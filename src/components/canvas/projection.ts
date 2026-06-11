@@ -1,5 +1,6 @@
 import type { Edge, Node } from '@xyflow/react';
 import { layoutTree } from '@/domain/layout';
+import { type PriorityBand, priorityBand } from '@/domain/priority';
 import { splitOf } from '@/domain/tree';
 import type { IssueNode, IssueTreeDoc, MeceStatus } from '@/domain/types';
 
@@ -11,6 +12,7 @@ export interface IssueNodeData extends Record<string, unknown> {
   mece: MeceStatus | null;
   hasChildren: boolean;
   value: IssueNode['value'];
+  priority: PriorityBand | null;
   selected: boolean;
 }
 
@@ -39,6 +41,7 @@ export function toFlow(
         mece: split ? split.mece : null,
         hasChildren: split !== undefined,
         value: n.value,
+        priority: n.priority ? priorityBand(n.priority) : null,
         selected: n.id === selectedId,
       },
     };

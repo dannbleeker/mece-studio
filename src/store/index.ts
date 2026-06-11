@@ -8,8 +8,15 @@ import {
   renameNode as renameNodeOp,
   setDecomposition as setDecompositionOp,
   setNodeValue as setNodeValueOp,
+  setPriority as setPriorityOp,
 } from '@/domain/tree';
-import type { DecompositionType, IssueTreeDoc, NodeId, NumericValue } from '@/domain/types';
+import type {
+  DecompositionType,
+  IssueTreeDoc,
+  NodeId,
+  NumericValue,
+  Priority,
+} from '@/domain/types';
 import { loadDoc, saveDoc } from '@/services/storage';
 
 const HISTORY_LIMIT = 100;
@@ -30,6 +37,7 @@ interface AppState {
   addChild: (parentId: NodeId, label?: string) => void;
   renameNode: (id: NodeId, label: string) => void;
   setNodeValue: (id: NodeId, value: NumericValue | undefined) => void;
+  setPriority: (id: NodeId, priority: Priority | undefined) => void;
   setDecomposition: (parentId: NodeId, decomposition: DecompositionType) => void;
   decompose: (parentId: NodeId, decomposition: DecompositionType) => void;
   removeNode: (id: NodeId) => void;
@@ -67,6 +75,7 @@ export const useStore = create<AppState>((set, get) => {
       apply((doc) => addChildOp(doc, parentId, label ?? 'New issue').doc),
     renameNode: (id, label) => apply((doc) => renameNodeOp(doc, id, label)),
     setNodeValue: (id, value) => apply((doc) => setNodeValueOp(doc, id, value)),
+    setPriority: (id, priority) => apply((doc) => setPriorityOp(doc, id, priority)),
     setDecomposition: (parentId, decomposition) =>
       apply((doc) => setDecompositionOp(doc, parentId, decomposition)),
     decompose: (parentId, decomposition) =>

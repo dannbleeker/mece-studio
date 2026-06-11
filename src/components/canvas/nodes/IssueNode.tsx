@@ -8,16 +8,31 @@ const STATE_COLOR: Record<CheckState, string> = {
   unknown: '#c4c0b6',
 };
 
+const BAND: Record<'low' | 'medium' | 'high', { bg: string; fg: string }> = {
+  high: { bg: '#3f6fb0', fg: '#ffffff' },
+  medium: { bg: '#f3e6cb', fg: '#8a5a14' },
+  low: { bg: '#ececea', fg: '#7a766c' },
+};
+
 export function IssueNode({ data }: NodeProps<IssueFlowNode>) {
-  const { label, mece, hasChildren, value, selected } = data;
+  const { label, mece, hasChildren, value, priority, selected } = data;
   return (
     <div
-      className="flex h-full w-full flex-col justify-center rounded-lg bg-white px-3 py-2 shadow-sm"
+      className="relative flex h-full w-full flex-col justify-center rounded-lg bg-white px-3 py-2 shadow-sm"
       style={{
         border: `${selected ? 2 : 1}px solid ${selected ? '#3f6fb0' : '#d7d4cb'}`,
       }}
     >
       <Handle type="target" position={Position.Left} className="!bg-neutral-400" />
+
+      {priority && (
+        <span
+          className="absolute top-1 right-1 rounded px-1 py-px font-semibold text-[8px] uppercase tracking-wide"
+          style={{ background: BAND[priority].bg, color: BAND[priority].fg }}
+        >
+          {priority}
+        </span>
+      )}
 
       <div className="line-clamp-2 font-medium text-[13px] text-neutral-800 leading-snug">
         {label || 'Untitled'}

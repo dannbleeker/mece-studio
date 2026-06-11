@@ -1,6 +1,6 @@
 import { DECOMPOSITION_HINTS, DECOMPOSITION_LABELS } from '@/domain/constants';
 import { splitOf } from '@/domain/tree';
-import type { CheckResult, CheckState, DecompositionType } from '@/domain/types';
+import type { CheckResult, CheckState, DecompositionType, Level } from '@/domain/types';
 import { useStore } from '@/store';
 
 const DECOMPOSITION_ORDER: DecompositionType[] = [
@@ -41,6 +41,7 @@ export function Inspector() {
   const setNodeValue = useStore((s) => s.setNodeValue);
   const setDecomposition = useStore((s) => s.setDecomposition);
   const decompose = useStore((s) => s.decompose);
+  const setPriority = useStore((s) => s.setPriority);
   const addChild = useStore((s) => s.addChild);
   const removeNode = useStore((s) => s.removeNode);
 
@@ -95,6 +96,47 @@ export function Inspector() {
           }}
         />
       </label>
+
+      <section className="flex flex-col gap-1.5 border-neutral-100 border-t pt-3">
+        <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
+          Priority
+        </span>
+        {(['impact', 'ease'] as const).map((axis) => (
+          <div key={axis} className="flex items-center gap-2">
+            <span className="w-12 text-[11px] text-neutral-500 capitalize">{axis}</span>
+            <div className="flex gap-1">
+              {(['low', 'medium', 'high'] as Level[]).map((lvl) => (
+                <button
+                  key={lvl}
+                  type="button"
+                  className={`rounded px-2 py-0.5 text-[11px] capitalize ${
+                    node.priority?.[axis] === lvl
+                      ? 'bg-[#3f6fb0] text-white'
+                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  }`}
+                  onClick={() =>
+                    setPriority(selectedId, {
+                      impact: axis === 'impact' ? lvl : (node.priority?.impact ?? 'medium'),
+                      ease: axis === 'ease' ? lvl : (node.priority?.ease ?? 'medium'),
+                    })
+                  }
+                >
+                  {lvl}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+        {node.priority && (
+          <button
+            type="button"
+            className="self-start text-[11px] text-neutral-400 hover:text-neutral-700 hover:underline"
+            onClick={() => setPriority(selectedId, undefined)}
+          >
+            Clear priority
+          </button>
+        )}
+      </section>
 
       {!split && (
         <section className="flex flex-col gap-2 border-neutral-100 border-t pt-3">

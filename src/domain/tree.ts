@@ -6,6 +6,7 @@ import type {
   IssueTreeDoc,
   NodeId,
   NumericValue,
+  Priority,
   Split,
   SplitId,
 } from './types';
@@ -135,4 +136,21 @@ export function decompose(
     next = addChild(next, parentId, label, decomposition).doc;
   }
   return next;
+}
+
+/** Set or clear a node's priority (impact × ease). */
+export function setPriority(
+  doc: IssueTreeDoc,
+  nodeId: NodeId,
+  priority: Priority | undefined
+): IssueTreeDoc {
+  const node = doc.nodes[nodeId];
+  if (!node) return doc;
+  const next: IssueNode = { ...node };
+  if (priority === undefined) {
+    delete next.priority;
+  } else {
+    next.priority = priority;
+  }
+  return { ...doc, nodes: { ...doc.nodes, [nodeId]: next } };
 }
