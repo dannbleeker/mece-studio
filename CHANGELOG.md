@@ -5,6 +5,8 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 ## [Unreleased]
 
 ### Added
+- **M4 — value-driver roll-up.** On a formula split, one click rolls the children's numbers up into the parent's value (sum / product / difference); the reconciliation check then confirms the totals add up.
+- **M4 — hypothesis status.** Mark any node open / supported / refuted / parked; the node gets a colour-coded left edge and the synthesis flags ✓ supported, ✗ refuted, ⊘ parked.
 - **Export.** Copy the tree as a Markdown outline (each split's MECE state annotated inline) or save the full document as JSON, from the header.
 - **M3 — evidence + answer-first synthesis.** Attach supporting/contradicting **evidence** (with a cyclable strength) to any node — nodes show ✓/✗ counts. A new **Synthesis** panel reads the tree answer-first: it leads with the highest-priority branch, lists branches in priority order, surfaces each node's evidence, and flags MECE gaps/overlaps — copyable as Markdown.
 - **M3 — branch prioritisation.** Mark each issue's **impact × ease** in the inspector; the node shows a priority-band chip (High / Medium / Low, from the 1–9 score) so the branches worth chasing first stand out. (Leaf evidence and answer-first roll-up still to come.)

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { CHECK_STATE_COLOR } from '@/components/checkColors';
 import { DECOMPOSITION_HINTS, DECOMPOSITION_LABELS } from '@/domain/constants';
+import { rollUpValue } from '@/domain/rollup';
 import { splitOf } from '@/domain/tree';
 import type {
   CheckResult,
@@ -81,6 +82,7 @@ export function Inspector() {
 
   const isRoot = selectedId === doc.rootId;
   const split = splitOf(doc, selectedId);
+  const rollup = split?.decomposition === 'formula' ? rollUpValue(doc, selectedId) : undefined;
 
   return (
     <aside className="flex w-80 shrink-0 flex-col gap-4 overflow-y-auto border-neutral-200 border-l bg-white p-5">
@@ -300,6 +302,15 @@ export function Inspector() {
             <MeceRow label="Mutually exclusive" result={split.mece.exclusive} />
             <MeceRow label="Collectively exhaustive" result={split.mece.exhaustive} />
           </div>
+          {rollup !== undefined && (
+            <button
+              type="button"
+              className="self-start rounded-md bg-neutral-100 px-2 py-1 text-[11px] text-neutral-600 hover:bg-neutral-200"
+              onClick={() => setNodeValue(selectedId, { amount: rollup })}
+            >
+              Roll up children → {rollup}
+            </button>
+          )}
         </section>
       )}
 

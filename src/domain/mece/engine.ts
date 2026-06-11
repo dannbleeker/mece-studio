@@ -1,4 +1,5 @@
 import { FORMULA_TOLERANCE, MIN_SPLIT_CHILDREN } from '../constants';
+import { combineValues } from '../rollup';
 import type { CheckResult, IssueNode, IssueTreeDoc, MeceStatus, Split, SplitId } from '../types';
 
 // Words too generic to signal a real overlap, plus the placeholder nouns the
@@ -90,17 +91,6 @@ function segmentExhaustive(children: IssueNode[]): CheckResult {
       };
 }
 
-function combine(values: number[], operator: Split['operator']): number {
-  switch (operator) {
-    case 'product':
-      return values.reduce((a, b) => a * b, 1);
-    case 'difference':
-      return values.slice(1).reduce((a, b) => a - b, values[0] ?? 0);
-    default:
-      return values.reduce((a, b) => a + b, 0);
-  }
-}
-
 function formulaExhaustive(split: Split, children: IssueNode[], doc: IssueTreeDoc): CheckResult {
   const parentValue = doc.nodes[split.parentId]?.value?.amount;
   const childValues = children.map((c) => c.value?.amount);
@@ -110,7 +100,7 @@ function formulaExhaustive(split: Split, children: IssueNode[], doc: IssueTreeDo
       message: 'Add a number to the parent and each child to check the totals reconcile.',
     };
   }
-  const combined = combine(childValues as number[], split.operator);
+  const combined = combineValues(childValues as number[], split.operator);
   const denom = Math.abs(parentValue) > 1e-9 ? Math.abs(parentValue) : 1;
   const rel = Math.abs(combined - parentValue) / denom;
   return rel <= FORMULA_TOLERANCE
