@@ -3,6 +3,7 @@ import { createDoc } from '@/domain/factory';
 import { recomputeMece } from '@/domain/mece';
 import {
   addChild as addChildOp,
+  decompose as decomposeOp,
   removeNode as removeNodeOp,
   renameNode as renameNodeOp,
   setDecomposition as setDecompositionOp,
@@ -30,6 +31,7 @@ interface AppState {
   renameNode: (id: NodeId, label: string) => void;
   setNodeValue: (id: NodeId, value: NumericValue | undefined) => void;
   setDecomposition: (parentId: NodeId, decomposition: DecompositionType) => void;
+  decompose: (parentId: NodeId, decomposition: DecompositionType) => void;
   removeNode: (id: NodeId) => void;
   undo: () => void;
   redo: () => void;
@@ -67,6 +69,8 @@ export const useStore = create<AppState>((set, get) => {
     setNodeValue: (id, value) => apply((doc) => setNodeValueOp(doc, id, value)),
     setDecomposition: (parentId, decomposition) =>
       apply((doc) => setDecompositionOp(doc, parentId, decomposition)),
+    decompose: (parentId, decomposition) =>
+      apply((doc) => decomposeOp(doc, parentId, decomposition)),
 
     removeNode: (id) =>
       set((s) => {

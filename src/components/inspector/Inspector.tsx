@@ -40,6 +40,7 @@ export function Inspector() {
   const renameNode = useStore((s) => s.renameNode);
   const setNodeValue = useStore((s) => s.setNodeValue);
   const setDecomposition = useStore((s) => s.setDecomposition);
+  const decompose = useStore((s) => s.decompose);
   const addChild = useStore((s) => s.addChild);
   const removeNode = useStore((s) => s.removeNode);
 
@@ -94,6 +95,30 @@ export function Inspector() {
           }}
         />
       </label>
+
+      {!split && (
+        <section className="flex flex-col gap-2 border-neutral-100 border-t pt-3">
+          <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
+            Decompose by
+          </span>
+          <div className="grid grid-cols-2 gap-1.5">
+            {DECOMPOSITION_ORDER.map((d) => (
+              <button
+                key={d}
+                type="button"
+                title={DECOMPOSITION_HINTS[d]}
+                className="rounded-md border border-neutral-200 px-2 py-1.5 text-left text-[12px] text-neutral-700 hover:border-[#3f6fb0] hover:bg-neutral-50"
+                onClick={() => decompose(selectedId, d)}
+              >
+                {DECOMPOSITION_LABELS[d]}
+              </button>
+            ))}
+          </div>
+          <span className="text-[11px] text-neutral-400 leading-snug">
+            Seeds clean starter sub-issues you can rename.
+          </span>
+        </section>
+      )}
 
       {split && (
         <section className="flex flex-col gap-2 border-neutral-100 border-t pt-3">

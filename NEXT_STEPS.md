@@ -3,7 +3,6 @@
 Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 
 ## Milestones
-- **M2** — full MECE rule set (`segmentOtherBucket`, `siblingOverlap`) + decomposition scaffolds/templates on split creation (pre-shape children by type, e.g. seed "Other" for segments, two branches for binary).
 - **M3** — prioritisation (impact × ease) + branch ranking + leaf evidence + answer-first roll-up to the root.
 - **M4** — hypothesis mode (node status workflow) + value-driver mode (numeric roll-up & sensitivity; units on values).
 - **M5** — export: PNG / PDF / **PPTX** (code-split + runtime-cached so they stay off the eager bundle).

@@ -1,4 +1,5 @@
 import { createNode, createSplit } from './factory';
+import { scaffoldChildren } from './scaffold';
 import type {
   DecompositionType,
   IssueNode,
@@ -116,4 +117,22 @@ export function removeNode(doc: IssueTreeDoc, nodeId: NodeId): IssueTreeDoc {
   }
 
   return { ...doc, nodes, splits };
+}
+
+/**
+ * Decompose `parentId`. If it already has a split, just change the type;
+ * otherwise create the split and seed type-appropriate starter children.
+ */
+export function decompose(
+  doc: IssueTreeDoc,
+  parentId: NodeId,
+  decomposition: DecompositionType
+): IssueTreeDoc {
+  if (!doc.nodes[parentId]) return doc;
+  if (splitOf(doc, parentId)) return setDecomposition(doc, parentId, decomposition);
+  let next = doc;
+  for (const label of scaffoldChildren(decomposition)) {
+    next = addChild(next, parentId, label, decomposition).doc;
+  }
+  return next;
 }
