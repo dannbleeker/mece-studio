@@ -1,4 +1,4 @@
 {
-  "comment": "Single source of truth for the gzipped JS size budget (KB), enforced by scripts/check-bundle-size.mjs as the last stage of the gate. Bump deliberately, in its own commit explaining why, when a real capability lands (e.g. the React Flow + dagre canvas in M1).",
-  "totalJsGzipKb": 80
+  "comment": "Single source of truth for the gzipped JS size budget (KB), enforced by scripts/check-bundle-size.mjs. Bump deliberately when a real capability lands. M1 raised it 80 -> 165 for the React Flow + dagre canvas core (the canvas is the app, so it loads eagerly and can't be split away). Future heavy/optional libs (e.g. export: pptxgenjs/jspdf) must be code-split + runtime-cached so they do NOT count against the eager budget — see NEXT_STEPS.",
+  "totalJsGzipKb": 165
 }

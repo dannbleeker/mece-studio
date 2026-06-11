@@ -24,6 +24,7 @@
   },
   "packageManager": "pnpm@11.0.9",
   "dependencies": {
+    "@xyflow/react": "^12.10.2",
     "dagre": "^0.8.5",
     "nanoid": "^5.1.11",
     "react": "^19.2.6",

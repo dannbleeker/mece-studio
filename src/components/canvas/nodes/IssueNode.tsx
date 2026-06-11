@@ -1,0 +1,55 @@
+import { Handle, type NodeProps, Position } from '@xyflow/react';
+import type { CheckState } from '@/domain/types';
+import type { IssueFlowNode } from '../projection';
+
+const STATE_COLOR: Record<CheckState, string> = {
+  pass: '#3f7d54',
+  warn: '#bd842c',
+  unknown: '#c4c0b6',
+};
+
+export function IssueNode({ data }: NodeProps<IssueFlowNode>) {
+  const { label, mece, hasChildren, value, selected } = data;
+  return (
+    <div
+      className="flex h-full w-full flex-col justify-center rounded-lg bg-white px-3 py-2 shadow-sm"
+      style={{
+        border: `${selected ? 2 : 1}px solid ${selected ? '#3f6fb0' : '#d7d4cb'}`,
+      }}
+    >
+      <Handle type="target" position={Position.Left} className="!bg-neutral-400" />
+
+      <div className="line-clamp-2 font-medium text-[13px] text-neutral-800 leading-snug">
+        {label || 'Untitled'}
+      </div>
+
+      {value && (
+        <div className="mt-0.5 text-[11px] text-neutral-500">
+          {value.amount}
+          {value.unit ? ` ${value.unit}` : ''}
+        </div>
+      )}
+
+      {hasChildren && mece && (
+        <div className="mt-1 flex items-center gap-3 text-[10px] text-neutral-500">
+          <span className="flex items-center gap-1">
+            <span
+              className="inline-block h-2 w-2 rounded-full"
+              style={{ background: STATE_COLOR[mece.exclusive.state] }}
+            />
+            ME
+          </span>
+          <span className="flex items-center gap-1">
+            <span
+              className="inline-block h-2 w-2 rounded-full"
+              style={{ background: STATE_COLOR[mece.exhaustive.state] }}
+            />
+            CE
+          </span>
+        </div>
+      )}
+
+      <Handle type="source" position={Position.Right} className="!bg-neutral-400" />
+    </div>
+  );
+}
