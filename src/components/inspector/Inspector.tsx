@@ -101,23 +101,45 @@ export function Inspector() {
         />
       </label>
 
-      <label className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1">
         <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
           Value (optional)
         </span>
-        <input
-          key={`${selectedId}-value`}
-          type="number"
-          defaultValue={node.value?.amount ?? ''}
-          placeholder="e.g. 100"
-          className="rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
-          onBlur={(e) => {
-            const raw = e.target.value.trim();
-            const num = Number(raw);
-            setNodeValue(selectedId, raw === '' || Number.isNaN(num) ? undefined : { amount: num });
-          }}
-        />
-      </label>
+        <div className="flex gap-1.5">
+          <input
+            key={`${selectedId}-value`}
+            type="number"
+            defaultValue={node.value?.amount ?? ''}
+            placeholder="e.g. 100"
+            className="w-0 flex-1 rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
+            onBlur={(e) => {
+              const raw = e.target.value.trim();
+              const num = Number(raw);
+              if (raw === '' || Number.isNaN(num)) {
+                setNodeValue(selectedId, undefined);
+                return;
+              }
+              // Read the live unit so tabbing amount→unit can't clobber it.
+              const unit = useStore.getState().doc.nodes[selectedId]?.value?.unit;
+              setNodeValue(selectedId, { amount: num, ...(unit ? { unit } : {}) });
+            }}
+          />
+          <input
+            key={`${selectedId}-unit`}
+            type="text"
+            defaultValue={node.value?.unit ?? ''}
+            placeholder="unit"
+            title="Unit (e.g. DKK, %, hrs) — set an amount first"
+            className="w-16 rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
+            onBlur={(e) => {
+              const unit = e.target.value.trim();
+              const current = useStore.getState().doc.nodes[selectedId]?.value;
+              if (!current) return; // a unit needs an amount to attach to
+              setNodeValue(selectedId, { amount: current.amount, ...(unit ? { unit } : {}) });
+            }}
+          />
+        </div>
+      </div>
 
       <section className="flex flex-col gap-1.5 border-neutral-100 border-t pt-3">
         <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
@@ -306,7 +328,12 @@ export function Inspector() {
             <button
               type="button"
               className="self-start rounded-md bg-neutral-100 px-2 py-1 text-[11px] text-neutral-600 hover:bg-neutral-200"
-              onClick={() => setNodeValue(selectedId, { amount: rollup })}
+              onClick={() =>
+                setNodeValue(selectedId, {
+                  amount: rollup,
+                  ...(node.value?.unit ? { unit: node.value.unit } : {}),
+                })
+              }
             >
               Roll up children → {rollup}
             </button>
