@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { CHECK_STATE_COLOR } from '@/components/checkColors';
 import { DECOMPOSITION_HINTS, DECOMPOSITION_LABELS } from '@/domain/constants';
 import { splitOf } from '@/domain/tree';
-import type { CheckResult, DecompositionType, Level } from '@/domain/types';
+import type { CheckResult, DecompositionType, EvidenceStrength, Level } from '@/domain/types';
 import { useStore } from '@/store';
 
 const DECOMPOSITION_ORDER: DecompositionType[] = [
@@ -12,6 +13,12 @@ const DECOMPOSITION_ORDER: DecompositionType[] = [
   'formula',
   'framework',
 ];
+
+const STRENGTH_CYCLE: EvidenceStrength[] = ['anecdote', 'indicative', 'strong'];
+function nextStrength(s: EvidenceStrength): EvidenceStrength {
+  const i = STRENGTH_CYCLE.indexOf(s);
+  return STRENGTH_CYCLE[(i + 1) % STRENGTH_CYCLE.length] ?? 'indicative';
+}
 
 function MeceRow({ label, result }: { label: string; result: CheckResult }) {
   return (
@@ -37,8 +44,12 @@ export function Inspector() {
   const setDecomposition = useStore((s) => s.setDecomposition);
   const decompose = useStore((s) => s.decompose);
   const setPriority = useStore((s) => s.setPriority);
+  const addEvidence = useStore((s) => s.addEvidence);
+  const removeEvidence = useStore((s) => s.removeEvidence);
+  const updateEvidence = useStore((s) => s.updateEvidence);
   const addChild = useStore((s) => s.addChild);
   const removeNode = useStore((s) => s.removeNode);
+  const [evidenceDraft, setEvidenceDraft] = useState('');
 
   const node = selectedId ? doc.nodes[selectedId] : undefined;
 
@@ -131,6 +142,76 @@ export function Inspector() {
             Clear priority
           </button>
         )}
+      </section>
+
+      <section className="flex flex-col gap-2 border-neutral-100 border-t pt-3">
+        <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
+          Evidence
+        </span>
+        {node.evidence.length > 0 && (
+          <ul className="flex flex-col gap-1">
+            {node.evidence.map((e) => (
+              <li key={e.id} className="flex items-start gap-1.5 text-[12px]">
+                <span
+                  className="mt-0.5 font-semibold"
+                  style={{ color: e.supports ? '#3f7d54' : '#bd4a3a' }}
+                  title={e.supports ? 'Supports' : 'Contradicts'}
+                >
+                  {e.supports ? '✓' : '✗'}
+                </span>
+                <span className="flex-1 text-neutral-700 leading-snug">{e.summary}</span>
+                <button
+                  type="button"
+                  title="Cycle strength"
+                  className="rounded bg-neutral-100 px-1 text-[10px] text-neutral-500 capitalize hover:bg-neutral-200"
+                  onClick={() =>
+                    updateEvidence(selectedId, e.id, { strength: nextStrength(e.strength) })
+                  }
+                >
+                  {e.strength}
+                </button>
+                <button
+                  type="button"
+                  title="Remove"
+                  className="text-neutral-300 hover:text-neutral-600"
+                  onClick={() => removeEvidence(selectedId, e.id)}
+                >
+                  ×
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <input
+          value={evidenceDraft}
+          placeholder="Add evidence…"
+          className="rounded-md border border-neutral-300 px-2 py-1.5 text-[12px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
+          onChange={(e) => setEvidenceDraft(e.target.value)}
+        />
+        <div className="flex gap-1.5">
+          <button
+            type="button"
+            disabled={!evidenceDraft.trim()}
+            className="flex-1 rounded-md bg-[#eaf2ea] px-2 py-1 text-[12px] text-[#2f6a44] hover:bg-[#dcebdc] disabled:opacity-50"
+            onClick={() => {
+              addEvidence(selectedId, evidenceDraft.trim(), true);
+              setEvidenceDraft('');
+            }}
+          >
+            + Supports
+          </button>
+          <button
+            type="button"
+            disabled={!evidenceDraft.trim()}
+            className="flex-1 rounded-md bg-[#f6e9e7] px-2 py-1 text-[12px] text-[#a23b2c] hover:bg-[#f0ddda] disabled:opacity-50"
+            onClick={() => {
+              addEvidence(selectedId, evidenceDraft.trim(), false);
+              setEvidenceDraft('');
+            }}
+          >
+            + Contradicts
+          </button>
+        </div>
       </section>
 
       {!split && (

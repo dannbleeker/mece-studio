@@ -9,7 +9,7 @@ const BAND: Record<'low' | 'medium' | 'high', { bg: string; fg: string }> = {
 };
 
 export function IssueNode({ data }: NodeProps<IssueFlowNode>) {
-  const { label, mece, hasChildren, value, priority, selected } = data;
+  const { label, mece, hasChildren, value, priority, evidence, selected } = data;
   return (
     <div
       className="relative flex h-full w-full flex-col justify-center rounded-lg bg-white px-3 py-2 shadow-sm"
@@ -36,6 +36,15 @@ export function IssueNode({ data }: NodeProps<IssueFlowNode>) {
         <div className="mt-0.5 text-[11px] text-neutral-500">
           {value.amount}
           {value.unit ? ` ${value.unit}` : ''}
+        </div>
+      )}
+
+      {evidence && (
+        <div className="mt-0.5 flex gap-2 text-[10px]">
+          {evidence.supports > 0 && <span style={{ color: '#3f7d54' }}>✓ {evidence.supports}</span>}
+          {evidence.contradicts > 0 && (
+            <span style={{ color: '#bd4a3a' }}>✗ {evidence.contradicts}</span>
+          )}
         </div>
       )}
 

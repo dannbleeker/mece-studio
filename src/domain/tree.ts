@@ -2,6 +2,7 @@ import { createNode, createSplit } from './factory';
 import { scaffoldChildren } from './scaffold';
 import type {
   DecompositionType,
+  EvidenceItem,
   IssueNode,
   IssueTreeDoc,
   NodeId,
@@ -153,4 +154,44 @@ export function setPriority(
     next.priority = priority;
   }
   return { ...doc, nodes: { ...doc.nodes, [nodeId]: next } };
+}
+
+/** Attach an evidence item to a node. */
+export function addEvidence(doc: IssueTreeDoc, nodeId: NodeId, item: EvidenceItem): IssueTreeDoc {
+  const node = doc.nodes[nodeId];
+  if (!node) return doc;
+  return {
+    ...doc,
+    nodes: { ...doc.nodes, [nodeId]: { ...node, evidence: [...node.evidence, item] } },
+  };
+}
+
+export function removeEvidence(
+  doc: IssueTreeDoc,
+  nodeId: NodeId,
+  evidenceId: string
+): IssueTreeDoc {
+  const node = doc.nodes[nodeId];
+  if (!node) return doc;
+  const evidence = node.evidence.filter((e) => e.id !== evidenceId);
+  if (evidence.length === node.evidence.length) return doc;
+  return { ...doc, nodes: { ...doc.nodes, [nodeId]: { ...node, evidence } } };
+}
+
+export function updateEvidence(
+  doc: IssueTreeDoc,
+  nodeId: NodeId,
+  evidenceId: string,
+  patch: Partial<EvidenceItem>
+): IssueTreeDoc {
+  const node = doc.nodes[nodeId];
+  if (!node) return doc;
+  let changed = false;
+  const evidence = node.evidence.map((e) => {
+    if (e.id !== evidenceId) return e;
+    changed = true;
+    return { ...e, ...patch };
+  });
+  if (!changed) return doc;
+  return { ...doc, nodes: { ...doc.nodes, [nodeId]: { ...node, evidence } } };
 }

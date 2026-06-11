@@ -1,17 +1,22 @@
 import { create } from 'zustand';
-import { createDoc } from '@/domain/factory';
+import { createDoc, createEvidence } from '@/domain/factory';
 import { recomputeMece } from '@/domain/mece';
 import {
   addChild as addChildOp,
+  addEvidence as addEvidenceOp,
   decompose as decomposeOp,
+  removeEvidence as removeEvidenceOp,
   removeNode as removeNodeOp,
   renameNode as renameNodeOp,
   setDecomposition as setDecompositionOp,
   setNodeValue as setNodeValueOp,
   setPriority as setPriorityOp,
+  updateEvidence as updateEvidenceOp,
 } from '@/domain/tree';
 import type {
   DecompositionType,
+  EvidenceItem,
+  EvidenceStrength,
   IssueTreeDoc,
   NodeId,
   NumericValue,
@@ -38,6 +43,14 @@ interface AppState {
   renameNode: (id: NodeId, label: string) => void;
   setNodeValue: (id: NodeId, value: NumericValue | undefined) => void;
   setPriority: (id: NodeId, priority: Priority | undefined) => void;
+  addEvidence: (
+    nodeId: NodeId,
+    summary: string,
+    supports: boolean,
+    strength?: EvidenceStrength
+  ) => void;
+  removeEvidence: (nodeId: NodeId, evidenceId: string) => void;
+  updateEvidence: (nodeId: NodeId, evidenceId: string, patch: Partial<EvidenceItem>) => void;
   setDecomposition: (parentId: NodeId, decomposition: DecompositionType) => void;
   decompose: (parentId: NodeId, decomposition: DecompositionType) => void;
   removeNode: (id: NodeId) => void;
@@ -76,6 +89,12 @@ export const useStore = create<AppState>((set, get) => {
     renameNode: (id, label) => apply((doc) => renameNodeOp(doc, id, label)),
     setNodeValue: (id, value) => apply((doc) => setNodeValueOp(doc, id, value)),
     setPriority: (id, priority) => apply((doc) => setPriorityOp(doc, id, priority)),
+    addEvidence: (nodeId, summary, supports, strength) =>
+      apply((doc) => addEvidenceOp(doc, nodeId, createEvidence(summary, supports, strength))),
+    removeEvidence: (nodeId, evidenceId) =>
+      apply((doc) => removeEvidenceOp(doc, nodeId, evidenceId)),
+    updateEvidence: (nodeId, evidenceId, patch) =>
+      apply((doc) => updateEvidenceOp(doc, nodeId, evidenceId, patch)),
     setDecomposition: (parentId, decomposition) =>
       apply((doc) => setDecompositionOp(doc, parentId, decomposition)),
     decompose: (parentId, decomposition) =>

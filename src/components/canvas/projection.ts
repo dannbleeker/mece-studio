@@ -13,6 +13,7 @@ export interface IssueNodeData extends Record<string, unknown> {
   hasChildren: boolean;
   value: IssueNode['value'];
   priority: PriorityBand | null;
+  evidence: { supports: number; contradicts: number } | null;
   selected: boolean;
 }
 
@@ -42,6 +43,13 @@ export function toFlow(
         hasChildren: split !== undefined,
         value: n.value,
         priority: n.priority ? priorityBand(n.priority) : null,
+        evidence:
+          n.evidence.length > 0
+            ? {
+                supports: n.evidence.filter((e) => e.supports).length,
+                contradicts: n.evidence.filter((e) => !e.supports).length,
+              }
+            : null,
         selected: n.id === selectedId,
       },
     };

@@ -2,6 +2,8 @@ import { nanoid } from 'nanoid';
 import type {
   DecompositionType,
   DocId,
+  EvidenceItem,
+  EvidenceStrength,
   IssueNode,
   IssueTreeDoc,
   NodeId,
@@ -46,4 +48,13 @@ export function createDoc(rootQuestion: string, now: number): IssueTreeDoc {
     createdAt: now,
     updatedAt: now,
   };
+}
+
+/** Create an evidence item to attach to a node. */
+export function createEvidence(
+  summary: string,
+  supports: boolean,
+  strength: EvidenceStrength = 'indicative'
+): EvidenceItem {
+  return { id: nanoid(), summary, supports, strength };
 }

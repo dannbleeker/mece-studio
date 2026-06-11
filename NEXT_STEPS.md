@@ -8,6 +8,11 @@ Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 - **M5 (cont.)** — *visual* export: PNG / PDF / **PPTX** (code-split + runtime-cached). (Markdown outline + JSON export already shipped.)
 - **Later** — AI tier-3: suggest a MECE split; critique a tree.
 
+## Options raised in review (2026-06-11) — on the list, decide later
+- **Manual node drag** as an option (auto-layout only today; would fall back to auto for new nodes).
+- **More-aggressive overlap detection** mode (vs the current conservative shared-word heuristic).
+- **Configurable formula tolerance** (currently fixed at 0.5%).
+
 ## Polish / refinements (found during M1)
 - Re-fit runs on every node-count change; refine to only recentre when a new node would land off-screen, to avoid view jumps in large trees.
 - Label/value edits commit on blur (one undo entry each) — consider inline-on-canvas label editing, and coalescing rapid edits if the granularity proves noisy.
