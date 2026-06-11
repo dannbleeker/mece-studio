@@ -4,7 +4,7 @@ Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 
 ## Milestones
 - **M4 (cont.)** — value-driver mode: numeric roll-up (auto-compute a parent's value from a formula split's children) + sensitivity; units on values. (Hypothesis-status workflow shipped.)
-- **M5 (cont.)** — *visual* export: PNG / PDF / **PPTX** (code-split + runtime-cached). (Markdown outline + JSON export already shipped.)
+- **M5 (cont.)** — *visual* export: **PDF / PPTX** (code-split). (PNG, Markdown outline, and JSON export shipped.)
 - **Later** — AI tier-3: suggest a MECE split; critique a tree.
 
 ## Options raised in review (2026-06-11) — on the list, decide later
