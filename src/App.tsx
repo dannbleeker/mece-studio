@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Canvas } from '@/components/canvas/Canvas';
 import { Inspector } from '@/components/inspector/Inspector';
+import { SynthesisPanel } from '@/components/SynthesisPanel';
 import { toMarkdown } from '@/domain/export';
 import { copyToClipboard, downloadText } from '@/services/download';
 import { useStore } from '@/store';
@@ -15,6 +16,7 @@ export function App() {
   const canUndo = useStore((s) => s.canUndo());
   const canRedo = useStore((s) => s.canRedo());
   const [copied, setCopied] = useState(false);
+  const [showSynthesis, setShowSynthesis] = useState(false);
 
   const onCopyMarkdown = () => {
     void copyToClipboard(toMarkdown(doc));
@@ -33,6 +35,10 @@ export function App() {
           issue trees, MECE by construction
         </span>
         <div className="ml-auto flex items-center gap-1">
+          <button type="button" onClick={() => setShowSynthesis((v) => !v)} className={GHOST_BTN}>
+            Synthesis
+          </button>
+          <span className="mx-1 h-5 w-px bg-neutral-200" />
           <button type="button" onClick={onCopyMarkdown} className={GHOST_BTN}>
             {copied ? 'Copied!' : 'Copy Markdown'}
           </button>
@@ -52,6 +58,7 @@ export function App() {
       <div className="flex min-h-0 flex-1">
         <main className="relative min-w-0 flex-1">
           <Canvas />
+          {showSynthesis && <SynthesisPanel onClose={() => setShowSynthesis(false)} />}
         </main>
         <Inspector />
       </div>
