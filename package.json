@@ -9,10 +9,13 @@
     "dev": "node ./node_modules/vite/bin/vite.js",
     "build": "node ./scripts/build.mjs",
     "preview": "node ./node_modules/vite/bin/vite.js preview",
+    "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit",
     "test": "node ./node_modules/vitest/vitest.mjs run",
     "test:watch": "node ./node_modules/vitest/vitest.mjs",
     "lint": "biome check src tests",
     "format": "biome check --write src tests",
+    "knip": "node ./node_modules/knip/bin/knip.js",
+    "check:bundle-size": "node ./scripts/check-bundle-size.mjs",
     "verify": "node ./scripts/verify.mjs"
   },
   "engines": {
@@ -33,6 +36,7 @@
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
+    "knip": "^6.14.2",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.14",

@@ -1,8 +1,9 @@
-// Full local gate: lint -> test -> typecheck -> build.
+// THE gate — the single "green before done" command (see CLAUDE.md).
 //
-// Each tool is spawned directly (shell:false, node-form entry point) so the
-// gate runs under this machine's AppLocker policy, which blocks pnpm's script
-// shell and the .bin tool shims. The same script runs unchanged on CI.
+// Fail-fast order: typecheck -> lint/format -> dead-code -> tests -> build ->
+// size budget. Each tool is spawned directly (shell:false, node-form) so the
+// gate runs under this machine's AppLocker policy (which blocks pnpm's `&&`
+// script shell and the .bin tool shims) and identically on the Linux CI runner.
 import { spawnSync } from 'node:child_process';
 
 function step(label, cmd, args) {
@@ -14,9 +15,11 @@ function step(label, cmd, args) {
   }
 }
 
-step('lint', 'node', ['./node_modules/@biomejs/biome/bin/biome', 'check', 'src', 'tests']);
-step('test', 'node', ['./node_modules/vitest/vitest.mjs', 'run']);
 step('typecheck', 'node', ['./node_modules/typescript/bin/tsc', '--noEmit']);
+step('lint/format', 'node', ['./node_modules/@biomejs/biome/bin/biome', 'check', 'src', 'tests']);
+step('dead-code', 'node', ['./node_modules/knip/bin/knip.js']);
+step('test', 'node', ['./node_modules/vitest/vitest.mjs', 'run']);
 step('build', 'node', ['./node_modules/vite/bin/vite.js', 'build']);
+step('size budget', 'node', ['./scripts/check-bundle-size.mjs']);
 
 process.stdout.write('\n✓ verify passed\n');
