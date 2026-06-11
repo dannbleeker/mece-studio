@@ -52,4 +52,16 @@ describe('store', () => {
     useStore.getState().removeNode(childId);
     expect(useStore.getState().selectedId).toBeNull();
   });
+
+  it('newDoc resets to a fresh root and keeps the old tree in undo', () => {
+    const root = useStore.getState().doc.rootId;
+    useStore.getState().addChild(root, 'A');
+    useStore.getState().newDoc();
+
+    expect(childrenOf(useStore.getState().doc, useStore.getState().doc.rootId)).toHaveLength(0);
+    expect(useStore.getState().doc.rootId).not.toBe(root);
+
+    useStore.getState().undo();
+    expect(useStore.getState().doc.rootId).toBe(root);
+  });
 });

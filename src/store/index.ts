@@ -40,6 +40,7 @@ interface AppState {
   selectedId: NodeId | null;
 
   select: (id: NodeId | null) => void;
+  newDoc: () => void;
   setRootQuestion: (label: string) => void;
   addChild: (parentId: NodeId, label?: string) => void;
   renameNode: (id: NodeId, label: string) => void;
@@ -86,6 +87,17 @@ export const useStore = create<AppState>((set, get) => {
     selectedId: null,
 
     select: (id) => set({ selectedId: id }),
+    newDoc: () =>
+      set((s) => {
+        const doc = recomputeMece(createDoc('Why is this happening?', Date.now()));
+        saveDoc(doc);
+        return {
+          doc,
+          past: [...s.past, s.doc].slice(-HISTORY_LIMIT),
+          future: [],
+          selectedId: null,
+        };
+      }),
     setRootQuestion: (label) => apply((doc) => renameNodeOp(doc, doc.rootId, label)),
     addChild: (parentId, label) =>
       apply((doc) => addChildOp(doc, parentId, label ?? 'New issue').doc),

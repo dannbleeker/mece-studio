@@ -11,6 +11,7 @@ const GHOST_BTN =
 
 export function App() {
   const doc = useStore((s) => s.doc);
+  const newDoc = useStore((s) => s.newDoc);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
   const canUndo = useStore((s) => s.canUndo());
@@ -26,6 +27,9 @@ export function App() {
   const onSaveJson = () => {
     downloadText('mece-tree.json', JSON.stringify(doc, null, 2), 'application/json');
   };
+  const onNew = () => {
+    if (window.confirm('Start a new tree? Your current one stays in undo.')) newDoc();
+  };
 
   return (
     <div className="flex h-full flex-col bg-[#faf9f5] text-neutral-800">
@@ -35,6 +39,10 @@ export function App() {
           issue trees, MECE by construction
         </span>
         <div className="ml-auto flex items-center gap-1">
+          <button type="button" onClick={onNew} className={GHOST_BTN}>
+            New
+          </button>
+          <span className="mx-1 h-5 w-px bg-neutral-200" />
           <button type="button" onClick={() => setShowSynthesis((v) => !v)} className={GHOST_BTN}>
             Synthesis
           </button>
