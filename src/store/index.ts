@@ -9,6 +9,7 @@ import {
   removeNode as removeNodeOp,
   renameNode as renameNodeOp,
   setDecomposition as setDecompositionOp,
+  setDetail as setDetailOp,
   setNodeValue as setNodeValueOp,
   setPriority as setPriorityOp,
   setStatus as setStatusOp,
@@ -44,6 +45,7 @@ interface AppState {
   setRootQuestion: (label: string) => void;
   addChild: (parentId: NodeId, label?: string) => void;
   renameNode: (id: NodeId, label: string) => void;
+  setDetail: (id: NodeId, detail: string) => void;
   setAmount: (id: NodeId, amount: number | undefined) => void;
   setUnit: (id: NodeId, unit: string) => void;
   setPriority: (id: NodeId, priority: Priority | undefined) => void;
@@ -114,6 +116,7 @@ export const useStore = create<AppState>((set, get) => {
     addChild: (parentId, label) =>
       apply((doc) => addChildOp(doc, parentId, label ?? 'New issue').doc),
     renameNode: (id, label) => apply((doc) => renameNodeOp(doc, id, label)),
+    setDetail: (id, detail) => apply((doc) => setDetailOp(doc, id, detail)),
     setAmount: (id, amount) =>
       apply((doc) => {
         if (amount === undefined) return setNodeValueOp(doc, id, undefined);

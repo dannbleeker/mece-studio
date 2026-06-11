@@ -5,6 +5,7 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 ## [Unreleased]
 
 ### Added
+- **Per-node notes.** Capture each issue's rationale, assumptions, or data sources in the inspector; notes flow into the Markdown export as an italic line under the bullet.
 - **Open JSON.** Load a previously saved tree back in from the header (validated; the current tree stays in undo) — completing the save/open round-trip.
 - **Units on values.** Set a unit (DKK, %, hrs, FTE…) beside a node's number — it shows on the node and in the Markdown export, and survives a value roll-up.
 - **Keyboard shortcuts.** Undo / redo with Ctrl/⌘+Z and Ctrl/⌘+Y (or Shift+Z), and Delete / Backspace to remove the selected node — all ignored while typing in a field, so they never hijack the inspector inputs.

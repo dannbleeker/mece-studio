@@ -7,6 +7,7 @@ import {
   removeNode,
   renameNode,
   setDecomposition,
+  setDetail,
   setNodeValue,
   splitOf,
 } from '@/domain/tree';
@@ -44,6 +45,14 @@ describe('tree ops', () => {
     expect(withVal.nodes[doc0.rootId]?.value).toEqual({ amount: 10, unit: '$' });
     const cleared = setNodeValue(withVal, doc0.rootId, undefined);
     expect(cleared.nodes[doc0.rootId]?.value).toBeUndefined();
+  });
+
+  it('setDetail sets and clears notes (blank clears)', () => {
+    const doc0 = seed();
+    const withNote = setDetail(doc0, doc0.rootId, 'Margin compression since Q2.');
+    expect(withNote.nodes[doc0.rootId]?.detail).toBe('Margin compression since Q2.');
+    const cleared = setDetail(withNote, doc0.rootId, '   ');
+    expect(cleared.nodes[doc0.rootId]?.detail).toBeUndefined();
   });
 
   it('removeNode drops the subtree and updates the parent split; root is protected', () => {

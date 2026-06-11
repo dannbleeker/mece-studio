@@ -54,6 +54,7 @@ export function Inspector() {
   const selectedId = useStore((s) => s.selectedId);
   const setRootQuestion = useStore((s) => s.setRootQuestion);
   const renameNode = useStore((s) => s.renameNode);
+  const setDetail = useStore((s) => s.setDetail);
   const setAmount = useStore((s) => s.setAmount);
   const setUnit = useStore((s) => s.setUnit);
   const setDecomposition = useStore((s) => s.setDecomposition);
@@ -99,6 +100,20 @@ export function Inspector() {
           onBlur={(e) =>
             isRoot ? setRootQuestion(e.target.value) : renameNode(selectedId, e.target.value)
           }
+        />
+      </label>
+
+      <label className="flex flex-col gap-1">
+        <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
+          Notes
+        </span>
+        <textarea
+          key={`${selectedId}-detail`}
+          defaultValue={node.detail ?? ''}
+          rows={2}
+          placeholder="Rationale, assumptions, data sources…"
+          className="resize-none rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
+          onBlur={(e) => setDetail(selectedId, e.target.value)}
         />
       </label>
 

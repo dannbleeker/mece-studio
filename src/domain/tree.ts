@@ -100,6 +100,19 @@ export function setNodeValue(
   return { ...doc, nodes: { ...doc.nodes, [nodeId]: next } };
 }
 
+/** Set or clear a node's free-text notes (rationale, assumptions, sources). */
+export function setDetail(doc: IssueTreeDoc, nodeId: NodeId, detail: string): IssueTreeDoc {
+  const node = doc.nodes[nodeId];
+  if (!node) return doc;
+  const next: IssueNode = { ...node };
+  if (detail.trim() === '') {
+    delete next.detail;
+  } else {
+    next.detail = detail;
+  }
+  return { ...doc, nodes: { ...doc.nodes, [nodeId]: next } };
+}
+
 /** Remove a node and its whole subtree. The root cannot be removed. */
 export function removeNode(doc: IssueTreeDoc, nodeId: NodeId): IssueTreeDoc {
   if (nodeId === doc.rootId || !doc.nodes[nodeId]) return doc;
