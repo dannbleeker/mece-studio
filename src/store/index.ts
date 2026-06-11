@@ -1,24 +1,102 @@
 import { create } from 'zustand';
 import { createDoc } from '@/domain/factory';
-import type { IssueTreeDoc } from '@/domain/types';
+import { recomputeMece } from '@/domain/mece';
+import {
+  addChild as addChildOp,
+  removeNode as removeNodeOp,
+  renameNode as renameNodeOp,
+  setDecomposition as setDecompositionOp,
+  setNodeValue as setNodeValueOp,
+} from '@/domain/tree';
+import type { DecompositionType, IssueTreeDoc, NodeId, NumericValue } from '@/domain/types';
+import { loadDoc, saveDoc } from '@/services/storage';
+
+const HISTORY_LIMIT = 100;
+
+function initialDoc(): IssueTreeDoc {
+  const loaded = loadDoc();
+  return recomputeMece(loaded ?? createDoc('Why is this happening?', Date.now()));
+}
 
 interface AppState {
   doc: IssueTreeDoc;
-  /** Replace the root question's label. */
+  past: IssueTreeDoc[];
+  future: IssueTreeDoc[];
+  selectedId: NodeId | null;
+
+  select: (id: NodeId | null) => void;
   setRootQuestion: (label: string) => void;
+  addChild: (parentId: NodeId, label?: string) => void;
+  renameNode: (id: NodeId, label: string) => void;
+  setNodeValue: (id: NodeId, value: NumericValue | undefined) => void;
+  setDecomposition: (parentId: NodeId, decomposition: DecompositionType) => void;
+  removeNode: (id: NodeId) => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
 }
 
-export const useStore = create<AppState>((set) => ({
-  doc: createDoc('Why is this happening?', Date.now()),
-  setRootQuestion: (label) =>
+export const useStore = create<AppState>((set, get) => {
+  /**
+   * Run a pure doc transform, then snapshot history, recompute MECE, and
+   * persist — the single path every mutation goes through. A no-op transform
+   * (same doc reference) is ignored so it neither persists nor adds history.
+   */
+  function apply(transform: (doc: IssueTreeDoc) => IssueTreeDoc): void {
     set((s) => {
-      const root = s.doc.nodes[s.doc.rootId];
-      return {
-        doc: {
-          ...s.doc,
-          nodes: { ...s.doc.nodes, [s.doc.rootId]: { ...root, label } },
-          updatedAt: Date.now(),
-        },
-      };
-    }),
-}));
+      const transformed = transform(s.doc);
+      if (transformed === s.doc) return s;
+      const doc = recomputeMece({ ...transformed, updatedAt: Date.now() });
+      saveDoc(doc);
+      return { doc, past: [...s.past, s.doc].slice(-HISTORY_LIMIT), future: [] };
+    });
+  }
+
+  return {
+    doc: initialDoc(),
+    past: [],
+    future: [],
+    selectedId: null,
+
+    select: (id) => set({ selectedId: id }),
+    setRootQuestion: (label) => apply((doc) => renameNodeOp(doc, doc.rootId, label)),
+    addChild: (parentId, label) =>
+      apply((doc) => addChildOp(doc, parentId, label ?? 'New issue').doc),
+    renameNode: (id, label) => apply((doc) => renameNodeOp(doc, id, label)),
+    setNodeValue: (id, value) => apply((doc) => setNodeValueOp(doc, id, value)),
+    setDecomposition: (parentId, decomposition) =>
+      apply((doc) => setDecompositionOp(doc, parentId, decomposition)),
+
+    removeNode: (id) =>
+      set((s) => {
+        const transformed = removeNodeOp(s.doc, id);
+        if (transformed === s.doc) return s;
+        const doc = recomputeMece({ ...transformed, updatedAt: Date.now() });
+        saveDoc(doc);
+        return {
+          doc,
+          past: [...s.past, s.doc].slice(-HISTORY_LIMIT),
+          future: [],
+          selectedId: s.selectedId === id ? null : s.selectedId,
+        };
+      }),
+
+    undo: () =>
+      set((s) => {
+        const prev = s.past[s.past.length - 1];
+        if (!prev) return s;
+        saveDoc(prev);
+        return { doc: prev, past: s.past.slice(0, -1), future: [s.doc, ...s.future] };
+      }),
+    redo: () =>
+      set((s) => {
+        const next = s.future[0];
+        if (!next) return s;
+        saveDoc(next);
+        return { doc: next, past: [...s.past, s.doc], future: s.future.slice(1) };
+      }),
+    canUndo: () => get().past.length > 0,
+    canRedo: () => get().future.length > 0,
+  };
+});
