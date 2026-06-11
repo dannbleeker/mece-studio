@@ -14,6 +14,7 @@ export interface IssueNodeData extends Record<string, unknown> {
   value: IssueNode['value'];
   priority: PriorityBand | null;
   evidence: { supports: number; contradicts: number } | null;
+  hasNote: boolean;
   selected: boolean;
 }
 
@@ -50,6 +51,7 @@ export function toFlow(
                 contradicts: n.evidence.filter((e) => !e.supports).length,
               }
             : null,
+        hasNote: !!n.detail?.trim(),
         selected: n.id === selectedId,
       },
     };

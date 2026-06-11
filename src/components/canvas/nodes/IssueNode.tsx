@@ -17,7 +17,7 @@ const STATUS_BORDER: Record<NodeStatus, string> = {
 };
 
 export function IssueNode({ data }: NodeProps<IssueFlowNode>) {
-  const { label, mece, hasChildren, value, priority, evidence, status, selected } = data;
+  const { label, mece, hasChildren, value, priority, evidence, hasNote, status, selected } = data;
   // All-longhand border props: mixing the `border` shorthand with a `borderLeft`
   // override makes React warn (and risks style bugs) on every rerender.
   const edgeColor = selected ? '#3f6fb0' : '#d7d4cb';
@@ -60,11 +60,29 @@ export function IssueNode({ data }: NodeProps<IssueFlowNode>) {
         </div>
       )}
 
-      {evidence && (
-        <div className="mt-0.5 flex gap-2 text-[10px]">
-          {evidence.supports > 0 && <span style={{ color: '#3f7d54' }}>✓ {evidence.supports}</span>}
-          {evidence.contradicts > 0 && (
+      {(evidence || hasNote) && (
+        <div className="mt-0.5 flex items-center gap-2 text-[10px]">
+          {evidence && evidence.supports > 0 && (
+            <span style={{ color: '#3f7d54' }}>✓ {evidence.supports}</span>
+          )}
+          {evidence && evidence.contradicts > 0 && (
             <span style={{ color: '#bd4a3a' }}>✗ {evidence.contradicts}</span>
+          )}
+          {hasNote && (
+            <span className="text-neutral-400" role="img" title="Has notes" aria-label="Has notes">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <path d="M3.5 4h9M3.5 8h9M3.5 12h6" />
+              </svg>
+            </span>
           )}
         </div>
       )}
