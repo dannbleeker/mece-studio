@@ -18,12 +18,24 @@ const STATUS_BORDER: Record<NodeStatus, string> = {
 
 export function IssueNode({ data }: NodeProps<IssueFlowNode>) {
   const { label, mece, hasChildren, value, priority, evidence, status, selected } = data;
+  // All-longhand border props: mixing the `border` shorthand with a `borderLeft`
+  // override makes React warn (and risks style bugs) on every rerender.
+  const edgeColor = selected ? '#3f6fb0' : '#d7d4cb';
+  const edgeWidth = selected ? 2 : 1;
+  const showStatus = status !== 'open';
   return (
     <div
       className="relative flex h-full w-full flex-col justify-center rounded-lg bg-white px-3 py-2 shadow-sm"
       style={{
-        border: `${selected ? 2 : 1}px solid ${selected ? '#3f6fb0' : '#d7d4cb'}`,
-        borderLeft: status === 'open' ? undefined : `4px solid ${STATUS_BORDER[status]}`,
+        borderStyle: 'solid',
+        borderTopColor: edgeColor,
+        borderRightColor: edgeColor,
+        borderBottomColor: edgeColor,
+        borderLeftColor: showStatus ? STATUS_BORDER[status] : edgeColor,
+        borderTopWidth: edgeWidth,
+        borderRightWidth: edgeWidth,
+        borderBottomWidth: edgeWidth,
+        borderLeftWidth: showStatus ? 4 : edgeWidth,
       }}
     >
       <Handle type="target" position={Position.Left} className="!bg-neutral-400" />
