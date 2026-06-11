@@ -6,6 +6,7 @@ import type {
   IssueNode,
   IssueTreeDoc,
   NodeId,
+  NodeStatus,
   NumericValue,
   Priority,
   Split,
@@ -194,4 +195,11 @@ export function updateEvidence(
   });
   if (!changed) return doc;
   return { ...doc, nodes: { ...doc.nodes, [nodeId]: { ...node, evidence } } };
+}
+
+/** Set a node's hypothesis status (open / supported / refuted / parked). */
+export function setStatus(doc: IssueTreeDoc, nodeId: NodeId, status: NodeStatus): IssueTreeDoc {
+  const node = doc.nodes[nodeId];
+  if (!node || node.status === status) return doc;
+  return { ...doc, nodes: { ...doc.nodes, [nodeId]: { ...node, status } } };
 }

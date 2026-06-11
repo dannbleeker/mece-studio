@@ -1,5 +1,6 @@
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import { CHECK_STATE_COLOR } from '@/components/checkColors';
+import type { NodeStatus } from '@/domain/types';
 import type { IssueFlowNode } from '../projection';
 
 const BAND: Record<'low' | 'medium' | 'high', { bg: string; fg: string }> = {
@@ -8,13 +9,21 @@ const BAND: Record<'low' | 'medium' | 'high', { bg: string; fg: string }> = {
   low: { bg: '#ececea', fg: '#7a766c' },
 };
 
+const STATUS_BORDER: Record<NodeStatus, string> = {
+  open: 'transparent',
+  supported: '#3f7d54',
+  refuted: '#bd4a3a',
+  parked: '#9a958a',
+};
+
 export function IssueNode({ data }: NodeProps<IssueFlowNode>) {
-  const { label, mece, hasChildren, value, priority, evidence, selected } = data;
+  const { label, mece, hasChildren, value, priority, evidence, status, selected } = data;
   return (
     <div
       className="relative flex h-full w-full flex-col justify-center rounded-lg bg-white px-3 py-2 shadow-sm"
       style={{
         border: `${selected ? 2 : 1}px solid ${selected ? '#3f6fb0' : '#d7d4cb'}`,
+        borderLeft: status === 'open' ? undefined : `4px solid ${STATUS_BORDER[status]}`,
       }}
     >
       <Handle type="target" position={Position.Left} className="!bg-neutral-400" />

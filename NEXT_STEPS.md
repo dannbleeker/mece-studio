@@ -3,7 +3,7 @@
 Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 
 ## Milestones
-- **M4** — hypothesis mode (node status workflow) + value-driver mode (numeric roll-up & sensitivity; units on values).
+- **M4 (cont.)** — value-driver mode: numeric roll-up (auto-compute a parent's value from a formula split's children) + sensitivity; units on values. (Hypothesis-status workflow shipped.)
 - **M5 (cont.)** — *visual* export: PNG / PDF / **PPTX** (code-split + runtime-cached). (Markdown outline + JSON export already shipped.)
 - **Later** — AI tier-3: suggest a MECE split; critique a tree.
 

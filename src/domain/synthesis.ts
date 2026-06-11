@@ -20,7 +20,15 @@ function render(doc: IssueTreeDoc, id: NodeId, depth: number, lines: string[]): 
   if (!node) return;
   const indent = '  '.repeat(depth);
   const band = node.priority ? ` _(${priorityBand(node.priority)})_` : '';
-  lines.push(`${indent}- ${node.label}${band}${meceFlags(doc, id)}`);
+  const mark =
+    node.status === 'supported'
+      ? '✓ '
+      : node.status === 'refuted'
+        ? '✗ '
+        : node.status === 'parked'
+          ? '⊘ '
+          : '';
+  lines.push(`${indent}- ${mark}${node.label}${band}${meceFlags(doc, id)}`);
   if (node.evidence.length > 0) {
     const ev = node.evidence.map((e) => `${e.supports ? '✓' : '✗'} ${e.summary}`).join('; ');
     lines.push(`${indent}  evidence: ${ev}`);

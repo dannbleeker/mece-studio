@@ -2,7 +2,13 @@ import { useState } from 'react';
 import { CHECK_STATE_COLOR } from '@/components/checkColors';
 import { DECOMPOSITION_HINTS, DECOMPOSITION_LABELS } from '@/domain/constants';
 import { splitOf } from '@/domain/tree';
-import type { CheckResult, DecompositionType, EvidenceStrength, Level } from '@/domain/types';
+import type {
+  CheckResult,
+  DecompositionType,
+  EvidenceStrength,
+  Level,
+  NodeStatus,
+} from '@/domain/types';
 import { useStore } from '@/store';
 
 const DECOMPOSITION_ORDER: DecompositionType[] = [
@@ -19,6 +25,13 @@ function nextStrength(s: EvidenceStrength): EvidenceStrength {
   const i = STRENGTH_CYCLE.indexOf(s);
   return STRENGTH_CYCLE[(i + 1) % STRENGTH_CYCLE.length] ?? 'indicative';
 }
+
+const STATUS_ACTIVE: Record<NodeStatus, string> = {
+  open: 'bg-[#3f6fb0] text-white',
+  supported: 'bg-[#3f7d54] text-white',
+  refuted: 'bg-[#bd4a3a] text-white',
+  parked: 'bg-neutral-500 text-white',
+};
 
 function MeceRow({ label, result }: { label: string; result: CheckResult }) {
   return (
@@ -44,6 +57,7 @@ export function Inspector() {
   const setDecomposition = useStore((s) => s.setDecomposition);
   const decompose = useStore((s) => s.decompose);
   const setPriority = useStore((s) => s.setPriority);
+  const setStatus = useStore((s) => s.setStatus);
   const addEvidence = useStore((s) => s.addEvidence);
   const removeEvidence = useStore((s) => s.removeEvidence);
   const updateEvidence = useStore((s) => s.updateEvidence);
@@ -102,6 +116,28 @@ export function Inspector() {
           }}
         />
       </label>
+
+      <section className="flex flex-col gap-1.5 border-neutral-100 border-t pt-3">
+        <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
+          Status
+        </span>
+        <div className="flex flex-wrap gap-1">
+          {(['open', 'supported', 'refuted', 'parked'] as NodeStatus[]).map((st) => (
+            <button
+              key={st}
+              type="button"
+              className={`rounded px-2 py-0.5 text-[11px] capitalize ${
+                node.status === st
+                  ? STATUS_ACTIVE[st]
+                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+              }`}
+              onClick={() => setStatus(selectedId, st)}
+            >
+              {st}
+            </button>
+          ))}
+        </div>
+      </section>
 
       <section className="flex flex-col gap-1.5 border-neutral-100 border-t pt-3">
         <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">

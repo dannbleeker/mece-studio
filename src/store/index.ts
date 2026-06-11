@@ -11,6 +11,7 @@ import {
   setDecomposition as setDecompositionOp,
   setNodeValue as setNodeValueOp,
   setPriority as setPriorityOp,
+  setStatus as setStatusOp,
   updateEvidence as updateEvidenceOp,
 } from '@/domain/tree';
 import type {
@@ -19,6 +20,7 @@ import type {
   EvidenceStrength,
   IssueTreeDoc,
   NodeId,
+  NodeStatus,
   NumericValue,
   Priority,
 } from '@/domain/types';
@@ -43,6 +45,7 @@ interface AppState {
   renameNode: (id: NodeId, label: string) => void;
   setNodeValue: (id: NodeId, value: NumericValue | undefined) => void;
   setPriority: (id: NodeId, priority: Priority | undefined) => void;
+  setStatus: (id: NodeId, status: NodeStatus) => void;
   addEvidence: (
     nodeId: NodeId,
     summary: string,
@@ -89,6 +92,7 @@ export const useStore = create<AppState>((set, get) => {
     renameNode: (id, label) => apply((doc) => renameNodeOp(doc, id, label)),
     setNodeValue: (id, value) => apply((doc) => setNodeValueOp(doc, id, value)),
     setPriority: (id, priority) => apply((doc) => setPriorityOp(doc, id, priority)),
+    setStatus: (id, status) => apply((doc) => setStatusOp(doc, id, status)),
     addEvidence: (nodeId, summary, supports, strength) =>
       apply((doc) => addEvidenceOp(doc, nodeId, createEvidence(summary, supports, strength))),
     removeEvidence: (nodeId, evidenceId) =>
