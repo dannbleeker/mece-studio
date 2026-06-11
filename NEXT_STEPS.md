@@ -4,7 +4,7 @@ Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 
 ## Milestones
 - **M4 (cont.)** — value-driver mode: numeric roll-up (auto-compute a parent's value from a formula split's children) + sensitivity; units on values. (Hypothesis-status workflow shipped.)
-- **M5 (cont.)** — *visual* export: **PDF / PPTX** (code-split). (PNG, Markdown outline, and JSON export shipped.)
+- **M5 (cont.)** — *visual* export: **PDF / PPTX** (code-split). PNG, Markdown, and JSON shipped. Note: jspdf pulls in `core-js`, which pnpm 11 blocks via its build-script guard — approve it in `pnpm-workspace.yaml` (`allowBuilds: { core-js: false }`) before re-adding PDF.
 - **Later** — AI tier-3: suggest a MECE split; critique a tree.
 
 ## Options raised in review (2026-06-11) — on the list, decide later
@@ -21,4 +21,3 @@ Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 - Turn `knip`'s `exports`/`types` rules back on now that M1 wires the domain model, and prune anything genuinely unused.
 - Once export libs are code-split (M5), measure the eager entry chunk specifically in `check-bundle-size.mjs` rather than total JS.
 - Add a jsdom component smoke test (React Flow needs ResizeObserver mocks) + Playwright e2e once the canvas behaviour stabilises.
-- Add `.gitattributes` (`* text=auto eol=lf`) in a dedicated chore commit to silence the CRLF warnings.

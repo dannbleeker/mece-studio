@@ -1,0 +1,7 @@
+# Normalise line endings to LF in the repo (silences Windows CRLF churn so the
+# Biome formatter and git agree).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary
