@@ -5,6 +5,7 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 ## [Unreleased]
 
 ### Added
+- **Keyboard shortcuts.** Undo / redo with Ctrl/⌘+Z and Ctrl/⌘+Y (or Shift+Z), and Delete / Backspace to remove the selected node — all ignored while typing in a field, so they never hijack the inspector inputs.
 - **New tree.** Start over from a fresh question via the header — the previous tree is kept in undo, so nothing is lost.
 - **M5 — PNG export.** Export the whole tree as a PNG image from the canvas; `html-to-image` is loaded on demand so it stays a separate lazy chunk off the first-load bundle. The size budget now measures only the eager entry chunk(s).
 - **M4 — value-driver roll-up.** On a formula split, one click rolls the children's numbers up into the parent's value (sum / product / difference); the reconciliation check then confirms the totals add up.

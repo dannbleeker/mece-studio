@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Canvas } from '@/components/canvas/Canvas';
 import { Inspector } from '@/components/inspector/Inspector';
 import { SynthesisPanel } from '@/components/SynthesisPanel';
@@ -14,6 +14,8 @@ export function App() {
   const newDoc = useStore((s) => s.newDoc);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
+  const removeNode = useStore((s) => s.removeNode);
+  const selectedId = useStore((s) => s.selectedId);
   const canUndo = useStore((s) => s.canUndo());
   const canRedo = useStore((s) => s.canRedo());
   const [copied, setCopied] = useState(false);
@@ -30,6 +32,29 @@ export function App() {
   const onNew = () => {
     if (window.confirm('Start a new tree? Your current one stays in undo.')) newDoc();
   };
+
+  // Keyboard shortcuts: undo / redo, and Delete to remove the selected node.
+  // Ignored while typing in a field so it never hijacks the inspector inputs.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement;
+      if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable) return;
+      const mod = e.ctrlKey || e.metaKey;
+      const key = e.key.toLowerCase();
+      if (mod && key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      } else if (mod && (key === 'y' || (key === 'z' && e.shiftKey))) {
+        e.preventDefault();
+        redo();
+      } else if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId) {
+        e.preventDefault();
+        removeNode(selectedId);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [undo, redo, removeNode, selectedId]);
 
   return (
     <div className="flex h-full flex-col bg-[#faf9f5] text-neutral-800">
@@ -54,10 +79,22 @@ export function App() {
             Save JSON
           </button>
           <span className="mx-1 h-5 w-px bg-neutral-200" />
-          <button type="button" disabled={!canUndo} onClick={undo} className={GHOST_BTN}>
+          <button
+            type="button"
+            disabled={!canUndo}
+            onClick={undo}
+            title="Undo (Ctrl/⌘+Z)"
+            className={GHOST_BTN}
+          >
             Undo
           </button>
-          <button type="button" disabled={!canRedo} onClick={redo} className={GHOST_BTN}>
+          <button
+            type="button"
+            disabled={!canRedo}
+            onClick={redo}
+            title="Redo (Ctrl/⌘+Y or Shift+Z)"
+            className={GHOST_BTN}
+          >
             Redo
           </button>
         </div>
