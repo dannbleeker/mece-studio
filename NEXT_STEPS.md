@@ -5,7 +5,7 @@ Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 ## Milestones
 - **M3 (cont.)** — leaf **evidence** items (model already exists) + **answer-first roll-up** to the root + sort/rank siblings by priority. (Impact × ease prioritisation shipped.)
 - **M4** — hypothesis mode (node status workflow) + value-driver mode (numeric roll-up & sensitivity; units on values).
-- **M5** — export: PNG / PDF / **PPTX** (code-split + runtime-cached so they stay off the eager bundle).
+- **M5 (cont.)** — *visual* export: PNG / PDF / **PPTX** (code-split + runtime-cached). (Markdown outline + JSON export already shipped.)
 - **Later** — AI tier-3: suggest a MECE split; critique a tree.
 
 ## Polish / refinements (found during M1)
