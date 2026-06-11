@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-ssr
+coverage
+.vite
+node_modules/.cache
+*.local
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
