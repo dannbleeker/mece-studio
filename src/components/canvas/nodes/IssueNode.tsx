@@ -1,12 +1,6 @@
 import { Handle, type NodeProps, Position } from '@xyflow/react';
-import type { CheckState } from '@/domain/types';
+import { CHECK_STATE_COLOR } from '@/components/checkColors';
 import type { IssueFlowNode } from '../projection';
-
-const STATE_COLOR: Record<CheckState, string> = {
-  pass: '#3f7d54',
-  warn: '#bd842c',
-  unknown: '#c4c0b6',
-};
 
 const BAND: Record<'low' | 'medium' | 'high', { bg: string; fg: string }> = {
   high: { bg: '#3f6fb0', fg: '#ffffff' },
@@ -50,14 +44,14 @@ export function IssueNode({ data }: NodeProps<IssueFlowNode>) {
           <span className="flex items-center gap-1">
             <span
               className="inline-block h-2 w-2 rounded-full"
-              style={{ background: STATE_COLOR[mece.exclusive.state] }}
+              style={{ background: CHECK_STATE_COLOR[mece.exclusive.state] }}
             />
             ME
           </span>
           <span className="flex items-center gap-1">
             <span
               className="inline-block h-2 w-2 rounded-full"
-              style={{ background: STATE_COLOR[mece.exhaustive.state] }}
+              style={{ background: CHECK_STATE_COLOR[mece.exhaustive.state] }}
             />
             CE
           </span>

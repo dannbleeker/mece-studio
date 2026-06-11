@@ -1,6 +1,7 @@
+import { CHECK_STATE_COLOR } from '@/components/checkColors';
 import { DECOMPOSITION_HINTS, DECOMPOSITION_LABELS } from '@/domain/constants';
 import { splitOf } from '@/domain/tree';
-import type { CheckResult, CheckState, DecompositionType, Level } from '@/domain/types';
+import type { CheckResult, DecompositionType, Level } from '@/domain/types';
 import { useStore } from '@/store';
 
 const DECOMPOSITION_ORDER: DecompositionType[] = [
@@ -12,18 +13,12 @@ const DECOMPOSITION_ORDER: DecompositionType[] = [
   'framework',
 ];
 
-const STATE_COLOR: Record<CheckState, string> = {
-  pass: '#3f7d54',
-  warn: '#bd842c',
-  unknown: '#c4c0b6',
-};
-
 function MeceRow({ label, result }: { label: string; result: CheckResult }) {
   return (
     <div className="flex gap-2 py-1">
       <span
         className="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full"
-        style={{ background: STATE_COLOR[result.state] }}
+        style={{ background: CHECK_STATE_COLOR[result.state] }}
       />
       <span className="text-[12px] text-neutral-600 leading-snug">
         <span className="font-medium text-neutral-800">{label}.</span>{' '}
