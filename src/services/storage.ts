@@ -37,6 +37,16 @@ export function loadDoc(): IssueTreeDoc | null {
   }
 }
 
+/** Parse + validate a JSON string as a document (for file import). */
+export function parseDoc(json: string): IssueTreeDoc | null {
+  try {
+    const parsed: unknown = JSON.parse(json);
+    return isDoc(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 export function saveDoc(doc: IssueTreeDoc): void {
   const s = storage();
   if (!s) return;

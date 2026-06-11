@@ -90,4 +90,15 @@ describe('store', () => {
     useStore.getState().setAmount(root, undefined);
     expect(useStore.getState().doc.nodes[root]?.value).toBeUndefined();
   });
+
+  it('openDoc loads a provided doc and keeps the old one in undo', () => {
+    const before = useStore.getState().doc.rootId;
+    const incoming = recomputeMece(createDoc('Imported question', 2000));
+    useStore.getState().openDoc(incoming);
+    expect(useStore.getState().doc.rootId).toBe(incoming.rootId);
+    expect(useStore.getState().doc.nodes[incoming.rootId]?.label).toBe('Imported question');
+
+    useStore.getState().undo();
+    expect(useStore.getState().doc.rootId).toBe(before);
+  });
 });

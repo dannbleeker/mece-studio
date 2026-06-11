@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Canvas } from '@/components/canvas/Canvas';
 import { Inspector } from '@/components/inspector/Inspector';
 import { SynthesisPanel } from '@/components/SynthesisPanel';
 import { toMarkdown } from '@/domain/export';
 import { copyToClipboard, downloadText } from '@/services/download';
+import { parseDoc } from '@/services/storage';
 import { useStore } from '@/store';
 
 const GHOST_BTN =
@@ -12,6 +13,7 @@ const GHOST_BTN =
 export function App() {
   const doc = useStore((s) => s.doc);
   const newDoc = useStore((s) => s.newDoc);
+  const openDoc = useStore((s) => s.openDoc);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
   const removeNode = useStore((s) => s.removeNode);
@@ -31,6 +33,18 @@ export function App() {
   };
   const onNew = () => {
     if (window.confirm('Start a new tree? Your current one stays in undo.')) newDoc();
+  };
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const onOpenFile = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // let the same file be re-opened later
+    if (!file) return;
+    void file.text().then((text) => {
+      const next = parseDoc(text);
+      if (next) openDoc(next);
+      else window.alert('That file is not a valid MECE Studio tree (.json).');
+    });
   };
 
   // Keyboard shortcuts: undo / redo, and Delete to remove the selected node.
@@ -75,9 +89,19 @@ export function App() {
           <button type="button" onClick={onCopyMarkdown} className={GHOST_BTN}>
             {copied ? 'Copied!' : 'Copy Markdown'}
           </button>
+          <button type="button" onClick={() => fileInputRef.current?.click()} className={GHOST_BTN}>
+            Open
+          </button>
           <button type="button" onClick={onSaveJson} className={GHOST_BTN}>
             Save JSON
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json,.json"
+            className="hidden"
+            onChange={onOpenFile}
+          />
           <span className="mx-1 h-5 w-px bg-neutral-200" />
           <button
             type="button"
