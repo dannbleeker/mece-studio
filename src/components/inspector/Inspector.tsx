@@ -54,7 +54,8 @@ export function Inspector() {
   const selectedId = useStore((s) => s.selectedId);
   const setRootQuestion = useStore((s) => s.setRootQuestion);
   const renameNode = useStore((s) => s.renameNode);
-  const setNodeValue = useStore((s) => s.setNodeValue);
+  const setAmount = useStore((s) => s.setAmount);
+  const setUnit = useStore((s) => s.setUnit);
   const setDecomposition = useStore((s) => s.setDecomposition);
   const decompose = useStore((s) => s.decompose);
   const setPriority = useStore((s) => s.setPriority);
@@ -115,13 +116,7 @@ export function Inspector() {
             onBlur={(e) => {
               const raw = e.target.value.trim();
               const num = Number(raw);
-              if (raw === '' || Number.isNaN(num)) {
-                setNodeValue(selectedId, undefined);
-                return;
-              }
-              // Read the live unit so tabbing amount→unit can't clobber it.
-              const unit = useStore.getState().doc.nodes[selectedId]?.value?.unit;
-              setNodeValue(selectedId, { amount: num, ...(unit ? { unit } : {}) });
+              setAmount(selectedId, raw === '' || Number.isNaN(num) ? undefined : num);
             }}
           />
           <input
@@ -131,12 +126,7 @@ export function Inspector() {
             placeholder="unit"
             title="Unit (e.g. DKK, %, hrs) — set an amount first"
             className="w-16 rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
-            onBlur={(e) => {
-              const unit = e.target.value.trim();
-              const current = useStore.getState().doc.nodes[selectedId]?.value;
-              if (!current) return; // a unit needs an amount to attach to
-              setNodeValue(selectedId, { amount: current.amount, ...(unit ? { unit } : {}) });
-            }}
+            onBlur={(e) => setUnit(selectedId, e.target.value.trim())}
           />
         </div>
       </div>
@@ -328,12 +318,7 @@ export function Inspector() {
             <button
               type="button"
               className="self-start rounded-md bg-neutral-100 px-2 py-1 text-[11px] text-neutral-600 hover:bg-neutral-200"
-              onClick={() =>
-                setNodeValue(selectedId, {
-                  amount: rollup,
-                  ...(node.value?.unit ? { unit: node.value.unit } : {}),
-                })
-              }
+              onClick={() => setAmount(selectedId, rollup)}
             >
               Roll up children → {rollup}
             </button>

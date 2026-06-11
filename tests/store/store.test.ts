@@ -64,4 +64,30 @@ describe('store', () => {
     useStore.getState().undo();
     expect(useStore.getState().doc.rootId).toBe(root);
   });
+
+  it('setAmount preserves an existing unit', () => {
+    const root = useStore.getState().doc.rootId;
+    useStore.getState().setAmount(root, 100);
+    useStore.getState().setUnit(root, 'DKK');
+    expect(useStore.getState().doc.nodes[root]?.value).toEqual({ amount: 100, unit: 'DKK' });
+    useStore.getState().setAmount(root, 250);
+    expect(useStore.getState().doc.nodes[root]?.value).toEqual({ amount: 250, unit: 'DKK' });
+  });
+
+  it('setUnit without an amount is a no-op (records no history)', () => {
+    const root = useStore.getState().doc.rootId;
+    useStore.getState().setUnit(root, 'DKK');
+    expect(useStore.getState().doc.nodes[root]?.value).toBeUndefined();
+    expect(useStore.getState().canUndo()).toBe(false);
+  });
+
+  it('setAmount(undefined) clears the value; empty setUnit clears just the unit', () => {
+    const root = useStore.getState().doc.rootId;
+    useStore.getState().setAmount(root, 100);
+    useStore.getState().setUnit(root, 'DKK');
+    useStore.getState().setUnit(root, '');
+    expect(useStore.getState().doc.nodes[root]?.value).toEqual({ amount: 100 });
+    useStore.getState().setAmount(root, undefined);
+    expect(useStore.getState().doc.nodes[root]?.value).toBeUndefined();
+  });
 });

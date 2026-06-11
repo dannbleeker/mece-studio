@@ -21,7 +21,6 @@ import type {
   IssueTreeDoc,
   NodeId,
   NodeStatus,
-  NumericValue,
   Priority,
 } from '@/domain/types';
 import { loadDoc, saveDoc } from '@/services/storage';
@@ -44,7 +43,8 @@ interface AppState {
   setRootQuestion: (label: string) => void;
   addChild: (parentId: NodeId, label?: string) => void;
   renameNode: (id: NodeId, label: string) => void;
-  setNodeValue: (id: NodeId, value: NumericValue | undefined) => void;
+  setAmount: (id: NodeId, amount: number | undefined) => void;
+  setUnit: (id: NodeId, unit: string) => void;
   setPriority: (id: NodeId, priority: Priority | undefined) => void;
   setStatus: (id: NodeId, status: NodeStatus) => void;
   addEvidence: (
@@ -102,7 +102,22 @@ export const useStore = create<AppState>((set, get) => {
     addChild: (parentId, label) =>
       apply((doc) => addChildOp(doc, parentId, label ?? 'New issue').doc),
     renameNode: (id, label) => apply((doc) => renameNodeOp(doc, id, label)),
-    setNodeValue: (id, value) => apply((doc) => setNodeValueOp(doc, id, value)),
+    setAmount: (id, amount) =>
+      apply((doc) => {
+        if (amount === undefined) return setNodeValueOp(doc, id, undefined);
+        const unit = doc.nodes[id]?.value?.unit;
+        return setNodeValueOp(doc, id, unit ? { amount, unit } : { amount });
+      }),
+    setUnit: (id, unit) =>
+      apply((doc) => {
+        const current = doc.nodes[id]?.value;
+        if (!current) return doc; // a unit needs an amount to attach to
+        return setNodeValueOp(
+          doc,
+          id,
+          unit ? { amount: current.amount, unit } : { amount: current.amount }
+        );
+      }),
     setPriority: (id, priority) => apply((doc) => setPriorityOp(doc, id, priority)),
     setStatus: (id, status) => apply((doc) => setStatusOp(doc, id, status)),
     addEvidence: (nodeId, summary, supports, strength) =>
