@@ -4,14 +4,16 @@ import {
   Controls,
   getNodesBounds,
   getViewportForBounds,
+  type Node,
   type NodeTypes,
   Panel,
   ReactFlow,
   ReactFlowProvider,
+  useNodesState,
   useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import type { NodeId } from '@/domain/types';
 import { downloadDataUrl } from '@/services/download';
 import { useStore } from '@/store';
@@ -25,13 +27,22 @@ function Flow() {
   const doc = useStore((s) => s.doc);
   const selectedId = useStore((s) => s.selectedId);
   const select = useStore((s) => s.select);
-  const { fitView, getNodes } = useReactFlow();
+  const moveNode = useStore((s) => s.moveNode);
+  const { fitView, getNodes, getIntersectingNodes } = useReactFlow();
 
-  const { nodes, edges } = useMemo(() => toFlow(doc, selectedId), [doc, selectedId]);
+  const { nodes: layoutNodes, edges } = useMemo(() => toFlow(doc, selectedId), [doc, selectedId]);
+  const [nodes, setNodes, onNodesChange] = useNodesState(layoutNodes);
+
+  // Auto-layout stays the source of truth: re-sync React Flow's nodes whenever the
+  // projection changes (add / edit / undo / re-parent). A drag only moves a node
+  // transiently until it resolves to a re-parent on drop.
+  useEffect(() => {
+    setNodes(layoutNodes);
+  }, [layoutNodes, setNodes]);
 
   // Re-fit whenever the set of nodes changes, so a freshly-added sub-issue is
   // never laid out off-screen. rAF lets dagre's new positions apply first.
-  const nodeCount = nodes.length;
+  const nodeCount = layoutNodes.length;
   useEffect(() => {
     if (nodeCount === 0) return;
     const handle = requestAnimationFrame(() => {
@@ -39,6 +50,18 @@ function Flow() {
     });
     return () => cancelAnimationFrame(handle);
   }, [nodeCount, fitView]);
+
+  // Drag a node onto another to re-parent it (and its subtree) there. On release
+  // we reconcile to the auto-layout: a valid drop re-parents and re-lays-out,
+  // anything else snaps the node back to where dagre had it.
+  const onNodeDragStop = useCallback(
+    (_evt: unknown, dragged: Node) => {
+      const target = getIntersectingNodes(dragged).find((n) => n.id !== dragged.id);
+      if (target) moveNode(dragged.id as NodeId, target.id as NodeId);
+      setNodes(toFlow(useStore.getState().doc, selectedId).nodes);
+    },
+    [getIntersectingNodes, moveNode, selectedId, setNodes]
+  );
 
   // Render the whole graph to a PNG (React Flow's bounds recipe). html-to-image
   // is loaded on demand so it stays off the eager bundle.
@@ -68,9 +91,10 @@ function Flow() {
       nodes={nodes}
       edges={edges}
       nodeTypes={nodeTypes}
+      onNodesChange={onNodesChange}
       onNodeClick={(_, node) => select(node.id as NodeId)}
+      onNodeDragStop={onNodeDragStop}
       onPaneClick={() => select(null)}
-      nodesDraggable={false}
       nodesConnectable={false}
       fitView
       fitViewOptions={FIT_VIEW_OPTIONS}

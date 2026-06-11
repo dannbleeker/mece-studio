@@ -5,6 +5,7 @@ import {
   addChild as addChildOp,
   addEvidence as addEvidenceOp,
   decompose as decomposeOp,
+  moveNode as moveNodeOp,
   removeEvidence as removeEvidenceOp,
   removeNode as removeNodeOp,
   renameNode as renameNodeOp,
@@ -60,6 +61,7 @@ interface AppState {
   updateEvidence: (nodeId: NodeId, evidenceId: string, patch: Partial<EvidenceItem>) => void;
   setDecomposition: (parentId: NodeId, decomposition: DecompositionType) => void;
   decompose: (parentId: NodeId, decomposition: DecompositionType) => void;
+  moveNode: (id: NodeId, newParentId: NodeId) => void;
   removeNode: (id: NodeId) => void;
   undo: () => void;
   redo: () => void;
@@ -145,6 +147,7 @@ export const useStore = create<AppState>((set, get) => {
       apply((doc) => setDecompositionOp(doc, parentId, decomposition)),
     decompose: (parentId, decomposition) =>
       apply((doc) => decomposeOp(doc, parentId, decomposition)),
+    moveNode: (id, newParentId) => apply((doc) => moveNodeOp(doc, id, newParentId)),
 
     removeNode: (id) =>
       set((s) => {

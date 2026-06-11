@@ -4,6 +4,8 @@ import {
   addChild,
   childrenOf,
   descendantIds,
+  moveNode,
+  parentOf,
   removeNode,
   renameNode,
   setDecomposition,
@@ -53,6 +55,58 @@ describe('tree ops', () => {
     expect(withNote.nodes[doc0.rootId]?.detail).toBe('Margin compression since Q2.');
     const cleared = setDetail(withNote, doc0.rootId, '   ');
     expect(cleared.nodes[doc0.rootId]?.detail).toBeUndefined();
+  });
+
+  it('parentOf finds the node a child hangs under', () => {
+    const doc0 = seed();
+    const { doc, childId } = addChild(doc0, doc0.rootId, 'A');
+    expect(parentOf(doc, childId)).toBe(doc0.rootId);
+    expect(parentOf(doc, doc0.rootId)).toBeUndefined();
+  });
+
+  it('moveNode re-parents a node under a new parent', () => {
+    const doc0 = seed();
+    let doc = addChild(doc0, doc0.rootId, 'Revenue').doc;
+    doc = addChild(doc, doc0.rootId, 'Cost').doc;
+    const childIds = splitOf(doc, doc0.rootId)?.childIds ?? [];
+    const revenue = childIds[0];
+    const cost = childIds[1];
+    if (!revenue || !cost) throw new Error('expected two children');
+
+    doc = moveNode(doc, cost, revenue);
+    expect(childrenOf(doc, doc0.rootId).map((n) => n.label)).toEqual(['Revenue']);
+    expect(childrenOf(doc, revenue).map((n) => n.label)).toEqual(['Cost']);
+    expect(parentOf(doc, cost)).toBe(revenue);
+  });
+
+  it('moveNode carries the subtree and refuses cycles / the root', () => {
+    const doc0 = seed();
+    const { doc: d1, childId: a } = addChild(doc0, doc0.rootId, 'A');
+    const { doc: d2, childId: aChild } = addChild(d1, a, 'A-child');
+    const doc = addChild(d2, doc0.rootId, 'B').doc;
+    const b = splitOf(doc, doc0.rootId)?.childIds.find((id) => id !== a);
+    if (!b) throw new Error('expected B');
+
+    expect(moveNode(doc, a, aChild)).toBe(doc); // onto own descendant → no-op
+    expect(moveNode(doc, doc0.rootId, a)).toBe(doc); // moving the root → no-op
+
+    const moved = moveNode(doc, a, b);
+    expect(parentOf(moved, a)).toBe(b);
+    expect(parentOf(moved, aChild)).toBe(a);
+    expect(descendantIds(moved, b)).toContain(aChild);
+  });
+
+  it('moveNode drops an emptied old-parent split; same-parent move is a no-op', () => {
+    const doc0 = seed();
+    const { doc: d1, childId: a } = addChild(doc0, doc0.rootId, 'A');
+    const { doc: d2, childId: a1 } = addChild(d1, a, 'A1');
+
+    expect(splitOf(d2, a)).toBeDefined();
+    const moved = moveNode(d2, a1, doc0.rootId);
+    expect(splitOf(moved, a)).toBeUndefined(); // A is a leaf again
+    expect(parentOf(moved, a1)).toBe(doc0.rootId);
+
+    expect(moveNode(moved, a1, doc0.rootId)).toBe(moved); // already there
   });
 
   it('removeNode drops the subtree and updates the parent split; root is protected', () => {

@@ -18,6 +18,11 @@ export function splitOf(doc: IssueTreeDoc, nodeId: NodeId): Split | undefined {
   return Object.values(doc.splits).find((s) => s.parentId === nodeId);
 }
 
+/** The id of the node that `nodeId` hangs under (its parent), if any. */
+export function parentOf(doc: IssueTreeDoc, nodeId: NodeId): NodeId | undefined {
+  return Object.values(doc.splits).find((s) => s.childIds.includes(nodeId))?.parentId;
+}
+
 /** Direct children of `nodeId`, in order. */
 export function childrenOf(doc: IssueTreeDoc, nodeId: NodeId): IssueNode[] {
   const split = splitOf(doc, nodeId);
@@ -133,6 +138,42 @@ export function removeNode(doc: IssueTreeDoc, nodeId: NodeId): IssueTreeDoc {
   }
 
   return { ...doc, nodes, splits };
+}
+
+/**
+ * Re-parent `nodeId` (and its whole subtree) to become a child of `newParentId`,
+ * leaving auto-layout to re-tidy. No-op when the move is invalid: moving the
+ * root, onto itself, onto one of its own descendants (which would cut the
+ * subtree loose), or to the parent it already has.
+ */
+export function moveNode(doc: IssueTreeDoc, nodeId: NodeId, newParentId: NodeId): IssueTreeDoc {
+  if (nodeId === doc.rootId) return doc;
+  if (nodeId === newParentId) return doc;
+  if (!doc.nodes[nodeId] || !doc.nodes[newParentId]) return doc;
+  if (descendantIds(doc, nodeId).includes(newParentId)) return doc;
+  if (parentOf(doc, nodeId) === newParentId) return doc;
+
+  // Detach from the old parent's split, dropping it if it goes empty.
+  const splits: Record<SplitId, Split> = {};
+  for (const [id, split] of Object.entries(doc.splits)) {
+    if (split.childIds.includes(nodeId)) {
+      const childIds = split.childIds.filter((c) => c !== nodeId);
+      if (childIds.length > 0) splits[id as SplitId] = { ...split, childIds };
+    } else {
+      splits[id as SplitId] = split;
+    }
+  }
+
+  // Attach to the new parent's split, creating one if it was a leaf.
+  const target = Object.values(splits).find((s) => s.parentId === newParentId);
+  if (target) {
+    splits[target.id] = { ...target, childIds: [...target.childIds, nodeId] };
+  } else {
+    const split: Split = { ...createSplit(newParentId, 'freeform'), childIds: [nodeId] };
+    splits[split.id] = split;
+  }
+
+  return { ...doc, splits };
 }
 
 /**

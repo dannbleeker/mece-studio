@@ -5,6 +5,7 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 ## [Unreleased]
 
 ### Added
+- **Drag to re-parent.** Drag any node onto another to move it (and its whole subtree) under that node; dagre then re-tidies the layout. Auto-layout stays in charge — an invalid drop (onto the node's own subtree, the root, or empty space) snaps back.
 - **Per-node notes.** Capture each issue's rationale, assumptions, or data sources in the inspector; a node carrying notes shows a small marker on the canvas, and notes flow into the Markdown export as an italic line under the bullet.
 - **Open JSON.** Load a previously saved tree back in from the header (validated; the current tree stays in undo) — completing the save/open round-trip.
 - **Units on values.** Set a unit (DKK, %, hrs, FTE…) beside a node's number — it shows on the node and in the Markdown export, and survives a value roll-up.
