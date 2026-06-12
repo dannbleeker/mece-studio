@@ -15,6 +15,7 @@ import {
   setOperator as setOperatorOp,
   setPriority as setPriorityOp,
   setStatus as setStatusOp,
+  toggleCollapse as toggleCollapseOp,
   updateEvidence as updateEvidenceOp,
 } from '@/domain/tree';
 import type {
@@ -53,6 +54,7 @@ interface AppState {
   setUnit: (id: NodeId, unit: string) => void;
   setPriority: (id: NodeId, priority: Priority | undefined) => void;
   setStatus: (id: NodeId, status: NodeStatus) => void;
+  toggleCollapse: (id: NodeId) => void;
   addEvidence: (
     nodeId: NodeId,
     summary: string,
@@ -140,6 +142,7 @@ export const useStore = create<AppState>((set, get) => {
       }),
     setPriority: (id, priority) => apply((doc) => setPriorityOp(doc, id, priority)),
     setStatus: (id, status) => apply((doc) => setStatusOp(doc, id, status)),
+    toggleCollapse: (id) => apply((doc) => toggleCollapseOp(doc, id)),
     addEvidence: (nodeId, summary, supports, strength) =>
       apply((doc) => addEvidenceOp(doc, nodeId, createEvidence(summary, supports, strength))),
     removeEvidence: (nodeId, evidenceId) =>

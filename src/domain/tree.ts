@@ -45,6 +45,18 @@ export function descendantIds(doc: IssueTreeDoc, nodeId: NodeId): NodeId[] {
   return out;
 }
 
+/** Nodes hidden because an ancestor is collapsed (a collapsed node stays visible). */
+export function hiddenNodeIds(doc: IssueTreeDoc): Set<NodeId> {
+  const hidden = new Set<NodeId>();
+  const walk = (id: NodeId, hiddenHere: boolean): void => {
+    if (hiddenHere) hidden.add(id);
+    const childrenHidden = hiddenHere || doc.nodes[id]?.collapsed === true;
+    for (const child of childrenOf(doc, id)) walk(child.id, childrenHidden);
+  };
+  walk(doc.rootId, false);
+  return hidden;
+}
+
 /**
  * Add a child issue under `parentId`, creating the parent's split if it has
  * none. Returns the new doc and the new child's id.
@@ -268,4 +280,17 @@ export function setStatus(doc: IssueTreeDoc, nodeId: NodeId, status: NodeStatus)
   const node = doc.nodes[nodeId];
   if (!node || node.status === status) return doc;
   return { ...doc, nodes: { ...doc.nodes, [nodeId]: { ...node, status } } };
+}
+
+/** Collapse or expand a node's subtree (hides/shows its descendants on the canvas). */
+export function toggleCollapse(doc: IssueTreeDoc, nodeId: NodeId): IssueTreeDoc {
+  const node = doc.nodes[nodeId];
+  if (!node) return doc;
+  const next: IssueNode = { ...node };
+  if (node.collapsed) {
+    delete next.collapsed;
+  } else {
+    next.collapsed = true;
+  }
+  return { ...doc, nodes: { ...doc.nodes, [nodeId]: next } };
 }

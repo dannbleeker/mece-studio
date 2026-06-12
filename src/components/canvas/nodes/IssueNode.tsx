@@ -1,7 +1,8 @@
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import { useEffect, useRef } from 'react';
 import { CHECK_STATE_COLOR } from '@/components/checkColors';
-import type { NodeStatus } from '@/domain/types';
+import type { NodeId, NodeStatus } from '@/domain/types';
+import { useStore } from '@/store';
 import { useNodeEditing } from '../nodeEditing';
 import type { IssueFlowNode } from '../projection';
 
@@ -19,8 +20,21 @@ const STATUS_BORDER: Record<NodeStatus, string> = {
 };
 
 export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
-  const { label, mece, hasChildren, value, priority, evidence, hasNote, status, selected } = data;
+  const {
+    label,
+    mece,
+    hasChildren,
+    value,
+    priority,
+    evidence,
+    hasNote,
+    collapsed,
+    childCount,
+    status,
+    selected,
+  } = data;
   const { editingId, start, commit, cancel } = useNodeEditing();
+  const toggleCollapse = useStore((s) => s.toggleCollapse);
   const isEditing = id === editingId;
   const inputRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
@@ -142,6 +156,22 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
             CE
           </span>
         </div>
+      )}
+
+      {hasChildren && (
+        <button
+          type="button"
+          title={collapsed ? `Expand ${childCount} hidden` : 'Collapse subtree'}
+          aria-label={collapsed ? 'Expand subtree' : 'Collapse subtree'}
+          className="nodrag absolute -bottom-2.5 left-1/2 -translate-x-1/2 rounded-full border border-neutral-300 bg-white px-1.5 py-px font-medium text-[9px] text-neutral-500 leading-none shadow-sm hover:border-[#3f6fb0] hover:text-[#3f6fb0]"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleCollapse(id as NodeId);
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          {collapsed ? `▶ ${childCount}` : '▼'}
+        </button>
       )}
 
       <Handle type="source" position={Position.Right} className="!bg-neutral-400" />

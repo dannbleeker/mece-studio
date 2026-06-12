@@ -4,6 +4,7 @@ import {
   addChild,
   childrenOf,
   descendantIds,
+  hiddenNodeIds,
   moveNode,
   parentOf,
   removeNode,
@@ -13,6 +14,7 @@ import {
   setNodeValue,
   setOperator,
   splitOf,
+  toggleCollapse,
 } from '@/domain/tree';
 
 const seed = () => createDoc('Why is profit down?', 1000);
@@ -64,6 +66,27 @@ describe('tree ops', () => {
     const formula = setDecomposition(d1, doc0.rootId, 'formula');
     const product = setOperator(formula, doc0.rootId, 'product');
     expect(splitOf(product, doc0.rootId)?.operator).toBe('product');
+  });
+
+  it('toggleCollapse collapses then expands a node', () => {
+    const doc0 = seed();
+    const { doc } = addChild(doc0, doc0.rootId, 'A');
+    const collapsed = toggleCollapse(doc, doc0.rootId);
+    expect(collapsed.nodes[doc0.rootId]?.collapsed).toBe(true);
+    const expanded = toggleCollapse(collapsed, doc0.rootId);
+    expect(expanded.nodes[doc0.rootId]?.collapsed).toBeUndefined();
+  });
+
+  it('hiddenNodeIds hides only the descendants of a collapsed node', () => {
+    let doc = seed();
+    const { doc: d1, childId: a } = addChild(doc, doc.rootId, 'A');
+    const { doc: d2, childId: aChild } = addChild(d1, a, 'A-child');
+    doc = addChild(d2, doc.rootId, 'B').doc;
+    expect(hiddenNodeIds(doc).size).toBe(0);
+
+    const hidden = hiddenNodeIds(toggleCollapse(doc, a));
+    expect(hidden.has(aChild)).toBe(true);
+    expect(hidden.has(a)).toBe(false);
   });
 
   it('parentOf finds the node a child hangs under', () => {
