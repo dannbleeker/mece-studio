@@ -14,6 +14,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { NODE_HEIGHT, NODE_WIDTH } from '@/domain/constants';
 import { childrenOf, descendantIds, parentOf } from '@/domain/tree';
 import type { NodeId } from '@/domain/types';
 import { downloadDataUrl } from '@/services/download';
@@ -21,6 +22,7 @@ import { useStore } from '@/store';
 import { type NodeEditing, NodeEditingContext } from './nodeEditing';
 import { IssueNode } from './nodes/IssueNode';
 import { toFlow } from './projection';
+import { boundsWithinViewport, nodesBounds } from './viewport';
 
 const nodeTypes: NodeTypes = { issue: IssueNode };
 const FIT_VIEW_OPTIONS = { padding: 0.3, maxZoom: 1.2 };
@@ -36,7 +38,7 @@ function Flow() {
   const addChild = useStore((s) => s.addChild);
   const collapseAll = useStore((s) => s.collapseAll);
   const expandAll = useStore((s) => s.expandAll);
-  const { fitView, getNodes, getIntersectingNodes } = useReactFlow();
+  const { fitView, getNodes, getIntersectingNodes, getViewport } = useReactFlow();
 
   // Inline label editing: double-click a node to edit its label in place.
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -93,16 +95,38 @@ function Flow() {
     setNodes(layoutNodes);
   }, [layoutNodes, setNodes]);
 
-  // Re-fit whenever the set of nodes changes, so a freshly-added sub-issue is
-  // never laid out off-screen. rAF lets dagre's new positions apply first.
+  // Re-fit when the node set changes — but only when it needs to. A freshly-opened
+  // document always fits; otherwise we fit only if something (e.g. a just-added
+  // sub-issue) would land outside the current viewport, so editing a big tree
+  // doesn't keep yanking the view back to a full fit. rAF lets dagre's new
+  // positions and React Flow's node state settle first. Bounds come from the
+  // layout positions + the known node size (not measured sizes), so they're
+  // correct for a node that hasn't rendered yet.
   const nodeCount = layoutNodes.length;
+  const docId = doc.id;
+  const fittedDocId = useRef<string | null>(null);
   useEffect(() => {
     if (nodeCount === 0) return;
+    const isNewDoc = fittedDocId.current !== docId;
+    fittedDocId.current = docId;
     const handle = requestAnimationFrame(() => {
-      void fitView({ ...FIT_VIEW_OPTIONS, duration: 200 });
+      const el = document.querySelector<HTMLElement>('.react-flow');
+      const allInView =
+        !isNewDoc &&
+        el !== null &&
+        boundsWithinViewport(
+          nodesBounds(
+            getNodes().map((n) => n.position),
+            NODE_WIDTH,
+            NODE_HEIGHT
+          ),
+          getViewport(),
+          { width: el.clientWidth, height: el.clientHeight }
+        );
+      if (!allInView) void fitView({ ...FIT_VIEW_OPTIONS, duration: 200 });
     });
     return () => cancelAnimationFrame(handle);
-  }, [nodeCount, fitView]);
+  }, [nodeCount, docId, fitView, getNodes, getViewport]);
 
   // The node a drag would re-parent onto: the first intersecting node that's a
   // valid target — not the dragged node, its own subtree (a cycle), or the

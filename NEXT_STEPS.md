@@ -11,7 +11,6 @@ Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 - **Configurable formula tolerance** (currently fixed at 0.5%) — would need a small settings surface.
 
 ## Polish / refinements
-- Re-fit runs on every node-count change; refine to only recentre when a new node would land off-screen, to avoid view jumps in large trees. (Deliberately not done yet — a naive version risks leaving a new off-screen node hidden.)
 - Coalesce rapid label / value edits if the blur-per-undo granularity proves noisy.
 
 ## Tooling backlog
