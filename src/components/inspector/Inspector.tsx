@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CHECK_STATE_COLOR } from '@/components/checkColors';
+import { decomposePrompt } from '@/domain/aiPrompts';
 import { DECOMPOSITION_HINTS, DECOMPOSITION_LABELS } from '@/domain/constants';
 import { rollUpValue } from '@/domain/rollup';
 import { sensitivity } from '@/domain/sensitivity';
@@ -12,6 +13,7 @@ import type {
   Level,
   NodeStatus,
 } from '@/domain/types';
+import { copyToClipboard } from '@/services/download';
 import { useStore } from '@/store';
 
 const DECOMPOSITION_ORDER: DecompositionType[] = [
@@ -306,6 +308,14 @@ export function Inspector() {
           <span className="text-[11px] text-neutral-400 leading-snug">
             Seeds clean starter sub-issues you can rename.
           </span>
+          <button
+            type="button"
+            className="self-start text-[11px] text-[#3f6fb0] hover:underline"
+            title="Copy a prompt to suggest a MECE split for this node — paste it into Claude or ChatGPT"
+            onClick={() => void copyToClipboard(decomposePrompt(doc, selectedId))}
+          >
+            Copy an AI prompt to suggest a split →
+          </button>
         </section>
       )}
 

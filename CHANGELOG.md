@@ -5,6 +5,7 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 ## [Unreleased]
 
 ### Added
+- **AI assist (keyless).** Copy a ready-made prompt — _critique this tree's MECE_ (from the Synthesis panel) or _suggest a MECE split for this node_ (from the inspector) — with your tree embedded, to paste into Claude or ChatGPT. No API key, no backend.
 - **PDF + PowerPoint export.** Export the canvas as a **PDF** or a **PPTX** slide from the header, alongside PNG. `jspdf` and `pptxgenjs` are loaded on demand (and reuse the PNG render), so they stay off the first-load bundle.
 - **Reorder siblings.** Move a node up or down among its siblings from the inspector — arrange branches in the order that reads best.
 - **Duplicate a subtree.** Copy a node and its whole subtree (with fresh ids) as a sibling from the inspector — handy for parallel branches that share a structure.

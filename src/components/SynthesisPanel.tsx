@@ -1,3 +1,4 @@
+import { critiquePrompt } from '@/domain/aiPrompts';
 import { synthesise } from '@/domain/synthesis';
 import { copyToClipboard } from '@/services/download';
 import { useStore } from '@/store';
@@ -15,6 +16,14 @@ export function SynthesisPanel({ onClose }: { onClose: () => void }) {
         <div className="flex gap-1">
           <button type="button" className={BTN} onClick={() => void copyToClipboard(text)}>
             Copy
+          </button>
+          <button
+            type="button"
+            className={BTN}
+            title="Copy a prompt to critique this tree in Claude or ChatGPT"
+            onClick={() => void copyToClipboard(critiquePrompt(doc))}
+          >
+            AI critique
           </button>
           <button type="button" className={BTN} onClick={onClose}>
             Close
