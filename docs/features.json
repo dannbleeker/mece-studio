@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 34,
+  "reviewedThroughChangelogEntries": 35,
   "features": [
     { "id": "issue-tree", "name": "Issue-tree canvas", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
     { "id": "root-question", "name": "Editable root question", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
@@ -86,6 +86,7 @@
 
     { "id": "undo-redo", "name": "Undo / redo history", "area": "App", "since": 1, "manual": true, "book": false, "bookExample": false },
     { "id": "local-persistence", "name": "Local persistence (localStorage)", "area": "App", "since": 1, "manual": true, "book": false, "bookExample": false },
-    { "id": "pwa", "name": "Installable, offline-capable PWA", "area": "App", "since": 1, "manual": true, "book": false, "bookExample": false }
+    { "id": "pwa", "name": "Installable, offline-capable PWA", "area": "App", "since": 1, "manual": true, "book": false, "bookExample": false },
+    { "id": "example-trees", "name": "Example / onboarding trees", "area": "App", "since": 6, "manual": true, "book": false, "bookExample": false }
   ]
 }

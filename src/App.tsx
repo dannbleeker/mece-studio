@@ -3,6 +3,7 @@ import { AboutDialog } from '@/components/about/AboutDialog';
 import { Canvas } from '@/components/canvas/Canvas';
 import { Inspector } from '@/components/inspector/Inspector';
 import { SynthesisPanel } from '@/components/SynthesisPanel';
+import { EXAMPLE_TREES } from '@/domain/examples';
 import { toMarkdown } from '@/domain/export';
 import { copyToClipboard, downloadText } from '@/services/download';
 import { parseDoc } from '@/services/storage';
@@ -98,6 +99,25 @@ export function App() {
         <button type="button" onClick={onDelete} className={GHOST_BTN} title="Delete this tree">
           Delete
         </button>
+        <select
+          value=""
+          onChange={(e) => {
+            const ex = EXAMPLE_TREES.find((x) => x.id === e.target.value);
+            if (ex) openDoc(ex.build());
+          }}
+          aria-label="Load an example tree"
+          title="Open a ready-made example tree"
+          className="rounded-md border border-neutral-200 bg-white px-2 py-1 text-[13px] text-neutral-600 hover:bg-neutral-100 focus:border-[#3f6fb0] focus:outline-none"
+        >
+          <option value="" disabled>
+            Examples…
+          </option>
+          {EXAMPLE_TREES.map((ex) => (
+            <option key={ex.id} value={ex.id}>
+              {ex.name}
+            </option>
+          ))}
+        </select>
         <div className="ml-auto flex items-center gap-1">
           <button type="button" onClick={() => setShowSynthesis((v) => !v)} className={GHOST_BTN}>
             Synthesis

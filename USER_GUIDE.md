@@ -42,11 +42,19 @@ question.
 - **The inspector** (right) shows everything about the currently selected node:
   its decomposition, MECE status, priority, hypothesis status, value, evidence,
   and notes.
-- **The header** (top) has the document picker and the New / Synthesis / Copy
-  Markdown / Open / Save / Undo / Redo / About actions.
+- **The header** (top) has the document picker and the New / Examples / Synthesis /
+  Copy Markdown / Open / Save / Undo / Redo / About actions.
 
 Click a node to select it. Rename the root question to your real problem to
 begin — double-click it, or select it and press <kbd>Enter</kbd>.
+
+**Start from an example.** New to issue trees? Open the **Examples…** picker in
+the header to load a ready-made tree and learn by poking at a real one. There are
+three: a value-driver tree (*operating profit*, whose formula branches provably
+reconcile), an issue tree (*customer churn*, segmented with an "Other" bucket and
+carrying hypotheses and evidence), and a decision frame (*subscription launch*,
+built on a provably-MECE binary split). Each opens as a new tree in your library,
+so your own work is untouched.
 
 ## Building the tree
 
