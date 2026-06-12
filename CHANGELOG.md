@@ -41,4 +41,5 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 - **Send-to-Kindle activated.** With the repo SMTP secrets configured, the opt-in send-to-Kindle path is live and verified end-to-end — a manual **Rebuild book** dispatch (or a `[kindle]` commit) emails the freshly-built EPUB. Bumped `dawidd6/action-send-mail` from v3 to v17 so the email step runs on Node 24, ahead of GitHub's Node-20 action removal.
 
 ### Fixed
+- **Reproducible book builds.** `pnpm book` now produces a byte-identical PDF and EPUB for unchanged sources, so a rebuild — or a send-to-Kindle dispatch — no longer commits churn. Pinned the PDF's trailer `/ID` (Chromium randomises it per run), derived every timestamp from the last book-content commit, and stamped jszip's auto-created folder entries (which had defaulted to the build clock).
 - **Node styling warning.** The issue node mixed the `border` shorthand with a `borderLeft` status override, so React warned on every rerender. It now uses longhand border props — identical look, clean console.

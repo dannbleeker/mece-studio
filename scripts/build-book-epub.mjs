@@ -19,11 +19,16 @@ import {
   slugOf,
   titleOf,
 } from './lib/bookChapters.mjs';
+import { bookDate } from './lib/bookDate.mjs';
 import { issueTreeSvg } from './lib/issueTreeSvg.mjs';
 
 const GUIDE = 'docs/guide';
 const OUT = path.join(GUIDE, `${BOOK_SLUG}.epub`);
-const TODAY = new Date().toISOString().slice(0, 10);
+// The book's canonical date (git-derived) drives every timestamp, so a no-change
+// rebuild is byte-identical instead of stamping the current build time.
+const DATE = bookDate();
+const PUB_DATE = DATE.toISOString().slice(0, 10);
+const MODIFIED = DATE.toISOString().replace(/\.\d+Z$/, 'Z');
 
 const esc = (s) =>
   String(s).replace(
@@ -95,8 +100,8 @@ function contentOpf(chapters) {
     <dc:language>${BOOK_LANG}</dc:language>
     <dc:publisher>${esc(BOOK_PUBLISHER)}</dc:publisher>
     <dc:description>${esc(BOOK_DESCRIPTION)}</dc:description>
-    <dc:date>${TODAY}</dc:date>
-    <meta property="dcterms:modified">${new Date().toISOString().replace(/\.\d+Z$/, 'Z')}</meta>
+    <dc:date>${PUB_DATE}</dc:date>
+    <meta property="dcterms:modified">${MODIFIED}</meta>
   </metadata>
   <manifest>
     ${manifest}
@@ -184,6 +189,11 @@ async function main() {
   chapters.forEach((c, i) => {
     zip.file(`OEBPS/chapter-${String(i).padStart(2, '0')}.xhtml`, chapterXhtml(c.title, c.body));
   });
+  // Stamp EVERY entry with the book's canonical date — including the META-INF/ and
+  // OEBPS/ folder entries jszip auto-creates, which otherwise carry the build time
+  // (jszip uses UTC, so this matches between local and CI) and make a no-change
+  // rebuild byte-different.
+  for (const name of Object.keys(zip.files)) zip.files[name].date = DATE;
   const buf = await zip.generateAsync({
     type: 'nodebuffer',
     compression: 'DEFLATE',

@@ -14,6 +14,7 @@ on:
       - 'scripts/build-book-epub.mjs'
       - 'scripts/lib/bookChapters.mjs'
       - 'scripts/lib/issueTreeSvg.mjs'
+      - 'scripts/lib/bookDate.mjs'
   workflow_dispatch:
     inputs:
       send_to_kindle:

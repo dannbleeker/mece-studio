@@ -2,14 +2,15 @@
 // TOC + chapters) in headless Chromium (the Playwright binary already installed for
 // e2e), prints it with page.pdf(), then post-processes with pdf-lib to attach full
 // document metadata + language. Same chapters + diagram source as the EPUB builder.
-import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { chromium } from '@playwright/test';
 import { marked } from 'marked';
-import { PDFDocument, PDFName, PDFString } from 'pdf-lib';
+import { PDFArray, PDFDocument, PDFHexString, PDFName, PDFString } from 'pdf-lib';
 import {
   BOOK_AUTHOR,
+  BOOK_ID,
   BOOK_KEYWORDS,
   BOOK_LANG,
   BOOK_SLUG,
@@ -20,6 +21,7 @@ import {
   slugOf,
   titleOf,
 } from './lib/bookChapters.mjs';
+import { bookDate } from './lib/bookDate.mjs';
 import { issueTreeSvg } from './lib/issueTreeSvg.mjs';
 
 const GUIDE = 'docs/guide';
@@ -31,29 +33,6 @@ const esc = (s) =>
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]
   );
 const expand = (md) => md.replace(/<!--\s*ISSUE_TREE\s*-->/g, () => `\n\n${issueTreeSvg()}\n\n`);
-
-// Reproducible date: the last commit that touched any book input. Identical source
-// → identical stamp, so a no-change rebuild doesn't churn the committed PDF date.
-function bookDate() {
-  const r = spawnSync(
-    'git',
-    [
-      'log',
-      '-1',
-      '--format=%cI',
-      '--',
-      'docs/guide',
-      'scripts/build-book-pdf.mjs',
-      'scripts/build-book-epub.mjs',
-      'scripts/lib/bookChapters.mjs',
-      'scripts/lib/issueTreeSvg.mjs',
-    ],
-    { encoding: 'utf8' }
-  );
-  const iso = (r.stdout || '').trim();
-  const d = iso ? new Date(iso) : new Date('2026-06-12T00:00:00Z');
-  return Number.isNaN(d.getTime()) ? new Date('2026-06-12T00:00:00Z') : d;
-}
 
 function loadChapters() {
   return CHAPTER_FILES.map((file) => {
@@ -133,6 +112,13 @@ async function main() {
   doc.setCreationDate(when);
   doc.setModificationDate(when);
   doc.catalog.set(PDFName.of('Lang'), PDFString.of(BOOK_LANG));
+  // Deterministic trailer /ID from the stable book id — Chromium emits a random
+  // /ID each run, which would otherwise make every rebuild byte-different.
+  const idHex = createHash('sha256').update(BOOK_ID).digest('hex').slice(0, 32).toUpperCase();
+  const id = PDFArray.withContext(doc.context);
+  id.push(PDFHexString.of(idHex));
+  id.push(PDFHexString.of(idHex));
+  doc.context.trailerInfo.ID = id;
   const out = await doc.save();
   writeFileSync(OUT, out);
   process.stdout.write(`PDF: ${OUT} (${chapters.length} chapters, ${(out.length / 1024).toFixed(0)} KB)\n`);
