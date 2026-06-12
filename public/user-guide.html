@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Guide — MECE Studio</title>
+  <style>
+  :root { color-scheme: light; --ink:#1f2937; --muted:#6b7280; --line:#e8e6df; --primary:#3f6fb0; --bg:#faf9f5; --code:#f3f1ea; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; -webkit-font-smoothing:antialiased; }
+  main { max-width: 46rem; margin: 0 auto; padding: 24px 22px 80px; }
+  .page-header { display:flex; align-items:baseline; gap:12px; padding-bottom:16px; margin-bottom:24px; border-bottom:1px solid var(--line); }
+  .page-header .brand { font-weight:600; color:var(--primary); }
+  .page-header .back { margin-left:auto; font-size:14px; text-decoration:none; color:var(--primary); }
+  h1 { font-size: 28px; letter-spacing:-0.01em; margin: 0 0 24px; }
+  h2 { font-size: 21px; margin: 38px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--line); }
+  h3 { font-size: 16px; margin: 26px 0 8px; }
+  a { color: var(--primary); }
+  p, li { color: var(--ink); }
+  ul, ol { padding-left: 1.3em; }
+  li { margin: 4px 0; }
+  code { background: var(--code); padding: 1px 5px; border-radius: 4px; font-size: 0.88em; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
+  pre { background: var(--code); padding: 14px 16px; border-radius: 8px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  blockquote { margin: 16px 0; padding: 4px 16px; border-left: 3px solid var(--primary); color: var(--muted); }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 14.5px; }
+  th, td { border: 1px solid var(--line); padding: 7px 10px; text-align: left; vertical-align: top; }
+  th { background: #f3f1ea; font-weight: 600; }
+  kbd { background:#fff; border:1px solid var(--line); border-bottom-width:2px; border-radius:5px; padding:1px 6px; font-size:0.82em; font-family:ui-monospace,monospace; }
+  hr { border:0; border-top:1px solid var(--line); margin: 28px 0; }
+  footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+  <main>
+    <header class="page-header"><span class="brand">MECE Studio</span><a class="back" href="/">← back to the app</a></header>
+    <h1>MECE Studio — User Guide</h1>
+    <p>A complete reference for every feature in MECE Studio, organized by what you&#39;re
+trying to do. MECE Studio is a free, local-first web app for building
+<strong>McKinsey-style issue trees</strong> with <strong>MECE checking built in</strong> — it flags
+overlaps and gaps as you decompose a problem, then helps you prioritise,
+test hypotheses, hang evidence, do the numbers, and read the answer back out.</p>
+<p>Everything runs in your browser. Nothing is uploaded; your trees are saved
+locally on your machine.</p>
+<h2>Contents</h2>
+<ol>
+<li><a href="#getting-started">Getting started</a></li>
+<li><a href="#building-the-tree">Building the tree</a></li>
+<li><a href="#mece-checking">MECE checking</a></li>
+<li><a href="#editing-nodes">Editing nodes</a></li>
+<li><a href="#navigating-the-canvas">Navigating the canvas</a></li>
+<li><a href="#prioritising-branches">Prioritising branches</a></li>
+<li><a href="#hypotheses-and-status">Hypotheses and status</a></li>
+<li><a href="#evidence">Evidence</a></li>
+<li><a href="#value-driver-trees">Value-driver trees</a></li>
+<li><a href="#synthesis--reading-the-answer">Synthesis — reading the answer</a></li>
+<li><a href="#ai-assist">AI assist</a></li>
+<li><a href="#working-with-multiple-trees">Working with multiple trees</a></li>
+<li><a href="#saving-exporting-and-importing">Saving, exporting, and importing</a></li>
+<li><a href="#undo-redo-and-autosave">Undo, redo, and autosave</a></li>
+<li><a href="#installing-as-an-app-offline">Installing as an app (offline)</a></li>
+<li><a href="#keyboard-reference">Keyboard reference</a></li>
+<li><a href="#tips">Tips</a></li>
+</ol>
+<hr>
+<h2>Getting started</h2>
+<p>When you open MECE Studio you get a single <strong>root node</strong> holding the key
+question — for example <em>&quot;Why is this happening?&quot;</em>. Everything hangs off this
+question.</p>
+<ul>
+<li><strong>The canvas</strong> (centre) shows the tree. Nodes are laid out automatically,
+left-to-right.</li>
+<li><strong>The inspector</strong> (right) shows everything about the currently selected node:
+its decomposition, MECE status, priority, hypothesis status, value, evidence,
+and notes.</li>
+<li><strong>The header</strong> (top) has the document picker and the New / Synthesis / Copy
+Markdown / Open / Save / Undo / Redo / About actions.</li>
+</ul>
+<p>Click a node to select it. Rename the root question to your real problem to
+begin — double-click it, or select it and press <kbd>Enter</kbd>.</p>
+<h2>Building the tree</h2>
+<p>A tree is built by <strong>decomposing</strong> each question into sub-issues.</p>
+<p><strong>Add a sub-issue.</strong> Select a node and click <strong>+ Add sub-issue</strong> in the
+inspector, or press <kbd>Tab</kbd> to add a child and start typing its label
+immediately.</p>
+<p><strong>Choose how a node decomposes.</strong> Each node splits in exactly one way. In the
+inspector, pick a <strong>decomposition type</strong>:</p>
+<ul>
+<li><strong>Segment</strong> — break into parts of a whole (regions, customer types…). Add an
+explicit <strong>&quot;Other&quot;</strong> bucket to be sure you&#39;ve covered everything.</li>
+<li><strong>Process</strong> — break into sequential stages or steps.</li>
+<li><strong>Binary</strong> — split into <strong>A / not-A</strong> (e.g. <em>new customers</em> vs <em>existing</em>).
+This is always provably MECE.</li>
+<li><strong>Formula</strong> — the children combine arithmetically into the parent
+(Revenue = Price × Volume). See <a href="#value-driver-trees">Value-driver trees</a>.</li>
+<li><strong>Framework</strong> — an established lens (e.g. People / Process / Technology).</li>
+<li><strong>Freeform</strong> — no specific structure.</li>
+</ul>
+<p><strong>Decomposition scaffolds.</strong> When you choose a type on a leaf node, MECE Studio
+seeds <strong>type-appropriate starter children</strong> for you to rename — binary gives you
+<em>A / not-A</em>, segments give two parts plus <em>Other</em>, process gives stages, formula
+gives terms. The &quot;Decompose by…&quot; buttons appear on leaf nodes.</p>
+<p><strong>Delete a node.</strong> Select it and click delete in the inspector, or press
+<kbd>Delete</kbd> / <kbd>Backspace</kbd>. The node and its whole subtree are
+removed (you can undo).</p>
+<h2>MECE checking</h2>
+<p>MECE = <strong>Mutually Exclusive, Collectively Exhaustive</strong>. It&#39;s a property of each
+<em>split</em> (a parent and its children), not of a single node. The engine
+re-evaluates every split on every change and shows the result two ways:</p>
+<ul>
+<li><strong>ME / CE dots on the node</strong> — at a glance, is this split mutually exclusive
+and collectively exhaustive?</li>
+<li><strong>Explained warnings in the inspector</strong> — <em>why</em> a split isn&#39;t MECE, in words,
+with what to do about it.</li>
+</ul>
+<p>How each split type is judged:</p>
+<ul>
+<li><strong>Binary (A / not-A)</strong> — provably MECE by construction (exactly two branches).</li>
+<li><strong>Formula</strong> — checked for <strong>reconciliation</strong>: do the children actually combine
+into the parent&#39;s value within tolerance?</li>
+<li><strong>Segments</strong> — collectively exhaustive only when you include an explicit
+<strong>&quot;Other&quot;</strong> bucket; otherwise you&#39;re warned there may be a gap.</li>
+<li><strong>Other types</strong> — a <strong>sibling-overlap heuristic</strong> flags when two siblings share
+a content word (a sign they may not be mutually exclusive). Generic and
+placeholder words are ignored so fresh scaffolds don&#39;t flag themselves.</li>
+</ul>
+<p>The goal isn&#39;t a perfect score — it&#39;s to make gaps and overlaps <em>visible</em> so you
+decide deliberately.</p>
+<h2>Editing nodes</h2>
+<p><strong>Inline label editing.</strong> Double-click any node to edit its label right on the
+canvas. With a node selected, press <kbd>Enter</kbd> or <kbd>F2</kbd> to edit.
+<kbd>Enter</kbd> or clicking away commits; <kbd>Escape</kbd> cancels.</p>
+<p><strong>Keyboard tree-building.</strong> With a node selected, <kbd>Tab</kbd> adds a child and
+drops you straight into editing its label — so you can build a whole tree without
+touching the mouse.</p>
+<p><strong>Detail and notes.</strong> The inspector has a label, an optional longer <strong>detail</strong>
+field, and a <strong>notes</strong> field for rationale, assumptions, or data sources. A node
+that carries notes shows a small marker on the canvas, and notes flow into the
+Markdown export.</p>
+<p><strong>Duplicate a subtree.</strong> Select a node and <strong>Duplicate</strong> to copy it and its whole
+subtree (with fresh ids) as a sibling — handy for parallel branches that share a
+structure.</p>
+<p><strong>Reorder siblings.</strong> Move a node <strong>up</strong> or <strong>down</strong> among its siblings from the
+inspector, to arrange branches in the order that reads best.</p>
+<h2>Navigating the canvas</h2>
+<p><strong>Auto-layout.</strong> The tree is laid out automatically with dagre, left-to-right.
+You don&#39;t place nodes by hand — structure drives position, so the tree always
+reads cleanly.</p>
+<p><strong>Auto-fit.</strong> The view re-fits when the tree changes so new nodes stay on screen.</p>
+<p><strong>Drag to re-parent.</strong> Drag any node onto another node to move it (and its whole
+subtree) under that node. While you drag, the <strong>valid drop target is
+highlighted</strong> so the result is predictable; dropping on an invalid target (the
+node&#39;s own subtree, the root, or empty space) snaps back with no change. Auto-
+layout then re-tidies everything.</p>
+<p><strong>Collapse and expand.</strong> Any node with children has a toggle. <strong>Collapse</strong> hides
+its subtree (the node shows a ▶ N badge with the hidden count) so you can focus on
+one branch; expand brings it back. <strong>Collapse all / Expand all</strong> (top-left) fold
+or unfold the whole tree at once.</p>
+<p><strong>Find on the canvas.</strong> The search box (top-left) rings every node whose label
+matches as you type and shows a match count. Press <kbd>Enter</kbd> to zoom to the
+matches — useful in a large tree.</p>
+<h2>Prioritising branches</h2>
+<p>Not every branch is worth chasing. In the inspector, mark each issue&#39;s <strong>impact</strong>
+and <strong>ease</strong> (each on a small scale). MECE Studio combines them into a <strong>priority
+band</strong> — <strong>High / Medium / Low</strong> — shown as a chip on the node, so the 80/20
+branches stand out. The synthesis reads branches in priority order.</p>
+<h2>Hypotheses and status</h2>
+<p>Issue trees are most powerful when you treat each branch as a <strong>hypothesis</strong> to
+test. Set a node&#39;s <strong>status</strong> in the inspector:</p>
+<ul>
+<li><strong>Open</strong> — not yet tested.</li>
+<li><strong>Supported</strong> — the evidence backs it.</li>
+<li><strong>Refuted</strong> — the evidence knocks it down.</li>
+<li><strong>Parked</strong> — set aside for now.</li>
+</ul>
+<p>The node gets a <strong>colour-coded left edge</strong> so the state of play is visible across
+the whole tree, and the synthesis flags ✓ supported, ✗ refuted, ⊘ parked.</p>
+<h2>Evidence</h2>
+<p>Attach <strong>evidence</strong> to any node from the inspector — each item is <strong>supporting</strong>
+or <strong>contradicting</strong>, with a <strong>strength</strong> you can cycle. Nodes show ✓/✗ count
+badges so you can see where the case is strong or thin. Evidence feeds the
+synthesis and your hypothesis decisions.</p>
+<h2>Value-driver trees</h2>
+<p>When a question is quantitative, make it a <strong>formula</strong> split and put numbers on
+the leaves.</p>
+<ul>
+<li><strong>Numeric value + units.</strong> Give a node a number and an optional <strong>unit</strong>
+(DKK, %, hrs, FTE…). The unit shows on the node and in exports.</li>
+<li><strong>Formula operators.</strong> Choose how a formula split combines its children —
+<strong>sum</strong>, <strong>product</strong> (Price × Volume), or <strong>difference</strong> (Revenue − Cost).</li>
+<li><strong>Roll-up.</strong> One click rolls the children&#39;s numbers up into the parent&#39;s value
+using the chosen operator.</li>
+<li><strong>Reconciliation.</strong> A check confirms the children actually add up to the parent
+within tolerance — if they don&#39;t, you&#39;re told.</li>
+<li><strong>Sensitivity analysis.</strong> On a formula split, a ranked readout shows how much
+the parent value swings when each leaf driver moves <strong>±10%</strong>, one at a time — so
+the driver that matters most is obvious.</li>
+</ul>
+<h2>Synthesis — reading the answer</h2>
+<p>Open the <strong>Synthesis</strong> panel (header) to read the tree back <strong>answer-first</strong>, the
+way a good consultant would present it:</p>
+<ul>
+<li>It leads with the <strong>highest-priority branch</strong>.</li>
+<li>It lists branches in <strong>priority order</strong>.</li>
+<li>It surfaces each node&#39;s <strong>evidence</strong> and <strong>hypothesis status</strong>.</li>
+<li>It flags any <strong>MECE gaps and overlaps</strong>.</li>
+</ul>
+<p><strong>Copy Markdown</strong> copies the whole synthesis (or use <strong>Copy Markdown</strong> in the
+header for the tree outline) so you can paste it into a doc, an email, or a deck.</p>
+<h2>AI assist</h2>
+<p>MECE Studio is a fully deterministic tool — but if you want a second opinion from
+an LLM, it gives you <strong>ready-made prompts with your tree embedded</strong>, with no API
+key and no backend:</p>
+<ul>
+<li><strong>AI critique</strong> (from the Synthesis panel) — copies a prompt asking an LLM to
+critique your tree&#39;s MECE structure.</li>
+<li><strong>Suggest a split</strong> (from the inspector, on a selected node) — copies a prompt
+asking an LLM to propose a MECE decomposition for that node.</li>
+</ul>
+<p>Paste either into Claude, ChatGPT, or any assistant. Your data never leaves your
+machine unless <em>you</em> paste it.</p>
+<h2>Working with multiple trees</h2>
+<p>MECE Studio keeps a <strong>library</strong> of trees.</p>
+<ul>
+<li>The <strong>document picker</strong> (header) lists every tree, named by its root question.
+Switch between them at any time.</li>
+<li><strong>+ New</strong> starts a fresh tree and adds it to the library; your current tree
+stays saved.</li>
+<li><strong>Delete</strong> removes the current tree (with confirmation). Deleting the last tree
+starts a fresh empty one.</li>
+<li><strong>Automatic migration</strong> — if you used an earlier single-tree version, your tree
+is folded into the library automatically the first time you open the new
+version. Nothing is lost.</li>
+</ul>
+<h2>Saving, exporting, and importing</h2>
+<p>Everything autosaves locally, but you can also take your work out in several
+formats:</p>
+<ul>
+<li><strong>PNG</strong> — export the canvas as an image.</li>
+<li><strong>PDF</strong> — export the canvas as a PDF.</li>
+<li><strong>PowerPoint (PPTX)</strong> — export the canvas as a slide.</li>
+<li><strong>Markdown</strong> — <strong>Copy Markdown</strong> (header) copies the tree as a structured
+outline, with each split&#39;s MECE state annotated and notes included.</li>
+<li><strong>JSON</strong> — <strong>Save JSON</strong> (header) downloads the full document.</li>
+<li><strong>Open JSON</strong> — <strong>Open</strong> (header) loads a saved <code>.json</code> tree back in. It&#39;s
+validated, and it opens as a <strong>new</strong> entry in your library, so it never
+overwrites an existing tree.</li>
+</ul>
+<p>The PNG / PDF / PowerPoint exporters are loaded on demand, so they don&#39;t slow
+down the app&#39;s first load.</p>
+<h2>Undo, redo, and autosave</h2>
+<ul>
+<li><strong>Undo / redo</strong> every change with <kbd>Ctrl/⌘+Z</kbd> and
+<kbd>Ctrl/⌘+Y</kbd> (or <kbd>Shift+Z</kbd>), or the header buttons.</li>
+<li><strong>Autosave</strong> — every change is saved to your browser&#39;s local storage
+immediately. Close the tab and come back; your trees are still there.</li>
+</ul>
+<h2>Installing as an app (offline)</h2>
+<p>MECE Studio is a <strong>Progressive Web App</strong>. Your browser may offer to <strong>install</strong>
+it (an icon in the address bar, or &quot;Add to Home Screen&quot; on mobile). Once
+installed it runs in its own window and <strong>works offline</strong> — the whole app is
+cached, so you can build trees on a plane.</p>
+<h2>Keyboard reference</h2>
+<p>These work on the canvas (they&#39;re ignored while you&#39;re typing in a field, so they
+never hijack the inspector inputs).</p>
+<table>
+<thead>
+<tr>
+<th>Keys</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><kbd>Tab</kbd></td>
+<td>Add a child to the selected node and edit it</td>
+</tr>
+<tr>
+<td><kbd>Enter</kbd> or <kbd>F2</kbd></td>
+<td>Edit the selected node&#39;s label</td>
+</tr>
+<tr>
+<td>Double-click</td>
+<td>Edit a node&#39;s label inline</td>
+</tr>
+<tr>
+<td><kbd>Enter</kbd> (while editing)</td>
+<td>Commit the label</td>
+</tr>
+<tr>
+<td><kbd>Escape</kbd> (while editing)</td>
+<td>Cancel the edit</td>
+</tr>
+<tr>
+<td><kbd>Delete</kbd> or <kbd>Backspace</kbd></td>
+<td>Remove the selected node and its subtree</td>
+</tr>
+<tr>
+<td><kbd>Ctrl/⌘+Z</kbd></td>
+<td>Undo</td>
+</tr>
+<tr>
+<td><kbd>Ctrl/⌘+Y</kbd> or <kbd>Ctrl/⌘+Shift+Z</kbd></td>
+<td>Redo</td>
+</tr>
+<tr>
+<td><kbd>Enter</kbd> (in the Find box)</td>
+<td>Zoom to the matching nodes</td>
+</tr>
+</tbody></table>
+<h2>Tips</h2>
+<ul>
+<li><strong>Start with the question, not the answer.</strong> The root node is a <em>question</em>;
+let the structure surface the answer.</li>
+<li><strong>Make splits explicit.</strong> If a segment split feels incomplete, add an
+<strong>&quot;Other&quot;</strong> bucket — the CE check will go green and you&#39;ll have named the gap.</li>
+<li><strong>Use binary splits when you&#39;re unsure.</strong> A / not-A is always MECE and often
+reveals the branch you were about to forget.</li>
+<li><strong>Prioritise before you dig.</strong> Mark impact × ease early so you spend effort on
+the branches that matter.</li>
+<li><strong>Treat branches as hypotheses.</strong> Set a status, hang evidence, and let the
+synthesis tell you where the case is strong or thin.</li>
+<li><strong>Read it back answer-first.</strong> The Synthesis panel turns a sprawling tree into
+a one-paragraph story you can present.</li>
+</ul>
+
+    <footer>Rendered from the canonical Markdown in the MECE Studio repository.</footer>
+  </main>
+</body>
+</html>
