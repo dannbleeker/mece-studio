@@ -1,32 +1,32 @@
 {
-  "generatedAt": "2026-06-12T18:25:31.985Z",
-  "commit": "5429117",
+  "generatedAt": "2026-06-12T19:15:01.976Z",
+  "commit": "c6775b1",
   "headline": {
-    "linesTsJs": 6303,
-    "tests": 119,
-    "lineCoveragePct": 57.65,
-    "commits": 76,
+    "linesTsJs": 6699,
+    "tests": 125,
+    "lineCoveragePct": 57.12,
+    "commits": 78,
     "ageDays": 1,
-    "trackedFiles": 132,
+    "trackedFiles": 137,
     "featureManualPct": 100,
-    "featureBookPct": 45.6,
-    "featureExamplePct": 31.6
+    "featureBookPct": 43.3,
+    "featureExamplePct": 30
   },
   "code": [
     {
       "category": "App code (src, excl. tests)",
-      "files": 36,
-      "lines": 3512
+      "files": 38,
+      "lines": 3785
     },
     {
       "category": "Unit tests",
-      "files": 19,
-      "lines": 1169
+      "files": 21,
+      "lines": 1254
     },
     {
       "category": "E2E tests (Playwright)",
-      "files": 13,
-      "lines": 512
+      "files": 14,
+      "lines": 550
     },
     {
       "category": "Build scripts",
@@ -41,40 +41,40 @@
     {
       "category": "Docs (Markdown)",
       "files": 21,
-      "lines": 2002
+      "lines": 2014
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 57.65,
-      "covered": 542,
-      "total": 940
+      "pct": 57.12,
+      "covered": 561,
+      "total": 982
     },
     "statements": {
-      "pct": 54.11,
-      "covered": 625,
-      "total": 1155
+      "pct": 53.82,
+      "covered": 647,
+      "total": 1202
     },
     "functions": {
-      "pct": 43.09,
-      "covered": 153,
-      "total": 355
+      "pct": 42.24,
+      "covered": 158,
+      "total": 374
     },
     "branches": {
-      "pct": 49.15,
-      "covered": 319,
-      "total": 649
+      "pct": 49.1,
+      "covered": 330,
+      "total": 672
     }
   },
   "tests": {
-    "unit": 96,
-    "e2e": 23
+    "unit": 101,
+    "e2e": 24
   },
   "domain": {
-    "features": 57,
+    "features": 60,
     "areas": 14,
-    "domainModules": 19,
-    "components": 6,
+    "domainModules": 20,
+    "components": 7,
     "exporters": 5
   },
   "footprint": {
@@ -91,19 +91,19 @@
       },
       {
         "name": "components/canvas/Canvas.tsx",
-        "lines": 359
+        "lines": 361
       },
       {
         "name": "store/index.ts",
-        "lines": 301
+        "lines": 341
+      },
+      {
+        "name": "domain/mece/engine.ts",
+        "lines": 212
       },
       {
         "name": "domain/examples.ts",
         "lines": 209
-      },
-      {
-        "name": "App.tsx",
-        "lines": 194
       }
     ]
   },
@@ -137,7 +137,7 @@
     "churnHotspots": [
       {
         "file": "src/store/index.ts",
-        "commits": 17
+        "commits": 18
       },
       {
         "file": "src/components/inspector/Inspector.tsx",
@@ -145,15 +145,15 @@
       },
       {
         "file": "src/components/canvas/Canvas.tsx",
+        "commits": 13
+      },
+      {
+        "file": "src/App.tsx",
         "commits": 12
       },
       {
         "file": "src/domain/tree.ts",
         "commits": 12
-      },
-      {
-        "file": "src/App.tsx",
-        "commits": 11
       },
       {
         "file": "src/components/canvas/nodes/IssueNode.tsx",
@@ -162,18 +162,23 @@
     ],
     "risky": [
       {
+        "file": "src/store/index.ts",
+        "commits": 18,
+        "pct": 69.36
+      },
+      {
         "file": "src/components/inspector/Inspector.tsx",
         "commits": 14,
         "pct": 0
       },
       {
         "file": "src/components/canvas/Canvas.tsx",
-        "commits": 12,
+        "commits": 13,
         "pct": 0
       },
       {
         "file": "src/App.tsx",
-        "commits": 11,
+        "commits": 12,
         "pct": 0
       },
       {
@@ -184,11 +189,6 @@
       {
         "file": "src/components/about/AboutDialog.tsx",
         "commits": 3,
-        "pct": 0
-      },
-      {
-        "file": "src/components/shortcuts/ShortcutsDialog.tsx",
-        "commits": 2,
         "pct": 0
       }
     ]
@@ -204,8 +204,8 @@
     "nonNull": 1
   },
   "bundle": {
-    "eagerJsGzipKb": 154.3,
-    "totalJsGzipKb": 507.6,
+    "eagerJsGzipKb": 155.2,
+    "totalJsGzipKb": 508.5,
     "cssGzipKb": 6.7,
     "budgetKb": 165,
     "withinBudget": true
@@ -213,17 +213,17 @@
   "docs": {
     "bookWords": 20665,
     "chapters": 14,
-    "appLoc": 3512,
-    "docToCodeRatio": 0.57
+    "appLoc": 3785,
+    "docToCodeRatio": 0.53
   },
   "featureCoverage": {
-    "total": 57,
-    "manual": 57,
+    "total": 60,
+    "manual": 60,
     "manualPct": 100,
     "book": 26,
-    "bookPct": 45.6,
+    "bookPct": 43.3,
     "bookExample": 18,
-    "bookExamplePct": 31.6,
+    "bookExamplePct": 30,
     "byArea": {
       "Tree": {
         "total": 6,
@@ -231,8 +231,8 @@
         "book": 5
       },
       "MECE": {
-        "total": 7,
-        "manual": 7,
+        "total": 9,
+        "manual": 9,
         "book": 5
       },
       "Prioritisation": {
@@ -261,8 +261,8 @@
         "book": 2
       },
       "Canvas": {
-        "total": 7,
-        "manual": 7,
+        "total": 8,
+        "manual": 8,
         "book": 0
       },
       "Editing": {
@@ -315,6 +315,16 @@
           "since": 1
         },
         {
+          "id": "setting-strict-overlap",
+          "name": "Stricter overlap detection (opt-in, Settings)",
+          "since": 6
+        },
+        {
+          "id": "setting-formula-tolerance",
+          "name": "Configurable formula tolerance (Settings)",
+          "since": 6
+        },
+        {
           "id": "status-edge-colour",
           "name": "Colour-coded status edge on the node",
           "since": 4
@@ -333,6 +343,11 @@
           "id": "auto-fit",
           "name": "Auto-fit on tree changes",
           "since": 1
+        },
+        {
+          "id": "setting-sort-priority",
+          "name": "Sort siblings by priority (opt-in, Settings)",
+          "since": 6
         },
         {
           "id": "drag-reparent",
@@ -460,22 +475,22 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 1,
-    "commits": 76,
-    "commits7d": 76,
+    "commits": 78,
+    "commits7d": 78,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 60
+        "count": 61
       },
       {
         "name": "github-actions[bot]",
-        "count": 16
+        "count": 17
       }
     ],
     "churn30d": {
-      "added": 17894,
-      "removed": 1548
+      "added": 18413,
+      "removed": 1646
     },
-    "changelogEntries": 38
+    "changelogEntries": 39
   }
 }
