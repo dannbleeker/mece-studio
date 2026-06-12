@@ -1,22 +1,22 @@
 {
-  "generatedAt": "2026-06-12T14:58:08.888Z",
-  "commit": "6883807",
+  "generatedAt": "2026-06-12T15:26:47.403Z",
+  "commit": "82240a6",
   "headline": {
-    "linesTsJs": 5049,
+    "linesTsJs": 5590,
     "tests": 102,
     "lineCoveragePct": 57.24,
-    "commits": 52,
+    "commits": 54,
     "ageDays": 1,
-    "trackedFiles": 100,
+    "trackedFiles": 122,
     "featureManualPct": 100,
-    "featureBookPct": 0,
-    "featureExamplePct": 0
+    "featureBookPct": 47.3,
+    "featureExamplePct": 32.7
   },
   "code": [
     {
       "category": "App code (src, excl. tests)",
       "files": 32,
-      "lines": 3058
+      "lines": 3068
     },
     {
       "category": "Unit tests",
@@ -30,8 +30,8 @@
     },
     {
       "category": "Build scripts",
-      "files": 7,
-      "lines": 555
+      "files": 12,
+      "lines": 1086
     },
     {
       "category": "Styles (CSS)",
@@ -40,8 +40,8 @@
     },
     {
       "category": "Docs (Markdown)",
-      "files": 7,
-      "lines": 534
+      "files": 21,
+      "lines": 1986
     }
   ],
   "coverage": {
@@ -79,7 +79,7 @@
   },
   "footprint": {
     "depsProd": 9,
-    "depsDev": 16,
+    "depsDev": 18,
     "biggestFiles": [
       {
         "name": "components/inspector/Inspector.tsx",
@@ -182,12 +182,12 @@
         "pct": 0
       },
       {
-        "file": "src/components/SynthesisPanel.tsx",
+        "file": "src/components/about/AboutDialog.tsx",
         "commits": 2,
         "pct": 0
       },
       {
-        "file": "src/services/download.ts",
+        "file": "src/components/SynthesisPanel.tsx",
         "commits": 2,
         "pct": 0
       }
@@ -204,61 +204,61 @@
     "nonNull": 1
   },
   "bundle": {
-    "eagerJsGzipKb": 151.7,
-    "totalJsGzipKb": 505,
+    "eagerJsGzipKb": 151.8,
+    "totalJsGzipKb": 505.1,
     "cssGzipKb": 6.6,
     "budgetKb": 165,
     "withinBudget": true
   },
   "docs": {
-    "bookWords": 0,
-    "chapters": 0,
-    "appLoc": 3058,
-    "docToCodeRatio": 0.17
+    "bookWords": 20665,
+    "chapters": 14,
+    "appLoc": 3068,
+    "docToCodeRatio": 0.65
   },
   "featureCoverage": {
     "total": 55,
     "manual": 55,
     "manualPct": 100,
-    "book": 0,
-    "bookPct": 0,
-    "bookExample": 0,
-    "bookExamplePct": 0,
+    "book": 26,
+    "bookPct": 47.3,
+    "bookExample": 18,
+    "bookExamplePct": 32.7,
     "byArea": {
       "Tree": {
         "total": 6,
         "manual": 6,
-        "book": 0
+        "book": 5
       },
       "MECE": {
         "total": 7,
         "manual": 7,
-        "book": 0
+        "book": 5
       },
       "Prioritisation": {
         "total": 2,
         "manual": 2,
-        "book": 0
+        "book": 2
       },
       "Hypotheses": {
         "total": 2,
         "manual": 2,
-        "book": 0
+        "book": 1
       },
       "Evidence": {
         "total": 3,
         "manual": 3,
-        "book": 0
+        "book": 2
       },
       "Value": {
         "total": 6,
         "manual": 6,
-        "book": 0
+        "book": 6
       },
       "Synthesis": {
         "total": 2,
         "manual": 2,
-        "book": 0
+        "book": 2
       },
       "Canvas": {
         "total": 7,
@@ -268,12 +268,12 @@
       "Editing": {
         "total": 6,
         "manual": 6,
-        "book": 0
+        "book": 2
       },
       "Export": {
         "total": 5,
         "manual": 5,
-        "book": 0
+        "book": 1
       },
       "Import": {
         "total": 1,
@@ -300,38 +300,8 @@
       "noManual": [],
       "noBook": [
         {
-          "id": "issue-tree",
-          "name": "Issue-tree canvas",
-          "since": 1
-        },
-        {
-          "id": "root-question",
-          "name": "Editable root question",
-          "since": 1
-        },
-        {
-          "id": "add-sub-issue",
-          "name": "Add sub-issue",
-          "since": 1
-        },
-        {
-          "id": "decomposition-types",
-          "name": "Decomposition types (segment / process / binary / formula / framework / freeform)",
-          "since": 1
-        },
-        {
-          "id": "decomposition-scaffolds",
-          "name": "Decomposition scaffolds (type-appropriate starter children)",
-          "since": 2
-        },
-        {
           "id": "delete-node",
           "name": "Delete a node and its subtree",
-          "since": 1
-        },
-        {
-          "id": "mece-engine",
-          "name": "Live MECE engine (mutual exclusivity + collective exhaustiveness)",
           "since": 1
         },
         {
@@ -345,98 +315,13 @@
           "since": 1
         },
         {
-          "id": "mece-binary",
-          "name": "Binary (A / not-A) provably MECE",
-          "since": 2
-        },
-        {
-          "id": "mece-formula",
-          "name": "Formula split reconciliation",
-          "since": 2
-        },
-        {
-          "id": "mece-segments",
-          "name": "Segments exhaustive only with an explicit Other",
-          "since": 2
-        },
-        {
-          "id": "mece-overlap-heuristic",
-          "name": "Sibling-overlap (shared content word) heuristic",
-          "since": 2
-        },
-        {
-          "id": "priority-impact-ease",
-          "name": "Impact x ease prioritisation",
-          "since": 3
-        },
-        {
-          "id": "priority-band",
-          "name": "High / Medium / Low priority band chip",
-          "since": 3
-        },
-        {
-          "id": "node-status",
-          "name": "Hypothesis status (open / supported / refuted / parked)",
-          "since": 4
-        },
-        {
           "id": "status-edge-colour",
           "name": "Colour-coded status edge on the node",
           "since": 4
         },
         {
-          "id": "evidence-items",
-          "name": "Supporting / contradicting evidence items",
-          "since": 3
-        },
-        {
-          "id": "evidence-strength",
-          "name": "Cyclable evidence strength",
-          "since": 3
-        },
-        {
           "id": "evidence-counts",
           "name": "Evidence count badges on the node",
-          "since": 3
-        },
-        {
-          "id": "node-value",
-          "name": "Numeric node value",
-          "since": 1
-        },
-        {
-          "id": "value-units",
-          "name": "Units on values (DKK / % / hrs / FTE)",
-          "since": 6
-        },
-        {
-          "id": "value-rollup",
-          "name": "Value-driver roll-up into the parent",
-          "since": 4
-        },
-        {
-          "id": "formula-operators",
-          "name": "Formula operators (sum / product / difference)",
-          "since": 6
-        },
-        {
-          "id": "value-reconciliation",
-          "name": "Roll-up reconciliation check",
-          "since": 4
-        },
-        {
-          "id": "sensitivity",
-          "name": "Sensitivity analysis (+/-10% driver ranking)",
-          "since": 6
-        },
-        {
-          "id": "synthesis-panel",
-          "name": "Answer-first synthesis panel",
-          "since": 3
-        },
-        {
-          "id": "synthesis-markdown",
-          "name": "Copy synthesis as Markdown",
           "since": 3
         },
         {
@@ -480,11 +365,6 @@
           "since": 6
         },
         {
-          "id": "keyboard-tree-building",
-          "name": "Keyboard tree-building (Tab adds a child)",
-          "since": 6
-        },
-        {
           "id": "duplicate-subtree",
           "name": "Duplicate a node and its subtree",
           "since": 6
@@ -497,11 +377,6 @@
         {
           "id": "node-notes",
           "name": "Per-node notes",
-          "since": 6
-        },
-        {
-          "id": "keyboard-shortcuts",
-          "name": "Keyboard shortcuts (undo / redo / delete)",
           "since": 6
         },
         {
@@ -518,11 +393,6 @@
           "id": "export-pptx",
           "name": "PowerPoint (PPTX) export",
           "since": 6
-        },
-        {
-          "id": "export-markdown",
-          "name": "Markdown outline export",
-          "since": 3
         },
         {
           "id": "export-json",
@@ -580,22 +450,22 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 1,
-    "commits": 52,
-    "commits7d": 52,
+    "commits": 54,
+    "commits7d": 54,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 50
+        "count": 51
       },
       {
         "name": "github-actions[bot]",
-        "count": 2
+        "count": 3
       }
     ],
     "churn30d": {
-      "added": 14595,
-      "removed": 719
+      "added": 16790,
+      "removed": 1056
     },
-    "changelogEntries": 31
+    "changelogEntries": 32
   }
 }
