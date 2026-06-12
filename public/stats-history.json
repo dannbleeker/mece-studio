@@ -1,10 +1,10 @@
 [
   {
     "date": "2026-06-12",
-    "linesTsJs": 6699,
-    "coveragePct": 57.12,
-    "tests": 125,
-    "bundleKb": 155.2,
+    "linesTsJs": 6739,
+    "coveragePct": 57.34,
+    "tests": 128,
+    "bundleKb": 155.3,
     "featureManualPct": 100,
     "featureBookPct": 43.3,
     "featureExamplePct": 30
