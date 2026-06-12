@@ -7,7 +7,7 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 ### Added
 - **Formula operators.** Choose how a formula split combines its children — **sum**, **product** (Price × Volume), or **difference** (Revenue − Cost) — so value-driver trees aren't limited to addition.
 - **Sensitivity analysis.** On a formula split, a ranked readout shows how much the value swings when each leaf driver moves ±10%, one at a time — so the driver that matters most is obvious.
-- **Inline label editing.** Double-click any node to rename it right on the canvas — Enter or click-away commits, Escape cancels. No trip to the inspector.
+- **Inline editing + keyboard tree-building.** Double-click any node to rename it on the canvas (Enter / click-away commits, Escape cancels); with a node selected, **Enter / F2** edits it and **Tab** adds a child and edits it straight away — build a tree without leaving the keyboard.
 - **Drag to re-parent.** Drag any node onto another to move it (and its whole subtree) under that node; the valid drop target is **highlighted** mid-drag so the result is predictable, then dagre re-tidies the layout. Auto-layout stays in charge — an invalid drop (onto the node's own subtree, the root, or empty space) isn't highlighted and snaps back.
 - **Playwright e2e.** A real-browser test drives an actual drag to verify re-parenting + the drop-target highlight (`pnpm e2e`), and runs as a CI job. Browsers install project-local (`PLAYWRIGHT_BROWSERS_PATH=0`) so they sit under the AppLocker-allowed path.
 - **Per-node notes.** Capture each issue's rationale, assumptions, or data sources in the inspector; a node carrying notes shows a small marker on the canvas, and notes flow into the Markdown export as an italic line under the bullet.

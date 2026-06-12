@@ -41,6 +41,25 @@ test('Enter edits the selected node; commit persists the new label', async ({ pa
   expect(label).toBe('Why are margins down?');
 });
 
+test('Tab on the selected node adds a child and edits it', async ({ page }) => {
+  const root = await freshRoot(page);
+  await root.click(); // select the root
+  await page.keyboard.press('Tab'); // add a child and start editing it
+
+  await expect(page.locator('.react-flow__node')).toHaveCount(2);
+  const input = page.locator('.react-flow__node textarea');
+  await expect(input).toBeVisible();
+  await input.fill('Revenue');
+  await input.press('Enter');
+
+  const childLabel = await page.evaluate((k) => {
+    const doc = JSON.parse(localStorage.getItem(k));
+    const split = Object.values(doc.splits).find((s) => s.parentId === doc.rootId);
+    return doc.nodes[split.childIds[0]].label;
+  }, KEY);
+  expect(childLabel).toBe('Revenue');
+});
+
 test('Escape cancels the edit without changing the label', async ({ page }) => {
   const root = await freshRoot(page);
   await root.click();

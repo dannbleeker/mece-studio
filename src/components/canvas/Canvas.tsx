@@ -14,7 +14,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { descendantIds, parentOf } from '@/domain/tree';
+import { childrenOf, descendantIds, parentOf } from '@/domain/tree';
 import type { NodeId } from '@/domain/types';
 import { downloadDataUrl } from '@/services/download';
 import { useStore } from '@/store';
@@ -33,6 +33,7 @@ function Flow() {
   const select = useStore((s) => s.select);
   const moveNode = useStore((s) => s.moveNode);
   const renameNode = useStore((s) => s.renameNode);
+  const addChild = useStore((s) => s.addChild);
   const { fitView, getNodes, getIntersectingNodes } = useReactFlow();
 
   // Inline label editing: double-click a node to edit its label in place.
@@ -50,20 +51,31 @@ function Flow() {
     [editingId, renameNode]
   );
 
-  // Double-click a node (handled in the node itself) or press Enter / F2 on the
-  // selected node to edit its label inline.
+  // Keyboard on the selected node: Enter / F2 edits its label; Tab adds a child
+  // and edits it straight away (fast tree-building). Double-click also edits
+  // (handled in the node). Ignored while already typing in a field.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
       if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable) return;
-      if ((e.key === 'Enter' || e.key === 'F2') && selectedId && !editingId) {
+      if (editingId || !selectedId) return;
+      if (e.key === 'Enter' || e.key === 'F2') {
         e.preventDefault();
         setEditingId(selectedId);
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        addChild(selectedId);
+        const kids = childrenOf(useStore.getState().doc, selectedId);
+        const newId = kids[kids.length - 1]?.id;
+        if (newId) {
+          select(newId);
+          setEditingId(newId);
+        }
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [selectedId, editingId]);
+  }, [selectedId, editingId, addChild, select]);
 
   const { nodes: layoutNodes, edges } = useMemo(() => toFlow(doc, selectedId), [doc, selectedId]);
   const [nodes, setNodes, onNodesChange] = useNodesState(layoutNodes);
