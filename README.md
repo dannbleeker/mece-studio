@@ -12,11 +12,12 @@ Sibling to [TP Studio](https://tp-studio.struktureretsundfornuft.dk) (Theory of 
 - **Decomposition scaffolds.** "Decompose by …" seeds clean, type-appropriate starter sub-issues (binary → A / not-A, segments → two + Other, process → stages, formula → terms) that you rename.
 - **Prioritisation.** Mark each issue's **impact × ease**; nodes show a High / Medium / Low band so the 80/20 branches stand out, and the synthesis ranks by it.
 - **Hypotheses & evidence.** Set a node's status (open / supported / refuted / parked) and attach supporting or contradicting **evidence** with a strength.
-- **Value-driver trees.** Put numbers (with **units**) on a formula split's children and **roll them up** into the parent (sum / product / difference); a reconciliation check confirms the totals add up.
+- **Value-driver trees.** Put numbers (with **units**) on a formula split's children and **roll them up** into the parent — combining by **sum, product, or difference** — with a reconciliation check, plus a **sensitivity** readout that ranks which driver moves the value most (±10%).
 - **Answer-first synthesis.** A Synthesis panel reads the tree back leading with the highest-priority branch, surfaces each node's evidence, and flags MECE gaps/overlaps — copyable as Markdown.
 - **Notes** per node for rationale, assumptions, and data sources.
 - **Export & round-trip.** PNG of the canvas, a Markdown outline, and JSON **save / open**.
-- **Built for flow.** Undo / redo (with `Ctrl/⌘+Z` · `Y` and `Delete` shortcuts), auto-layout (dagre, left-to-right), and localStorage persistence — no account, no backend.
+- **Navigate big trees.** **Collapse** any subtree (a ▶ N badge shows what's hidden) or Collapse all / Expand all at once; **search** rings matching nodes and zooms to them.
+- **Built for flow.** Rename inline (double-click or Enter / F2), **Tab** to add a child, **drag** a node onto another to re-parent its subtree (with a drop-target highlight). Undo / redo (with `Ctrl/⌘+Z` · `Y` and `Delete` shortcuts), auto-layout (dagre, left-to-right), and localStorage persistence — no account, no backend.
 
 ## Architecture
 
