@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-06-12T14:53:18.896Z",
-  "commit": "3f066a4",
+  "generatedAt": "2026-06-12T14:58:08.888Z",
+  "commit": "6883807",
   "headline": {
     "linesTsJs": 5049,
     "tests": 102,
     "lineCoveragePct": 57.24,
-    "commits": 50,
+    "commits": 52,
     "ageDays": 1,
-    "trackedFiles": 98,
-    "featureManualPct": 0,
+    "trackedFiles": 100,
+    "featureManualPct": 100,
     "featureBookPct": 0,
     "featureExamplePct": 0
   },
@@ -40,8 +40,8 @@
     },
     {
       "category": "Docs (Markdown)",
-      "files": 6,
-      "lines": 234
+      "files": 7,
+      "lines": 534
     }
   ],
   "coverage": {
@@ -214,12 +214,12 @@
     "bookWords": 0,
     "chapters": 0,
     "appLoc": 3058,
-    "docToCodeRatio": 0.08
+    "docToCodeRatio": 0.17
   },
   "featureCoverage": {
     "total": 55,
-    "manual": 0,
-    "manualPct": 0,
+    "manual": 55,
+    "manualPct": 100,
     "book": 0,
     "bookPct": 0,
     "bookExample": 0,
@@ -227,353 +227,77 @@
     "byArea": {
       "Tree": {
         "total": 6,
-        "manual": 0,
+        "manual": 6,
         "book": 0
       },
       "MECE": {
         "total": 7,
-        "manual": 0,
+        "manual": 7,
         "book": 0
       },
       "Prioritisation": {
         "total": 2,
-        "manual": 0,
+        "manual": 2,
         "book": 0
       },
       "Hypotheses": {
         "total": 2,
-        "manual": 0,
+        "manual": 2,
         "book": 0
       },
       "Evidence": {
         "total": 3,
-        "manual": 0,
+        "manual": 3,
         "book": 0
       },
       "Value": {
         "total": 6,
-        "manual": 0,
+        "manual": 6,
         "book": 0
       },
       "Synthesis": {
         "total": 2,
-        "manual": 0,
+        "manual": 2,
         "book": 0
       },
       "Canvas": {
         "total": 7,
-        "manual": 0,
+        "manual": 7,
         "book": 0
       },
       "Editing": {
         "total": 6,
-        "manual": 0,
+        "manual": 6,
         "book": 0
       },
       "Export": {
         "total": 5,
-        "manual": 0,
+        "manual": 5,
         "book": 0
       },
       "Import": {
         "total": 1,
-        "manual": 0,
+        "manual": 1,
         "book": 0
       },
       "Documents": {
         "total": 3,
-        "manual": 0,
+        "manual": 3,
         "book": 0
       },
       "AI": {
         "total": 2,
-        "manual": 0,
+        "manual": 2,
         "book": 0
       },
       "App": {
         "total": 3,
-        "manual": 0,
+        "manual": 3,
         "book": 0
       }
     },
     "gaps": {
-      "noManual": [
-        {
-          "id": "issue-tree",
-          "name": "Issue-tree canvas",
-          "since": 1
-        },
-        {
-          "id": "root-question",
-          "name": "Editable root question",
-          "since": 1
-        },
-        {
-          "id": "add-sub-issue",
-          "name": "Add sub-issue",
-          "since": 1
-        },
-        {
-          "id": "decomposition-types",
-          "name": "Decomposition types (segment / process / binary / formula / framework / freeform)",
-          "since": 1
-        },
-        {
-          "id": "decomposition-scaffolds",
-          "name": "Decomposition scaffolds (type-appropriate starter children)",
-          "since": 2
-        },
-        {
-          "id": "delete-node",
-          "name": "Delete a node and its subtree",
-          "since": 1
-        },
-        {
-          "id": "mece-engine",
-          "name": "Live MECE engine (mutual exclusivity + collective exhaustiveness)",
-          "since": 1
-        },
-        {
-          "id": "mece-dots",
-          "name": "ME / CE status dots on the node",
-          "since": 1
-        },
-        {
-          "id": "mece-warnings",
-          "name": "Explained MECE warnings in the inspector",
-          "since": 1
-        },
-        {
-          "id": "mece-binary",
-          "name": "Binary (A / not-A) provably MECE",
-          "since": 2
-        },
-        {
-          "id": "mece-formula",
-          "name": "Formula split reconciliation",
-          "since": 2
-        },
-        {
-          "id": "mece-segments",
-          "name": "Segments exhaustive only with an explicit Other",
-          "since": 2
-        },
-        {
-          "id": "mece-overlap-heuristic",
-          "name": "Sibling-overlap (shared content word) heuristic",
-          "since": 2
-        },
-        {
-          "id": "priority-impact-ease",
-          "name": "Impact x ease prioritisation",
-          "since": 3
-        },
-        {
-          "id": "priority-band",
-          "name": "High / Medium / Low priority band chip",
-          "since": 3
-        },
-        {
-          "id": "node-status",
-          "name": "Hypothesis status (open / supported / refuted / parked)",
-          "since": 4
-        },
-        {
-          "id": "status-edge-colour",
-          "name": "Colour-coded status edge on the node",
-          "since": 4
-        },
-        {
-          "id": "evidence-items",
-          "name": "Supporting / contradicting evidence items",
-          "since": 3
-        },
-        {
-          "id": "evidence-strength",
-          "name": "Cyclable evidence strength",
-          "since": 3
-        },
-        {
-          "id": "evidence-counts",
-          "name": "Evidence count badges on the node",
-          "since": 3
-        },
-        {
-          "id": "node-value",
-          "name": "Numeric node value",
-          "since": 1
-        },
-        {
-          "id": "value-units",
-          "name": "Units on values (DKK / % / hrs / FTE)",
-          "since": 6
-        },
-        {
-          "id": "value-rollup",
-          "name": "Value-driver roll-up into the parent",
-          "since": 4
-        },
-        {
-          "id": "formula-operators",
-          "name": "Formula operators (sum / product / difference)",
-          "since": 6
-        },
-        {
-          "id": "value-reconciliation",
-          "name": "Roll-up reconciliation check",
-          "since": 4
-        },
-        {
-          "id": "sensitivity",
-          "name": "Sensitivity analysis (+/-10% driver ranking)",
-          "since": 6
-        },
-        {
-          "id": "synthesis-panel",
-          "name": "Answer-first synthesis panel",
-          "since": 3
-        },
-        {
-          "id": "synthesis-markdown",
-          "name": "Copy synthesis as Markdown",
-          "since": 3
-        },
-        {
-          "id": "auto-layout",
-          "name": "Auto-layout (dagre, left-to-right)",
-          "since": 1
-        },
-        {
-          "id": "auto-fit",
-          "name": "Auto-fit on tree changes",
-          "since": 1
-        },
-        {
-          "id": "drag-reparent",
-          "name": "Drag a node onto another to re-parent its subtree",
-          "since": 6
-        },
-        {
-          "id": "drop-highlight",
-          "name": "Drop-target highlight while dragging",
-          "since": 6
-        },
-        {
-          "id": "collapse-subtree",
-          "name": "Collapse / expand a subtree",
-          "since": 6
-        },
-        {
-          "id": "collapse-all",
-          "name": "Collapse all / Expand all",
-          "since": 6
-        },
-        {
-          "id": "canvas-search",
-          "name": "Find on the canvas (ring matches + zoom)",
-          "since": 6
-        },
-        {
-          "id": "inline-edit",
-          "name": "Inline label editing (double-click / Enter / F2)",
-          "since": 6
-        },
-        {
-          "id": "keyboard-tree-building",
-          "name": "Keyboard tree-building (Tab adds a child)",
-          "since": 6
-        },
-        {
-          "id": "duplicate-subtree",
-          "name": "Duplicate a node and its subtree",
-          "since": 6
-        },
-        {
-          "id": "reorder-siblings",
-          "name": "Reorder siblings (move up / down)",
-          "since": 6
-        },
-        {
-          "id": "node-notes",
-          "name": "Per-node notes",
-          "since": 6
-        },
-        {
-          "id": "keyboard-shortcuts",
-          "name": "Keyboard shortcuts (undo / redo / delete)",
-          "since": 6
-        },
-        {
-          "id": "export-png",
-          "name": "PNG export",
-          "since": 5
-        },
-        {
-          "id": "export-pdf",
-          "name": "PDF export",
-          "since": 6
-        },
-        {
-          "id": "export-pptx",
-          "name": "PowerPoint (PPTX) export",
-          "since": 6
-        },
-        {
-          "id": "export-markdown",
-          "name": "Markdown outline export",
-          "since": 3
-        },
-        {
-          "id": "export-json",
-          "name": "Save as JSON",
-          "since": 3
-        },
-        {
-          "id": "import-json",
-          "name": "Open a saved JSON tree",
-          "since": 6
-        },
-        {
-          "id": "multi-document",
-          "name": "Multiple trees (document library + picker)",
-          "since": 6
-        },
-        {
-          "id": "new-tree",
-          "name": "New tree",
-          "since": 6
-        },
-        {
-          "id": "legacy-migration",
-          "name": "Automatic legacy single-doc migration",
-          "since": 6
-        },
-        {
-          "id": "ai-critique",
-          "name": "AI critique prompt (keyless)",
-          "since": 6
-        },
-        {
-          "id": "ai-suggest-split",
-          "name": "AI suggest-a-split prompt (keyless)",
-          "since": 6
-        },
-        {
-          "id": "undo-redo",
-          "name": "Undo / redo history",
-          "since": 1
-        },
-        {
-          "id": "local-persistence",
-          "name": "Local persistence (localStorage)",
-          "since": 1
-        },
-        {
-          "id": "pwa",
-          "name": "Installable, offline-capable PWA",
-          "since": 1
-        }
-      ],
+      "noManual": [],
       "noBook": [
         {
           "id": "issue-tree",
@@ -856,22 +580,22 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 1,
-    "commits": 50,
-    "commits7d": 50,
+    "commits": 52,
+    "commits7d": 52,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 49
+        "count": 50
       },
       {
         "name": "github-actions[bot]",
-        "count": 1
+        "count": 2
       }
     ],
     "churn30d": {
-      "added": 13861,
-      "removed": 617
+      "added": 14595,
+      "removed": 719
     },
-    "changelogEntries": 30
+    "changelogEntries": 31
   }
 }
