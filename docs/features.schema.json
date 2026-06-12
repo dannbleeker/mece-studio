@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MECE Studio feature catalogue",
+  "description": "Curated list of user-facing capabilities. The denominator for documentation-coverage metrics (manual / book). Validated by scripts/check-feature-coverage.mjs.",
+  "type": "object",
+  "required": ["areas", "reviewedThroughChangelogEntries", "features"],
+  "additionalProperties": true,
+  "properties": {
+    "areas": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Allowed functional areas. Every feature's `area` must be one of these."
+    },
+    "reviewedThroughChangelogEntries": {
+      "type": "number",
+      "description": "Watermark: how many CHANGELOG feature-bullets the catalogue has been reconciled against. The gate warns when the CHANGELOG has advanced past this."
+    },
+    "features": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "area", "since", "manual", "book", "bookExample"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "description": "Unique kebab-case slug." },
+          "name": { "type": "string", "description": "Human display name." },
+          "area": { "type": "string", "description": "One of the declared areas." },
+          "since": { "type": "number", "description": "Milestone the capability shipped in (1-6)." },
+          "manual": { "type": "boolean", "description": "Documented in USER_GUIDE.md." },
+          "book": { "type": "boolean", "description": "Covered in a docs/guide chapter." },
+          "bookExample": { "type": "boolean", "description": "That chapter has a worked example (requires book=true)." }
+        }
+      }
+    }
+  }
+}

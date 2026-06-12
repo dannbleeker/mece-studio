@@ -1,0 +1,873 @@
+{
+  "generatedAt": "2026-06-12T14:36:33.778Z",
+  "commit": "be9c8d7",
+  "headline": {
+    "linesTsJs": 4824,
+    "tests": 101,
+    "lineCoveragePct": 58.15,
+    "commits": 47,
+    "ageDays": 1,
+    "trackedFiles": 83,
+    "featureManualPct": 0,
+    "featureBookPct": 0,
+    "featureExamplePct": 0
+  },
+  "code": [
+    {
+      "category": "App code (src, excl. tests)",
+      "files": 31,
+      "lines": 2936
+    },
+    {
+      "category": "Unit tests",
+      "files": 17,
+      "lines": 1035
+    },
+    {
+      "category": "E2E tests (Playwright)",
+      "files": 9,
+      "lines": 382
+    },
+    {
+      "category": "Build scripts",
+      "files": 6,
+      "lines": 471
+    },
+    {
+      "category": "Styles (CSS)",
+      "files": 1,
+      "lines": 12
+    },
+    {
+      "category": "Docs (Markdown)",
+      "files": 5,
+      "lines": 177
+    }
+  ],
+  "coverage": {
+    "lines": {
+      "pct": 58.15,
+      "covered": 474,
+      "total": 815
+    },
+    "statements": {
+      "pct": 53.84,
+      "covered": 546,
+      "total": 1014
+    },
+    "functions": {
+      "pct": 43.38,
+      "covered": 141,
+      "total": 325
+    },
+    "branches": {
+      "pct": 49.05,
+      "covered": 286,
+      "total": 583
+    }
+  },
+  "tests": {
+    "unit": 83,
+    "e2e": 18
+  },
+  "domain": {
+    "features": 55,
+    "areas": 14,
+    "domainModules": 18,
+    "components": 4,
+    "exporters": 5
+  },
+  "footprint": {
+    "depsProd": 9,
+    "depsDev": 15,
+    "biggestFiles": [
+      {
+        "name": "components/inspector/Inspector.tsx",
+        "lines": 451
+      },
+      {
+        "name": "domain/tree.ts",
+        "lines": 381
+      },
+      {
+        "name": "components/canvas/Canvas.tsx",
+        "lines": 335
+      },
+      {
+        "name": "store/index.ts",
+        "lines": 301
+      },
+      {
+        "name": "components/canvas/nodes/IssueNode.tsx",
+        "lines": 182
+      },
+      {
+        "name": "domain/mece/engine.ts",
+        "lines": 181
+      }
+    ]
+  },
+  "quality": {
+    "leastCovered": [
+      {
+        "file": "src/App.tsx",
+        "pct": 0
+      },
+      {
+        "file": "src/components/SynthesisPanel.tsx",
+        "pct": 0
+      },
+      {
+        "file": "src/components/checkColors.ts",
+        "pct": 0
+      },
+      {
+        "file": "src/components/canvas/Canvas.tsx",
+        "pct": 0
+      },
+      {
+        "file": "src/components/canvas/nodeEditing.ts",
+        "pct": 0
+      },
+      {
+        "file": "src/components/canvas/nodes/IssueNode.tsx",
+        "pct": 0
+      }
+    ],
+    "churnHotspots": [
+      {
+        "file": "src/store/index.ts",
+        "commits": 17
+      },
+      {
+        "file": "src/components/inspector/Inspector.tsx",
+        "commits": 14
+      },
+      {
+        "file": "src/domain/tree.ts",
+        "commits": 12
+      },
+      {
+        "file": "src/components/canvas/Canvas.tsx",
+        "commits": 11
+      },
+      {
+        "file": "src/components/canvas/nodes/IssueNode.tsx",
+        "commits": 10
+      },
+      {
+        "file": "src/App.tsx",
+        "commits": 8
+      }
+    ],
+    "risky": [
+      {
+        "file": "src/components/inspector/Inspector.tsx",
+        "commits": 14,
+        "pct": 0
+      },
+      {
+        "file": "src/components/canvas/Canvas.tsx",
+        "commits": 11,
+        "pct": 0
+      },
+      {
+        "file": "src/components/canvas/nodes/IssueNode.tsx",
+        "commits": 10,
+        "pct": 0
+      },
+      {
+        "file": "src/App.tsx",
+        "commits": 8,
+        "pct": 0
+      },
+      {
+        "file": "src/components/SynthesisPanel.tsx",
+        "commits": 2,
+        "pct": 0
+      },
+      {
+        "file": "src/services/download.ts",
+        "commits": 2,
+        "pct": 0
+      }
+    ]
+  },
+  "hygiene": {
+    "todo": 0,
+    "fixme": 0,
+    "hack": 0,
+    "anyCount": 0,
+    "tsIgnore": 0,
+    "tsExpectError": 0,
+    "biomeIgnore": 1,
+    "nonNull": 1
+  },
+  "bundle": {
+    "eagerJsGzipKb": 150.6,
+    "totalJsGzipKb": 503.9,
+    "cssGzipKb": 6.4,
+    "budgetKb": 165,
+    "withinBudget": true
+  },
+  "docs": {
+    "bookWords": 0,
+    "chapters": 0,
+    "appLoc": 2936,
+    "docToCodeRatio": 0.06
+  },
+  "featureCoverage": {
+    "total": 55,
+    "manual": 0,
+    "manualPct": 0,
+    "book": 0,
+    "bookPct": 0,
+    "bookExample": 0,
+    "bookExamplePct": 0,
+    "byArea": {
+      "Tree": {
+        "total": 6,
+        "manual": 0,
+        "book": 0
+      },
+      "MECE": {
+        "total": 7,
+        "manual": 0,
+        "book": 0
+      },
+      "Prioritisation": {
+        "total": 2,
+        "manual": 0,
+        "book": 0
+      },
+      "Hypotheses": {
+        "total": 2,
+        "manual": 0,
+        "book": 0
+      },
+      "Evidence": {
+        "total": 3,
+        "manual": 0,
+        "book": 0
+      },
+      "Value": {
+        "total": 6,
+        "manual": 0,
+        "book": 0
+      },
+      "Synthesis": {
+        "total": 2,
+        "manual": 0,
+        "book": 0
+      },
+      "Canvas": {
+        "total": 7,
+        "manual": 0,
+        "book": 0
+      },
+      "Editing": {
+        "total": 6,
+        "manual": 0,
+        "book": 0
+      },
+      "Export": {
+        "total": 5,
+        "manual": 0,
+        "book": 0
+      },
+      "Import": {
+        "total": 1,
+        "manual": 0,
+        "book": 0
+      },
+      "Documents": {
+        "total": 3,
+        "manual": 0,
+        "book": 0
+      },
+      "AI": {
+        "total": 2,
+        "manual": 0,
+        "book": 0
+      },
+      "App": {
+        "total": 3,
+        "manual": 0,
+        "book": 0
+      }
+    },
+    "gaps": {
+      "noManual": [
+        {
+          "id": "issue-tree",
+          "name": "Issue-tree canvas",
+          "since": 1
+        },
+        {
+          "id": "root-question",
+          "name": "Editable root question",
+          "since": 1
+        },
+        {
+          "id": "add-sub-issue",
+          "name": "Add sub-issue",
+          "since": 1
+        },
+        {
+          "id": "decomposition-types",
+          "name": "Decomposition types (segment / process / binary / formula / framework / freeform)",
+          "since": 1
+        },
+        {
+          "id": "decomposition-scaffolds",
+          "name": "Decomposition scaffolds (type-appropriate starter children)",
+          "since": 2
+        },
+        {
+          "id": "delete-node",
+          "name": "Delete a node and its subtree",
+          "since": 1
+        },
+        {
+          "id": "mece-engine",
+          "name": "Live MECE engine (mutual exclusivity + collective exhaustiveness)",
+          "since": 1
+        },
+        {
+          "id": "mece-dots",
+          "name": "ME / CE status dots on the node",
+          "since": 1
+        },
+        {
+          "id": "mece-warnings",
+          "name": "Explained MECE warnings in the inspector",
+          "since": 1
+        },
+        {
+          "id": "mece-binary",
+          "name": "Binary (A / not-A) provably MECE",
+          "since": 2
+        },
+        {
+          "id": "mece-formula",
+          "name": "Formula split reconciliation",
+          "since": 2
+        },
+        {
+          "id": "mece-segments",
+          "name": "Segments exhaustive only with an explicit Other",
+          "since": 2
+        },
+        {
+          "id": "mece-overlap-heuristic",
+          "name": "Sibling-overlap (shared content word) heuristic",
+          "since": 2
+        },
+        {
+          "id": "priority-impact-ease",
+          "name": "Impact x ease prioritisation",
+          "since": 3
+        },
+        {
+          "id": "priority-band",
+          "name": "High / Medium / Low priority band chip",
+          "since": 3
+        },
+        {
+          "id": "node-status",
+          "name": "Hypothesis status (open / supported / refuted / parked)",
+          "since": 4
+        },
+        {
+          "id": "status-edge-colour",
+          "name": "Colour-coded status edge on the node",
+          "since": 4
+        },
+        {
+          "id": "evidence-items",
+          "name": "Supporting / contradicting evidence items",
+          "since": 3
+        },
+        {
+          "id": "evidence-strength",
+          "name": "Cyclable evidence strength",
+          "since": 3
+        },
+        {
+          "id": "evidence-counts",
+          "name": "Evidence count badges on the node",
+          "since": 3
+        },
+        {
+          "id": "node-value",
+          "name": "Numeric node value",
+          "since": 1
+        },
+        {
+          "id": "value-units",
+          "name": "Units on values (DKK / % / hrs / FTE)",
+          "since": 6
+        },
+        {
+          "id": "value-rollup",
+          "name": "Value-driver roll-up into the parent",
+          "since": 4
+        },
+        {
+          "id": "formula-operators",
+          "name": "Formula operators (sum / product / difference)",
+          "since": 6
+        },
+        {
+          "id": "value-reconciliation",
+          "name": "Roll-up reconciliation check",
+          "since": 4
+        },
+        {
+          "id": "sensitivity",
+          "name": "Sensitivity analysis (+/-10% driver ranking)",
+          "since": 6
+        },
+        {
+          "id": "synthesis-panel",
+          "name": "Answer-first synthesis panel",
+          "since": 3
+        },
+        {
+          "id": "synthesis-markdown",
+          "name": "Copy synthesis as Markdown",
+          "since": 3
+        },
+        {
+          "id": "auto-layout",
+          "name": "Auto-layout (dagre, left-to-right)",
+          "since": 1
+        },
+        {
+          "id": "auto-fit",
+          "name": "Auto-fit on tree changes",
+          "since": 1
+        },
+        {
+          "id": "drag-reparent",
+          "name": "Drag a node onto another to re-parent its subtree",
+          "since": 6
+        },
+        {
+          "id": "drop-highlight",
+          "name": "Drop-target highlight while dragging",
+          "since": 6
+        },
+        {
+          "id": "collapse-subtree",
+          "name": "Collapse / expand a subtree",
+          "since": 6
+        },
+        {
+          "id": "collapse-all",
+          "name": "Collapse all / Expand all",
+          "since": 6
+        },
+        {
+          "id": "canvas-search",
+          "name": "Find on the canvas (ring matches + zoom)",
+          "since": 6
+        },
+        {
+          "id": "inline-edit",
+          "name": "Inline label editing (double-click / Enter / F2)",
+          "since": 6
+        },
+        {
+          "id": "keyboard-tree-building",
+          "name": "Keyboard tree-building (Tab adds a child)",
+          "since": 6
+        },
+        {
+          "id": "duplicate-subtree",
+          "name": "Duplicate a node and its subtree",
+          "since": 6
+        },
+        {
+          "id": "reorder-siblings",
+          "name": "Reorder siblings (move up / down)",
+          "since": 6
+        },
+        {
+          "id": "node-notes",
+          "name": "Per-node notes",
+          "since": 6
+        },
+        {
+          "id": "keyboard-shortcuts",
+          "name": "Keyboard shortcuts (undo / redo / delete)",
+          "since": 6
+        },
+        {
+          "id": "export-png",
+          "name": "PNG export",
+          "since": 5
+        },
+        {
+          "id": "export-pdf",
+          "name": "PDF export",
+          "since": 6
+        },
+        {
+          "id": "export-pptx",
+          "name": "PowerPoint (PPTX) export",
+          "since": 6
+        },
+        {
+          "id": "export-markdown",
+          "name": "Markdown outline export",
+          "since": 3
+        },
+        {
+          "id": "export-json",
+          "name": "Save as JSON",
+          "since": 3
+        },
+        {
+          "id": "import-json",
+          "name": "Open a saved JSON tree",
+          "since": 6
+        },
+        {
+          "id": "multi-document",
+          "name": "Multiple trees (document library + picker)",
+          "since": 6
+        },
+        {
+          "id": "new-tree",
+          "name": "New tree",
+          "since": 6
+        },
+        {
+          "id": "legacy-migration",
+          "name": "Automatic legacy single-doc migration",
+          "since": 6
+        },
+        {
+          "id": "ai-critique",
+          "name": "AI critique prompt (keyless)",
+          "since": 6
+        },
+        {
+          "id": "ai-suggest-split",
+          "name": "AI suggest-a-split prompt (keyless)",
+          "since": 6
+        },
+        {
+          "id": "undo-redo",
+          "name": "Undo / redo history",
+          "since": 1
+        },
+        {
+          "id": "local-persistence",
+          "name": "Local persistence (localStorage)",
+          "since": 1
+        },
+        {
+          "id": "pwa",
+          "name": "Installable, offline-capable PWA",
+          "since": 1
+        }
+      ],
+      "noBook": [
+        {
+          "id": "issue-tree",
+          "name": "Issue-tree canvas",
+          "since": 1
+        },
+        {
+          "id": "root-question",
+          "name": "Editable root question",
+          "since": 1
+        },
+        {
+          "id": "add-sub-issue",
+          "name": "Add sub-issue",
+          "since": 1
+        },
+        {
+          "id": "decomposition-types",
+          "name": "Decomposition types (segment / process / binary / formula / framework / freeform)",
+          "since": 1
+        },
+        {
+          "id": "decomposition-scaffolds",
+          "name": "Decomposition scaffolds (type-appropriate starter children)",
+          "since": 2
+        },
+        {
+          "id": "delete-node",
+          "name": "Delete a node and its subtree",
+          "since": 1
+        },
+        {
+          "id": "mece-engine",
+          "name": "Live MECE engine (mutual exclusivity + collective exhaustiveness)",
+          "since": 1
+        },
+        {
+          "id": "mece-dots",
+          "name": "ME / CE status dots on the node",
+          "since": 1
+        },
+        {
+          "id": "mece-warnings",
+          "name": "Explained MECE warnings in the inspector",
+          "since": 1
+        },
+        {
+          "id": "mece-binary",
+          "name": "Binary (A / not-A) provably MECE",
+          "since": 2
+        },
+        {
+          "id": "mece-formula",
+          "name": "Formula split reconciliation",
+          "since": 2
+        },
+        {
+          "id": "mece-segments",
+          "name": "Segments exhaustive only with an explicit Other",
+          "since": 2
+        },
+        {
+          "id": "mece-overlap-heuristic",
+          "name": "Sibling-overlap (shared content word) heuristic",
+          "since": 2
+        },
+        {
+          "id": "priority-impact-ease",
+          "name": "Impact x ease prioritisation",
+          "since": 3
+        },
+        {
+          "id": "priority-band",
+          "name": "High / Medium / Low priority band chip",
+          "since": 3
+        },
+        {
+          "id": "node-status",
+          "name": "Hypothesis status (open / supported / refuted / parked)",
+          "since": 4
+        },
+        {
+          "id": "status-edge-colour",
+          "name": "Colour-coded status edge on the node",
+          "since": 4
+        },
+        {
+          "id": "evidence-items",
+          "name": "Supporting / contradicting evidence items",
+          "since": 3
+        },
+        {
+          "id": "evidence-strength",
+          "name": "Cyclable evidence strength",
+          "since": 3
+        },
+        {
+          "id": "evidence-counts",
+          "name": "Evidence count badges on the node",
+          "since": 3
+        },
+        {
+          "id": "node-value",
+          "name": "Numeric node value",
+          "since": 1
+        },
+        {
+          "id": "value-units",
+          "name": "Units on values (DKK / % / hrs / FTE)",
+          "since": 6
+        },
+        {
+          "id": "value-rollup",
+          "name": "Value-driver roll-up into the parent",
+          "since": 4
+        },
+        {
+          "id": "formula-operators",
+          "name": "Formula operators (sum / product / difference)",
+          "since": 6
+        },
+        {
+          "id": "value-reconciliation",
+          "name": "Roll-up reconciliation check",
+          "since": 4
+        },
+        {
+          "id": "sensitivity",
+          "name": "Sensitivity analysis (+/-10% driver ranking)",
+          "since": 6
+        },
+        {
+          "id": "synthesis-panel",
+          "name": "Answer-first synthesis panel",
+          "since": 3
+        },
+        {
+          "id": "synthesis-markdown",
+          "name": "Copy synthesis as Markdown",
+          "since": 3
+        },
+        {
+          "id": "auto-layout",
+          "name": "Auto-layout (dagre, left-to-right)",
+          "since": 1
+        },
+        {
+          "id": "auto-fit",
+          "name": "Auto-fit on tree changes",
+          "since": 1
+        },
+        {
+          "id": "drag-reparent",
+          "name": "Drag a node onto another to re-parent its subtree",
+          "since": 6
+        },
+        {
+          "id": "drop-highlight",
+          "name": "Drop-target highlight while dragging",
+          "since": 6
+        },
+        {
+          "id": "collapse-subtree",
+          "name": "Collapse / expand a subtree",
+          "since": 6
+        },
+        {
+          "id": "collapse-all",
+          "name": "Collapse all / Expand all",
+          "since": 6
+        },
+        {
+          "id": "canvas-search",
+          "name": "Find on the canvas (ring matches + zoom)",
+          "since": 6
+        },
+        {
+          "id": "inline-edit",
+          "name": "Inline label editing (double-click / Enter / F2)",
+          "since": 6
+        },
+        {
+          "id": "keyboard-tree-building",
+          "name": "Keyboard tree-building (Tab adds a child)",
+          "since": 6
+        },
+        {
+          "id": "duplicate-subtree",
+          "name": "Duplicate a node and its subtree",
+          "since": 6
+        },
+        {
+          "id": "reorder-siblings",
+          "name": "Reorder siblings (move up / down)",
+          "since": 6
+        },
+        {
+          "id": "node-notes",
+          "name": "Per-node notes",
+          "since": 6
+        },
+        {
+          "id": "keyboard-shortcuts",
+          "name": "Keyboard shortcuts (undo / redo / delete)",
+          "since": 6
+        },
+        {
+          "id": "export-png",
+          "name": "PNG export",
+          "since": 5
+        },
+        {
+          "id": "export-pdf",
+          "name": "PDF export",
+          "since": 6
+        },
+        {
+          "id": "export-pptx",
+          "name": "PowerPoint (PPTX) export",
+          "since": 6
+        },
+        {
+          "id": "export-markdown",
+          "name": "Markdown outline export",
+          "since": 3
+        },
+        {
+          "id": "export-json",
+          "name": "Save as JSON",
+          "since": 3
+        },
+        {
+          "id": "import-json",
+          "name": "Open a saved JSON tree",
+          "since": 6
+        },
+        {
+          "id": "multi-document",
+          "name": "Multiple trees (document library + picker)",
+          "since": 6
+        },
+        {
+          "id": "new-tree",
+          "name": "New tree",
+          "since": 6
+        },
+        {
+          "id": "legacy-migration",
+          "name": "Automatic legacy single-doc migration",
+          "since": 6
+        },
+        {
+          "id": "ai-critique",
+          "name": "AI critique prompt (keyless)",
+          "since": 6
+        },
+        {
+          "id": "ai-suggest-split",
+          "name": "AI suggest-a-split prompt (keyless)",
+          "since": 6
+        },
+        {
+          "id": "undo-redo",
+          "name": "Undo / redo history",
+          "since": 1
+        },
+        {
+          "id": "local-persistence",
+          "name": "Local persistence (localStorage)",
+          "since": 1
+        },
+        {
+          "id": "pwa",
+          "name": "Installable, offline-capable PWA",
+          "since": 1
+        }
+      ]
+    }
+  },
+  "git": {
+    "born": "2026-06-11T17:11:43+02:00",
+    "ageDays": 1,
+    "commits": 47,
+    "commits7d": 47,
+    "authors": [
+      {
+        "name": "Dann Bleeker Pedersen",
+        "count": 47
+      }
+    ],
+    "churn30d": {
+      "added": 11267,
+      "removed": 604
+    },
+    "changelogEntries": 29
+  }
+}

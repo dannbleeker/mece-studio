@@ -5,6 +5,7 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 ## [Unreleased]
 
 ### Added
+- **Project dashboard + metrics.** A standalone dashboard (`/dashboard.html`) pairs a live GitHub repo pulse (commit frequency, types, authors, day/hour activity, recent commits & PRs) with CI-published project metrics — tests, coverage, bundle vs budget, code hygiene, churn/risk, and documentation coverage against a curated `docs/features.json` catalogue. `build-stats.mjs` + a **Stats** workflow refresh `stats.json` on every push; a `check-feature-coverage` gate validates the catalogue and flags CHANGELOG drift.
 - **Multiple trees.** Keep a library of issue trees and switch between them from the header — a document picker lists every tree (named by its root question), **+ New** starts another, and **Delete** removes the current one. Each tree persists under its own key; a previously single saved tree migrates into the library automatically, so nothing is lost.
 - **AI assist (keyless).** Copy a ready-made prompt — _critique this tree's MECE_ (from the Synthesis panel) or _suggest a MECE split for this node_ (from the inspector) — with your tree embedded, to paste into Claude or ChatGPT. No API key, no backend.
 - **PDF + PowerPoint export.** Export the canvas as a **PDF** or a **PPTX** slide from the header, alongside PNG. `jspdf` and `pptxgenjs` are loaded on demand (and reuse the PNG render), so they stay off the first-load bundle.

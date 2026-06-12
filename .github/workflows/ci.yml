@@ -3,6 +3,10 @@ name: CI
 on:
   push:
     branches: [main]
+    # The Stats workflow commits these back; don't re-run the gate for them.
+    paths-ignore:
+      - 'public/stats.json'
+      - 'public/stats-history.json'
   pull_request:
     branches: [main]
 

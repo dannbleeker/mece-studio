@@ -1,0 +1,91 @@
+{
+  "$schema": "./features.schema.json",
+  "note": "Curated catalogue of MECE Studio's user-facing features — the denominator for documentation-coverage metrics. `since` is the milestone the capability shipped in (1-6). `manual` = covered in USER_GUIDE.md; `book` = covered in a docs/guide chapter; `bookExample` = that chapter has a worked example. Keep in sync with CHANGELOG.md and bump `reviewedThroughChangelogEntries` after reconciling.",
+  "areas": [
+    "Tree",
+    "MECE",
+    "Prioritisation",
+    "Hypotheses",
+    "Evidence",
+    "Value",
+    "Synthesis",
+    "Canvas",
+    "Editing",
+    "Export",
+    "Import",
+    "Documents",
+    "AI",
+    "App"
+  ],
+  "reviewedThroughChangelogEntries": 29,
+  "features": [
+    { "id": "issue-tree", "name": "Issue-tree canvas", "area": "Tree", "since": 1, "manual": false, "book": false, "bookExample": false },
+    { "id": "root-question", "name": "Editable root question", "area": "Tree", "since": 1, "manual": false, "book": false, "bookExample": false },
+    { "id": "add-sub-issue", "name": "Add sub-issue", "area": "Tree", "since": 1, "manual": false, "book": false, "bookExample": false },
+    { "id": "decomposition-types", "name": "Decomposition types (segment / process / binary / formula / framework / freeform)", "area": "Tree", "since": 1, "manual": false, "book": false, "bookExample": false },
+    { "id": "decomposition-scaffolds", "name": "Decomposition scaffolds (type-appropriate starter children)", "area": "Tree", "since": 2, "manual": false, "book": false, "bookExample": false },
+    { "id": "delete-node", "name": "Delete a node and its subtree", "area": "Tree", "since": 1, "manual": false, "book": false, "bookExample": false },
+
+    { "id": "mece-engine", "name": "Live MECE engine (mutual exclusivity + collective exhaustiveness)", "area": "MECE", "since": 1, "manual": false, "book": false, "bookExample": false },
+    { "id": "mece-dots", "name": "ME / CE status dots on the node", "area": "MECE", "since": 1, "manual": false, "book": false, "bookExample": false },
+    { "id": "mece-warnings", "name": "Explained MECE warnings in the inspector", "area": "MECE", "since": 1, "manual": false, "book": false, "bookExample": false },
+    { "id": "mece-binary", "name": "Binary (A / not-A) provably MECE", "area": "MECE", "since": 2, "manual": false, "book": false, "bookExample": false },
+    { "id": "mece-formula", "name": "Formula split reconciliation", "area": "MECE", "since": 2, "manual": false, "book": false, "bookExample": false },
+    { "id": "mece-segments", "name": "Segments exhaustive only with an explicit Other", "area": "MECE", "since": 2, "manual": false, "book": false, "bookExample": false },
+    { "id": "mece-overlap-heuristic", "name": "Sibling-overlap (shared content word) heuristic", "area": "MECE", "since": 2, "manual": false, "book": false, "bookExample": false },
+
+    { "id": "priority-impact-ease", "name": "Impact x ease prioritisation", "area": "Prioritisation", "since": 3, "manual": false, "book": false, "bookExample": false },
+    { "id": "priority-band", "name": "High / Medium / Low priority band chip", "area": "Prioritisation", "since": 3, "manual": false, "book": false, "bookExample": false },
+
+    { "id": "node-status", "name": "Hypothesis status (open / supported / refuted / parked)", "area": "Hypotheses", "since": 4, "manual": false, "book": false, "bookExample": false },
+    { "id": "status-edge-colour", "name": "Colour-coded status edge on the node", "area": "Hypotheses", "since": 4, "manual": false, "book": false, "bookExample": false },
+
+    { "id": "evidence-items", "name": "Supporting / contradicting evidence items", "area": "Evidence", "since": 3, "manual": false, "book": false, "bookExample": false },
+    { "id": "evidence-strength", "name": "Cyclable evidence strength", "area": "Evidence", "since": 3, "manual": false, "book": false, "bookExample": false },
+    { "id": "evidence-counts", "name": "Evidence count badges on the node", "area": "Evidence", "since": 3, "manual": false, "book": false, "bookExample": false },
+
+    { "id": "node-value", "name": "Numeric node value", "area": "Value", "since": 1, "manual": false, "book": false, "bookExample": false },
+    { "id": "value-units", "name": "Units on values (DKK / % / hrs / FTE)", "area": "Value", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "value-rollup", "name": "Value-driver roll-up into the parent", "area": "Value", "since": 4, "manual": false, "book": false, "bookExample": false },
+    { "id": "formula-operators", "name": "Formula operators (sum / product / difference)", "area": "Value", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "value-reconciliation", "name": "Roll-up reconciliation check", "area": "Value", "since": 4, "manual": false, "book": false, "bookExample": false },
+    { "id": "sensitivity", "name": "Sensitivity analysis (+/-10% driver ranking)", "area": "Value", "since": 6, "manual": false, "book": false, "bookExample": false },
+
+    { "id": "synthesis-panel", "name": "Answer-first synthesis panel", "area": "Synthesis", "since": 3, "manual": false, "book": false, "bookExample": false },
+    { "id": "synthesis-markdown", "name": "Copy synthesis as Markdown", "area": "Synthesis", "since": 3, "manual": false, "book": false, "bookExample": false },
+
+    { "id": "auto-layout", "name": "Auto-layout (dagre, left-to-right)", "area": "Canvas", "since": 1, "manual": false, "book": false, "bookExample": false },
+    { "id": "auto-fit", "name": "Auto-fit on tree changes", "area": "Canvas", "since": 1, "manual": false, "book": false, "bookExample": false },
+    { "id": "drag-reparent", "name": "Drag a node onto another to re-parent its subtree", "area": "Canvas", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "drop-highlight", "name": "Drop-target highlight while dragging", "area": "Canvas", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "collapse-subtree", "name": "Collapse / expand a subtree", "area": "Canvas", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "collapse-all", "name": "Collapse all / Expand all", "area": "Canvas", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "canvas-search", "name": "Find on the canvas (ring matches + zoom)", "area": "Canvas", "since": 6, "manual": false, "book": false, "bookExample": false },
+
+    { "id": "inline-edit", "name": "Inline label editing (double-click / Enter / F2)", "area": "Editing", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "keyboard-tree-building", "name": "Keyboard tree-building (Tab adds a child)", "area": "Editing", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "duplicate-subtree", "name": "Duplicate a node and its subtree", "area": "Editing", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "reorder-siblings", "name": "Reorder siblings (move up / down)", "area": "Editing", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "node-notes", "name": "Per-node notes", "area": "Editing", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "keyboard-shortcuts", "name": "Keyboard shortcuts (undo / redo / delete)", "area": "Editing", "since": 6, "manual": false, "book": false, "bookExample": false },
+
+    { "id": "export-png", "name": "PNG export", "area": "Export", "since": 5, "manual": false, "book": false, "bookExample": false },
+    { "id": "export-pdf", "name": "PDF export", "area": "Export", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "export-pptx", "name": "PowerPoint (PPTX) export", "area": "Export", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "export-markdown", "name": "Markdown outline export", "area": "Export", "since": 3, "manual": false, "book": false, "bookExample": false },
+    { "id": "export-json", "name": "Save as JSON", "area": "Export", "since": 3, "manual": false, "book": false, "bookExample": false },
+
+    { "id": "import-json", "name": "Open a saved JSON tree", "area": "Import", "since": 6, "manual": false, "book": false, "bookExample": false },
+
+    { "id": "multi-document", "name": "Multiple trees (document library + picker)", "area": "Documents", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "new-tree", "name": "New tree", "area": "Documents", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "legacy-migration", "name": "Automatic legacy single-doc migration", "area": "Documents", "since": 6, "manual": false, "book": false, "bookExample": false },
+
+    { "id": "ai-critique", "name": "AI critique prompt (keyless)", "area": "AI", "since": 6, "manual": false, "book": false, "bookExample": false },
+    { "id": "ai-suggest-split", "name": "AI suggest-a-split prompt (keyless)", "area": "AI", "since": 6, "manual": false, "book": false, "bookExample": false },
+
+    { "id": "undo-redo", "name": "Undo / redo history", "area": "App", "since": 1, "manual": false, "book": false, "bookExample": false },
+    { "id": "local-persistence", "name": "Local persistence (localStorage)", "area": "App", "since": 1, "manual": false, "book": false, "bookExample": false },
+    { "id": "pwa", "name": "Installable, offline-capable PWA", "area": "App", "since": 1, "manual": false, "book": false, "bookExample": false }
+  ]
+}

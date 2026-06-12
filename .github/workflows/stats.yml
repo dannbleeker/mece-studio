@@ -1,0 +1,82 @@
+name: Stats
+
+# Recompute project metrics (public/stats.json + public/stats-history.json) and
+# commit them back, so the dashboard's "Project metrics" half stays current.
+#
+# Two loop-guards keep the bot's own refresh commit from re-triggering this:
+#   1. paths-ignore the generated JSON (a stats-only commit changes nothing else)
+#   2. skip when the committer is the bot (belt-and-suspenders)
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'public/stats.json'
+      - 'public/stats-history.json'
+  schedule:
+    - cron: '17 6 * * 1' # Monday 06:17 UTC — keeps the git story fresh between pushes
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stats-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  stats:
+    name: Refresh project metrics
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]' # loop-guard 2: never run on the bot's own commit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # full history for churn / authors / age
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Tests with coverage
+        # Best-effort: stats still build without coverage (degrades to null).
+        run: node ./node_modules/vitest/vitest.mjs run --coverage
+        continue-on-error: true
+
+      - name: Build (for bundle metrics)
+        run: pnpm build
+
+      - name: Validate feature catalogue
+        run: node ./scripts/check-feature-coverage.mjs
+
+      - name: Build stats
+        run: node ./scripts/build-stats.mjs
+
+      - name: Commit refreshed metrics
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/stats.json public/stats-history.json
+          if git diff --cached --quiet; then
+            echo "No metric changes."
+            exit 0
+          fi
+          git commit -m "chore(stats): refresh project metrics"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then
+              echo "pushed on attempt $attempt"; exit 0
+            fi
+            echo "push attempt $attempt rejected; retrying in 5s…"; sleep 5
+          done
+          echo "could not push after retries"; exit 1

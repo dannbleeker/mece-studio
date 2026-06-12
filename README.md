@@ -44,6 +44,10 @@ pnpm verify     # typecheck → lint/format → dead-code → test → build →
 Auto-deploys to GitHub Pages on every push to `main` (`.github/workflows/deploy-pages.yml`).
 Custom domain bound via `public/CNAME` → `mece-studio.struktureretsundfornuft.dk`.
 
+## Project dashboard
+
+A standalone **[dashboard](https://mece-studio.struktureretsundfornuft.dk/dashboard.html)** (`public/dashboard.html`) shows a live GitHub repo pulse — commit frequency, commit types, authors, day/hour activity, and recent commits & PRs straight from the unauthenticated GitHub API — alongside CI-published project metrics: tests, coverage, bundle vs budget, code hygiene, churn/risk, and **documentation coverage** measured against the curated catalogue in `docs/features.json`. `scripts/build-stats.mjs` regenerates `public/stats.json` (+ a rolling `stats-history.json` for the trend sparklines); the **Stats** workflow commits it back on every push, and `scripts/check-feature-coverage.mjs` keeps the catalogue honest in the gate.
+
 ## License
 
 Apache-2.0 © Dann Bleeker Pedersen

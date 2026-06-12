@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MECE Studio — Project Dashboard</title>
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #faf9f5;
+        --card: #ffffff;
+        --ink: #1f2937;
+        --muted: #6b7280;
+        --line: #e8e6df;
+        --primary: #3f6fb0;
+        --primary-soft: #eef3fb;
+        --green: #3f7d54;
+        --amber: #d99a2b;
+        --rose: #e11d48;
+        --teal: #0d9488;
+        --violet: #7c3aed;
+        --sky: #0284c7;
+        --slate: #64748b;
+        --shadow: 0 1px 2px rgba(31, 41, 55, 0.04), 0 4px 16px rgba(31, 41, 55, 0.06);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: var(--primary); }
+      .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 20px 64px; }
+      header.top { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+      header.top h1 { font-size: 22px; margin: 0; letter-spacing: -0.01em; }
+      header.top .sub { color: var(--muted); font-size: 13px; }
+      header.top .spacer { flex: 1; }
+      header.top a.back { font-size: 13px; text-decoration: none; }
+      h2.section { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 34px 0 12px; font-weight: 600; }
+      .grid { display: grid; gap: 14px; }
+      .cards { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+      .cols-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+      .cols-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+      .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); }
+      .card h3 { margin: 0 0 12px; font-size: 13px; font-weight: 600; color: var(--ink); }
+      .card h3 .hint { font-weight: 400; color: var(--muted); font-size: 12px; }
+      .stat .n { font-size: 26px; font-weight: 650; letter-spacing: -0.02em; }
+      .stat .l { color: var(--muted); font-size: 12px; margin-top: 2px; }
+      .stat .d { font-size: 12px; margin-top: 4px; }
+      .up { color: var(--green); } .down { color: var(--rose); } .flat { color: var(--muted); }
+      .chart { width: 100%; height: auto; display: block; }
+      text.ax { fill: var(--muted); font-size: 9px; }
+      .row { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 12.5px; }
+      .row-l { width: 120px; flex-shrink: 0; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .row-l.wide { width: 160px; }
+      .row-bar { flex: 1; height: 8px; background: #f1efe9; border-radius: 5px; overflow: hidden; }
+      .row-fill { display: block; height: 100%; border-radius: 5px; background: var(--primary); }
+      .row-v { width: 64px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+      .row-v.narrow { width: 40px; }
+      ul.list { list-style: none; margin: 0; padding: 0; }
+      ul.list li { padding: 6px 0; border-top: 1px solid var(--line); font-size: 12.5px; display: flex; gap: 8px; }
+      ul.list li:first-child { border-top: 0; }
+      ul.list .sha { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); flex-shrink: 0; }
+      ul.list .msg { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      ul.list .when { margin-left: auto; color: var(--muted); flex-shrink: 0; }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+      .chip { display: inline-flex; align-items: baseline; gap: 6px; background: var(--primary-soft); border-radius: 999px; padding: 4px 11px; font-size: 12px; }
+      .chip b { font-weight: 650; } .chip.warn { background: #fdf3e3; } .chip.bad { background: #fdeaee; }
+      .spark { width: 100%; height: 42px; display: block; }
+      .pct { font-variant-numeric: tabular-nums; }
+      .pending { background: #fdf3e3; border: 1px solid #f0dcb4; color: #8a6314; border-radius: 10px; padding: 12px 14px; font-size: 13px; }
+      .muted { color: var(--muted); }
+      .foot { color: var(--muted); font-size: 12px; margin-top: 28px; text-align: center; }
+      .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; font-size: 11.5px; color: var(--muted); }
+      .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <h1>MECE Studio</h1>
+        <span class="sub">project dashboard</span>
+        <span class="spacer"></span>
+        <a class="back" href="/">← back to the app</a>
+      </header>
+      <div class="sub" id="repo-line">Loading repository activity…</div>
+
+      <h2 class="section">Live repo pulse <span style="text-transform:none;font-weight:400">— last 30 days, GitHub API</span></h2>
+      <div id="live"><div class="card"><div class="muted">Fetching commits &amp; pull requests from GitHub…</div></div></div>
+
+      <h2 class="section">Project metrics <span style="text-transform:none;font-weight:400">— from CI (stats.json)</span></h2>
+      <div id="metrics"><div class="card"><div class="muted">Loading stats.json…</div></div></div>
+
+      <div class="foot" id="foot"></div>
+    </div>
+
+    <script>
+      const OWNER = 'dannbleeker', REPO = 'mece-studio', API = 'https://api.github.com';
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+      const round = (n, d = 0) => (n == null ? null : Math.round(n * 10 ** d) / 10 ** d);
+      const ago = (iso) => {
+        const s = (Date.now() - new Date(iso).getTime()) / 1000;
+        if (s < 3600) return Math.round(s / 60) + 'm ago';
+        if (s < 86400) return Math.round(s / 3600) + 'h ago';
+        return Math.round(s / 86400) + 'd ago';
+      };
+
+      // ---------- hand-rolled charts (inline SVG / CSS bars, zero deps) ----------
+      function barSvg(data, { h = 150, color = 'var(--primary)', every = 1, fmt } = {}) {
+        const w = 640;
+        const max = Math.max(1, ...data.map((d) => d.v));
+        const n = Math.max(1, data.length);
+        const bw = w / n;
+        let bars = '', labels = '';
+        data.forEach((d, i) => {
+          const bh = Math.round((d.v / max) * (h - 24));
+          const x = i * bw;
+          bars += `<rect x="${(x + 1).toFixed(1)}" y="${(h - 20 - bh).toFixed(1)}" width="${Math.max(1, bw - 2).toFixed(1)}" height="${bh}" rx="1.5" fill="${color}"><title>${esc(d.label)}: ${d.v}</title></rect>`;
+          if (i % every === 0) labels += `<text class="ax" x="${(x + bw / 2).toFixed(1)}" y="${h - 6}" text-anchor="middle">${esc(fmt ? fmt(d, i) : d.label)}</text>`;
+        });
+        return `<svg viewBox="0 0 ${w} ${h}" class="chart">${bars}${labels}</svg>`;
+      }
+      function breakdown(entries, { fmt, wide } = {}) {
+        const max = Math.max(1, ...entries.map((e) => e.value));
+        return entries
+          .map((e) => {
+            const pct = Math.round((e.value / max) * 100);
+            return `<div class="row"><span class="row-l${wide ? ' wide' : ''}" title="${esc(e.label)}">${esc(e.label)}</span><span class="row-bar"><span class="row-fill" style="width:${pct}%;background:${e.color || 'var(--primary)'}"></span></span><span class="row-v">${fmt ? fmt(e) : e.value}</span></div>`;
+          })
+          .join('');
+      }
+      function sparkSvg(points, color = 'var(--primary)') {
+        const valid = points.filter((p) => p != null);
+        if (valid.length < 2) return '<div class="muted" style="font-size:12px">collecting…</div>';
+        const w = 200, h = 42, min = Math.min(...valid), max = Math.max(...valid), rng = max - min || 1, step = w / (valid.length - 1);
+        const pts = valid.map((p, i) => `${(i * step).toFixed(1)},${(h - 3 - ((p - min) / rng) * (h - 6)).toFixed(1)}`).join(' ');
+        return `<svg viewBox="0 0 ${w} ${h}" class="spark" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg>`;
+      }
+      const card = (title, body, hint) => `<div class="card"><h3>${title}${hint ? ` <span class="hint">${hint}</span>` : ''}</h3>${body}</div>`;
+      const statCard = (n, l, d = '') => `<div class="card stat"><div class="n">${n}</div><div class="l">${l}</div>${d ? `<div class="d">${d}</div>` : ''}</div>`;
+
+      // ---------- live repo pulse ----------
+      const TYPES = { feat: 'var(--primary)', fix: 'var(--rose)', refactor: 'var(--teal)', test: 'var(--violet)', docs: 'var(--sky)', chore: 'var(--slate)', perf: 'var(--amber)', other: '#b8b2a4' };
+      const VERB = {
+        feat: ['add', 'implement', 'introduce', 'build', 'create', 'support', 'ship', 'enable', 'wire'],
+        fix: ['fix', 'correct', 'repair', 'resolve', 'patch', 'guard', 'handle'],
+        refactor: ['refactor', 'simplify', 'extract', 'rename', 'clean', 'tidy', 'restructure', 'unify', 'consolidate', 'move', 'split'],
+        test: ['test', 'cover', 'e2e'],
+        docs: ['doc', 'docs', 'document'],
+        chore: ['chore', 'bump', 'update', 'upgrade', 'pin', 'remove', 'prune', 'drop', 'delete'],
+        perf: ['perf', 'optimize', 'optimise', 'speed'],
+      };
+      const WORD2TYPE = {};
+      for (const t in VERB) for (const w of VERB[t]) WORD2TYPE[w] = t;
+      function commitType(msg) {
+        const first = (msg || '').split('\n')[0].replace(/^﻿/, '');
+        const conv = first.match(/^([a-z]+)(?:\(|!|:)/i);
+        if (conv && TYPES[conv[1].toLowerCase()]) return conv[1].toLowerCase();
+        const w = (first.match(/^([a-zA-Z]+)/) || [])[1];
+        return (w && WORD2TYPE[w.toLowerCase()]) || 'other';
+      }
+
+      async function ghJson(url) {
+        const r = await fetch(url, { headers: { Accept: 'application/vnd.github+json' } });
+        if (!r.ok) throw new Error(`GitHub ${r.status}`);
+        return r.json();
+      }
+      async function paged(pathQ, maxPages) {
+        let all = [];
+        for (let page = 1; page <= maxPages; page++) {
+          const batch = await ghJson(`${API}/repos/${OWNER}/${REPO}/${pathQ}&per_page=100&page=${page}`);
+          all = all.concat(batch);
+          if (batch.length < 100) break;
+        }
+        return all;
+      }
+
+      async function loadLive() {
+        let repo, commits, prs;
+        try {
+          const since = new Date(Date.now() - 30 * 864e5).toISOString();
+          [repo, commits, prs] = await Promise.all([
+            ghJson(`${API}/repos/${OWNER}/${REPO}`),
+            paged(`commits?since=${since}`, 8),
+            paged(`pulls?state=all`, 3),
+          ]);
+        } catch (e) {
+          $('live').innerHTML = card('GitHub unavailable', `<div class="muted">${esc(String(e.message || e))}. The unauthenticated API allows ~60 requests/hour per IP — try again shortly.</div>`);
+          $('repo-line').textContent = '';
+          return;
+        }
+
+        $('repo-line').innerHTML =
+          `<b>${esc(repo.full_name)}</b> · ${esc(repo.language || '—')} · ★ ${repo.stargazers_count} · ` +
+          `${repo.open_issues_count} open issues · updated ${ago(repo.pushed_at)}`;
+
+        // commits per day (30 buckets)
+        const days = [];
+        for (let i = 29; i >= 0; i--) { const d = new Date(Date.now() - i * 864e5); days.push({ key: d.toISOString().slice(0, 10), label: `${d.getMonth() + 1}/${d.getDate()}`, v: 0 }); }
+        const dayIx = Object.fromEntries(days.map((d, i) => [d.key, i]));
+        const types = {}, authors = {}, dow = [0, 0, 0, 0, 0, 0, 0], hod = new Array(24).fill(0);
+        for (const c of commits) {
+          const dt = new Date(c.commit.author.date);
+          const k = dt.toISOString().slice(0, 10);
+          if (k in dayIx) days[dayIx[k]].v++;
+          const t = commitType(c.commit.message); types[t] = (types[t] || 0) + 1;
+          const a = (c.author && c.author.login) || c.commit.author.name; authors[a] = (authors[a] || 0) + 1;
+          dow[(dt.getDay() + 6) % 7]++; hod[dt.getHours()]++;
+        }
+        // merged PRs per day + author/bot split
+        const prDays = days.map((d) => ({ ...d, v: 0 }));
+        let human = 0, bot = 0;
+        for (const p of prs) {
+          if (!p.merged_at) continue;
+          const k = p.merged_at.slice(0, 10);
+          if (k in dayIx) prDays[dayIx[k]].v++;
+          if ((p.user && p.user.login || '').includes('[bot]')) bot++; else human++;
+        }
+        const merged = prs.filter((p) => p.merged_at);
+
+        const typeEntries = Object.entries(types).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({ label: k, value: v, color: TYPES[k] || TYPES.other }));
+        const authEntries = Object.entries(authors).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, v]) => ({ label: k, value: v }));
+        const DOWL = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+        const recentCommits = commits.slice(0, 8).map((c) =>
+          `<li><span class="sha">${esc(c.sha.slice(0, 7))}</span><span class="msg" title="${esc(c.commit.message.split('\n')[0])}">${esc(c.commit.message.split('\n')[0])}</span><span class="when">${ago(c.commit.author.date)}</span></li>`).join('');
+        const recentPRs = merged.sort((a, b) => new Date(b.merged_at) - new Date(a.merged_at)).slice(0, 8).map((p) =>
+          `<li><span class="sha">#${p.number}</span><span class="msg" title="${esc(p.title)}">${esc(p.title)}</span><span class="when">${ago(p.merged_at)}</span></li>`).join('') || '<li class="muted">No merged PRs in range</li>';
+
+        $('live').innerHTML =
+          `<div class="grid cards" style="margin-bottom:14px">
+             ${statCard(commits.length + (commits.length >= 800 ? '+' : ''), 'commits / 30d')}
+             ${statCard(merged.length, 'merged PRs / 30d')}
+             ${statCard(Object.keys(authors).length, 'contributors')}
+             ${statCard(days.slice(-7).reduce((s, d) => s + d.v, 0), 'commits / 7d')}
+           </div>
+           <div class="grid cols-2">
+             ${card('Commits per day', barSvg(days, { every: 5 }))}
+             ${card('Merged PRs per day', barSvg(prDays, { color: 'var(--teal)', every: 5 }))}
+           </div>
+           <div class="grid cols-3" style="margin-top:14px">
+             ${card('Commit types', breakdown(typeEntries, { fmt: (e) => e.value }) || '<div class="muted">—</div>')}
+             ${card('Top authors', breakdown(authEntries) || '<div class="muted">—</div>')}
+             ${card('You vs bot (merged PRs)', breakdown([{ label: 'You', value: human, color: 'var(--primary)' }, { label: 'Bot', value: bot, color: 'var(--slate)' }]))}
+           </div>
+           <div class="grid cols-2" style="margin-top:14px">
+             ${card('Day of week', barSvg(dow.map((v, i) => ({ label: DOWL[i], v })), { color: 'var(--violet)' }))}
+             ${card('Hour of day', barSvg(hod.map((v, i) => ({ label: i, v })), { color: 'var(--amber)', every: 3 }))}
+           </div>
+           <div class="grid cols-2" style="margin-top:14px">
+             ${card('Recent commits', `<ul class="list">${recentCommits}</ul>`)}
+             ${card('Recently merged PRs', `<ul class="list">${recentPRs}</ul>`)}
+           </div>`;
+      }
+
+      // ---------- project metrics (stats.json) ----------
+      async function fetchJson(name) {
+        const RAW = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/public/${name}`;
+        for (const url of [name, RAW]) {
+          try { const r = await fetch(url, { cache: 'no-store' }); if (r.ok) return await r.json(); } catch (e) {}
+        }
+        return null;
+      }
+      const delta = (hist, key) => {
+        const xs = hist.map((h) => h[key]).filter((v) => v != null);
+        if (xs.length < 2) return '';
+        const d = round(xs[xs.length - 1] - xs[0], 1);
+        const cls = d > 0 ? 'up' : d < 0 ? 'down' : 'flat';
+        return `<span class="${cls}">${d > 0 ? '▲' : d < 0 ? '▼' : '■'} ${Math.abs(d)}</span>`;
+      };
+
+      async function loadMetrics() {
+        const [s, hist] = await Promise.all([fetchJson('stats.json'), fetchJson('stats-history.json')]);
+        if (!s || !s.headline) {
+          $('metrics').innerHTML = `<div class="pending">stats.json not published yet. It is generated in CI by <code>scripts/build-stats.mjs</code> and committed back by the Stats workflow.</div>`;
+          return;
+        }
+        const h = s.headline, cov = s.coverage, fc = s.featureCoverage, q = s.quality, hy = s.hygiene, hy0 = (k) => hy?.[k] || 0;
+        const history = Array.isArray(hist) ? hist.slice(-60) : [];
+        const sparkCard = (title, key, color, suffix = '') => {
+          const last = history.length ? history[history.length - 1][key] : null;
+          return card(`${title} ${delta(history, key)}`, `<div style="font-size:20px;font-weight:650">${last == null ? '—' : last + suffix}</div>${sparkSvg(history.map((r) => r[key]), color)}`);
+        };
+        const covBars = cov ? breakdown(
+          [['lines', cov.lines], ['statements', cov.statements], ['functions', cov.functions], ['branches', cov.branches]]
+            .filter(([, v]) => v).map(([k, v]) => ({ label: k, value: v.pct, color: v.pct >= 80 ? 'var(--green)' : v.pct >= 50 ? 'var(--amber)' : 'var(--rose)' })),
+          { fmt: (e) => e.value + '%' }
+        ) : '<div class="muted">no coverage data</div>';
+
+        const byArea = Object.entries(fc.byArea || {}).map(([a, v]) => ({ label: a, value: v.total ? Math.round((v.book / v.total) * 100) : 0, color: 'var(--sky)', total: v.total, book: v.book }))
+          .sort((a, b) => a.value - b.value);
+        const noBook = (fc.gaps?.noBook || []).slice(0, 8);
+
+        $('metrics').innerHTML =
+          `<div class="grid cards" style="margin-bottom:14px">
+             ${statCard(h.linesTsJs.toLocaleString(), 'lines of TS/JS')}
+             ${statCard(h.tests.toLocaleString(), 'automated tests', `${s.tests.unit} unit · ${s.tests.e2e} e2e`)}
+             ${statCard(h.lineCoveragePct == null ? '—' : h.lineCoveragePct + '%', 'line coverage')}
+             ${statCard(fc.total, 'catalogued features', `${fc.manualPct}% manual · ${fc.bookPct}% book`)}
+             ${statCard(s.bundle.eagerJsGzipKb + ' KB', 'eager bundle (gz)', `budget ${s.bundle.budgetKb} KB`)}
+             ${statCard(h.commits, 'commits', `${h.trackedFiles} tracked files`)}
+           </div>
+
+           <div class="grid cols-3">
+             ${card('Documentation coverage', breakdown([
+                { label: 'Manual', value: fc.manualPct, color: 'var(--green)' },
+                { label: 'Book', value: fc.bookPct, color: 'var(--sky)' },
+                { label: 'Book examples', value: fc.bookExamplePct, color: 'var(--violet)' },
+              ], { fmt: (e) => e.value + '%' }), `${fc.total} features`)}
+             ${card('Book coverage by area', breakdown(byArea, { fmt: (e) => `${e.book}/${e.total}`, wide: true }), 'weakest first')}
+             ${card('Not yet in the book', noBook.length ? `<ul class="list">${noBook.map((g) => `<li><span class="msg">${esc(g.name)}</span><span class="when">M${g.since}</span></li>`).join('')}</ul>${fc.gaps.noBook.length > 8 ? `<div class="muted" style="margin-top:6px">+${fc.gaps.noBook.length - 8} more</div>` : ''}` : '<div class="muted">All features covered 🎉</div>')}
+           </div>
+
+           <div class="grid cols-3" style="margin-top:14px">
+             ${sparkCard('Coverage %', 'coveragePct', 'var(--green)', '%')}
+             ${sparkCard('Lines of code', 'linesTsJs', 'var(--primary)')}
+             ${sparkCard('Tests', 'tests', 'var(--violet)')}
+             ${sparkCard('Manual coverage %', 'featureManualPct', 'var(--teal)', '%')}
+             ${sparkCard('Book coverage %', 'featureBookPct', 'var(--sky)', '%')}
+             ${sparkCard('Bundle (KB gz)', 'bundleKb', 'var(--amber)')}
+           </div>
+
+           <div class="grid cols-2" style="margin-top:14px">
+             ${card('Lines by category', breakdown(s.code.map((c) => ({ label: c.category, value: c.lines })), { fmt: (e) => e.value.toLocaleString(), wide: true }))}
+             ${card('Coverage', covBars + `<div class="legend"><span><i style="background:var(--green)"></i>≥80</span><span><i style="background:var(--amber)"></i>50–79</span><span><i style="background:var(--rose)"></i>&lt;50</span></div>`)}
+           </div>
+
+           <div class="grid cols-3" style="margin-top:14px">
+             ${card('Least covered', q.leastCovered?.length ? breakdown(q.leastCovered.map((f) => ({ label: f.file.replace(/^src\//, ''), value: f.pct, color: 'var(--rose)' })), { fmt: (e) => e.value + '%', wide: true }) : '<div class="muted">—</div>', 'lowest line %')}
+             ${card('Churn hotspots', breakdown((q.churnHotspots || []).map((f) => ({ label: f.file.replace(/^src\//, ''), value: f.commits, color: 'var(--amber)' })), { fmt: (e) => e.value, wide: true }), '90 days')}
+             ${card('Risky files', q.risky?.length ? `<ul class="list">${q.risky.map((f) => `<li><span class="msg" title="${esc(f.file)}">${esc(f.file.replace(/^src\//, ''))}</span><span class="when">${f.commits}× · ${f.pct}%</span></li>`).join('')}</ul>` : '<div class="muted">none — no high-churn file is under-covered 🎉</div>', 'high churn ∩ low coverage')}
+           </div>
+
+           <div class="grid cols-2" style="margin-top:14px">
+             ${card('Code hygiene', `<div class="chips">
+                ${[['TODO', hy0('todo')], ['FIXME', hy0('fixme')], ['HACK', hy0('hack')], ['any', hy0('anyCount')], ['@ts-ignore', hy0('tsIgnore')], ['@ts-expect-error', hy0('tsExpectError')], ['biome-ignore', hy0('biomeIgnore')], ['non-null !', hy0('nonNull')]]
+                  .map(([l, v]) => `<span class="chip ${v === 0 ? '' : v > 10 ? 'bad' : 'warn'}">${l} <b>${v}</b></span>`).join('')}
+              </div>`)}
+             ${card('Footprint', `<div class="chips">
+                <span class="chip">prod deps <b>${s.footprint.depsProd}</b></span>
+                <span class="chip">dev deps <b>${s.footprint.depsDev}</b></span>
+                <span class="chip">churn 30d <b class="up">+${s.git.churn30d.added}</b> / <b class="down">−${s.git.churn30d.removed}</b></span>
+                <span class="chip">changelog <b>${s.git.changelogEntries}</b></span>
+                <span class="chip">book words <b>${s.docs.bookWords.toLocaleString()}</b></span>
+              </div>
+              <div style="margin-top:12px">${breakdown(s.footprint.biggestFiles.map((f) => ({ label: f.name, value: f.lines })), { fmt: (e) => e.value, wide: true })}</div>`, 'biggest source files')}
+           </div>`;
+
+        $('foot').innerHTML = `Generated ${new Date(s.generatedAt).toLocaleString()} at <span class="sha">${esc(s.commit)}</span> · ${s.domain.features} features · ${s.domain.domainModules} domain modules · ${s.domain.components} components`;
+      }
+
+      loadLive();
+      loadMetrics();
+    </script>
+  </body>
+</html>

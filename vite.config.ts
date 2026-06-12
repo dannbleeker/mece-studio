@@ -42,5 +42,14 @@ export default defineConfig({
     environment: 'node',
     globals: false,
     include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx', 'src/**/*.test.ts'],
+    // Coverage runs only in the stats pipeline (`vitest run --coverage`), not in
+    // the gate; build-stats.mjs reads coverage/coverage-summary.json.
+    coverage: {
+      provider: 'v8',
+      reporter: ['text-summary', 'json-summary', 'json'],
+      reportsDirectory: 'coverage',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.test.{ts,tsx}', 'src/main.tsx', 'src/**/*.d.ts', 'src/vite-env.d.ts'],
+    },
   },
 });

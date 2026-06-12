@@ -1,0 +1,12 @@
+[
+  {
+    "date": "2026-06-12",
+    "linesTsJs": 4824,
+    "coveragePct": 58.15,
+    "tests": 101,
+    "bundleKb": 150.6,
+    "featureManualPct": 0,
+    "featureBookPct": 0,
+    "featureExamplePct": 0
+  }
+]
