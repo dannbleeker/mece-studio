@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 35,
+  "reviewedThroughChangelogEntries": 36,
   "features": [
     { "id": "issue-tree", "name": "Issue-tree canvas", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
     { "id": "root-question", "name": "Editable root question", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
@@ -68,6 +68,7 @@
     { "id": "reorder-siblings", "name": "Reorder siblings (move up / down)", "area": "Editing", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "node-notes", "name": "Per-node notes", "area": "Editing", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "keyboard-shortcuts", "name": "Keyboard shortcuts (undo / redo / delete)", "area": "Editing", "since": 6, "manual": true, "book": true, "bookExample": false },
+    { "id": "shortcuts-overlay", "name": "Keyboard shortcuts overlay (?)", "area": "Editing", "since": 6, "manual": true, "book": false, "bookExample": false },
 
     { "id": "export-png", "name": "PNG export", "area": "Export", "since": 5, "manual": true, "book": false, "bookExample": false },
     { "id": "export-pdf", "name": "PDF export", "area": "Export", "since": 6, "manual": true, "book": false, "bookExample": false },

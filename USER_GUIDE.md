@@ -276,7 +276,8 @@ cached, so you can build trees on a plane.
 ## Keyboard reference
 
 These work on the canvas (they're ignored while you're typing in a field, so they
-never hijack the inspector inputs).
+never hijack the inspector inputs). Press <kbd>?</kbd> any time to see this list as
+an overlay in the app.
 
 | Keys | Action |
 | --- | --- |
@@ -289,6 +290,7 @@ never hijack the inspector inputs).
 | <kbd>Ctrl/⌘+Z</kbd> | Undo |
 | <kbd>Ctrl/⌘+Y</kbd> or <kbd>Ctrl/⌘+Shift+Z</kbd> | Redo |
 | <kbd>Enter</kbd> (in the Find box) | Zoom to the matching nodes |
+| <kbd>?</kbd> | Open the keyboard-shortcuts overlay |
 
 ## Tips
 

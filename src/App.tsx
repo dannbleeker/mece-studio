@@ -3,6 +3,7 @@ import { AboutDialog } from '@/components/about/AboutDialog';
 import { Canvas } from '@/components/canvas/Canvas';
 import { Inspector } from '@/components/inspector/Inspector';
 import { SynthesisPanel } from '@/components/SynthesisPanel';
+import { ShortcutsDialog } from '@/components/shortcuts/ShortcutsDialog';
 import { EXAMPLE_TREES } from '@/domain/examples';
 import { toMarkdown } from '@/domain/export';
 import { copyToClipboard, downloadText } from '@/services/download';
@@ -29,6 +30,7 @@ export function App() {
   const [copied, setCopied] = useState(false);
   const [showSynthesis, setShowSynthesis] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   const onCopyMarkdown = () => {
     void copyToClipboard(toMarkdown(doc));
@@ -71,6 +73,9 @@ export function App() {
       } else if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId) {
         e.preventDefault();
         removeNode(selectedId);
+      } else if (e.key === '?') {
+        e.preventDefault();
+        setShowShortcuts((v) => !v);
       }
     };
     window.addEventListener('keydown', onKey);
@@ -159,6 +164,15 @@ export function App() {
             Redo
           </button>
           <span className="mx-1 h-5 w-px bg-neutral-200" />
+          <button
+            type="button"
+            onClick={() => setShowShortcuts(true)}
+            className={GHOST_BTN}
+            title="Keyboard shortcuts (?)"
+            aria-label="Keyboard shortcuts"
+          >
+            ?
+          </button>
           <button type="button" onClick={() => setShowAbout(true)} className={GHOST_BTN}>
             About
           </button>
@@ -170,6 +184,7 @@ export function App() {
           <Canvas />
           {showSynthesis && <SynthesisPanel onClose={() => setShowSynthesis(false)} />}
           {showAbout && <AboutDialog onClose={() => setShowAbout(false)} />}
+          {showShortcuts && <ShortcutsDialog onClose={() => setShowShortcuts(false)} />}
         </main>
         <Inspector />
       </div>
