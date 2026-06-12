@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-06-12T18:00:48.444Z",
-  "commit": "d5756cf",
+  "generatedAt": "2026-06-12T18:05:09.319Z",
+  "commit": "aaca40f",
   "headline": {
-    "linesTsJs": 6009,
+    "linesTsJs": 6001,
     "tests": 107,
-    "lineCoveragePct": 58.46,
-    "commits": 67,
+    "lineCoveragePct": 58.41,
+    "commits": 69,
     "ageDays": 1,
     "trackedFiles": 126,
     "featureManualPct": 100,
@@ -16,7 +16,7 @@
     {
       "category": "App code (src, excl. tests)",
       "files": 34,
-      "lines": 3398
+      "lines": 3390
     },
     {
       "category": "Unit tests",
@@ -41,19 +41,19 @@
     {
       "category": "Docs (Markdown)",
       "files": 21,
-      "lines": 2002
+      "lines": 2001
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 58.46,
-      "covered": 525,
-      "total": 898
+      "pct": 58.41,
+      "covered": 524,
+      "total": 897
     },
     "statements": {
-      "pct": 54.33,
-      "covered": 602,
-      "total": 1108
+      "pct": 54.29,
+      "covered": 601,
+      "total": 1107
     },
     "functions": {
       "pct": 42.65,
@@ -213,7 +213,7 @@
   "docs": {
     "bookWords": 20665,
     "chapters": 14,
-    "appLoc": 3398,
+    "appLoc": 3390,
     "docToCodeRatio": 0.59
   },
   "featureCoverage": {
@@ -460,21 +460,21 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 1,
-    "commits": 67,
-    "commits7d": 67,
+    "commits": 69,
+    "commits7d": 69,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 56
+        "count": 57
       },
       {
         "name": "github-actions[bot]",
-        "count": 11
+        "count": 12
       }
     ],
     "churn30d": {
-      "added": 17427,
-      "removed": 1372
+      "added": 17491,
+      "removed": 1442
     },
     "changelogEntries": 36
   }
