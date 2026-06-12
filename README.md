@@ -50,4 +50,9 @@ A standalone **[dashboard](https://mece-studio.struktureretsundfornuft.dk/dashbo
 
 ## License
 
-Apache-2.0 © Dann Bleeker Pedersen
+Dual-licensed:
+
+- **Software** — all source code, scripts, configuration, and the application — under **[Apache-2.0](LICENSE)** © 2026 Dann Bleeker Pedersen.
+- **Book** — the long-form practitioner guide under `docs/guide/` and its generated PDF/EPUB — under **[CC BY-NC 4.0](LICENSE-BOOK)**: free for non-commercial use with attribution; commercial use needs permission.
+
+Third-party attribution and trademark notices are in [`NOTICE.md`](NOTICE.md), rendered in-app at `/notices.html` and surfaced from the **About** dialog. “MECE” and the issue-tree method are referenced descriptively; McKinsey & Company is not affiliated with, and does not endorse, MECE Studio.

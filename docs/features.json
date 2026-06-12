@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 29,
+  "reviewedThroughChangelogEntries": 30,
   "features": [
     { "id": "issue-tree", "name": "Issue-tree canvas", "area": "Tree", "since": 1, "manual": false, "book": false, "bookExample": false },
     { "id": "root-question", "name": "Editable root question", "area": "Tree", "since": 1, "manual": false, "book": false, "bookExample": false },

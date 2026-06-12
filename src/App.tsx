@@ -1,4 +1,5 @@
 import { type ChangeEvent, useEffect, useRef, useState } from 'react';
+import { AboutDialog } from '@/components/about/AboutDialog';
 import { Canvas } from '@/components/canvas/Canvas';
 import { Inspector } from '@/components/inspector/Inspector';
 import { SynthesisPanel } from '@/components/SynthesisPanel';
@@ -26,6 +27,7 @@ export function App() {
   const canRedo = useStore((s) => s.canRedo());
   const [copied, setCopied] = useState(false);
   const [showSynthesis, setShowSynthesis] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
   const onCopyMarkdown = () => {
     void copyToClipboard(toMarkdown(doc));
@@ -136,6 +138,10 @@ export function App() {
           >
             Redo
           </button>
+          <span className="mx-1 h-5 w-px bg-neutral-200" />
+          <button type="button" onClick={() => setShowAbout(true)} className={GHOST_BTN}>
+            About
+          </button>
         </div>
       </header>
 
@@ -143,6 +149,7 @@ export function App() {
         <main className="relative min-w-0 flex-1">
           <Canvas />
           {showSynthesis && <SynthesisPanel onClose={() => setShowSynthesis(false)} />}
+          {showAbout && <AboutDialog onClose={() => setShowAbout(false)} />}
         </main>
         <Inspector />
       </div>

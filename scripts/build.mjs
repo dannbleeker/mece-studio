@@ -14,5 +14,6 @@ function run(cmd, args) {
   }
 }
 
+run('node', ['./scripts/build-docs.mjs']); // render NOTICE.md / USER_GUIDE.md -> public/*.html
 run('node', ['./node_modules/typescript/bin/tsc', '--noEmit']);
 run('node', ['./node_modules/vite/bin/vite.js', 'build']);

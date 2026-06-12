@@ -1,0 +1,59 @@
+Issue Trees with MECE Studio
+Copyright (c) 2026 Dann Bleeker Pedersen
+
+This book — the text, narrative, exercises, and original diagrams that make
+up the practitioner guide in `docs/guide/` of this repository, including the
+assembled EPUB and PDF artefacts — is licensed under the
+
+    Creative Commons Attribution-NonCommercial 4.0 International License
+    (CC BY-NC 4.0)
+
+SPDX-License-Identifier: CC-BY-NC-4.0
+
+Human-readable summary (the "deed"):
+    https://creativecommons.org/licenses/by-nc/4.0/
+
+Full legal code (the binding license text):
+    https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+You are free to:
+
+  * Share — copy and redistribute the material in any medium or format.
+  * Adapt — remix, transform, and build upon the material.
+
+Under the following terms:
+
+  * Attribution — You must give appropriate credit to Dann Bleeker Pedersen,
+    provide a link to this license, and indicate if changes were made. You
+    may do so in any reasonable manner, but not in any way that suggests the
+    licensor endorses you or your use.
+
+  * NonCommercial — You may not use the material for commercial purposes.
+
+  * No additional restrictions — You may not apply legal terms or
+    technological measures that legally restrict others from doing anything
+    the license permits.
+
+Scope and distinction from the software license:
+
+  * This book license (CC BY-NC 4.0) covers ONLY the long-form documentation:
+    the chapters and appendices under `docs/guide/` and the generated PDF and
+    EPUB books built from them.
+
+  * The MECE Studio SOFTWARE — all source code, scripts, configuration, the
+    in-app user guide, and the application itself — is licensed separately
+    under the Apache License 2.0 (see the `LICENSE` file). Code is permissively
+    licensed; the book is not.
+
+  * "MECE" and the issue-tree / hypothesis-driven problem-solving methods the
+    book teaches are concepts popularised by McKinsey & Company and others;
+    they are referenced descriptively. McKinsey & Company is not affiliated
+    with, and does not endorse, this book or MECE Studio. Third parties whose
+    work is cited remain the authors of their own material.
+
+Commercial use:
+
+  Commercial use of the book — including selling it, bundling it with a paid
+  product or training, or using it in paid consulting deliverables — requires
+  prior written permission from the copyright holder. Contact the author via
+  the project repository: https://github.com/dannbleeker/mece-studio

@@ -20,6 +20,7 @@ step('lint/format', 'node', ['./node_modules/@biomejs/biome/bin/biome', 'check',
 step('dead-code', 'node', ['./node_modules/knip/bin/knip.js']);
 step('feature catalogue', 'node', ['./scripts/check-feature-coverage.mjs']);
 step('test', 'node', ['./node_modules/vitest/vitest.mjs', 'run']);
+step('docs', 'node', ['./scripts/build-docs.mjs']);
 step('build', 'node', ['./node_modules/vite/bin/vite.js', 'build']);
 step('size budget', 'node', ['./scripts/check-bundle-size.mjs']);
 

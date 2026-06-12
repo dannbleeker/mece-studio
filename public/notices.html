@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notices — MECE Studio</title>
+  <style>
+  :root { color-scheme: light; --ink:#1f2937; --muted:#6b7280; --line:#e8e6df; --primary:#3f6fb0; --bg:#faf9f5; --code:#f3f1ea; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; -webkit-font-smoothing:antialiased; }
+  main { max-width: 46rem; margin: 0 auto; padding: 24px 22px 80px; }
+  .page-header { display:flex; align-items:baseline; gap:12px; padding-bottom:16px; margin-bottom:24px; border-bottom:1px solid var(--line); }
+  .page-header .brand { font-weight:600; color:var(--primary); }
+  .page-header .back { margin-left:auto; font-size:14px; text-decoration:none; color:var(--primary); }
+  h1 { font-size: 28px; letter-spacing:-0.01em; margin: 0 0 24px; }
+  h2 { font-size: 21px; margin: 38px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--line); }
+  h3 { font-size: 16px; margin: 26px 0 8px; }
+  a { color: var(--primary); }
+  p, li { color: var(--ink); }
+  ul, ol { padding-left: 1.3em; }
+  li { margin: 4px 0; }
+  code { background: var(--code); padding: 1px 5px; border-radius: 4px; font-size: 0.88em; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
+  pre { background: var(--code); padding: 14px 16px; border-radius: 8px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  blockquote { margin: 16px 0; padding: 4px 16px; border-left: 3px solid var(--primary); color: var(--muted); }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 14.5px; }
+  th, td { border: 1px solid var(--line); padding: 7px 10px; text-align: left; vertical-align: top; }
+  th { background: #f3f1ea; font-weight: 600; }
+  kbd { background:#fff; border:1px solid var(--line); border-bottom-width:2px; border-radius:5px; padding:1px 6px; font-size:0.82em; font-family:ui-monospace,monospace; }
+  hr { border:0; border-top:1px solid var(--line); margin: 28px 0; }
+  footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+  <main>
+    <header class="page-header"><span class="brand">MECE Studio</span><a class="back" href="/">← back to the app</a></header>
+    <h1>Third-party notices &amp; trademarks</h1>
+    <p>MECE Studio is free, local-first software. This file records attribution for
+third-party software it depends on and trademark notices for products and
+methods it references. It is informational and does not modify either license
+(see <code>LICENSE</code> for the software and <code>LICENSE-BOOK</code> for the book).</p>
+<h2>Methods &amp; trademarks</h2>
+<ul>
+<li><p><strong>MECE</strong> (&quot;Mutually Exclusive, Collectively Exhaustive&quot;), the <strong>issue tree</strong>,
+and <strong>hypothesis-driven problem solving</strong> are problem-structuring concepts
+popularised by <strong>McKinsey &amp; Company</strong> and described in widely published
+business literature. MECE Studio implements these methods descriptively as a
+generic thinking tool. <strong>McKinsey &amp; Company is not affiliated with, does not
+sponsor, and does not endorse MECE Studio.</strong> &quot;McKinsey&quot; is a trademark of its
+owner and is used here only nominatively, to describe the lineage of the
+methods.</p>
+</li>
+<li><p>Other product names that may appear in the app, book, or documentation —
+for example <strong>PowerPoint</strong> and <strong>Excel</strong> (Microsoft), <strong>Claude</strong> (Anthropic),
+and <strong>ChatGPT</strong> (OpenAI) — are trademarks of their respective owners and are
+used only nominatively, for interoperability or comparative reference. No
+affiliation or endorsement is implied.</p>
+</li>
+</ul>
+<h2>Open-source dependencies</h2>
+<p>MECE Studio&#39;s production runtime depends on third-party open-source software,
+including <strong>React</strong> and <strong>React DOM</strong> (MIT), <strong>React Flow</strong> / <code>@xyflow/react</code>
+(MIT), <strong>Zustand</strong> (MIT), <strong>dagre</strong> (MIT), <strong>jsPDF</strong> (MIT), <strong>pptxgenjs</strong> (MIT),
+<strong>html-to-image</strong> (MIT), and <strong>nanoid</strong> (MIT).</p>
+<p>The development toolchain includes <strong>Vite</strong>, <strong>TypeScript</strong>, <strong>Tailwind CSS</strong>,
+<strong>Biome</strong>, <strong>Vitest</strong>, <strong>Playwright</strong>, <strong>knip</strong>, <strong>marked</strong>, and
+<strong>vite-plugin-pwa</strong>, among others.</p>
+<p>Each dependency carries its own license. The full, authoritative list with exact
+versions is produced by the package manager&#39;s manifest (<code>package.json</code> and
+<code>pnpm-lock.yaml</code>) in this repository; the corresponding license texts ship inside
+each package under <code>node_modules/&lt;pkg&gt;/LICENSE</code>. MECE Studio is grateful to the
+maintainers of all of the above.</p>
+<h2>MECE Studio&#39;s own license</h2>
+<ul>
+<li><strong>Software</strong> (all source code, scripts, configuration, the in-app user guide,
+and the application) — <strong>Apache License 2.0</strong>. See <code>LICENSE</code>.</li>
+<li><strong>Book</strong> (the long-form practitioner guide under <code>docs/guide/</code> and its
+generated PDF and EPUB) — <strong>Creative Commons Attribution-NonCommercial 4.0
+International (CC BY-NC 4.0)</strong>. See <code>LICENSE-BOOK</code>.</li>
+</ul>
+<p>Copyright © 2026 Dann Bleeker Pedersen.</p>
+
+    <footer>Rendered from the canonical Markdown in the MECE Studio repository.</footer>
+  </main>
+</body>
+</html>

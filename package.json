@@ -18,6 +18,7 @@
     "check:bundle-size": "node ./scripts/check-bundle-size.mjs",
     "check:features": "node ./scripts/check-feature-coverage.mjs",
     "stats": "node ./scripts/build-stats.mjs",
+    "docs": "node ./scripts/build-docs.mjs",
     "verify": "node ./scripts/verify.mjs",
     "e2e": "node ./scripts/e2e.mjs"
   },
@@ -48,6 +49,7 @@
     "@vitejs/plugin-react": "^6.0.2",
     "@vitest/coverage-v8": "^4.1.8",
     "knip": "^6.14.2",
+    "marked": "^16.4.2",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.14",
