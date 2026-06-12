@@ -9,6 +9,7 @@ import {
   parentOf,
   removeNode,
   renameNode,
+  setAllCollapsed,
   setDecomposition,
   setDetail,
   setNodeValue,
@@ -87,6 +88,19 @@ describe('tree ops', () => {
     const hidden = hiddenNodeIds(toggleCollapse(doc, a));
     expect(hidden.has(aChild)).toBe(true);
     expect(hidden.has(a)).toBe(false);
+  });
+
+  it('setAllCollapsed collapses non-root parents and expands all', () => {
+    let doc = seed();
+    const { doc: d1, childId: a } = addChild(doc, doc.rootId, 'A');
+    doc = addChild(d1, a, 'A-child').doc;
+
+    const collapsed = setAllCollapsed(doc, true);
+    expect(collapsed.nodes[a]?.collapsed).toBe(true);
+    expect(collapsed.nodes[doc.rootId]?.collapsed).toBeUndefined(); // root stays open
+
+    const expanded = setAllCollapsed(collapsed, false);
+    expect(expanded.nodes[a]?.collapsed).toBeUndefined();
   });
 
   it('parentOf finds the node a child hangs under', () => {

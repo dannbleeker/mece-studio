@@ -9,6 +9,7 @@ import {
   removeEvidence as removeEvidenceOp,
   removeNode as removeNodeOp,
   renameNode as renameNodeOp,
+  setAllCollapsed as setAllCollapsedOp,
   setDecomposition as setDecompositionOp,
   setDetail as setDetailOp,
   setNodeValue as setNodeValueOp,
@@ -55,6 +56,8 @@ interface AppState {
   setPriority: (id: NodeId, priority: Priority | undefined) => void;
   setStatus: (id: NodeId, status: NodeStatus) => void;
   toggleCollapse: (id: NodeId) => void;
+  collapseAll: () => void;
+  expandAll: () => void;
   addEvidence: (
     nodeId: NodeId,
     summary: string,
@@ -143,6 +146,8 @@ export const useStore = create<AppState>((set, get) => {
     setPriority: (id, priority) => apply((doc) => setPriorityOp(doc, id, priority)),
     setStatus: (id, status) => apply((doc) => setStatusOp(doc, id, status)),
     toggleCollapse: (id) => apply((doc) => toggleCollapseOp(doc, id)),
+    collapseAll: () => apply((doc) => setAllCollapsedOp(doc, true)),
+    expandAll: () => apply((doc) => setAllCollapsedOp(doc, false)),
     addEvidence: (nodeId, summary, supports, strength) =>
       apply((doc) => addEvidenceOp(doc, nodeId, createEvidence(summary, supports, strength))),
     removeEvidence: (nodeId, evidenceId) =>

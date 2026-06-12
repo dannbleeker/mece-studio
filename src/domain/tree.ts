@@ -294,3 +294,25 @@ export function toggleCollapse(doc: IssueTreeDoc, nodeId: NodeId): IssueTreeDoc 
   }
   return { ...doc, nodes: { ...doc.nodes, [nodeId]: next } };
 }
+
+/** Collapse every non-root node that has children, or expand all of them. */
+export function setAllCollapsed(doc: IssueTreeDoc, collapsed: boolean): IssueTreeDoc {
+  const nodes: Record<NodeId, IssueNode> = {};
+  let changed = false;
+  for (const [key, node] of Object.entries(doc.nodes)) {
+    const id = key as NodeId;
+    const want = collapsed && id !== doc.rootId && splitOf(doc, id) !== undefined;
+    if (want && !node.collapsed) {
+      nodes[id] = { ...node, collapsed: true };
+      changed = true;
+    } else if (!want && node.collapsed) {
+      const next: IssueNode = { ...node };
+      delete next.collapsed;
+      nodes[id] = next;
+      changed = true;
+    } else {
+      nodes[id] = node;
+    }
+  }
+  return changed ? { ...doc, nodes } : doc;
+}

@@ -34,6 +34,8 @@ function Flow() {
   const moveNode = useStore((s) => s.moveNode);
   const renameNode = useStore((s) => s.renameNode);
   const addChild = useStore((s) => s.addChild);
+  const collapseAll = useStore((s) => s.collapseAll);
+  const expandAll = useStore((s) => s.expandAll);
   const { fitView, getNodes, getIntersectingNodes } = useReactFlow();
 
   // Inline label editing: double-click a node to edit its label in place.
@@ -205,17 +207,35 @@ function Flow() {
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e2dfd6" />
         <Controls showInteractive={false} />
         <Panel position="top-left">
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') fitToMatches();
-              e.stopPropagation();
-            }}
-            placeholder="Find…"
-            aria-label="Find nodes"
-            className="nodrag w-44 rounded-md border border-neutral-200 bg-white/90 px-2.5 py-1 text-[12px] text-neutral-700 shadow-sm focus:border-[#3f6fb0] focus:outline-none"
-          />
+          <div className="flex flex-col gap-1">
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') fitToMatches();
+                e.stopPropagation();
+              }}
+              placeholder="Find…"
+              aria-label="Find nodes"
+              className="nodrag w-44 rounded-md border border-neutral-200 bg-white/90 px-2.5 py-1 text-[12px] text-neutral-700 shadow-sm focus:border-[#3f6fb0] focus:outline-none"
+            />
+            <div className="flex gap-1">
+              <button
+                type="button"
+                onClick={() => collapseAll()}
+                className="nodrag rounded-md border border-neutral-200 bg-white/90 px-2 py-0.5 text-[11px] text-neutral-600 shadow-sm hover:bg-white"
+              >
+                Collapse all
+              </button>
+              <button
+                type="button"
+                onClick={() => expandAll()}
+                className="nodrag rounded-md border border-neutral-200 bg-white/90 px-2 py-0.5 text-[11px] text-neutral-600 shadow-sm hover:bg-white"
+              >
+                Expand all
+              </button>
+            </div>
+          </div>
         </Panel>
         <Panel position="top-right">
           <button

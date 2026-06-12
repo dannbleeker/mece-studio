@@ -6,7 +6,7 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 
 ### Added
 - **Find on the canvas.** A search box (top-left) rings every node whose label matches as you type; press Enter to zoom to the matches — handy in a big tree.
-- **Collapse subtrees.** Any node with children gets a toggle — collapse to hide its subtree (the node shows a ▶ N badge with the hidden count) so you can focus on one branch of a big tree; the layout re-tidies around what's left visible.
+- **Collapse subtrees.** Any node with children gets a toggle — collapse to hide its subtree (the node shows a ▶ N badge with the hidden count) so you can focus on one branch of a big tree; the layout re-tidies around what's left visible. **Collapse all / Expand all** buttons (top-left) fold or unfold the whole tree at once.
 - **Formula operators.** Choose how a formula split combines its children — **sum**, **product** (Price × Volume), or **difference** (Revenue − Cost) — so value-driver trees aren't limited to addition.
 - **Sensitivity analysis.** On a formula split, a ranked readout shows how much the value swings when each leaf driver moves ±10%, one at a time — so the driver that matters most is obvious.
 - **Inline editing + keyboard tree-building.** Double-click any node to rename it on the canvas (Enter / click-away commits, Escape cancels); with a node selected, **Enter / F2** edits it and **Tab** adds a child and edits it straight away — build a tree without leaving the keyboard.
