@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useModalFocus } from '@/components/useModalFocus';
 
 interface AboutDialogProps {
   onClose: () => void;
@@ -33,13 +33,7 @@ const LINKS: { href: string; label: string; hint: string }[] = [
 const LICENSE_LINK = 'text-[#3f6fb0] underline';
 
 export function AboutDialog({ onClose }: AboutDialogProps) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  const ref = useModalFocus<HTMLDivElement>(onClose);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -50,7 +44,9 @@ export function AboutDialog({ onClose }: AboutDialogProps) {
         className="absolute inset-0 cursor-default bg-neutral-900/30"
       />
       <div
-        className="relative w-full max-w-md rounded-xl border border-neutral-200 bg-white p-6 shadow-xl"
+        ref={ref}
+        tabIndex={-1}
+        className="relative w-full max-w-md rounded-xl border border-neutral-200 bg-white p-6 shadow-xl outline-none"
         role="dialog"
         aria-modal="true"
         aria-label="About MECE Studio"

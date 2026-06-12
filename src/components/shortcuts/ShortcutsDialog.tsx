@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useModalFocus } from '@/components/useModalFocus';
 
 interface ShortcutsDialogProps {
   onClose: () => void;
@@ -21,13 +21,7 @@ const KBD =
   'rounded border border-neutral-300 border-b-2 bg-neutral-50 px-1.5 py-0.5 font-mono text-[11px] text-neutral-700';
 
 export function ShortcutsDialog({ onClose }: ShortcutsDialogProps) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  const ref = useModalFocus<HTMLDivElement>(onClose);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -38,7 +32,9 @@ export function ShortcutsDialog({ onClose }: ShortcutsDialogProps) {
         className="absolute inset-0 cursor-default bg-neutral-900/30"
       />
       <div
-        className="relative w-full max-w-md rounded-xl border border-neutral-200 bg-white p-6 shadow-xl"
+        ref={ref}
+        tabIndex={-1}
+        className="relative w-full max-w-md rounded-xl border border-neutral-200 bg-white p-6 shadow-xl outline-none"
         role="dialog"
         aria-modal="true"
         aria-label="Keyboard shortcuts"
