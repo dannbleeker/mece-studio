@@ -19,7 +19,4 @@ Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 
 ## Tooling backlog
 - Turn `knip`'s `exports` / `types` rules back on and prune anything genuinely unused.
-- **Playwright e2e — priority: drag-to-reparent.** React Flow's drag is pointer-capture based, so it can't be driven by synthetic events in the headless preview; the `moveNode` domain logic is unit-tested and the wiring follows RF's documented `onNodeDragStop` + `getIntersectingNodes` recipe, but the *gesture* itself needs a real-input test (or a manual drag) to be fully covered. Same harness gap applies to keyboard/units/notes glue, though those were each driven via synthetic events.
-
-## Possible follow-ups
-- **Drop-target highlight** while dragging, so it's clear which node a drag will re-parent onto (today the re-parent only resolves on release).
+- **Extend the Playwright e2e suite.** Drag-to-reparent + the drop-target highlight are covered (`pnpm e2e`, also a CI job). Good next targets for real-input coverage: keyboard shortcuts, units, notes, and Open-JSON — driven via synthetic events so far, with no end-to-end test.
