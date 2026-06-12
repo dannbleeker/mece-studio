@@ -17,7 +17,7 @@ Sibling to [TP Studio](https://tp-studio.struktureretsundfornuft.dk) (Theory of 
 - **Notes** per node for rationale, assumptions, and data sources.
 - **Export & round-trip.** PNG of the canvas, a Markdown outline, and JSON **save / open**.
 - **Navigate big trees.** **Collapse** any subtree (a ▶ N badge shows what's hidden) or Collapse all / Expand all at once; **search** rings matching nodes and zooms to them.
-- **Built for flow.** Rename inline (double-click or Enter / F2), **Tab** to add a child, **drag** a node onto another to re-parent its subtree (with a drop-target highlight). Undo / redo (with `Ctrl/⌘+Z` · `Y` and `Delete` shortcuts), auto-layout (dagre, left-to-right), and localStorage persistence — no account, no backend.
+- **Built for flow.** Rename inline (double-click or Enter / F2), **Tab** to add a child, **drag** a node onto another to re-parent its subtree (with a drop-target highlight), **duplicate** or **reorder** a branch from the inspector. Undo / redo (with `Ctrl/⌘+Z` · `Y` and `Delete` shortcuts), auto-layout (dagre, left-to-right), and localStorage persistence — no account, no backend.
 
 ## Architecture
 
