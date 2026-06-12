@@ -13,11 +13,12 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { descendantIds, parentOf } from '@/domain/tree';
 import type { NodeId } from '@/domain/types';
 import { downloadDataUrl } from '@/services/download';
 import { useStore } from '@/store';
+import { type NodeEditing, NodeEditingContext } from './nodeEditing';
 import { IssueNode } from './nodes/IssueNode';
 import { toFlow } from './projection';
 
@@ -31,7 +32,38 @@ function Flow() {
   const selectedId = useStore((s) => s.selectedId);
   const select = useStore((s) => s.select);
   const moveNode = useStore((s) => s.moveNode);
+  const renameNode = useStore((s) => s.renameNode);
   const { fitView, getNodes, getIntersectingNodes } = useReactFlow();
+
+  // Inline label editing: double-click a node to edit its label in place.
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const editing = useMemo<NodeEditing>(
+    () => ({
+      editingId,
+      start: setEditingId,
+      commit: (id, label) => {
+        renameNode(id as NodeId, label);
+        setEditingId(null);
+      },
+      cancel: () => setEditingId(null),
+    }),
+    [editingId, renameNode]
+  );
+
+  // Double-click a node (handled in the node itself) or press Enter / F2 on the
+  // selected node to edit its label inline.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement;
+      if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable) return;
+      if ((e.key === 'Enter' || e.key === 'F2') && selectedId && !editingId) {
+        e.preventDefault();
+        setEditingId(selectedId);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selectedId, editingId]);
 
   const { nodes: layoutNodes, edges } = useMemo(() => toFlow(doc, selectedId), [doc, selectedId]);
   const [nodes, setNodes, onNodesChange] = useNodesState(layoutNodes);
@@ -125,34 +157,37 @@ function Flow() {
   };
 
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      nodeTypes={nodeTypes}
-      onNodesChange={onNodesChange}
-      onNodeClick={(_, node) => select(node.id as NodeId)}
-      onNodeDrag={onNodeDrag}
-      onNodeDragStop={onNodeDragStop}
-      onPaneClick={() => select(null)}
-      nodesConnectable={false}
-      fitView
-      fitViewOptions={FIT_VIEW_OPTIONS}
-      proOptions={{ hideAttribution: true }}
-    >
-      <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e2dfd6" />
-      <Controls showInteractive={false} />
-      <Panel position="top-right">
-        <button
-          type="button"
-          onClick={() => {
-            void exportPng();
-          }}
-          className="rounded-md border border-neutral-200 bg-white/90 px-2.5 py-1 text-[12px] text-neutral-600 shadow-sm hover:bg-white"
-        >
-          Export PNG
-        </button>
-      </Panel>
-    </ReactFlow>
+    <NodeEditingContext.Provider value={editing}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        onNodesChange={onNodesChange}
+        onNodeClick={(_, node) => select(node.id as NodeId)}
+        onNodeDrag={onNodeDrag}
+        onNodeDragStop={onNodeDragStop}
+        onPaneClick={() => select(null)}
+        nodesConnectable={false}
+        deleteKeyCode={null}
+        fitView
+        fitViewOptions={FIT_VIEW_OPTIONS}
+        proOptions={{ hideAttribution: true }}
+      >
+        <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e2dfd6" />
+        <Controls showInteractive={false} />
+        <Panel position="top-right">
+          <button
+            type="button"
+            onClick={() => {
+              void exportPng();
+            }}
+            className="rounded-md border border-neutral-200 bg-white/90 px-2.5 py-1 text-[12px] text-neutral-600 shadow-sm hover:bg-white"
+          >
+            Export PNG
+          </button>
+        </Panel>
+      </ReactFlow>
+    </NodeEditingContext.Provider>
   );
 }
 

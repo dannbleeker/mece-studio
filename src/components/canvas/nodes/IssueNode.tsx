@@ -1,6 +1,8 @@
 import { Handle, type NodeProps, Position } from '@xyflow/react';
+import { useEffect, useRef } from 'react';
 import { CHECK_STATE_COLOR } from '@/components/checkColors';
 import type { NodeStatus } from '@/domain/types';
+import { useNodeEditing } from '../nodeEditing';
 import type { IssueFlowNode } from '../projection';
 
 const BAND: Record<'low' | 'medium' | 'high', { bg: string; fg: string }> = {
@@ -16,16 +18,30 @@ const STATUS_BORDER: Record<NodeStatus, string> = {
   parked: '#9a958a',
 };
 
-export function IssueNode({ data }: NodeProps<IssueFlowNode>) {
+export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
   const { label, mece, hasChildren, value, priority, evidence, hasNote, status, selected } = data;
+  const { editingId, start, commit, cancel } = useNodeEditing();
+  const isEditing = id === editingId;
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    if (!isEditing) return;
+    // Defer past React Flow's focus-on-click so the textarea keeps focus.
+    const handle = requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    });
+    return () => cancelAnimationFrame(handle);
+  }, [isEditing]);
   // All-longhand border props: mixing the `border` shorthand with a `borderLeft`
   // override makes React warn (and risks style bugs) on every rerender.
   const edgeColor = selected ? '#3f6fb0' : '#d7d4cb';
   const edgeWidth = selected ? 2 : 1;
   const showStatus = status !== 'open';
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: canvas node; keyboard editing is via Enter/F2 (handled in Canvas)
     <div
       className="relative flex h-full w-full flex-col justify-center rounded-lg bg-white px-3 py-2 shadow-sm"
+      onDoubleClick={() => start(id)}
       style={{
         borderStyle: 'solid',
         borderTopColor: edgeColor,
@@ -49,9 +65,31 @@ export function IssueNode({ data }: NodeProps<IssueFlowNode>) {
         </span>
       )}
 
-      <div className="line-clamp-2 font-medium text-[13px] text-neutral-800 leading-snug">
-        {label || 'Untitled'}
-      </div>
+      {isEditing ? (
+        <textarea
+          ref={inputRef}
+          aria-label="Edit node label"
+          defaultValue={label}
+          rows={2}
+          className="nodrag nopan w-full resize-none rounded border border-[#3f6fb0] bg-white px-1 py-0.5 font-medium text-[13px] text-neutral-800 leading-snug focus:outline-none"
+          onBlur={(e) => commit(id, e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              commit(id, e.currentTarget.value);
+            } else if (e.key === 'Escape') {
+              e.preventDefault();
+              cancel();
+            }
+            e.stopPropagation();
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
+        />
+      ) : (
+        <div className="line-clamp-2 font-medium text-[13px] text-neutral-800 leading-snug">
+          {label || 'Untitled'}
+        </div>
+      )}
 
       {value && (
         <div className="mt-0.5 text-[11px] text-neutral-500">
