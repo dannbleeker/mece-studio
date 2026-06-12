@@ -108,7 +108,7 @@ export function setOperator(
 
 export function renameNode(doc: IssueTreeDoc, nodeId: NodeId, label: string): IssueTreeDoc {
   const node = doc.nodes[nodeId];
-  if (!node) return doc;
+  if (!node || node.label === label) return doc; // no-op edits don't churn undo history
   return { ...doc, nodes: { ...doc.nodes, [nodeId]: { ...node, label } } };
 }
 
@@ -120,6 +120,12 @@ export function setNodeValue(
 ): IssueTreeDoc {
   const node = doc.nodes[nodeId];
   if (!node) return doc;
+  const cur = node.value;
+  const unchanged =
+    value === undefined
+      ? cur === undefined
+      : cur !== undefined && cur.amount === value.amount && cur.unit === value.unit;
+  if (unchanged) return doc; // no-op edits don't churn undo history
   const next: IssueNode = { ...node };
   if (value === undefined) {
     delete next.value;
@@ -133,11 +139,13 @@ export function setNodeValue(
 export function setDetail(doc: IssueTreeDoc, nodeId: NodeId, detail: string): IssueTreeDoc {
   const node = doc.nodes[nodeId];
   if (!node) return doc;
+  const nextDetail = detail.trim() === '' ? undefined : detail;
+  if (node.detail === nextDetail) return doc; // no-op edits don't churn undo history
   const next: IssueNode = { ...node };
-  if (detail.trim() === '') {
+  if (nextDetail === undefined) {
     delete next.detail;
   } else {
-    next.detail = detail;
+    next.detail = nextDetail;
   }
   return { ...doc, nodes: { ...doc.nodes, [nodeId]: next } };
 }
