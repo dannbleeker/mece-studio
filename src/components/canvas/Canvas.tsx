@@ -164,6 +164,8 @@ function Flow() {
     }
   }, [nodes, fitView]);
 
+  const matchCount = query.trim() === '' ? 0 : nodes.filter((n) => n.data.matched).length;
+
   // Render the whole graph to a PNG (React Flow's bounds recipe). html-to-image
   // is loaded on demand so it stays off the eager bundle.
   const exportPng = async () => {
@@ -235,6 +237,13 @@ function Flow() {
                 Expand all
               </button>
             </div>
+            {query.trim() !== '' && (
+              <span className="px-0.5 text-[10px] text-neutral-400">
+                {matchCount === 0
+                  ? 'No matches'
+                  : `${matchCount} match${matchCount === 1 ? '' : 'es'}`}
+              </span>
+            )}
           </div>
         </Panel>
         <Panel position="top-right">
