@@ -2,6 +2,19 @@ import { FORMULA_TOLERANCE, MIN_SPLIT_CHILDREN } from '../constants';
 import { combineValues } from '../rollup';
 import type { CheckResult, IssueNode, IssueTreeDoc, MeceStatus, Split, SplitId } from '../types';
 
+/** Tunable knobs for the MECE checks (surfaced in app Settings). */
+export interface MeceOptions {
+  /** Relative tolerance for formula reconciliation (children combined vs parent). */
+  formulaTolerance: number;
+  /** Stricter sibling-overlap heuristic — also flags shorter shared words. */
+  strictOverlap: boolean;
+}
+
+export const DEFAULT_MECE_OPTIONS: MeceOptions = {
+  formulaTolerance: FORMULA_TOLERANCE,
+  strictOverlap: false,
+};
+
 // Words too generic to signal a real overlap, plus the placeholder nouns the
 // scaffolds seed (so a fresh "Segment 1 / Segment 2" doesn't flag itself).
 const OVERLAP_STOPWORDS = new Set([
@@ -52,18 +65,19 @@ const OVERLAP_STOPWORDS = new Set([
 const OTHER_BUCKET =
   /\b(other|others|remaining|remainder|rest|misc|miscellaneous|everything\s+else)\b/i;
 
-function contentTokens(label: string): string[] {
+function contentTokens(label: string, minLength: number): string[] {
   return label
     .toLowerCase()
     .split(/[^a-z0-9]+/)
-    .filter((t) => t.length >= 4 && !OVERLAP_STOPWORDS.has(t));
+    .filter((t) => t.length >= minLength && !OVERLAP_STOPWORDS.has(t));
 }
 
 /** ME heuristic for split types we can't prove exclusive: flag siblings that share a content word. */
-function siblingOverlap(children: IssueNode[]): CheckResult {
+function siblingOverlap(children: IssueNode[], strict: boolean): CheckResult {
+  const minLength = strict ? 3 : 4;
   const seen = new Map<string, string>();
   for (const child of children) {
-    for (const token of new Set(contentTokens(child.label))) {
+    for (const token of new Set(contentTokens(child.label, minLength))) {
       const prev = seen.get(token);
       if (prev !== undefined && prev !== child.label) {
         return {
@@ -91,7 +105,12 @@ function segmentExhaustive(children: IssueNode[]): CheckResult {
       };
 }
 
-function formulaExhaustive(split: Split, children: IssueNode[], doc: IssueTreeDoc): CheckResult {
+function formulaExhaustive(
+  split: Split,
+  children: IssueNode[],
+  doc: IssueTreeDoc,
+  tolerance: number
+): CheckResult {
   const parentValue = doc.nodes[split.parentId]?.value?.amount;
   const childValues = children.map((c) => c.value?.amount);
   if (parentValue === undefined || childValues.some((v) => v === undefined)) {
@@ -103,7 +122,7 @@ function formulaExhaustive(split: Split, children: IssueNode[], doc: IssueTreeDo
   const combined = combineValues(childValues as number[], split.operator);
   const denom = Math.abs(parentValue) > 1e-9 ? Math.abs(parentValue) : 1;
   const rel = Math.abs(combined - parentValue) / denom;
-  return rel <= FORMULA_TOLERANCE
+  return rel <= tolerance
     ? { state: 'pass', message: `Children reconcile to the parent (${combined}).` }
     : {
         state: 'warn',
@@ -111,7 +130,7 @@ function formulaExhaustive(split: Split, children: IssueNode[], doc: IssueTreeDo
       };
 }
 
-function exclusiveStatus(split: Split, children: IssueNode[]): CheckResult {
+function exclusiveStatus(split: Split, children: IssueNode[], options: MeceOptions): CheckResult {
   switch (split.decomposition) {
     case 'binary':
       return children.length === 2
@@ -123,11 +142,16 @@ function exclusiveStatus(split: Split, children: IssueNode[]): CheckResult {
     case 'formula':
       return { state: 'pass', message: 'Formula terms are mutually exclusive.' };
     default:
-      return siblingOverlap(children);
+      return siblingOverlap(children, options.strictOverlap);
   }
 }
 
-function exhaustiveStatus(split: Split, children: IssueNode[], doc: IssueTreeDoc): CheckResult {
+function exhaustiveStatus(
+  split: Split,
+  children: IssueNode[],
+  doc: IssueTreeDoc,
+  options: MeceOptions
+): CheckResult {
   switch (split.decomposition) {
     case 'binary':
       return children.length === 2
@@ -137,7 +161,7 @@ function exhaustiveStatus(split: Split, children: IssueNode[], doc: IssueTreeDoc
             message: 'A binary split should have exactly two branches (A / not-A).',
           };
     case 'formula':
-      return formulaExhaustive(split, children, doc);
+      return formulaExhaustive(split, children, doc, options.formulaTolerance);
     case 'segment':
       return segmentExhaustive(children);
     default:
@@ -149,7 +173,11 @@ function exhaustiveStatus(split: Split, children: IssueNode[], doc: IssueTreeDoc
  * Evaluate one split's MECE status — mutually exclusive (no overlap) and
  * collectively exhaustive (no gaps). Pure; the heart of the "MECE brain".
  */
-export function evaluateSplit(split: Split, doc: IssueTreeDoc): MeceStatus {
+export function evaluateSplit(
+  split: Split,
+  doc: IssueTreeDoc,
+  options: MeceOptions = DEFAULT_MECE_OPTIONS
+): MeceStatus {
   const children = split.childIds
     .map((id) => doc.nodes[id])
     .filter((n): n is IssueNode => n !== undefined);
@@ -165,16 +193,19 @@ export function evaluateSplit(split: Split, doc: IssueTreeDoc): MeceStatus {
   }
 
   return {
-    exclusive: exclusiveStatus(split, children),
-    exhaustive: exhaustiveStatus(split, children, doc),
+    exclusive: exclusiveStatus(split, children, options),
+    exhaustive: exhaustiveStatus(split, children, doc, options),
   };
 }
 
 /** Recompute MECE status for every split in the doc. Pure — returns a new doc. */
-export function recomputeMece(doc: IssueTreeDoc): IssueTreeDoc {
+export function recomputeMece(
+  doc: IssueTreeDoc,
+  options: MeceOptions = DEFAULT_MECE_OPTIONS
+): IssueTreeDoc {
   const splits: Record<SplitId, Split> = {};
   for (const [id, split] of Object.entries(doc.splits)) {
-    splits[id as SplitId] = { ...split, mece: evaluateSplit(split, doc) };
+    splits[id as SplitId] = { ...split, mece: evaluateSplit(split, doc, options) };
   }
   return { ...doc, splits };
 }

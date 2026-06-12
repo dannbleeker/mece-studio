@@ -1,7 +1,8 @@
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 import { createDoc, createEvidence } from '@/domain/factory';
-import { recomputeMece } from '@/domain/mece';
+import { type MeceOptions, recomputeMece } from '@/domain/mece';
+import { meceOptions, type Settings } from '@/domain/settings';
 import {
   addChild as addChildOp,
   addEvidence as addEvidenceOp,
@@ -37,17 +38,19 @@ import {
   docName,
   type LibraryEntry,
   loadDocById,
+  loadSettings,
   loadWorkspace,
   removeDocById,
   saveDocById,
   saveLibrary,
+  saveSettings,
 } from '@/services/storage';
 
 const HISTORY_LIMIT = 100;
 const STARTER_QUESTION = 'Why is this happening?';
 
-function freshDoc(): IssueTreeDoc {
-  return recomputeMece(createDoc(STARTER_QUESTION, Date.now()));
+function freshDoc(options: MeceOptions): IssueTreeDoc {
+  return recomputeMece(createDoc(STARTER_QUESTION, Date.now()), options);
 }
 
 function entryFor(doc: IssueTreeDoc): LibraryEntry {
@@ -55,16 +58,28 @@ function entryFor(doc: IssueTreeDoc): LibraryEntry {
 }
 
 /** Seed the workspace from storage, migrating a legacy single-doc save, or start fresh. */
-function initialState(): { doc: IssueTreeDoc; library: LibraryEntry[]; activeId: string } {
+function initialState(): {
+  doc: IssueTreeDoc;
+  library: LibraryEntry[];
+  activeId: string;
+  settings: Settings;
+} {
+  const settings = loadSettings();
+  const options = meceOptions(settings);
   const ws = loadWorkspace();
   if (ws) {
-    return { doc: recomputeMece(ws.doc), library: ws.library.docs, activeId: ws.library.activeId };
+    return {
+      doc: recomputeMece(ws.doc, options),
+      library: ws.library.docs,
+      activeId: ws.library.activeId,
+      settings,
+    };
   }
-  const doc = freshDoc();
+  const doc = freshDoc(options);
   saveDocById(doc);
   const library = [entryFor(doc)];
   saveLibrary({ activeId: doc.id, docs: library });
-  return { doc, library, activeId: doc.id };
+  return { doc, library, activeId: doc.id, settings };
 }
 
 /** Keep the active doc's library name in sync with its root question; persist on change. */
@@ -92,8 +107,10 @@ interface AppState {
   past: IssueTreeDoc[];
   future: IssueTreeDoc[];
   selectedId: NodeId | null;
+  settings: Settings;
 
   select: (id: NodeId | null) => void;
+  setSettings: (patch: Partial<Settings>) => void;
   newDoc: () => void;
   switchDoc: (id: string) => void;
   deleteDoc: (id: string) => void;
@@ -140,7 +157,7 @@ export const useStore = create<AppState>((set, get) => {
     set((s) => {
       const transformed = transform(s.doc);
       if (transformed === s.doc) return s;
-      const doc = recomputeMece({ ...transformed, updatedAt: Date.now() });
+      const doc = recomputeMece({ ...transformed, updatedAt: Date.now() }, meceOptions(s.settings));
       saveDocById(doc);
       return {
         doc,
@@ -157,15 +174,25 @@ export const useStore = create<AppState>((set, get) => {
     doc: init.doc,
     library: init.library,
     activeId: init.activeId,
+    settings: init.settings,
     past: [],
     future: [],
     selectedId: null,
 
     select: (id) => set({ selectedId: id }),
+    setSettings: (patch) =>
+      set((s) => {
+        const settings = { ...s.settings, ...patch };
+        saveSettings(settings);
+        // Re-evaluate the active doc's MECE under the new options (tolerance / overlap).
+        const doc = recomputeMece(s.doc, meceOptions(settings));
+        saveDocById(doc);
+        return { settings, doc };
+      }),
 
     newDoc: () =>
       set((s) => {
-        const doc = freshDoc();
+        const doc = freshDoc(meceOptions(s.settings));
         return activate(doc, [...s.library, entryFor(doc)]);
       }),
 
@@ -174,7 +201,7 @@ export const useStore = create<AppState>((set, get) => {
         if (id === s.activeId) return s;
         const target = loadDocById(id);
         if (!target) return s;
-        return activate(recomputeMece(target), s.library);
+        return activate(recomputeMece(target, meceOptions(s.settings)), s.library);
       }),
 
     deleteDoc: (id) =>
@@ -182,6 +209,7 @@ export const useStore = create<AppState>((set, get) => {
         if (!s.library.some((e) => e.id === id)) return s;
         removeDocById(id);
         const docs = s.library.filter((e) => e.id !== id);
+        const opts = meceOptions(s.settings);
 
         // Deleting a non-active doc: just drop it from the library.
         if (id !== s.activeId) {
@@ -190,16 +218,22 @@ export const useStore = create<AppState>((set, get) => {
         }
         // Deleting the active doc: open another, or seed a fresh one if none remain.
         if (docs.length === 0) {
-          const doc = freshDoc();
+          const doc = freshDoc(opts);
           return activate(doc, [entryFor(doc)]);
         }
-        return activate(recomputeMece(loadDocById(docs[0]?.id ?? '') ?? freshDoc()), docs);
+        return activate(
+          recomputeMece(loadDocById(docs[0]?.id ?? '') ?? freshDoc(opts), opts),
+          docs
+        );
       }),
 
     openDoc: (incoming) =>
       set((s) => {
         // Import as a NEW document (fresh id) so it can't clobber an existing one.
-        const doc = recomputeMece({ ...incoming, id: nanoid() as DocId, updatedAt: Date.now() });
+        const doc = recomputeMece(
+          { ...incoming, id: nanoid() as DocId, updatedAt: Date.now() },
+          meceOptions(s.settings)
+        );
         return activate(doc, [...s.library, entryFor(doc)]);
       }),
 
@@ -246,7 +280,10 @@ export const useStore = create<AppState>((set, get) => {
       set((s) => {
         const { doc: transformed, newId } = duplicateNodeOp(s.doc, id);
         if (transformed === s.doc) return s;
-        const doc = recomputeMece({ ...transformed, updatedAt: Date.now() });
+        const doc = recomputeMece(
+          { ...transformed, updatedAt: Date.now() },
+          meceOptions(s.settings)
+        );
         saveDocById(doc);
         return {
           doc,
@@ -260,7 +297,10 @@ export const useStore = create<AppState>((set, get) => {
       set((s) => {
         const transformed = removeNodeOp(s.doc, id);
         if (transformed === s.doc) return s;
-        const doc = recomputeMece({ ...transformed, updatedAt: Date.now() });
+        const doc = recomputeMece(
+          { ...transformed, updatedAt: Date.now() },
+          meceOptions(s.settings)
+        );
         saveDocById(doc);
         return {
           doc,

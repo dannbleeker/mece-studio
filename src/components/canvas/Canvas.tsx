@@ -38,6 +38,7 @@ function Flow() {
   const addChild = useStore((s) => s.addChild);
   const collapseAll = useStore((s) => s.collapseAll);
   const expandAll = useStore((s) => s.expandAll);
+  const sortByPriority = useStore((s) => s.settings.sortSiblingsByPriority);
   const { fitView, getNodes, getIntersectingNodes, getViewport } = useReactFlow();
 
   // Inline label editing: double-click a node to edit its label in place.
@@ -83,8 +84,8 @@ function Flow() {
   }, [selectedId, editingId, addChild, select]);
 
   const { nodes: layoutNodes, edges } = useMemo(
-    () => toFlow(doc, selectedId, query),
-    [doc, selectedId, query]
+    () => toFlow(doc, selectedId, query, sortByPriority),
+    [doc, selectedId, query, sortByPriority]
   );
   const [nodes, setNodes, onNodesChange] = useNodesState(layoutNodes);
 
@@ -170,7 +171,8 @@ function Flow() {
       const target = findDropTarget(dragged);
       dropTargetRef.current = null;
       if (target) moveNode(dragged.id as NodeId, target.id as NodeId);
-      setNodes(toFlow(useStore.getState().doc, selectedId).nodes);
+      const st = useStore.getState();
+      setNodes(toFlow(st.doc, selectedId, '', st.settings.sortSiblingsByPriority).nodes);
     },
     [findDropTarget, moveNode, selectedId, setNodes]
   );

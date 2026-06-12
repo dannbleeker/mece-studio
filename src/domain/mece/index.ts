@@ -1,1 +1,1 @@
-export { evaluateSplit, recomputeMece } from './engine';
+export { DEFAULT_MECE_OPTIONS, evaluateSplit, type MeceOptions, recomputeMece } from './engine';

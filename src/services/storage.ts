@@ -1,8 +1,10 @@
+import { DEFAULT_SETTINGS, type Settings } from '@/domain/settings';
 import type { IssueTreeDoc } from '@/domain/types';
 
 const LIBRARY_KEY = 'mece-studio:library:v1';
 const LEGACY_DOC_KEY = 'mece-studio:doc:v1';
 const docKey = (id: string) => `mece-studio:doc:${id}`;
+const SETTINGS_KEY = 'mece-studio:settings:v1';
 
 /** One entry in the document library — enough to list it without loading it. */
 export interface LibraryEntry {
@@ -130,4 +132,29 @@ export function loadWorkspace(): { library: Library; doc: IssueTreeDoc } | null 
   const doc = loadDocById(activeId);
   if (!doc) return null;
   return { library: { ...library, activeId }, doc };
+}
+
+/** Load global app settings, merged over defaults so unknown/absent keys degrade gracefully. */
+export function loadSettings(): Settings {
+  const raw = readJson<Record<string, unknown>>(
+    SETTINGS_KEY,
+    (v): v is Record<string, unknown> => typeof v === 'object' && v !== null
+  );
+  if (!raw) return { ...DEFAULT_SETTINGS };
+  return {
+    sortSiblingsByPriority:
+      typeof raw.sortSiblingsByPriority === 'boolean'
+        ? raw.sortSiblingsByPriority
+        : DEFAULT_SETTINGS.sortSiblingsByPriority,
+    strictOverlap:
+      typeof raw.strictOverlap === 'boolean' ? raw.strictOverlap : DEFAULT_SETTINGS.strictOverlap,
+    formulaTolerance:
+      typeof raw.formulaTolerance === 'number' && raw.formulaTolerance > 0
+        ? raw.formulaTolerance
+        : DEFAULT_SETTINGS.formulaTolerance,
+  };
+}
+
+export function saveSettings(settings: Settings): void {
+  writeJson(SETTINGS_KEY, settings);
 }

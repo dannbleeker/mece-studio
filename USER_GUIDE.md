@@ -26,8 +26,9 @@ locally on your machine.
 13. [Saving, exporting, and importing](#saving-exporting-and-importing)
 14. [Undo, redo, and autosave](#undo-redo-and-autosave)
 15. [Installing as an app (offline)](#installing-as-an-app-offline)
-16. [Keyboard reference](#keyboard-reference)
-17. [Tips](#tips)
+16. [Settings](#settings)
+17. [Keyboard reference](#keyboard-reference)
+18. [Tips](#tips)
 
 ---
 
@@ -43,7 +44,7 @@ question.
   its decomposition, MECE status, priority, hypothesis status, value, evidence,
   and notes.
 - **The header** (top) has the document picker and the New / Examples / Synthesis /
-  Copy Markdown / Open / Save / Undo / Redo / About actions.
+  Copy Markdown / Open / Save / Undo / Redo / ⚙ Settings / About actions.
 
 Click a node to select it. Rename the root question to your real problem to
 begin — double-click it, or select it and press <kbd>Enter</kbd>.
@@ -272,6 +273,21 @@ MECE Studio is a **Progressive Web App**. Your browser may offer to **install**
 it (an icon in the address bar, or "Add to Home Screen" on mobile). Once
 installed it runs in its own window and **works offline** — the whole app is
 cached, so you can build trees on a plane.
+
+## Settings
+
+Open **⚙ Settings** in the header to tune three preferences. They're saved on
+this device and apply to every tree; all three default to the original behaviour.
+
+- **Sort siblings by priority.** Lay each split's branches out highest-impact
+  first (by the impact × ease score) instead of the order you added them. Off by
+  default — turning it on never changes your data, only the layout.
+- **Stricter overlap detection.** The mutual-exclusivity check normally flags
+  siblings that share a four-letter-or-longer word; strict mode also flags
+  three-letter words, catching more possible overlaps at the cost of more false
+  positives.
+- **Formula tolerance.** How closely a value-driver (formula) split must
+  reconcile to read as collectively exhaustive — from 0.1% to 5%, default 0.5%.
 
 ## Keyboard reference
 

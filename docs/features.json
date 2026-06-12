@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 38,
+  "reviewedThroughChangelogEntries": 39,
   "features": [
     { "id": "issue-tree", "name": "Issue-tree canvas", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
     { "id": "root-question", "name": "Editable root question", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
@@ -33,6 +33,8 @@
     { "id": "mece-formula", "name": "Formula split reconciliation", "area": "MECE", "since": 2, "manual": true, "book": true, "bookExample": true },
     { "id": "mece-segments", "name": "Segments exhaustive only with an explicit Other", "area": "MECE", "since": 2, "manual": true, "book": true, "bookExample": true },
     { "id": "mece-overlap-heuristic", "name": "Sibling-overlap (shared content word) heuristic", "area": "MECE", "since": 2, "manual": true, "book": true, "bookExample": false },
+    { "id": "setting-strict-overlap", "name": "Stricter overlap detection (opt-in, Settings)", "area": "MECE", "since": 6, "manual": true, "book": false, "bookExample": false },
+    { "id": "setting-formula-tolerance", "name": "Configurable formula tolerance (Settings)", "area": "MECE", "since": 6, "manual": true, "book": false, "bookExample": false },
 
     { "id": "priority-impact-ease", "name": "Impact x ease prioritisation", "area": "Prioritisation", "since": 3, "manual": true, "book": true, "bookExample": true },
     { "id": "priority-band", "name": "High / Medium / Low priority band chip", "area": "Prioritisation", "since": 3, "manual": true, "book": true, "bookExample": true },
@@ -56,6 +58,7 @@
 
     { "id": "auto-layout", "name": "Auto-layout (dagre, left-to-right)", "area": "Canvas", "since": 1, "manual": true, "book": false, "bookExample": false },
     { "id": "auto-fit", "name": "Auto-fit on tree changes", "area": "Canvas", "since": 1, "manual": true, "book": false, "bookExample": false },
+    { "id": "setting-sort-priority", "name": "Sort siblings by priority (opt-in, Settings)", "area": "Canvas", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "drag-reparent", "name": "Drag a node onto another to re-parent its subtree", "area": "Canvas", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "drop-highlight", "name": "Drop-target highlight while dragging", "area": "Canvas", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "collapse-subtree", "name": "Collapse / expand a subtree", "area": "Canvas", "since": 6, "manual": true, "book": false, "bookExample": false },

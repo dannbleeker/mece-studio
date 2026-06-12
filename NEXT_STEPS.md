@@ -5,11 +5,6 @@ Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 ## Features not yet built
 - **Integrated AI (optional).** The keyless **AI-assist prompts** ship — copy a _critique_ or _suggest-a-split_ prompt (tree embedded) into your own LLM. Calling an LLM directly from the app would need a backend or a stored API key (a cost/security decision); the prompt bridge is the keyless alternative. Everything else — the full deterministic tool plus PNG/PDF/PPTX/Markdown/JSON export — ships.
 
-## Decisions to make (raised during the autonomous build)
-- **Sort siblings on the canvas by priority?** The synthesis already ranks; the canvas keeps creation order. Reordering on the canvas would make nodes jump as you change priority — deliberately left as a choice.
-- **More-aggressive overlap detection** mode, vs. the current conservative shared-word heuristic.
-- **Configurable formula tolerance** (currently fixed at 0.5%) — would need a small settings surface.
-
 ## Polish / refinements
 - Coalesce rapid label / value edits if the blur-per-undo granularity proves noisy.
 

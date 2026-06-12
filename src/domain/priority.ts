@@ -1,4 +1,4 @@
-import type { Level, Priority } from './types';
+import type { IssueTreeDoc, Level, NodeId, Priority, Split, SplitId } from './types';
 
 const LEVEL_WEIGHT: Record<Level, number> = { low: 1, medium: 2, high: 3 };
 
@@ -15,4 +15,22 @@ export function priorityBand(p: Priority): PriorityBand {
   if (score >= 6) return 'high';
   if (score >= 3) return 'medium';
   return 'low';
+}
+
+/**
+ * Return a copy of `doc` with each split's children ordered by priority score
+ * (highest first; unprioritised last, stable). View-only — lays siblings out by
+ * priority without mutating the document's stored order.
+ */
+export function sortSiblingsByPriority(doc: IssueTreeDoc): IssueTreeDoc {
+  const score = (id: NodeId): number => {
+    const p = doc.nodes[id]?.priority;
+    return p ? priorityScore(p) : -1;
+  };
+  const splits: Record<SplitId, Split> = {};
+  for (const [id, split] of Object.entries(doc.splits)) {
+    const childIds = [...split.childIds].sort((a, b) => score(b) - score(a));
+    splits[id as SplitId] = { ...split, childIds };
+  }
+  return { ...doc, splits };
 }

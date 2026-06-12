@@ -59,6 +59,7 @@ locally on your machine.</p>
 <li><a href="#saving-exporting-and-importing">Saving, exporting, and importing</a></li>
 <li><a href="#undo-redo-and-autosave">Undo, redo, and autosave</a></li>
 <li><a href="#installing-as-an-app-offline">Installing as an app (offline)</a></li>
+<li><a href="#settings">Settings</a></li>
 <li><a href="#keyboard-reference">Keyboard reference</a></li>
 <li><a href="#tips">Tips</a></li>
 </ol>
@@ -74,7 +75,7 @@ left-to-right.</li>
 its decomposition, MECE status, priority, hypothesis status, value, evidence,
 and notes.</li>
 <li><strong>The header</strong> (top) has the document picker and the New / Examples / Synthesis /
-Copy Markdown / Open / Save / Undo / Redo / About actions.</li>
+Copy Markdown / Open / Save / Undo / Redo / ⚙ Settings / About actions.</li>
 </ul>
 <p>Click a node to select it. Rename the root question to your real problem to
 begin — double-click it, or select it and press <kbd>Enter</kbd>.</p>
@@ -267,6 +268,20 @@ immediately. Close the tab and come back; your trees are still there.</li>
 it (an icon in the address bar, or &quot;Add to Home Screen&quot; on mobile). Once
 installed it runs in its own window and <strong>works offline</strong> — the whole app is
 cached, so you can build trees on a plane.</p>
+<h2>Settings</h2>
+<p>Open <strong>⚙ Settings</strong> in the header to tune three preferences. They&#39;re saved on
+this device and apply to every tree; all three default to the original behaviour.</p>
+<ul>
+<li><strong>Sort siblings by priority.</strong> Lay each split&#39;s branches out highest-impact
+first (by the impact × ease score) instead of the order you added them. Off by
+default — turning it on never changes your data, only the layout.</li>
+<li><strong>Stricter overlap detection.</strong> The mutual-exclusivity check normally flags
+siblings that share a four-letter-or-longer word; strict mode also flags
+three-letter words, catching more possible overlaps at the cost of more false
+positives.</li>
+<li><strong>Formula tolerance.</strong> How closely a value-driver (formula) split must
+reconcile to read as collectively exhaustive — from 0.1% to 5%, default 0.5%.</li>
+</ul>
 <h2>Keyboard reference</h2>
 <p>These work on the canvas (they&#39;re ignored while you&#39;re typing in a field, so they
 never hijack the inspector inputs). Press <kbd>?</kbd> any time to see this list as

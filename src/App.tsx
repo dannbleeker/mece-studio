@@ -3,6 +3,7 @@ import { AboutDialog } from '@/components/about/AboutDialog';
 import { Canvas } from '@/components/canvas/Canvas';
 import { Inspector } from '@/components/inspector/Inspector';
 import { SynthesisPanel } from '@/components/SynthesisPanel';
+import { SettingsDialog } from '@/components/settings/SettingsDialog';
 import { ShortcutsDialog } from '@/components/shortcuts/ShortcutsDialog';
 import { EXAMPLE_TREES } from '@/domain/examples';
 import { toMarkdown } from '@/domain/export';
@@ -31,6 +32,7 @@ export function App() {
   const [showSynthesis, setShowSynthesis] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const onCopyMarkdown = () => {
     void copyToClipboard(toMarkdown(doc));
@@ -166,6 +168,15 @@ export function App() {
           <span className="mx-1 h-5 w-px bg-neutral-200" />
           <button
             type="button"
+            onClick={() => setShowSettings(true)}
+            className={GHOST_BTN}
+            title="Settings"
+            aria-label="Settings"
+          >
+            ⚙
+          </button>
+          <button
+            type="button"
             onClick={() => setShowShortcuts(true)}
             className={GHOST_BTN}
             title="Keyboard shortcuts (?)"
@@ -185,6 +196,7 @@ export function App() {
           {showSynthesis && <SynthesisPanel onClose={() => setShowSynthesis(false)} />}
           {showAbout && <AboutDialog onClose={() => setShowAbout(false)} />}
           {showShortcuts && <ShortcutsDialog onClose={() => setShowShortcuts(false)} />}
+          {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
         </main>
         <Inspector />
       </div>
