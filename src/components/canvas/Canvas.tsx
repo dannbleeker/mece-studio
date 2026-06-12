@@ -38,6 +38,7 @@ function Flow() {
 
   // Inline label editing: double-click a node to edit its label in place.
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
   const editing = useMemo<NodeEditing>(
     () => ({
       editingId,
@@ -77,7 +78,10 @@ function Flow() {
     return () => window.removeEventListener('keydown', onKey);
   }, [selectedId, editingId, addChild, select]);
 
-  const { nodes: layoutNodes, edges } = useMemo(() => toFlow(doc, selectedId), [doc, selectedId]);
+  const { nodes: layoutNodes, edges } = useMemo(
+    () => toFlow(doc, selectedId, query),
+    [doc, selectedId, query]
+  );
   const [nodes, setNodes, onNodesChange] = useNodesState(layoutNodes);
 
   // Auto-layout stays the source of truth: re-sync React Flow's nodes whenever the
@@ -145,6 +149,19 @@ function Flow() {
     [findDropTarget, moveNode, selectedId, setNodes]
   );
 
+  // Zoom to the nodes whose label matches the search query.
+  const fitToMatches = useCallback(() => {
+    const matched = nodes.filter((n) => n.data.matched);
+    if (matched.length > 0) {
+      void fitView({
+        nodes: matched.map((n) => ({ id: n.id })),
+        duration: 400,
+        padding: 0.4,
+        maxZoom: 1.2,
+      });
+    }
+  }, [nodes, fitView]);
+
   // Render the whole graph to a PNG (React Flow's bounds recipe). html-to-image
   // is loaded on demand so it stays off the eager bundle.
   const exportPng = async () => {
@@ -187,6 +204,19 @@ function Flow() {
       >
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e2dfd6" />
         <Controls showInteractive={false} />
+        <Panel position="top-left">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') fitToMatches();
+              e.stopPropagation();
+            }}
+            placeholder="Find…"
+            aria-label="Find nodes"
+            className="nodrag w-44 rounded-md border border-neutral-200 bg-white/90 px-2.5 py-1 text-[12px] text-neutral-700 shadow-sm focus:border-[#3f6fb0] focus:outline-none"
+          />
+        </Panel>
         <Panel position="top-right">
           <button
             type="button"

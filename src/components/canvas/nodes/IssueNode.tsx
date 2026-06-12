@@ -30,6 +30,7 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
     hasNote,
     collapsed,
     childCount,
+    matched,
     status,
     selected,
   } = data;
@@ -54,7 +55,7 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: canvas node; keyboard editing is via Enter/F2 (handled in Canvas)
     <div
-      className="relative flex h-full w-full flex-col justify-center rounded-lg bg-white px-3 py-2 shadow-sm"
+      className={`relative flex h-full w-full flex-col justify-center rounded-lg bg-white px-3 py-2 shadow-sm${matched ? ' ring-2 ring-[#d99a2b] ring-offset-1' : ''}`}
       onDoubleClick={() => start(id)}
       style={{
         borderStyle: 'solid',

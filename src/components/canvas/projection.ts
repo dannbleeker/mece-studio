@@ -19,6 +19,8 @@ export interface IssueNodeData extends Record<string, unknown> {
   collapsed: boolean;
   /** Direct children, for the collapsed badge. */
   childCount: number;
+  /** Label matches the active search query. */
+  matched: boolean;
   selected: boolean;
 }
 
@@ -31,8 +33,10 @@ export type IssueFlowNode = Node<IssueNodeData, 'issue'>;
  */
 export function toFlow(
   doc: IssueTreeDoc,
-  selectedId: string | null
+  selectedId: string | null,
+  query = ''
 ): { nodes: IssueFlowNode[]; edges: Edge[] } {
+  const q = query.trim().toLowerCase();
   const hidden = hiddenNodeIds(doc);
   const positions = layoutTree(doc, doc.layout.direction, hidden);
 
@@ -61,6 +65,7 @@ export function toFlow(
           hasNote: !!n.detail?.trim(),
           collapsed: n.collapsed === true,
           childCount: split ? split.childIds.length : 0,
+          matched: q !== '' && n.label.toLowerCase().includes(q),
           selected: n.id === selectedId,
         },
       };

@@ -53,4 +53,15 @@ describe('toFlow', () => {
     expect(a?.data.childCount).toBe(1);
     expect(edges).toHaveLength(1); // root → A only
   });
+
+  it('flags nodes whose label matches the search query', () => {
+    let doc = createDoc('Revenue', 1000);
+    doc = addChild(doc, doc.rootId, 'Price').doc;
+    doc = addChild(doc, doc.rootId, 'Volume').doc;
+    doc = recomputeMece(doc);
+
+    const matched = toFlow(doc, null, 'pri').nodes.filter((n) => n.data.matched);
+    expect(matched.map((n) => n.data.label)).toEqual(['Price']);
+    expect(toFlow(doc, null, '').nodes.some((n) => n.data.matched)).toBe(false);
+  });
 });
