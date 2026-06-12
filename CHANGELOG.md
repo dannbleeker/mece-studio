@@ -37,5 +37,8 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 - **Project scaffold (M0).** React 19 / Vite 8 / TS 6 / Tailwind 4 / Zustand 5 / vite-plugin-pwa. Domain model (`IssueNode`, `Split` as the MECE unit, `IssueTreeDoc`) + `factory`, a minimal app shell + Zustand store seeded with a root question, and the GitHub Pages deploy pipeline. Live at <https://mece-studio.struktureretsundfornuft.dk>.
 - **Local gate + CI + working agreement.** `pnpm verify` runs the full fail-fast gate — typecheck → lint/format (Biome) → dead-code (knip) → tests (Vitest) → build → bundle-size budget — via shell-free node runners (`scripts/verify.mjs`, `scripts/build.mjs`) that work under the local AppLocker policy and on CI. CI runs the same gate. `CLAUDE.md` captures the working agreement; `bundle-budget.json` is the single source of truth for the size budget.
 
+### Changed
+- **Send-to-Kindle activated.** With the repo SMTP secrets configured, the opt-in send-to-Kindle path is live and verified end-to-end — a manual **Rebuild book** dispatch (or a `[kindle]` commit) emails the freshly-built EPUB. Bumped `dawidd6/action-send-mail` from v3 to v17 so the email step runs on Node 24, ahead of GitHub's Node-20 action removal.
+
 ### Fixed
 - **Node styling warning.** The issue node mixed the `border` shorthand with a `borderLeft` status override, so React warned on every rerender. It now uses longhand border props — identical look, clean console.
