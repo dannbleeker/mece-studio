@@ -1,6 +1,6 @@
 import type { Level, Priority } from './types';
 
-export const LEVEL_WEIGHT: Record<Level, number> = { low: 1, medium: 2, high: 3 };
+const LEVEL_WEIGHT: Record<Level, number> = { low: 1, medium: 2, high: 3 };
 
 export type PriorityBand = 'low' | 'medium' | 'high';
 

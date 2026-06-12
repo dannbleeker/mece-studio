@@ -1,4 +1,4 @@
-import type { DecompositionType, LayoutDirection } from './types';
+import type { DecompositionType } from './types';
 
 /** Node box size, in px — the single source of truth shared by layout and the canvas. */
 export const NODE_WIDTH = 220;
@@ -7,9 +7,6 @@ export const NODE_HEIGHT = 64;
 /** dagre spacing (px). */
 export const RANK_GAP = 90;
 export const NODE_GAP = 24;
-
-/** 'LR' (left-to-right) is the classic McKinsey issue-tree look. */
-export const DEFAULT_LAYOUT_DIRECTION: LayoutDirection = 'LR';
 
 /** A decomposition needs at least this many children to be a real split. */
 export const MIN_SPLIT_CHILDREN = 2;

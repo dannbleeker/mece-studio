@@ -48,7 +48,7 @@ export const CHAPTER_FILES = [
 ];
 
 // TOC parts — grouped labels for the contents page (PDF) and nav (EPUB).
-export const TOC_GROUPS = [
+const TOC_GROUPS = [
   { label: 'Beginning', match: (f) => f.startsWith('00-') },
   { label: 'Structuring the problem', match: (f) => /^0[1-4]-/.test(f) },
   { label: 'Working the tree', match: (f) => /^0[5-8]-/.test(f) },

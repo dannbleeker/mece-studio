@@ -5,7 +5,7 @@ import { hiddenNodeIds, splitOf } from '@/domain/tree';
 import type { IssueNode, IssueTreeDoc, MeceStatus } from '@/domain/types';
 
 /** Data carried by each React Flow node. Must extend Record for React Flow v12. */
-export interface IssueNodeData extends Record<string, unknown> {
+interface IssueNodeData extends Record<string, unknown> {
   label: string;
   status: IssueNode['status'];
   /** MECE status of THIS node's decomposition, or null if it's a leaf. */

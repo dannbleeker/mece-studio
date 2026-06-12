@@ -1,6 +1,5 @@
 export type { IssueTreeDoc, LayoutDirection } from './document';
-export { SCHEMA_VERSION } from './document';
-export type { Brand, DocId, NodeId, Patch, SplitId } from './ids';
+export type { DocId, NodeId, SplitId } from './ids';
 export type {
   EvidenceItem,
   EvidenceStrength,
@@ -18,4 +17,3 @@ export type {
   MeceStatus,
   Split,
 } from './split';
-export { freshMece } from './split';

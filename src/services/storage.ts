@@ -94,7 +94,7 @@ export function removeDocById(id: string): void {
   storage()?.removeItem(docKey(id));
 }
 
-export function loadLibrary(): Library | null {
+function loadLibrary(): Library | null {
   return readJson(LIBRARY_KEY, isLibrary);
 }
 
