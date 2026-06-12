@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-06-12T18:05:09.319Z",
-  "commit": "aaca40f",
+  "generatedAt": "2026-06-12T18:07:59.930Z",
+  "commit": "0477bec",
   "headline": {
-    "linesTsJs": 6001,
-    "tests": 107,
+    "linesTsJs": 6046,
+    "tests": 109,
     "lineCoveragePct": 58.41,
-    "commits": 69,
+    "commits": 72,
     "ageDays": 1,
-    "trackedFiles": 126,
+    "trackedFiles": 128,
     "featureManualPct": 100,
     "featureBookPct": 45.6,
     "featureExamplePct": 31.6
@@ -25,8 +25,8 @@
     },
     {
       "category": "E2E tests (Playwright)",
-      "files": 10,
-      "lines": 401
+      "files": 12,
+      "lines": 446
     },
     {
       "category": "Build scripts",
@@ -68,7 +68,7 @@
   },
   "tests": {
     "unit": 88,
-    "e2e": 19
+    "e2e": 21
   },
   "domain": {
     "features": 57,
@@ -460,21 +460,21 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 1,
-    "commits": 69,
-    "commits7d": 69,
+    "commits": 72,
+    "commits7d": 72,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 57
+        "count": 58
       },
       {
         "name": "github-actions[bot]",
-        "count": 12
+        "count": 14
       }
     ],
     "churn30d": {
-      "added": 17491,
-      "removed": 1442
+      "added": 17557,
+      "removed": 1465
     },
     "changelogEntries": 36
   }
