@@ -1,0 +1,116 @@
+name: Rebuild book
+
+# Rebuild the PDF + EPUB from docs/guide/ whenever a book input changes, commit the
+# refreshed artifacts back, and (opt-in) email the EPUB to a Kindle address. The
+# deploy workflow independently copies the committed artifacts into the site.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/guide/*.md'
+      - 'scripts/build-book.mjs'
+      - 'scripts/build-book-pdf.mjs'
+      - 'scripts/build-book-epub.mjs'
+      - 'scripts/lib/bookChapters.mjs'
+      - 'scripts/lib/issueTreeSvg.mjs'
+  workflow_dispatch:
+    inputs:
+      send_to_kindle:
+        description: 'Also email the freshly-built EPUB to the configured Kindle address'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    name: Rebuild PDF + EPUB
+    runs-on: ubuntu-latest
+    # Loop-guard: never run on the bot's own artifact commit.
+    if: github.actor != 'github-actions[bot]'
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: '0' # browsers install project-local (matches e2e)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # full history so the PDF's reproducible date is stable
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: node ./node_modules/@playwright/test/cli.js install --with-deps chromium
+
+      - name: Rebuild the book
+        run: pnpm book
+
+      - name: Commit refreshed artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/guide/Issue-Trees-with-MECE-Studio.pdf docs/guide/Issue-Trees-with-MECE-Studio.epub
+          if git diff --cached --quiet; then
+            echo "Book artifacts unchanged."
+            exit 0
+          fi
+          git commit -m "docs: rebuild book (PDF + EPUB)"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then
+              echo "pushed on attempt $attempt"; exit 0
+            fi
+            echo "push attempt $attempt rejected; retrying in 5s…"; sleep 5
+          done
+          echo "could not push after retries"; exit 1
+
+      - name: Decide whether to send to Kindle
+        id: kindle
+        env:
+          KINDLE_TO: ${{ secrets.KINDLE_TO }}
+          HEAD_MSG: ${{ github.event.head_commit.message }}
+          DISPATCH_SEND: ${{ github.event.inputs.send_to_kindle }}
+        run: |
+          send=false
+          # Opt-in only, and only if a Kindle address is configured.
+          if [ -n "$KINDLE_TO" ]; then
+            if printf '%s' "$HEAD_MSG" | grep -qF '[kindle]'; then send=true; fi
+            if [ "$DISPATCH_SEND" = "true" ]; then send=true; fi
+          fi
+          echo "send=$send" >> "$GITHUB_OUTPUT"
+
+      - name: Stage a date-stamped EPUB
+        if: steps.kindle.outputs.send == 'true'
+        run: |
+          NAME="Issue-Trees-with-MECE-Studio-$(date +%Y-%m-%d).epub"
+          cp docs/guide/Issue-Trees-with-MECE-Studio.epub "$NAME"
+          echo "KINDLE_EPUB=$NAME" >> "$GITHUB_ENV"
+
+      - name: Email the EPUB to Kindle
+        if: steps.kindle.outputs.send == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST || 'smtp.gmail.com' }}
+          server_port: ${{ secrets.SMTP_PORT || 465 }}
+          secure: true
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASS }}
+          from: MECE Studio Book <${{ secrets.SMTP_USER }}>
+          to: ${{ secrets.KINDLE_TO }}
+          subject: 'Issue Trees with MECE Studio — book update'
+          body: |
+            The latest build of "Issue Trees with MECE Studio" is attached.
+            Sent automatically by the Rebuild book workflow. Commit: ${{ github.sha }}
+          attachments: ${{ env.KINDLE_EPUB }}

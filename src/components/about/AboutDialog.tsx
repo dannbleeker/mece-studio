@@ -13,6 +13,16 @@ const LINKS: { href: string; label: string; hint: string }[] = [
     hint: 'Reference for every feature and shortcut.',
   },
   {
+    href: '/Issue-Trees-with-MECE-Studio.pdf',
+    label: 'Read the book (PDF)',
+    hint: 'Issue Trees with MECE Studio — the practitioner’s guide.',
+  },
+  {
+    href: '/Issue-Trees-with-MECE-Studio.epub',
+    label: 'Read the book (EPUB)',
+    hint: 'Same book, for Kindle and e-readers.',
+  },
+  {
     href: '/notices.html',
     label: 'Third-party notices & trademarks',
     hint: 'Attribution and licenses for dependencies.',

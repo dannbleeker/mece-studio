@@ -14,3 +14,7 @@ node_modules/.cache
 # Playwright
 test-results
 playwright-report
+
+# Generated book copies (canonical artifacts are committed under docs/guide/)
+public/Issue-Trees-with-MECE-Studio.pdf
+public/Issue-Trees-with-MECE-Studio.epub

@@ -3,8 +3,9 @@
 // in-app About dialog. marked only; node-form, runs in the gate and the deploy
 // build. Pages whose source file is absent are skipped (USER_GUIDE.md arrives with
 // the user-manual artifact).
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { marked } from 'marked';
+import { BOOK_SLUG } from './lib/bookChapters.mjs';
 
 const PAGES = [
   {
@@ -77,5 +78,16 @@ for (const p of PAGES) {
   writeFileSync(p.output, page({ title: p.title, h1: p.h1, body }));
   process.stdout.write(`  ${p.source} -> ${p.output}\n`);
   built++;
+}
+
+// Copy the built book artifacts into public/ so they ship to the site root
+// (/Issue-Trees-with-MECE-Studio.pdf / .epub), get cached offline, and can be
+// linked from the About dialog. Skipped until `pnpm book` has produced them.
+for (const ext of ['pdf', 'epub']) {
+  const src = `docs/guide/${BOOK_SLUG}.${ext}`;
+  if (existsSync(src)) {
+    copyFileSync(src, `public/${BOOK_SLUG}.${ext}`);
+    process.stdout.write(`  ${src} -> public/${BOOK_SLUG}.${ext}\n`);
+  }
 }
 process.stdout.write(`docs: rendered ${built} page(s).\n`);
