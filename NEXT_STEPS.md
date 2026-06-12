@@ -3,8 +3,7 @@
 Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 
 ## Features not yet built
-- **Visual export: PPTX** (code-split, like PNG / PDF). PNG, PDF, Markdown, and JSON save/open are shipped.
-- **AI tier-3** — suggest a MECE split for a node; critique a tree for overlaps/gaps.
+- **AI tier-3** — suggest a MECE split for a node; critique a tree for overlaps/gaps. (All deterministic features ship; this is the main remaining one and needs API wiring.) Export is complete: PNG, **PDF**, **PPTX**, Markdown, and JSON save/open.
 
 ## Decisions to make (raised during the autonomous build)
 - **Sort siblings on the canvas by priority?** The synthesis already ranks; the canvas keeps creation order. Reordering on the canvas would make nodes jump as you change priority — deliberately left as a choice.

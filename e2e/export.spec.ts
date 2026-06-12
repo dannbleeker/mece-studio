@@ -1,24 +1,23 @@
 import { expect, test } from '@playwright/test';
 
-// The image render (html-to-image) + jspdf can take a few seconds.
+// The image render (html-to-image) + the export libraries can take a few seconds.
 test.describe(() => {
   test.slow();
 
-  test('Export PNG downloads a PNG file', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.locator('.react-flow__node').first()).toBeVisible();
+  const cases = [
+    { label: 'PNG', file: 'mece-tree.png' },
+    { label: 'PDF', file: 'mece-tree.pdf' },
+    { label: 'PPTX', file: 'mece-tree.pptx' },
+  ];
 
-    const download = page.waitForEvent('download');
-    await page.getByRole('button', { name: 'Export PNG' }).click();
-    expect((await download).suggestedFilename()).toBe('mece-tree.png');
-  });
+  for (const { label, file } of cases) {
+    test(`Export ${label} downloads ${file}`, async ({ page }) => {
+      await page.goto('/');
+      await expect(page.locator('.react-flow__node').first()).toBeVisible();
 
-  test('Export PDF downloads a PDF file', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.locator('.react-flow__node').first()).toBeVisible();
-
-    const download = page.waitForEvent('download');
-    await page.getByRole('button', { name: 'Export PDF' }).click();
-    expect((await download).suggestedFilename()).toBe('mece-tree.pdf');
-  });
+      const download = page.waitForEvent('download');
+      await page.getByRole('button', { name: label, exact: true }).click();
+      expect((await download).suggestedFilename()).toBe(file);
+    });
+  }
 });

@@ -212,6 +212,25 @@ function Flow() {
     pdf.save('mece-tree.pdf');
   };
 
+  const exportPptx = async () => {
+    const img = await renderToImage();
+    if (!img) return;
+    const PptxGenJS = (await import('pptxgenjs')).default;
+    const pptx = new PptxGenJS();
+    const slide = pptx.addSlide();
+    // Fit the image, centred, on the default 16:9 slide (10 × 5.625 in).
+    const margin = 0.3;
+    const aspect = img.width / img.height;
+    let w = 10 - margin * 2;
+    let h = w / aspect;
+    if (h > 5.625 - margin * 2) {
+      h = 5.625 - margin * 2;
+      w = h * aspect;
+    }
+    slide.addImage({ data: img.dataUrl, x: (10 - w) / 2, y: (5.625 - h) / 2, w, h });
+    await pptx.writeFile({ fileName: 'mece-tree.pptx' });
+  };
+
   return (
     <NodeEditingContext.Provider value={editing}>
       <ReactFlow
@@ -270,24 +289,34 @@ function Flow() {
           </div>
         </Panel>
         <Panel position="top-right">
-          <div className="flex gap-1">
+          <div className="flex items-center gap-0.5 rounded-md border border-neutral-200 bg-white/90 px-1.5 py-1 shadow-sm">
+            <span className="px-1 text-[11px] text-neutral-400">Export</span>
             <button
               type="button"
               onClick={() => {
                 void exportPng();
               }}
-              className="rounded-md border border-neutral-200 bg-white/90 px-2.5 py-1 text-[12px] text-neutral-600 shadow-sm hover:bg-white"
+              className="rounded px-1.5 py-0.5 text-[12px] text-neutral-600 hover:bg-neutral-100"
             >
-              Export PNG
+              PNG
             </button>
             <button
               type="button"
               onClick={() => {
                 void exportPdf();
               }}
-              className="rounded-md border border-neutral-200 bg-white/90 px-2.5 py-1 text-[12px] text-neutral-600 shadow-sm hover:bg-white"
+              className="rounded px-1.5 py-0.5 text-[12px] text-neutral-600 hover:bg-neutral-100"
             >
-              Export PDF
+              PDF
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                void exportPptx();
+              }}
+              className="rounded px-1.5 py-0.5 text-[12px] text-neutral-600 hover:bg-neutral-100"
+            >
+              PPTX
             </button>
           </div>
         </Panel>

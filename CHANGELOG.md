@@ -5,7 +5,7 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 ## [Unreleased]
 
 ### Added
-- **PDF export.** Export the canvas as a PDF from the header, alongside PNG. `jspdf` is loaded on demand (and reuses the PNG render), so it stays off the first-load bundle.
+- **PDF + PowerPoint export.** Export the canvas as a **PDF** or a **PPTX** slide from the header, alongside PNG. `jspdf` and `pptxgenjs` are loaded on demand (and reuse the PNG render), so they stay off the first-load bundle.
 - **Reorder siblings.** Move a node up or down among its siblings from the inspector — arrange branches in the order that reads best.
 - **Duplicate a subtree.** Copy a node and its whole subtree (with fresh ids) as a sibling from the inspector — handy for parallel branches that share a structure.
 - **Find on the canvas.** A search box (top-left) rings every node whose label matches as you type and shows a match count; press Enter to zoom to the matches — handy in a big tree.
