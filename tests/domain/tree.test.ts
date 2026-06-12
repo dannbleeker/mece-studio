@@ -4,6 +4,7 @@ import {
   addChild,
   childrenOf,
   descendantIds,
+  duplicateNode,
   hiddenNodeIds,
   moveNode,
   parentOf,
@@ -153,6 +154,21 @@ describe('tree ops', () => {
     expect(parentOf(moved, a1)).toBe(doc0.rootId);
 
     expect(moveNode(moved, a1, doc0.rootId)).toBe(moved); // already there
+  });
+
+  it('duplicateNode clones a subtree as a sibling with fresh ids', () => {
+    const doc0 = seed();
+    const { doc: d1, childId: a } = addChild(doc0, doc0.rootId, 'A');
+    const { doc: d2 } = addChild(d1, a, 'A-child');
+    const { doc, newId } = duplicateNode(d2, a);
+
+    expect(childrenOf(doc, doc0.rootId)).toHaveLength(2); // A + its clone
+    expect(newId).not.toBe(a);
+    const cloneChildren = childrenOf(doc, newId);
+    expect(cloneChildren).toHaveLength(1);
+    expect(cloneChildren[0]?.label).toBe('A-child');
+    expect(cloneChildren[0]?.id).not.toBe(childrenOf(doc, a)[0]?.id); // fresh ids
+    expect(duplicateNode(doc, doc0.rootId).doc).toBe(doc); // root is a no-op
   });
 
   it('removeNode drops the subtree and updates the parent split; root is protected', () => {

@@ -201,6 +201,52 @@ export function moveNode(doc: IssueTreeDoc, nodeId: NodeId, newParentId: NodeId)
 }
 
 /**
+ * Duplicate a node and its whole subtree, inserting the copy as a sibling under
+ * the same parent. Fresh ids throughout. No-op for the root or a missing node.
+ */
+export function duplicateNode(
+  doc: IssueTreeDoc,
+  nodeId: NodeId
+): { doc: IssueTreeDoc; newId: NodeId } {
+  const parent = parentOf(doc, nodeId);
+  if (nodeId === doc.rootId || parent === undefined || !doc.nodes[nodeId]) {
+    return { doc, newId: nodeId };
+  }
+
+  const subtreeIds = [nodeId, ...descendantIds(doc, nodeId)];
+  const idMap = new Map<NodeId, NodeId>();
+  const nodes = { ...doc.nodes };
+  for (const id of subtreeIds) {
+    const orig = doc.nodes[id];
+    if (!orig) continue;
+    const clone = createNode(orig.label);
+    idMap.set(id, clone.id);
+    nodes[clone.id] = { ...orig, id: clone.id, evidence: orig.evidence.map((e) => ({ ...e })) };
+  }
+
+  const splits = { ...doc.splits };
+  for (const split of Object.values(doc.splits)) {
+    const newParent = idMap.get(split.parentId);
+    if (newParent === undefined) continue;
+    const cloned: Split = {
+      ...createSplit(newParent, split.decomposition),
+      childIds: split.childIds.map((c) => idMap.get(c)).filter((c): c is NodeId => c !== undefined),
+    };
+    if (split.operator !== undefined) cloned.operator = split.operator;
+    splits[cloned.id] = cloned;
+  }
+
+  // Insert the clone as a sibling of the original.
+  const newId = idMap.get(nodeId) as NodeId;
+  const parentSplit = Object.values(splits).find((s) => s.parentId === parent);
+  if (parentSplit) {
+    splits[parentSplit.id] = { ...parentSplit, childIds: [...parentSplit.childIds, newId] };
+  }
+
+  return { doc: { ...doc, nodes, splits }, newId };
+}
+
+/**
  * Decompose `parentId`. If it already has a split, just change the type;
  * otherwise create the split and seed type-appropriate starter children.
  */

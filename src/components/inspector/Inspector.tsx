@@ -69,6 +69,7 @@ export function Inspector() {
   const updateEvidence = useStore((s) => s.updateEvidence);
   const addChild = useStore((s) => s.addChild);
   const removeNode = useStore((s) => s.removeNode);
+  const duplicateNode = useStore((s) => s.duplicateNode);
   const [evidenceDraft, setEvidenceDraft] = useState('');
 
   const node = selectedId ? doc.nodes[selectedId] : undefined;
@@ -396,6 +397,15 @@ export function Inspector() {
         >
           + Add sub-issue
         </button>
+        {!isRoot && (
+          <button
+            type="button"
+            className="rounded-md px-3 py-2 text-[13px] text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800"
+            onClick={() => duplicateNode(selectedId)}
+          >
+            Duplicate subtree
+          </button>
+        )}
         {!isRoot && (
           <button
             type="button"

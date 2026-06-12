@@ -5,6 +5,7 @@ import {
   addChild as addChildOp,
   addEvidence as addEvidenceOp,
   decompose as decomposeOp,
+  duplicateNode as duplicateNodeOp,
   moveNode as moveNodeOp,
   removeEvidence as removeEvidenceOp,
   removeNode as removeNodeOp,
@@ -70,6 +71,7 @@ interface AppState {
   setOperator: (parentId: NodeId, operator: FormulaOperator) => void;
   decompose: (parentId: NodeId, decomposition: DecompositionType) => void;
   moveNode: (id: NodeId, newParentId: NodeId) => void;
+  duplicateNode: (id: NodeId) => void;
   removeNode: (id: NodeId) => void;
   undo: () => void;
   redo: () => void;
@@ -160,6 +162,19 @@ export const useStore = create<AppState>((set, get) => {
     decompose: (parentId, decomposition) =>
       apply((doc) => decomposeOp(doc, parentId, decomposition)),
     moveNode: (id, newParentId) => apply((doc) => moveNodeOp(doc, id, newParentId)),
+    duplicateNode: (id) =>
+      set((s) => {
+        const { doc: transformed, newId } = duplicateNodeOp(s.doc, id);
+        if (transformed === s.doc) return s;
+        const doc = recomputeMece({ ...transformed, updatedAt: Date.now() });
+        saveDoc(doc);
+        return {
+          doc,
+          past: [...s.past, s.doc].slice(-HISTORY_LIMIT),
+          future: [],
+          selectedId: newId,
+        };
+      }),
 
     removeNode: (id) =>
       set((s) => {
