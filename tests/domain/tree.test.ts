@@ -7,6 +7,7 @@ import {
   duplicateNode,
   hiddenNodeIds,
   moveNode,
+  moveSibling,
   parentOf,
   removeNode,
   renameNode,
@@ -169,6 +170,28 @@ describe('tree ops', () => {
     expect(cloneChildren[0]?.label).toBe('A-child');
     expect(cloneChildren[0]?.id).not.toBe(childrenOf(doc, a)[0]?.id); // fresh ids
     expect(duplicateNode(doc, doc0.rootId).doc).toBe(doc); // root is a no-op
+  });
+
+  it('moveSibling reorders a node among its siblings', () => {
+    const doc0 = seed();
+    let doc = addChild(doc0, doc0.rootId, 'A').doc;
+    doc = addChild(doc, doc0.rootId, 'B').doc;
+    doc = addChild(doc, doc0.rootId, 'C').doc;
+    const ids = splitOf(doc, doc0.rootId)?.childIds ?? [];
+    const [aId, bId] = ids;
+    if (!aId || !bId) throw new Error('expected children');
+
+    expect(childrenOf(moveSibling(doc, bId, 'up'), doc0.rootId).map((n) => n.label)).toEqual([
+      'B',
+      'A',
+      'C',
+    ]);
+    expect(childrenOf(moveSibling(doc, bId, 'down'), doc0.rootId).map((n) => n.label)).toEqual([
+      'A',
+      'C',
+      'B',
+    ]);
+    expect(moveSibling(doc, aId, 'up')).toBe(doc); // first child can't move up
   });
 
   it('removeNode drops the subtree and updates the parent split; root is protected', () => {

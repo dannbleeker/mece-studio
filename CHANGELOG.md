@@ -5,6 +5,7 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 ## [Unreleased]
 
 ### Added
+- **Reorder siblings.** Move a node up or down among its siblings from the inspector — arrange branches in the order that reads best.
 - **Duplicate a subtree.** Copy a node and its whole subtree (with fresh ids) as a sibling from the inspector — handy for parallel branches that share a structure.
 - **Find on the canvas.** A search box (top-left) rings every node whose label matches as you type and shows a match count; press Enter to zoom to the matches — handy in a big tree.
 - **Collapse subtrees.** Any node with children gets a toggle — collapse to hide its subtree (the node shows a ▶ N badge with the hidden count) so you can focus on one branch of a big tree; the layout re-tidies around what's left visible. **Collapse all / Expand all** buttons (top-left) fold or unfold the whole tree at once.

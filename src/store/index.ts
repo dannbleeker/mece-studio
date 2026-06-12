@@ -7,6 +7,7 @@ import {
   decompose as decomposeOp,
   duplicateNode as duplicateNodeOp,
   moveNode as moveNodeOp,
+  moveSibling as moveSiblingOp,
   removeEvidence as removeEvidenceOp,
   removeNode as removeNodeOp,
   renameNode as renameNodeOp,
@@ -71,6 +72,7 @@ interface AppState {
   setOperator: (parentId: NodeId, operator: FormulaOperator) => void;
   decompose: (parentId: NodeId, decomposition: DecompositionType) => void;
   moveNode: (id: NodeId, newParentId: NodeId) => void;
+  moveSibling: (id: NodeId, direction: 'up' | 'down') => void;
   duplicateNode: (id: NodeId) => void;
   removeNode: (id: NodeId) => void;
   undo: () => void;
@@ -162,6 +164,7 @@ export const useStore = create<AppState>((set, get) => {
     decompose: (parentId, decomposition) =>
       apply((doc) => decomposeOp(doc, parentId, decomposition)),
     moveNode: (id, newParentId) => apply((doc) => moveNodeOp(doc, id, newParentId)),
+    moveSibling: (id, direction) => apply((doc) => moveSiblingOp(doc, id, direction)),
     duplicateNode: (id) =>
       set((s) => {
         const { doc: transformed, newId } = duplicateNodeOp(s.doc, id);

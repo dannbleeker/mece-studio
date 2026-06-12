@@ -70,6 +70,7 @@ export function Inspector() {
   const addChild = useStore((s) => s.addChild);
   const removeNode = useStore((s) => s.removeNode);
   const duplicateNode = useStore((s) => s.duplicateNode);
+  const moveSibling = useStore((s) => s.moveSibling);
   const [evidenceDraft, setEvidenceDraft] = useState('');
 
   const node = selectedId ? doc.nodes[selectedId] : undefined;
@@ -397,6 +398,24 @@ export function Inspector() {
         >
           + Add sub-issue
         </button>
+        {!isRoot && (
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className="flex-1 rounded-md px-3 py-1.5 text-[12px] text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800"
+              onClick={() => moveSibling(selectedId, 'up')}
+            >
+              ↑ Move up
+            </button>
+            <button
+              type="button"
+              className="flex-1 rounded-md px-3 py-1.5 text-[12px] text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800"
+              onClick={() => moveSibling(selectedId, 'down')}
+            >
+              ↓ Move down
+            </button>
+          </div>
+        )}
         {!isRoot && (
           <button
             type="button"

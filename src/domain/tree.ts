@@ -200,6 +200,22 @@ export function moveNode(doc: IssueTreeDoc, nodeId: NodeId, newParentId: NodeId)
   return { ...doc, splits };
 }
 
+/** Reorder a node among its siblings. No-op at the ends or with no parent. */
+export function moveSibling(
+  doc: IssueTreeDoc,
+  nodeId: NodeId,
+  direction: 'up' | 'down'
+): IssueTreeDoc {
+  const split = Object.values(doc.splits).find((s) => s.childIds.includes(nodeId));
+  if (!split) return doc;
+  const i = split.childIds.indexOf(nodeId);
+  const j = direction === 'up' ? i - 1 : i + 1;
+  if (j < 0 || j >= split.childIds.length) return doc;
+  const childIds = [...split.childIds];
+  [childIds[i], childIds[j]] = [childIds[j], childIds[i]];
+  return { ...doc, splits: { ...doc.splits, [split.id]: { ...split, childIds } } };
+}
+
 /**
  * Duplicate a node and its whole subtree, inserting the copy as a sibling under
  * the same parent. Fresh ids throughout. No-op for the root or a missing node.
