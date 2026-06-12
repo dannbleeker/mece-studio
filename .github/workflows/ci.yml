@@ -31,3 +31,33 @@ jobs:
 
       - name: Verify (typecheck, lint, dead-code, test, build, size)
         run: pnpm verify
+
+  e2e:
+    name: E2E (Playwright)
+    runs-on: ubuntu-latest
+    env:
+      # Match the local setup: browsers install project-local, not into ~/.cache.
+      PLAYWRIGHT_BROWSERS_PATH: '0'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: node ./node_modules/@playwright/test/cli.js install --with-deps chromium
+
+      - name: Run e2e (real-browser drag-to-reparent)
+        run: pnpm e2e

@@ -13,7 +13,8 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { descendantIds, parentOf } from '@/domain/tree';
 import type { NodeId } from '@/domain/types';
 import { downloadDataUrl } from '@/services/download';
 import { useStore } from '@/store';
@@ -22,6 +23,8 @@ import { toFlow } from './projection';
 
 const nodeTypes: NodeTypes = { issue: IssueNode };
 const FIT_VIEW_OPTIONS = { padding: 0.3, maxZoom: 1.2 };
+// Ring applied to the node a drag would re-parent onto (valid targets only).
+const DROP_TARGET_CLASS = 'rounded-lg ring-2 ring-[#3f7d54] ring-offset-2 ring-offset-[#faf9f5]';
 
 function Flow() {
   const doc = useStore((s) => s.doc);
@@ -51,16 +54,51 @@ function Flow() {
     return () => cancelAnimationFrame(handle);
   }, [nodeCount, fitView]);
 
-  // Drag a node onto another to re-parent it (and its subtree) there. On release
-  // we reconcile to the auto-layout: a valid drop re-parents and re-lays-out,
-  // anything else snaps the node back to where dagre had it.
+  // The node a drag would re-parent onto: the first intersecting node that's a
+  // valid target — not the dragged node, its own subtree (a cycle), or the
+  // parent it already has (a no-op). Mirrors moveNode's guards so the highlight
+  // and the drop agree.
+  const dropTargetRef = useRef<string | null>(null);
+  const findDropTarget = useCallback(
+    (dragged: Node): Node | undefined => {
+      const d = useStore.getState().doc;
+      const draggedId = dragged.id as NodeId;
+      const blocked = new Set<string>([draggedId, ...descendantIds(d, draggedId)]);
+      const currentParent = parentOf(d, draggedId);
+      return getIntersectingNodes(dragged).find(
+        (n) => !blocked.has(n.id) && n.id !== currentParent
+      );
+    },
+    [getIntersectingNodes]
+  );
+
+  // While dragging, ring the node we'd drop onto so the re-parent is legible.
+  const onNodeDrag = useCallback(
+    (_evt: unknown, dragged: Node) => {
+      const targetId = findDropTarget(dragged)?.id ?? null;
+      if (dropTargetRef.current === targetId) return;
+      dropTargetRef.current = targetId;
+      setNodes((ns) =>
+        ns.map((n) => {
+          const cls = n.id === targetId ? DROP_TARGET_CLASS : '';
+          return n.className === cls ? n : { ...n, className: cls };
+        })
+      );
+    },
+    [findDropTarget, setNodes]
+  );
+
+  // On release, reconcile to the auto-layout: a valid drop re-parents and
+  // re-lays-out; anything else snaps back. Re-deriving from the doc also clears
+  // the drop-target ring.
   const onNodeDragStop = useCallback(
     (_evt: unknown, dragged: Node) => {
-      const target = getIntersectingNodes(dragged).find((n) => n.id !== dragged.id);
+      const target = findDropTarget(dragged);
+      dropTargetRef.current = null;
       if (target) moveNode(dragged.id as NodeId, target.id as NodeId);
       setNodes(toFlow(useStore.getState().doc, selectedId).nodes);
     },
-    [getIntersectingNodes, moveNode, selectedId, setNodes]
+    [findDropTarget, moveNode, selectedId, setNodes]
   );
 
   // Render the whole graph to a PNG (React Flow's bounds recipe). html-to-image
@@ -93,6 +131,7 @@ function Flow() {
       nodeTypes={nodeTypes}
       onNodesChange={onNodesChange}
       onNodeClick={(_, node) => select(node.id as NodeId)}
+      onNodeDrag={onNodeDrag}
       onNodeDragStop={onNodeDragStop}
       onPaneClick={() => select(null)}
       nodesConnectable={false}
