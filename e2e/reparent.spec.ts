@@ -1,6 +1,6 @@
 import { expect, type Locator, test } from '@playwright/test';
+import { activeDoc, resetApp } from './helpers';
 
-const KEY = 'mece-studio:doc:v1';
 const RING = /ring-\[#3f7d54\]/; // the drop-target highlight class
 
 // Wait until a node stops moving (the post-add fitView animation settles) before
@@ -25,9 +25,7 @@ const center = (b: { x: number; y: number; width: number; height: number }) => (
 });
 
 test('drag-to-reparent: highlights the valid target and re-parents on drop', async ({ page }) => {
-  await page.goto('/');
-  await page.evaluate((k) => localStorage.removeItem(k), KEY);
-  await page.reload();
+  await resetApp(page);
 
   // Add two sub-issues under the root.
   await page.locator('.react-flow__node').first().click();
@@ -37,11 +35,8 @@ test('drag-to-reparent: highlights the valid target and re-parents on drop', asy
   await expect(page.locator('.react-flow__node')).toHaveCount(3);
 
   // Identify the root and its two children from the persisted document.
-  const { childIds } = await page.evaluate((k) => {
-    const doc = JSON.parse(localStorage.getItem(k));
-    return { childIds: Object.keys(doc.nodes).filter((id) => id !== doc.rootId) };
-  }, KEY);
-  const [aId, bId] = childIds;
+  const doc = await activeDoc(page);
+  const [aId, bId] = Object.keys(doc.nodes).filter((id) => id !== doc.rootId);
   const a = page.locator(`.react-flow__node[data-id="${aId}"]`);
   const b = page.locator(`.react-flow__node[data-id="${bId}"]`);
 
@@ -60,31 +55,23 @@ test('drag-to-reparent: highlights the valid target and re-parents on drop', asy
   await page.mouse.up();
 
   // After release: B is now a child of A, and the ring is cleared.
-  const parentOfB = await page.evaluate(
-    ({ k, id }) => {
-      const doc = JSON.parse(localStorage.getItem(k));
-      return Object.values(doc.splits).find((s) => s.childIds.includes(id))?.parentId;
-    },
-    { k: KEY, id: bId }
-  );
+  const after = await activeDoc(page);
+  const parentOfB = Object.values(after.splits).find((s) => s.childIds.includes(bId))?.parentId;
   expect(parentOfB).toBe(aId);
   await expect(a).not.toHaveClass(RING);
 });
 
 test('dropping onto nothing snaps back (no re-parent)', async ({ page }) => {
-  await page.goto('/');
-  await page.evaluate((k) => localStorage.removeItem(k), KEY);
-  await page.reload();
+  await resetApp(page);
 
   await page.locator('.react-flow__node').first().click();
   await page.getByRole('button', { name: '+ Add sub-issue' }).click();
   await expect(page.locator('.react-flow__node')).toHaveCount(2);
 
-  const { rootId, childIds } = await page.evaluate((k) => {
-    const doc = JSON.parse(localStorage.getItem(k));
-    return { rootId: doc.rootId, childIds: Object.keys(doc.nodes).filter((id) => id !== doc.rootId) };
-  }, KEY);
-  const child = page.locator(`.react-flow__node[data-id="${childIds[0]}"]`);
+  const doc = await activeDoc(page);
+  const rootId = doc.rootId;
+  const [childId] = Object.keys(doc.nodes).filter((id) => id !== doc.rootId);
+  const child = page.locator(`.react-flow__node[data-id="${childId}"]`);
   const c = center(await settledBox(child));
 
   // Drag the child straight down into empty space (no node there) and drop.
@@ -94,12 +81,7 @@ test('dropping onto nothing snaps back (no re-parent)', async ({ page }) => {
   await page.mouse.up();
 
   // Still a child of the root — the drop resolved to nothing.
-  const parent = await page.evaluate(
-    ({ k, id }) => {
-      const doc = JSON.parse(localStorage.getItem(k));
-      return Object.values(doc.splits).find((s) => s.childIds.includes(id))?.parentId;
-    },
-    { k: KEY, id: childIds[0] }
-  );
+  const after = await activeDoc(page);
+  const parent = Object.values(after.splits).find((s) => s.childIds.includes(childId))?.parentId;
   expect(parent).toBe(rootId);
 });

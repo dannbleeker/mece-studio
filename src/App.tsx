@@ -14,6 +14,10 @@ export function App() {
   const doc = useStore((s) => s.doc);
   const newDoc = useStore((s) => s.newDoc);
   const openDoc = useStore((s) => s.openDoc);
+  const library = useStore((s) => s.library);
+  const activeId = useStore((s) => s.activeId);
+  const switchDoc = useStore((s) => s.switchDoc);
+  const deleteDoc = useStore((s) => s.deleteDoc);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
   const removeNode = useStore((s) => s.removeNode);
@@ -31,8 +35,8 @@ export function App() {
   const onSaveJson = () => {
     downloadText('mece-tree.json', JSON.stringify(doc, null, 2), 'application/json');
   };
-  const onNew = () => {
-    if (window.confirm('Start a new tree? Your current one stays in undo.')) newDoc();
+  const onDelete = () => {
+    if (window.confirm('Delete this tree? This cannot be undone.')) deleteDoc(activeId);
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -74,14 +78,25 @@ export function App() {
     <div className="flex h-full flex-col bg-[#faf9f5] text-neutral-800">
       <header className="flex shrink-0 items-center gap-3 border-neutral-200 border-b bg-white px-5 py-2.5">
         <span className="font-semibold text-[#3f6fb0] text-lg tracking-tight">MECE Studio</span>
-        <span className="hidden text-[12px] text-neutral-400 sm:inline">
-          issue trees, MECE by construction
-        </span>
+        <select
+          value={activeId}
+          onChange={(e) => switchDoc(e.target.value)}
+          aria-label="Open tree"
+          className="max-w-[220px] truncate rounded-md border border-neutral-200 bg-white px-2 py-1 text-[13px] text-neutral-700 focus:border-[#3f6fb0] focus:outline-none"
+        >
+          {library.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.name || 'Untitled tree'}
+            </option>
+          ))}
+        </select>
+        <button type="button" onClick={() => newDoc()} className={GHOST_BTN} title="New tree">
+          + New
+        </button>
+        <button type="button" onClick={onDelete} className={GHOST_BTN} title="Delete this tree">
+          Delete
+        </button>
         <div className="ml-auto flex items-center gap-1">
-          <button type="button" onClick={onNew} className={GHOST_BTN}>
-            New
-          </button>
-          <span className="mx-1 h-5 w-px bg-neutral-200" />
           <button type="button" onClick={() => setShowSynthesis((v) => !v)} className={GHOST_BTN}>
             Synthesis
           </button>

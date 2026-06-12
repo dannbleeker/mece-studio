@@ -1,6 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
-
-const KEY = 'mece-studio:doc:v1';
+import { activeDoc, resetApp } from './helpers';
 
 // Inline editing opens by double-clicking a node (the everyday gesture) or by
 // pressing Enter / F2 on the selected node. Playwright's simulated dblclick goes
@@ -9,9 +8,7 @@ const KEY = 'mece-studio:doc:v1';
 // and the double-click wiring is covered by dispatching the native event.
 
 async function freshRoot(page: Page) {
-  await page.goto('/');
-  await page.evaluate((k) => localStorage.removeItem(k), KEY);
-  await page.reload();
+  await resetApp(page);
   return page.locator('.react-flow__node').first();
 }
 
@@ -34,11 +31,8 @@ test('Enter edits the selected node; commit persists the new label', async ({ pa
   await expect(root.locator('textarea')).toBeHidden();
   await expect(root).toContainText('Why are margins down?');
 
-  const label = await page.evaluate((k) => {
-    const doc = JSON.parse(localStorage.getItem(k));
-    return doc.nodes[doc.rootId].label;
-  }, KEY);
-  expect(label).toBe('Why are margins down?');
+  const doc = await activeDoc(page);
+  expect(doc.nodes[doc.rootId].label).toBe('Why are margins down?');
 });
 
 test('Tab on the selected node adds a child and edits it', async ({ page }) => {
@@ -52,12 +46,9 @@ test('Tab on the selected node adds a child and edits it', async ({ page }) => {
   await input.fill('Revenue');
   await input.press('Enter');
 
-  const childLabel = await page.evaluate((k) => {
-    const doc = JSON.parse(localStorage.getItem(k));
-    const split = Object.values(doc.splits).find((s) => s.parentId === doc.rootId);
-    return doc.nodes[split.childIds[0]].label;
-  }, KEY);
-  expect(childLabel).toBe('Revenue');
+  const doc = await activeDoc(page);
+  const split = Object.values(doc.splits).find((s) => s.parentId === doc.rootId);
+  expect(doc.nodes[split.childIds[0]].label).toBe('Revenue');
 });
 
 test('Escape cancels the edit without changing the label', async ({ page }) => {

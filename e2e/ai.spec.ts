@@ -1,17 +1,9 @@
-import { expect, type Page, test } from '@playwright/test';
-
-const KEY = 'mece-studio:doc:v1';
-
-async function freshTree(page: Page) {
-  await page.goto('/');
-  await page.evaluate((k) => localStorage.removeItem(k), KEY);
-  await page.reload();
-  await expect(page.locator('.react-flow__node').first()).toBeVisible();
-}
+import { expect, test } from '@playwright/test';
+import { resetApp } from './helpers';
 
 test('Synthesis "AI critique" copies a prompt with the tree embedded', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-  await freshTree(page);
+  await resetApp(page);
 
   await page.getByRole('button', { name: 'Synthesis' }).click();
   await page.getByRole('button', { name: 'AI critique' }).click();
@@ -26,7 +18,7 @@ test('inspector copies a "suggest a split" prompt for the selected node', async 
   context,
 }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-  await freshTree(page);
+  await resetApp(page);
 
   await page.locator('.react-flow__node').first().click();
   await page.getByRole('button', { name: /suggest a split/ }).click();

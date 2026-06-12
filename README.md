@@ -15,7 +15,8 @@ Sibling to [TP Studio](https://tp-studio.struktureretsundfornuft.dk) (Theory of 
 - **Value-driver trees.** Put numbers (with **units**) on a formula split's children and **roll them up** into the parent — combining by **sum, product, or difference** — with a reconciliation check, plus a **sensitivity** readout that ranks which driver moves the value most (±10%).
 - **Answer-first synthesis.** A Synthesis panel reads the tree back leading with the highest-priority branch, surfaces each node's evidence, and flags MECE gaps/overlaps — copyable as Markdown.
 - **Notes** per node for rationale, assumptions, and data sources.
-- **Export & round-trip.** PNG of the canvas, a Markdown outline, and JSON **save / open**.
+- **Multiple trees.** Keep a **library** of issue trees — a header picker switches between them, **+ New** starts another, **Delete** removes one. Each tree saves locally on its own; an older single saved tree migrates into the library automatically.
+- **Export & round-trip.** **PNG / PDF / PowerPoint** of the canvas, a **Markdown** outline, and **JSON save / open** — plus **keyless AI assist**: copy a _critique_ or _suggest-a-split_ prompt with your tree embedded, to paste into Claude or ChatGPT.
 - **Navigate big trees.** **Collapse** any subtree (a ▶ N badge shows what's hidden) or Collapse all / Expand all at once; **search** rings matching nodes and zooms to them.
 - **Built for flow.** Rename inline (double-click or Enter / F2), **Tab** to add a child, **drag** a node onto another to re-parent its subtree (with a drop-target highlight), **duplicate** or **reorder** a branch from the inspector. Undo / redo (with `Ctrl/⌘+Z` · `Y` and `Delete` shortcuts), auto-layout (dagre, left-to-right), and localStorage persistence — no account, no backend.
 

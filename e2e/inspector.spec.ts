@@ -1,11 +1,8 @@
 import { expect, type Page, test } from '@playwright/test';
-
-const KEY = 'mece-studio:doc:v1';
+import { activeDoc, resetApp } from './helpers';
 
 async function freshRootSelected(page: Page) {
-  await page.goto('/');
-  await page.evaluate((k) => localStorage.removeItem(k), KEY);
-  await page.reload();
+  await resetApp(page);
   await page.locator('.react-flow__node').first().click();
 }
 
@@ -21,11 +18,8 @@ test('set a value and unit, shown on the node', async ({ page }) => {
   await expect(node).toContainText('250');
   await expect(node).toContainText('DKK');
 
-  const value = await page.evaluate((k) => {
-    const doc = JSON.parse(localStorage.getItem(k));
-    return doc.nodes[doc.rootId].value;
-  }, KEY);
-  expect(value).toEqual({ amount: 250, unit: 'DKK' });
+  const doc = await activeDoc(page);
+  expect(doc.nodes[doc.rootId].value).toEqual({ amount: 250, unit: 'DKK' });
 });
 
 test('adding notes shows a marker on the node', async ({ page }) => {

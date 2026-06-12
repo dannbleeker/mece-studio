@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 import { createDoc, createEvidence } from '@/domain/factory';
 import { recomputeMece } from '@/domain/mece';
@@ -23,6 +24,7 @@ import {
 } from '@/domain/tree';
 import type {
   DecompositionType,
+  DocId,
   EvidenceItem,
   EvidenceStrength,
   FormulaOperator,
@@ -31,23 +33,70 @@ import type {
   NodeStatus,
   Priority,
 } from '@/domain/types';
-import { loadDoc, saveDoc } from '@/services/storage';
+import {
+  docName,
+  type LibraryEntry,
+  loadDocById,
+  loadWorkspace,
+  removeDocById,
+  saveDocById,
+  saveLibrary,
+} from '@/services/storage';
 
 const HISTORY_LIMIT = 100;
+const STARTER_QUESTION = 'Why is this happening?';
 
-function initialDoc(): IssueTreeDoc {
-  const loaded = loadDoc();
-  return recomputeMece(loaded ?? createDoc('Why is this happening?', Date.now()));
+function freshDoc(): IssueTreeDoc {
+  return recomputeMece(createDoc(STARTER_QUESTION, Date.now()));
+}
+
+function entryFor(doc: IssueTreeDoc): LibraryEntry {
+  return { id: doc.id, name: docName(doc) };
+}
+
+/** Seed the workspace from storage, migrating a legacy single-doc save, or start fresh. */
+function initialState(): { doc: IssueTreeDoc; library: LibraryEntry[]; activeId: string } {
+  const ws = loadWorkspace();
+  if (ws) {
+    return { doc: recomputeMece(ws.doc), library: ws.library.docs, activeId: ws.library.activeId };
+  }
+  const doc = freshDoc();
+  saveDocById(doc);
+  const library = [entryFor(doc)];
+  saveLibrary({ activeId: doc.id, docs: library });
+  return { doc, library, activeId: doc.id };
+}
+
+/** Keep the active doc's library name in sync with its root question; persist on change. */
+function syncLibraryName(library: LibraryEntry[], doc: IssueTreeDoc): LibraryEntry[] {
+  const name = docName(doc);
+  const existing = library.find((e) => e.id === doc.id);
+  if (!existing || existing.name === name) return library;
+  const next = library.map((e) => (e.id === doc.id ? { ...e, name } : e));
+  saveLibrary({ activeId: doc.id, docs: next });
+  return next;
+}
+
+/** Make `doc` the active document under `docs`: persist both, and reset history + selection. */
+function activate(doc: IssueTreeDoc, docs: LibraryEntry[]) {
+  saveDocById(doc);
+  saveLibrary({ activeId: doc.id, docs });
+  return { doc, library: docs, activeId: doc.id, past: [], future: [], selectedId: null };
 }
 
 interface AppState {
   doc: IssueTreeDoc;
+  /** All saved trees (for the document picker). */
+  library: LibraryEntry[];
+  activeId: string;
   past: IssueTreeDoc[];
   future: IssueTreeDoc[];
   selectedId: NodeId | null;
 
   select: (id: NodeId | null) => void;
   newDoc: () => void;
+  switchDoc: (id: string) => void;
+  deleteDoc: (id: string) => void;
   openDoc: (doc: IssueTreeDoc) => void;
   setRootQuestion: (label: string) => void;
   addChild: (parentId: NodeId, label?: string) => void;
@@ -83,49 +132,77 @@ interface AppState {
 
 export const useStore = create<AppState>((set, get) => {
   /**
-   * Run a pure doc transform, then snapshot history, recompute MECE, and
-   * persist — the single path every mutation goes through. A no-op transform
-   * (same doc reference) is ignored so it neither persists nor adds history.
+   * Run a pure doc transform on the active doc, then snapshot history, recompute
+   * MECE, and persist — the single path every mutation goes through. A no-op
+   * transform (same doc reference) is ignored.
    */
   function apply(transform: (doc: IssueTreeDoc) => IssueTreeDoc): void {
     set((s) => {
       const transformed = transform(s.doc);
       if (transformed === s.doc) return s;
       const doc = recomputeMece({ ...transformed, updatedAt: Date.now() });
-      saveDoc(doc);
-      return { doc, past: [...s.past, s.doc].slice(-HISTORY_LIMIT), future: [] };
+      saveDocById(doc);
+      return {
+        doc,
+        library: syncLibraryName(s.library, doc),
+        past: [...s.past, s.doc].slice(-HISTORY_LIMIT),
+        future: [],
+      };
     });
   }
 
+  const init = initialState();
+
   return {
-    doc: initialDoc(),
+    doc: init.doc,
+    library: init.library,
+    activeId: init.activeId,
     past: [],
     future: [],
     selectedId: null,
 
     select: (id) => set({ selectedId: id }),
+
     newDoc: () =>
       set((s) => {
-        const doc = recomputeMece(createDoc('Why is this happening?', Date.now()));
-        saveDoc(doc);
-        return {
-          doc,
-          past: [...s.past, s.doc].slice(-HISTORY_LIMIT),
-          future: [],
-          selectedId: null,
-        };
+        const doc = freshDoc();
+        return activate(doc, [...s.library, entryFor(doc)]);
       }),
+
+    switchDoc: (id) =>
+      set((s) => {
+        if (id === s.activeId) return s;
+        const target = loadDocById(id);
+        if (!target) return s;
+        return activate(recomputeMece(target), s.library);
+      }),
+
+    deleteDoc: (id) =>
+      set((s) => {
+        if (!s.library.some((e) => e.id === id)) return s;
+        removeDocById(id);
+        const docs = s.library.filter((e) => e.id !== id);
+
+        // Deleting a non-active doc: just drop it from the library.
+        if (id !== s.activeId) {
+          saveLibrary({ activeId: s.activeId, docs });
+          return { library: docs };
+        }
+        // Deleting the active doc: open another, or seed a fresh one if none remain.
+        if (docs.length === 0) {
+          const doc = freshDoc();
+          return activate(doc, [entryFor(doc)]);
+        }
+        return activate(recomputeMece(loadDocById(docs[0]?.id ?? '') ?? freshDoc()), docs);
+      }),
+
     openDoc: (incoming) =>
       set((s) => {
-        const doc = recomputeMece({ ...incoming, updatedAt: Date.now() });
-        saveDoc(doc);
-        return {
-          doc,
-          past: [...s.past, s.doc].slice(-HISTORY_LIMIT),
-          future: [],
-          selectedId: null,
-        };
+        // Import as a NEW document (fresh id) so it can't clobber an existing one.
+        const doc = recomputeMece({ ...incoming, id: nanoid() as DocId, updatedAt: Date.now() });
+        return activate(doc, [...s.library, entryFor(doc)]);
       }),
+
     setRootQuestion: (label) => apply((doc) => renameNodeOp(doc, doc.rootId, label)),
     addChild: (parentId, label) =>
       apply((doc) => addChildOp(doc, parentId, label ?? 'New issue').doc),
@@ -170,7 +247,7 @@ export const useStore = create<AppState>((set, get) => {
         const { doc: transformed, newId } = duplicateNodeOp(s.doc, id);
         if (transformed === s.doc) return s;
         const doc = recomputeMece({ ...transformed, updatedAt: Date.now() });
-        saveDoc(doc);
+        saveDocById(doc);
         return {
           doc,
           past: [...s.past, s.doc].slice(-HISTORY_LIMIT),
@@ -184,7 +261,7 @@ export const useStore = create<AppState>((set, get) => {
         const transformed = removeNodeOp(s.doc, id);
         if (transformed === s.doc) return s;
         const doc = recomputeMece({ ...transformed, updatedAt: Date.now() });
-        saveDoc(doc);
+        saveDocById(doc);
         return {
           doc,
           past: [...s.past, s.doc].slice(-HISTORY_LIMIT),
@@ -197,15 +274,25 @@ export const useStore = create<AppState>((set, get) => {
       set((s) => {
         const prev = s.past[s.past.length - 1];
         if (!prev) return s;
-        saveDoc(prev);
-        return { doc: prev, past: s.past.slice(0, -1), future: [s.doc, ...s.future] };
+        saveDocById(prev);
+        return {
+          doc: prev,
+          library: syncLibraryName(s.library, prev),
+          past: s.past.slice(0, -1),
+          future: [s.doc, ...s.future],
+        };
       }),
     redo: () =>
       set((s) => {
         const next = s.future[0];
         if (!next) return s;
-        saveDoc(next);
-        return { doc: next, past: [...s.past, s.doc], future: s.future.slice(1) };
+        saveDocById(next);
+        return {
+          doc: next,
+          library: syncLibraryName(s.library, next),
+          past: [...s.past, s.doc],
+          future: s.future.slice(1),
+        };
       }),
     canUndo: () => get().past.length > 0,
     canRedo: () => get().future.length > 0,

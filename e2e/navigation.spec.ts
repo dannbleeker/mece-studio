@@ -1,12 +1,9 @@
 import { expect, type Page, test } from '@playwright/test';
-
-const KEY = 'mece-studio:doc:v1';
+import { activeDoc, resetApp } from './helpers';
 
 // Build root → Branch → Leaf from the keyboard (Tab adds a child and edits it).
 async function buildThreeLevels(page: Page) {
-  await page.goto('/');
-  await page.evaluate((k) => localStorage.removeItem(k), KEY);
-  await page.reload();
+  await resetApp(page);
 
   const root = page.locator('.react-flow__node').first();
   await root.click();
@@ -22,12 +19,9 @@ async function buildThreeLevels(page: Page) {
 test('collapse hides a subtree and expand restores it', async ({ page }) => {
   await buildThreeLevels(page);
 
-  const branchId = await page.evaluate((k) => {
-    const doc = JSON.parse(localStorage.getItem(k));
-    const rootSplit = Object.values(doc.splits).find((s) => s.parentId === doc.rootId);
-    return rootSplit.childIds[0];
-  }, KEY);
-  const branch = page.locator(`.react-flow__node[data-id="${branchId}"]`);
+  const doc = await activeDoc(page);
+  const rootSplit = Object.values(doc.splits).find((s) => s.parentId === doc.rootId);
+  const branch = page.locator(`.react-flow__node[data-id="${rootSplit.childIds[0]}"]`);
 
   await branch.locator('button[aria-label="Collapse subtree"]').click();
   await expect(page.locator('.react-flow__node')).toHaveCount(2); // Leaf hidden
@@ -38,9 +32,7 @@ test('collapse hides a subtree and expand restores it', async ({ page }) => {
 });
 
 test('search rings the matching node', async ({ page }) => {
-  await page.goto('/');
-  await page.evaluate((k) => localStorage.removeItem(k), KEY);
-  await page.reload();
+  await resetApp(page);
 
   const root = page.locator('.react-flow__node').first();
   await root.click();
