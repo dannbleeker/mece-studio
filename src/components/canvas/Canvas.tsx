@@ -166,15 +166,20 @@ function Flow() {
 
   const matchCount = query.trim() === '' ? 0 : nodes.filter((n) => n.data.matched).length;
 
-  // Render the whole graph to a PNG (React Flow's bounds recipe). html-to-image
-  // is loaded on demand so it stays off the eager bundle.
-  const exportPng = async () => {
+  // Render the visible graph to a PNG data URL (React Flow's bounds recipe).
+  // html-to-image and jspdf are both loaded on demand so they stay off the
+  // eager bundle.
+  const renderToImage = async (): Promise<{
+    dataUrl: string;
+    width: number;
+    height: number;
+  } | null> => {
     const bounds = getNodesBounds(getNodes());
     const width = Math.max(640, Math.min(2600, Math.round(bounds.width + 160)));
     const height = Math.max(480, Math.min(2600, Math.round(bounds.height + 160)));
     const { x, y, zoom } = getViewportForBounds(bounds, width, height, 0.5, 2, 0.12);
     const viewport = document.querySelector<HTMLElement>('.react-flow__viewport');
-    if (!viewport) return;
+    if (!viewport) return null;
     const { toPng } = await import('html-to-image');
     const dataUrl = await toPng(viewport, {
       backgroundColor: '#faf9f5',
@@ -186,7 +191,25 @@ function Flow() {
         transform: `translate(${x}px, ${y}px) scale(${zoom})`,
       },
     });
-    downloadDataUrl('mece-tree.png', dataUrl);
+    return { dataUrl, width, height };
+  };
+
+  const exportPng = async () => {
+    const img = await renderToImage();
+    if (img) downloadDataUrl('mece-tree.png', img.dataUrl);
+  };
+
+  const exportPdf = async () => {
+    const img = await renderToImage();
+    if (!img) return;
+    const { jsPDF } = await import('jspdf');
+    const pdf = new jsPDF({
+      orientation: img.width >= img.height ? 'landscape' : 'portrait',
+      unit: 'px',
+      format: [img.width, img.height],
+    });
+    pdf.addImage(img.dataUrl, 'PNG', 0, 0, img.width, img.height);
+    pdf.save('mece-tree.pdf');
   };
 
   return (
@@ -247,15 +270,26 @@ function Flow() {
           </div>
         </Panel>
         <Panel position="top-right">
-          <button
-            type="button"
-            onClick={() => {
-              void exportPng();
-            }}
-            className="rounded-md border border-neutral-200 bg-white/90 px-2.5 py-1 text-[12px] text-neutral-600 shadow-sm hover:bg-white"
-          >
-            Export PNG
-          </button>
+          <div className="flex gap-1">
+            <button
+              type="button"
+              onClick={() => {
+                void exportPng();
+              }}
+              className="rounded-md border border-neutral-200 bg-white/90 px-2.5 py-1 text-[12px] text-neutral-600 shadow-sm hover:bg-white"
+            >
+              Export PNG
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                void exportPdf();
+              }}
+              className="rounded-md border border-neutral-200 bg-white/90 px-2.5 py-1 text-[12px] text-neutral-600 shadow-sm hover:bg-white"
+            >
+              Export PDF
+            </button>
+          </div>
         </Panel>
       </ReactFlow>
     </NodeEditingContext.Provider>

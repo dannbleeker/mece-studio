@@ -1,0 +1,6 @@
+# core-js (a transitive jspdf dependency) ships a postinstall that only prints a
+# funding message — nothing the library needs at runtime. `false` approves
+# skipping its build script so pnpm's guard doesn't fail the install. jspdf is
+# lazy-loaded (off the eager bundle) and works fine without core-js's build.
+allowBuilds:
+  core-js: false

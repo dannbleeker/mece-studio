@@ -3,7 +3,7 @@
 Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 
 ## Features not yet built
-- **Visual export: PDF / PPTX** (code-split, like PNG). PNG, Markdown, and JSON save/open are shipped. Note: jspdf pulls in `core-js`, which pnpm 11 blocks via its build-script guard — approve it in `pnpm-workspace.yaml` (`allowBuilds: { core-js: false }`) before re-adding PDF.
+- **Visual export: PPTX** (code-split, like PNG / PDF). PNG, PDF, Markdown, and JSON save/open are shipped.
 - **AI tier-3** — suggest a MECE split for a node; critique a tree for overlaps/gaps.
 
 ## Decisions to make (raised during the autonomous build)
