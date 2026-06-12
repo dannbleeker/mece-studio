@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { CHECK_STATE_COLOR } from '@/components/checkColors';
 import { DECOMPOSITION_HINTS, DECOMPOSITION_LABELS } from '@/domain/constants';
 import { rollUpValue } from '@/domain/rollup';
+import { sensitivity } from '@/domain/sensitivity';
 import { splitOf } from '@/domain/tree';
 import type {
   CheckResult,
   DecompositionType,
   EvidenceStrength,
+  FormulaOperator,
   Level,
   NodeStatus,
 } from '@/domain/types';
@@ -58,6 +60,7 @@ export function Inspector() {
   const setAmount = useStore((s) => s.setAmount);
   const setUnit = useStore((s) => s.setUnit);
   const setDecomposition = useStore((s) => s.setDecomposition);
+  const setOperator = useStore((s) => s.setOperator);
   const decompose = useStore((s) => s.decompose);
   const setPriority = useStore((s) => s.setPriority);
   const setStatus = useStore((s) => s.setStatus);
@@ -85,6 +88,7 @@ export function Inspector() {
   const isRoot = selectedId === doc.rootId;
   const split = splitOf(doc, selectedId);
   const rollup = split?.decomposition === 'formula' ? rollUpValue(doc, selectedId) : undefined;
+  const drivers = split?.decomposition === 'formula' ? sensitivity(doc, selectedId) : [];
 
   return (
     <aside className="flex w-80 shrink-0 flex-col gap-4 overflow-y-auto border-neutral-200 border-l bg-white p-5">
@@ -325,6 +329,23 @@ export function Inspector() {
             </span>
           </label>
 
+          {split.decomposition === 'formula' && (
+            <label className="flex flex-col gap-1">
+              <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
+                Combine children by
+              </span>
+              <select
+                value={split.operator ?? 'sum'}
+                className="rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
+                onChange={(e) => setOperator(selectedId, e.target.value as FormulaOperator)}
+              >
+                <option value="sum">Sum (A + B + C)</option>
+                <option value="product">Product (A × B × C)</option>
+                <option value="difference">Difference (A − B − …)</option>
+              </select>
+            </label>
+          )}
+
           <div className="rounded-md bg-neutral-50 px-3 py-2">
             <MeceRow label="Mutually exclusive" result={split.mece.exclusive} />
             <MeceRow label="Collectively exhaustive" result={split.mece.exhaustive} />
@@ -337,6 +358,32 @@ export function Inspector() {
             >
               Roll up children → {rollup}
             </button>
+          )}
+          {drivers.length >= 2 && (
+            <div className="flex flex-col gap-1 rounded-md bg-neutral-50 px-3 py-2">
+              <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
+                Sensitivity (±10%)
+              </span>
+              {drivers.map((d) => (
+                <div key={d.id} className="flex items-center gap-2 text-[11px]">
+                  <span className="w-20 shrink-0 truncate text-neutral-700" title={d.label}>
+                    {d.label || 'Untitled'}
+                  </span>
+                  <span className="h-1.5 flex-1 overflow-hidden rounded bg-neutral-200">
+                    <span
+                      className="block h-full rounded bg-[#3f6fb0]"
+                      style={{ width: `${(d.swing / (drivers[0]?.swing || 1)) * 100}%` }}
+                    />
+                  </span>
+                  <span className="w-12 shrink-0 text-right text-neutral-500 tabular-nums">
+                    {Math.round(d.swing * 100) / 100}
+                  </span>
+                </div>
+              ))}
+              <span className="text-[10px] text-neutral-400 leading-snug">
+                Range of this value as each driver shifts ±10%, one at a time.
+              </span>
+            </div>
           )}
         </section>
       )}

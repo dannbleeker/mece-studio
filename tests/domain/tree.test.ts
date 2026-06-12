@@ -11,6 +11,7 @@ import {
   setDecomposition,
   setDetail,
   setNodeValue,
+  setOperator,
   splitOf,
 } from '@/domain/tree';
 
@@ -55,6 +56,14 @@ describe('tree ops', () => {
     expect(withNote.nodes[doc0.rootId]?.detail).toBe('Margin compression since Q2.');
     const cleared = setDetail(withNote, doc0.rootId, '   ');
     expect(cleared.nodes[doc0.rootId]?.detail).toBeUndefined();
+  });
+
+  it('setOperator sets the formula combine operator', () => {
+    const doc0 = seed();
+    const { doc: d1 } = addChild(doc0, doc0.rootId, 'A');
+    const formula = setDecomposition(d1, doc0.rootId, 'formula');
+    const product = setOperator(formula, doc0.rootId, 'product');
+    expect(splitOf(product, doc0.rootId)?.operator).toBe('product');
   });
 
   it('parentOf finds the node a child hangs under', () => {

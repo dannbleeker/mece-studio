@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createDoc } from '@/domain/factory';
 import { combineValues, rollUpValue } from '@/domain/rollup';
-import { addChild, setDecomposition, setNodeValue } from '@/domain/tree';
+import { addChild, setDecomposition, setNodeValue, setOperator } from '@/domain/tree';
 
 describe('rollup', () => {
   it('combines values by operator', () => {
@@ -21,6 +21,19 @@ describe('rollup', () => {
     doc = setNodeValue(doc, price.childId, { amount: 60 });
     doc = setNodeValue(doc, volume.childId, { amount: 40 });
     expect(rollUpValue(doc, doc.rootId)).toBe(100);
+  });
+
+  it('rolls up with the product operator', () => {
+    let doc = createDoc('Revenue', 1000);
+    const price = addChild(doc, doc.rootId, 'Price');
+    doc = price.doc;
+    const volume = addChild(doc, doc.rootId, 'Volume');
+    doc = volume.doc;
+    doc = setDecomposition(doc, doc.rootId, 'formula');
+    doc = setOperator(doc, doc.rootId, 'product');
+    doc = setNodeValue(doc, price.childId, { amount: 60 });
+    doc = setNodeValue(doc, volume.childId, { amount: 40 });
+    expect(rollUpValue(doc, doc.rootId)).toBe(2400);
   });
 
   it('returns undefined for a non-formula split', () => {

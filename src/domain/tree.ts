@@ -3,6 +3,7 @@ import { scaffoldChildren } from './scaffold';
 import type {
   DecompositionType,
   EvidenceItem,
+  FormulaOperator,
   IssueNode,
   IssueTreeDoc,
   NodeId,
@@ -80,6 +81,17 @@ export function setDecomposition(
   const split = splitOf(doc, parentId);
   if (!split) return doc;
   return { ...doc, splits: { ...doc.splits, [split.id]: { ...split, decomposition } } };
+}
+
+/** Set the combine operator of a formula split (sum / product / difference). */
+export function setOperator(
+  doc: IssueTreeDoc,
+  parentId: NodeId,
+  operator: FormulaOperator
+): IssueTreeDoc {
+  const split = splitOf(doc, parentId);
+  if (!split) return doc;
+  return { ...doc, splits: { ...doc.splits, [split.id]: { ...split, operator } } };
 }
 
 export function renameNode(doc: IssueTreeDoc, nodeId: NodeId, label: string): IssueTreeDoc {

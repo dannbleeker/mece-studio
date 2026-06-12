@@ -12,6 +12,7 @@ import {
   setDecomposition as setDecompositionOp,
   setDetail as setDetailOp,
   setNodeValue as setNodeValueOp,
+  setOperator as setOperatorOp,
   setPriority as setPriorityOp,
   setStatus as setStatusOp,
   updateEvidence as updateEvidenceOp,
@@ -20,6 +21,7 @@ import type {
   DecompositionType,
   EvidenceItem,
   EvidenceStrength,
+  FormulaOperator,
   IssueTreeDoc,
   NodeId,
   NodeStatus,
@@ -60,6 +62,7 @@ interface AppState {
   removeEvidence: (nodeId: NodeId, evidenceId: string) => void;
   updateEvidence: (nodeId: NodeId, evidenceId: string, patch: Partial<EvidenceItem>) => void;
   setDecomposition: (parentId: NodeId, decomposition: DecompositionType) => void;
+  setOperator: (parentId: NodeId, operator: FormulaOperator) => void;
   decompose: (parentId: NodeId, decomposition: DecompositionType) => void;
   moveNode: (id: NodeId, newParentId: NodeId) => void;
   removeNode: (id: NodeId) => void;
@@ -145,6 +148,7 @@ export const useStore = create<AppState>((set, get) => {
       apply((doc) => updateEvidenceOp(doc, nodeId, evidenceId, patch)),
     setDecomposition: (parentId, decomposition) =>
       apply((doc) => setDecompositionOp(doc, parentId, decomposition)),
+    setOperator: (parentId, operator) => apply((doc) => setOperatorOp(doc, parentId, operator)),
     decompose: (parentId, decomposition) =>
       apply((doc) => decomposeOp(doc, parentId, decomposition)),
     moveNode: (id, newParentId) => apply((doc) => moveNodeOp(doc, id, newParentId)),
