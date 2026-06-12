@@ -16,4 +16,4 @@ Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 
 ## Tooling backlog
 - Turn `knip`'s `exports` / `types` rules back on and prune anything genuinely unused.
-- **Extend the Playwright e2e suite.** Covered (`pnpm e2e`, also a CI job): drag-to-reparent + drop-target highlight, inline editing (double-click / Enter / Tab), units, notes, collapse/expand, search, export (PNG/PDF/PPTX), AI-prompt copy, and the multi-document picker (create / switch / delete). Remaining real-input target: the Open-JSON import round-trip.
+- **Extend the Playwright e2e suite.** Covered (`pnpm e2e`, also a CI job): drag-to-reparent + drop-target highlight, inline editing (double-click / Enter / Tab), units, notes, collapse/expand, search, Open-JSON import, export (PNG/PDF/PPTX), AI-prompt copy, and the multi-document picker (create / switch / delete). The real-input paths are now well covered; extend opportunistically as new UI lands.
