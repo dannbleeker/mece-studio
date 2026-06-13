@@ -313,7 +313,14 @@ down the app's first load.
 MECE Studio is a **Progressive Web App**. Your browser may offer to **install**
 it (an icon in the address bar, or "Add to Home Screen" on mobile). Once
 installed it runs in its own window and **works offline** — the whole app is
-cached, so you can build trees on a plane.
+cached, so you can build trees on a plane. The first time it caches, you'll see a
+brief **"Ready to use offline"** notice.
+
+**Staying up to date.** When a new version is deployed, a **"A new version is
+available — Refresh now"** notice appears; click it to load the update. It never
+reloads on its own, so you won't lose unsaved work — dismiss it and the next
+natural reload picks the update up anyway. You can also check on demand from
+**About → Check for updates**.
 
 ## Settings
 

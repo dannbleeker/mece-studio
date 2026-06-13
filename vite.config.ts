@@ -18,7 +18,11 @@ export default defineConfig({
       registerType: 'prompt',
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,webp,ico,woff2}'],
+        // SPA deep links fall back to the app shell...
         navigateFallback: '/index.html',
+        // ...but never rewrite the standalone pages (/user-guide.html, /notices.html,
+        // /dashboard.html) into it. (No /api/ — the app has no backend.)
+        navigateFallbackDenylist: [/\.html$/],
       },
       manifest: {
         name: 'MECE Studio',
@@ -36,6 +40,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.join(here, 'src'),
+      // Vitest can't resolve the build-time virtual module; alias it to a stub.
+      ...(process.env.VITEST
+        ? { 'virtual:pwa-register': path.join(here, 'tests/stubs/virtual-pwa-register.ts') }
+        : {}),
     },
   },
   test: {

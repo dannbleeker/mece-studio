@@ -1,4 +1,6 @@
 import { Dialog } from '@/components/Dialog';
+import { showToast } from '@/components/toast/toastStore';
+import { checkForUpdate } from '@/pwa/pwaUpdate';
 
 const REPO = 'https://github.com/dannbleeker/mece-studio';
 
@@ -29,6 +31,16 @@ const LINKS: { href: string; label: string; hint: string }[] = [
 const LICENSE_LINK = 'text-[#3f6fb0] underline';
 
 export function AboutDialog({ onClose }: { onClose: () => void }) {
+  const onCheckForUpdate = async () => {
+    const result = await checkForUpdate();
+    if (result === 'up-to-date') showToast('success', "You're on the latest version.");
+    else if (result === 'newly-found')
+      showToast('info', 'New version found — the refresh prompt will appear once it downloads.');
+    else if (result === 'unsupported')
+      showToast('info', "Update checks aren't available here (no service worker running).");
+    // 'already-pending' — checkForUpdate already re-surfaced the "Refresh now" prompt.
+  };
+
   return (
     <Dialog
       label="About MECE Studio"
@@ -50,6 +62,14 @@ export function AboutDialog({ onClose }: { onClose: () => void }) {
           </a>
         ))}
       </div>
+
+      <button
+        type="button"
+        onClick={() => void onCheckForUpdate()}
+        className="mt-4 rounded-md border border-neutral-200 px-3 py-1.5 text-[13px] text-neutral-600 hover:bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3f6fb0]/40"
+      >
+        Check for updates
+      </button>
 
       <p className="mt-5 border-neutral-200 border-t pt-4 text-[11px] text-neutral-500 leading-relaxed">
         © 2026 Dann Bleeker Pedersen. Software under{' '}

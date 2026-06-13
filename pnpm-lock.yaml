@@ -96,6 +96,9 @@ importers:
       vitest:
         specifier: ^4.1.7
         version: 4.1.8(@types/node@24.13.1)(@vitest/coverage-v8@4.1.8)(happy-dom@20.10.2)(vite@8.0.16(@types/node@24.13.1)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0))
+      workbox-window:
+        specifier: ^7.4.1
+        version: 7.4.1
 
 packages:
 

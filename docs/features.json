@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 42,
+  "reviewedThroughChangelogEntries": 43,
   "features": [
     { "id": "issue-tree", "name": "Issue-tree canvas", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
     { "id": "root-question", "name": "Editable root question", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
@@ -97,6 +97,7 @@
     { "id": "templates-gallery", "name": "Templates page (frameworks + example trees as cards)", "area": "App", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "library-cards", "name": "Tree library cards with live MECE status + preview", "area": "Documents", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "needs-review", "name": "Needs-review triage (trees with a flagged split)", "area": "MECE", "since": 6, "manual": true, "book": false, "bookExample": false },
-    { "id": "manage-trees", "name": "Rename / duplicate / delete a tree from its card", "area": "Documents", "since": 6, "manual": true, "book": false, "bookExample": false }
+    { "id": "manage-trees", "name": "Rename / duplicate / delete a tree from its card", "area": "Documents", "since": 6, "manual": true, "book": false, "bookExample": false },
+    { "id": "self-update", "name": "Self-update prompt + Check for updates", "area": "App", "since": 6, "manual": true, "book": false, "bookExample": false }
   ]
 }
