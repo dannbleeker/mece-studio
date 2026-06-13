@@ -1,9 +1,43 @@
 // @vitest-environment happy-dom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { childrenOf } from '@/domain/tree';
+import { downloadDataUrl } from '@/services/download';
 import { useStore } from '@/store';
 import { Canvas } from './Canvas';
+
+// Export uses dynamic import() of these heavy libs. Mock them so a toolbar click
+// drives the real export plumbing (bounds → render → save) without the actual
+// rasteriser / encoders, which don't run under happy-dom.
+const { toPngMock, pdfSave, pdfAddImage, pptxWrite, pptxAddImage } = vi.hoisted(() => ({
+  toPngMock: vi.fn(async () => 'data:image/png;base64,AAAA'),
+  pdfSave: vi.fn(),
+  pdfAddImage: vi.fn(),
+  pptxWrite: vi.fn(async () => undefined),
+  pptxAddImage: vi.fn(),
+}));
+vi.mock('html-to-image', () => ({ toPng: toPngMock }));
+// Real classes (not vi.fn) — a mock fn used with `new` doesn't reliably return
+// the factory object, so instance methods would be undefined.
+vi.mock('jspdf', () => ({
+  jsPDF: class {
+    addImage = pdfAddImage;
+    save = pdfSave;
+  },
+}));
+vi.mock('pptxgenjs', () => ({
+  default: class {
+    addSlide() {
+      return { addImage: pptxAddImage };
+    }
+    writeFile = pptxWrite;
+  },
+}));
+vi.mock('@/services/download', () => ({
+  downloadDataUrl: vi.fn(),
+  downloadText: vi.fn(),
+  copyToClipboard: vi.fn(),
+}));
 
 // React Flow needs ResizeObserver, which happy-dom doesn't provide.
 class ResizeObserverStub {
@@ -18,6 +52,7 @@ beforeEach(() => {
   vi.stubGlobal('ResizeObserver', ResizeObserverStub);
   localStorage.clear();
   useStore.setState(FRESH, true);
+  vi.clearAllMocks();
 });
 afterEach(() => {
   cleanup();
@@ -52,5 +87,37 @@ describe('Canvas', () => {
     expect(s().doc.nodes[a.id]?.collapsed).toBe(true);
     fireEvent.click(screen.getByRole('button', { name: 'Expand all' }));
     expect(s().doc.nodes[a.id]?.collapsed).toBeUndefined();
+  });
+
+  it('exports a PNG from the toolbar', async () => {
+    render(<Canvas />);
+    fireEvent.click(screen.getByRole('button', { name: 'PNG' }));
+    await waitFor(() =>
+      expect(downloadDataUrl).toHaveBeenCalledWith('mece-tree.png', 'data:image/png;base64,AAAA')
+    );
+    expect(toPngMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('exports a PDF from the toolbar', async () => {
+    render(<Canvas />);
+    fireEvent.click(screen.getByRole('button', { name: 'PDF' }));
+    await waitFor(() => expect(pdfSave).toHaveBeenCalledWith('mece-tree.pdf'));
+    expect(pdfAddImage).toHaveBeenCalledTimes(1);
+  });
+
+  it('exports a PPTX from the toolbar', async () => {
+    render(<Canvas />);
+    fireEvent.click(screen.getByRole('button', { name: 'PPTX' }));
+    await waitFor(() => expect(pptxWrite).toHaveBeenCalledWith({ fileName: 'mece-tree.pptx' }));
+    expect(pptxAddImage).toHaveBeenCalledTimes(1);
+  });
+
+  it('zooms to matches when Enter is pressed in the search box', () => {
+    s().setRootQuestion('Find me here');
+    render(<Canvas />);
+    const input = screen.getByLabelText('Find nodes');
+    fireEvent.change(input, { target: { value: 'find' } });
+    fireEvent.keyDown(input, { key: 'Enter' }); // exercises fitToMatches + stopPropagation
+    expect(screen.getByText(/1 match/)).toBeTruthy();
   });
 });
