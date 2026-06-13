@@ -57,6 +57,15 @@ describe('toMarkdown', () => {
     expect(line).toBe('- Plain');
   });
 
+  it('falls back to the document title when the root node is missing', () => {
+    const doc = createDoc('Orphaned tree', 0);
+    const broken = { ...doc, nodes: {} }; // a corrupt import: rootId dangles
+    const md = toMarkdown(broken);
+    expect(md.startsWith('# ')).toBe(true);
+    expect(md).toContain(`# ${doc.title}`);
+    expect(md).not.toContain('undefined');
+  });
+
   it('renders a unit-less value and evidence hung on the root', () => {
     let doc = createDoc('Root', 0);
     const { doc: d, childId } = addChild(doc, doc.rootId, 'Count');

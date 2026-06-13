@@ -55,6 +55,14 @@ describe('synthesise', () => {
     expect(synthesise(doc)).toContain('evidence: ✗ Counter-point');
   });
 
+  it('uses the document title in the heading when the root node is missing', () => {
+    const doc = createDoc('Orphaned', 0);
+    const broken = { ...doc, nodes: {} }; // corrupt import: rootId dangles
+    const out = synthesise(broken);
+    expect(out).toContain(`# ${doc.title}`);
+    expect(out).toContain('No branches yet');
+  });
+
   it('flags MECE overlaps and gaps on a branch', () => {
     let doc = createDoc('Q', 0);
     const causes = addChild(doc, doc.rootId, 'Causes');
