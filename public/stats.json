@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-06-13T21:53:27.734Z",
-  "commit": "92269a9",
+  "generatedAt": "2026-06-13T23:58:52.784Z",
+  "commit": "92f5c9c",
   "headline": {
-    "linesTsJs": 11107,
-    "tests": 320,
-    "lineCoveragePct": 93.01,
-    "commits": 144,
+    "linesTsJs": 11613,
+    "tests": 328,
+    "lineCoveragePct": 93.36,
+    "commits": 146,
     "ageDays": 2,
-    "trackedFiles": 192,
+    "trackedFiles": 194,
     "featureManualPct": 100,
-    "featureBookPct": 37.1,
-    "featureExamplePct": 25.7
+    "featureBookPct": 36.6,
+    "featureExamplePct": 25.4
   },
   "code": [
     {
       "category": "App code (src, excl. tests)",
-      "files": 56,
-      "lines": 5465
+      "files": 57,
+      "lines": 5881
     },
     {
       "category": "Unit tests",
-      "files": 54,
-      "lines": 3842
+      "files": 55,
+      "lines": 3932
     },
     {
       "category": "E2E tests (Playwright)",
@@ -41,24 +41,24 @@
     {
       "category": "Docs (Markdown)",
       "files": 21,
-      "lines": 2089
+      "lines": 2103
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 93.01,
-      "covered": 1226,
-      "total": 1318
+      "pct": 93.36,
+      "covered": 1295,
+      "total": 1387
     },
     "statements": {
-      "pct": 91.09,
-      "covered": 1483,
-      "total": 1628
+      "pct": 91.4,
+      "covered": 1552,
+      "total": 1698
     },
     "functions": {
-      "pct": 89.92,
-      "covered": 491,
-      "total": 546
+      "pct": 89.96,
+      "covered": 502,
+      "total": 558
     },
     "branches": {
       "pct": 82.13,
@@ -67,13 +67,13 @@
     }
   },
   "tests": {
-    "unit": 294,
+    "unit": 302,
     "e2e": 26
   },
   "domain": {
-    "features": 70,
+    "features": 71,
     "areas": 14,
-    "domainModules": 21,
+    "domainModules": 22,
     "components": 34,
     "exporters": 5
   },
@@ -84,6 +84,10 @@
       {
         "name": "components/inspector/Inspector.tsx",
         "lines": 514
+      },
+      {
+        "name": "domain/examples.ts",
+        "lines": 413
       },
       {
         "name": "store/index.ts",
@@ -100,10 +104,6 @@
       {
         "name": "App.tsx",
         "lines": 255
-      },
-      {
-        "name": "components/start/StartPage.tsx",
-        "lines": 222
       }
     ]
   },
@@ -115,7 +115,7 @@
       },
       {
         "file": "src/components/start/StartPage.tsx",
-        "pct": 67.3
+        "pct": 67.92
       },
       {
         "file": "src/components/canvas/Canvas.tsx",
@@ -165,6 +165,11 @@
         "file": "src/components/about/AboutDialog.tsx",
         "commits": 5,
         "pct": 54.54
+      },
+      {
+        "file": "src/components/start/StartPage.tsx",
+        "commits": 4,
+        "pct": 67.92
       }
     ]
   },
@@ -179,26 +184,26 @@
     "nonNull": 0
   },
   "bundle": {
-    "eagerJsGzipKb": 163.8,
-    "totalJsGzipKb": 519.3,
+    "eagerJsGzipKb": 166.7,
+    "totalJsGzipKb": 522.2,
     "cssGzipKb": 7.9,
-    "budgetKb": 165,
+    "budgetKb": 168,
     "withinBudget": true
   },
   "docs": {
     "bookWords": 20750,
     "chapters": 14,
-    "appLoc": 5465,
-    "docToCodeRatio": 0.38
+    "appLoc": 5881,
+    "docToCodeRatio": 0.36
   },
   "featureCoverage": {
-    "total": 70,
-    "manual": 70,
+    "total": 71,
+    "manual": 71,
     "manualPct": 100,
     "book": 26,
-    "bookPct": 37.1,
+    "bookPct": 36.6,
     "bookExample": 18,
-    "bookExamplePct": 25.7,
+    "bookExamplePct": 25.4,
     "byArea": {
       "Tree": {
         "total": 6,
@@ -266,8 +271,8 @@
         "book": 0
       },
       "App": {
-        "total": 8,
-        "manual": 8,
+        "total": 9,
+        "manual": 9,
         "book": 0
       }
     },
@@ -451,8 +456,13 @@
         },
         {
           "id": "templates-gallery",
-          "name": "Templates page (frameworks + example trees as cards)",
+          "name": "Templates page (decomposition styles + named frameworks + example trees as cards)",
           "since": 6
+        },
+        {
+          "id": "named-frameworks",
+          "name": "Named framework templates (4Ps, 4Cs, 3Cs, Five Forces, PESTEL, SWOT, BCG, Ansoff, 7S, AARRR, fishbone)",
+          "since": 7
         },
         {
           "id": "library-cards",
@@ -500,22 +510,22 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 2,
-    "commits": 144,
-    "commits7d": 144,
+    "commits": 146,
+    "commits7d": 146,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 95
+        "count": 96
       },
       {
         "name": "github-actions[bot]",
-        "count": 49
+        "count": 50
       }
     ],
     "churn30d": {
-      "added": 25356,
-      "removed": 3875
+      "added": 25975,
+      "removed": 3943
     },
-    "changelogEntries": 45
+    "changelogEntries": 46
   }
 }
