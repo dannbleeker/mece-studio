@@ -111,6 +111,7 @@ function activate(doc: IssueTreeDoc, docs: LibraryEntry[]) {
     future: [],
     selectedId: null,
     view: 'workspace' as const,
+    reviewOpen: false,
   };
 }
 
@@ -125,9 +126,16 @@ interface AppState {
   settings: Settings;
   /** Which top-level surface is showing: the Start shell or a tree on the canvas. */
   view: AppView;
+  /** Editor right dock shows the tree-level MECE review panel (XOR the inspector). */
+  reviewOpen: boolean;
+  /** Bumped by `locate` to ask the canvas to centre the (now-selected) node. */
+  locateNonce: number;
 
   select: (id: NodeId | null) => void;
   setView: (view: AppView) => void;
+  setReviewOpen: (open: boolean) => void;
+  /** Select a node and ask the canvas to centre it (used by the review dock). */
+  locate: (id: NodeId) => void;
   setSettings: (patch: Partial<Settings>) => void;
   /** Create a fresh tree (optionally seeding the root question) and open it. */
   newDoc: (question?: string) => void;
@@ -207,9 +215,13 @@ export const useStore = create<AppState>((set, get) => {
     selectedId: null,
     // Land on the Start shell; opening or creating a tree switches to 'workspace'.
     view: 'start',
+    reviewOpen: false,
+    locateNonce: 0,
 
     select: (id) => set({ selectedId: id }),
     setView: (view) => set({ view }),
+    setReviewOpen: (open) => set({ reviewOpen: open }),
+    locate: (id) => set((s) => ({ selectedId: id, locateNonce: s.locateNonce + 1 })),
     setSettings: (patch) =>
       set((s) => {
         const settings = { ...s.settings, ...patch };

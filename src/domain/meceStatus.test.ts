@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { EXAMPLE_TREES } from './examples';
 import { createDoc } from './factory';
 import { recomputeMece } from './mece';
-import { meceSummary, reviewCount } from './meceStatus';
+import { flaggedSplits, meceSummary, reviewCount } from './meceStatus';
 import { addChild, setDecomposition } from './tree';
 
 describe('meceStatus', () => {
@@ -48,5 +48,28 @@ describe('meceStatus', () => {
       // Whatever the kind, warns and the manual count agree.
       expect(summary.warns).toBe(reviewCount(doc));
     }
+  });
+
+  it('flaggedSplits lists each warned split with its decomposition + message', () => {
+    // A single root segment split with no "Other" bucket → exactly one flagged split.
+    let doc = createDoc('Why?', 0);
+    doc = addChild(doc, doc.rootId, 'A').doc;
+    doc = addChild(doc, doc.rootId, 'B').doc;
+    doc = setDecomposition(doc, doc.rootId, 'segment'); // no "Other" → CE gap
+    doc = recomputeMece(doc);
+    const flagged = flaggedSplits(doc);
+    expect(flagged).toHaveLength(1);
+    expect(flagged[0]?.nodeId).toBe(doc.rootId);
+    expect(flagged[0]?.decomposition).toBe('segment');
+    expect(flagged[0]?.exhaustive).toBeTruthy();
+  });
+
+  it('flaggedSplits is empty for a clean tree', () => {
+    let doc = createDoc('Q', 0);
+    doc = addChild(doc, doc.rootId, 'Yes').doc;
+    doc = addChild(doc, doc.rootId, 'No').doc;
+    doc = setDecomposition(doc, doc.rootId, 'binary');
+    doc = recomputeMece(doc);
+    expect(flaggedSplits(doc)).toEqual([]);
   });
 });

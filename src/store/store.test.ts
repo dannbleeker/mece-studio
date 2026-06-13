@@ -276,4 +276,21 @@ describe('store', () => {
     expect(s().activeId).toBe(activeBefore); // no switch
     expect(s().library.some((e) => e.name.endsWith('(copy)'))).toBe(true);
   });
+
+  it('setReviewOpen toggles the dock; opening another tree closes it', () => {
+    s().setReviewOpen(true);
+    expect(s().reviewOpen).toBe(true);
+    s().newDoc(); // activate() resets the dock
+    expect(s().reviewOpen).toBe(false);
+  });
+
+  it('locate selects a node and bumps the locate nonce', () => {
+    s().addChild(s().doc.rootId, 'Branch');
+    const id = childrenOf(s().doc, s().doc.rootId)[0]?.id;
+    if (!id) throw new Error('no child');
+    const before = s().locateNonce;
+    s().locate(id);
+    expect(s().selectedId).toBe(id);
+    expect(s().locateNonce).toBe(before + 1);
+  });
 });

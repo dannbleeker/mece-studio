@@ -2,6 +2,8 @@ import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { AboutDialog } from '@/components/about/AboutDialog';
 import { Canvas } from '@/components/canvas/Canvas';
 import { Inspector } from '@/components/inspector/Inspector';
+import { HealthChip } from '@/components/review/HealthChip';
+import { ReviewPanel } from '@/components/review/ReviewPanel';
 import { SynthesisPanel } from '@/components/SynthesisPanel';
 import { SettingsDialog } from '@/components/settings/SettingsDialog';
 import { ShortcutsDialog } from '@/components/shortcuts/ShortcutsDialog';
@@ -28,6 +30,7 @@ export function Workspace() {
   const selectedId = useStore((s) => s.selectedId);
   const canUndo = useStore((s) => s.canUndo());
   const canRedo = useStore((s) => s.canRedo());
+  const reviewOpen = useStore((s) => s.reviewOpen);
   const [copied, setCopied] = useState(false);
   const [showSynthesis, setShowSynthesis] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -110,6 +113,8 @@ export function Workspace() {
           Delete
         </button>
         <div className="ml-auto flex items-center gap-1">
+          <HealthChip />
+          <span className="mx-1 h-5 w-px bg-neutral-200" />
           <button type="button" onClick={() => setShowSynthesis((v) => !v)} className={GHOST_BTN}>
             Synthesis
           </button>
@@ -182,7 +187,7 @@ export function Workspace() {
           {showShortcuts && <ShortcutsDialog onClose={() => setShowShortcuts(false)} />}
           {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
         </main>
-        <Inspector />
+        {reviewOpen ? <ReviewPanel /> : <Inspector />}
       </div>
     </div>
   );

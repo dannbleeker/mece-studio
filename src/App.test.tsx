@@ -177,4 +177,12 @@ describe('Workspace', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Open' }));
     expect(clickSpy).toHaveBeenCalledTimes(1);
   });
+
+  it('toggles the MECE review dock from the health chip', () => {
+    render(<Workspace />);
+    expect(screen.getByText(/Select a node to edit it/)).toBeTruthy(); // inspector by default
+    fireEvent.click(screen.getByRole('button', { name: /MECE clean/ }));
+    expect(screen.getByRole('complementary', { name: 'MECE review' })).toBeTruthy();
+    expect(screen.queryByText(/Select a node to edit it/)).toBeNull(); // inspector hidden
+  });
 });

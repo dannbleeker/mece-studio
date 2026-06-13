@@ -15,6 +15,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NODE_HEIGHT, NODE_WIDTH } from '@/domain/constants';
+import { flaggedSplits } from '@/domain/meceStatus';
 import { childrenOf, descendantIds, parentOf } from '@/domain/tree';
 import type { NodeId } from '@/domain/types';
 import { downloadDataUrl } from '@/services/download';
@@ -39,6 +40,8 @@ function Flow() {
   const collapseAll = useStore((s) => s.collapseAll);
   const expandAll = useStore((s) => s.expandAll);
   const sortByPriority = useStore((s) => s.settings.sortSiblingsByPriority);
+  const reviewOpen = useStore((s) => s.reviewOpen);
+  const locateNonce = useStore((s) => s.locateNonce);
   const { fitView, getNodes, getIntersectingNodes, getViewport } = useReactFlow();
 
   // Inline label editing: double-click a node to edit its label in place.
@@ -129,6 +132,14 @@ function Flow() {
     return () => cancelAnimationFrame(handle);
   }, [nodeCount, docId, fitView, getNodes, getViewport]);
 
+  // The review dock asks to centre a node via a bumped nonce — fire only on the
+  // bump (not on every selection), reading the now-selected id fresh.
+  useEffect(() => {
+    if (locateNonce === 0) return;
+    const id = useStore.getState().selectedId;
+    if (id) void fitView({ nodes: [{ id }], duration: 400, padding: 0.5, maxZoom: 1.3 });
+  }, [locateNonce, fitView]);
+
   // The node a drag would re-parent onto: the first intersecting node that's a
   // valid target — not the dragged node, its own subtree (a cycle), or the
   // parent it already has (a no-op). Mirrors moveNode's guards so the highlight
@@ -191,6 +202,27 @@ function Flow() {
   }, [nodes, fitView]);
 
   const matchCount = query.trim() === '' ? 0 : nodes.filter((n) => n.data.matched).length;
+
+  // When the review dock is open, dim clean split-nodes and amber-dash the edges
+  // out of flagged splits so the issues stand out. Derived (not baked into node
+  // state) so it can't fight the auto-layout re-sync.
+  const flaggedIds = useMemo(() => new Set(flaggedSplits(doc).map((f) => f.nodeId)), [doc]);
+  const displayNodes = useMemo(() => {
+    if (!reviewOpen) return nodes;
+    return nodes.map((n) =>
+      n.data.hasChildren && !flaggedIds.has(n.id as NodeId)
+        ? { ...n, style: { ...n.style, opacity: 0.4 } }
+        : n
+    );
+  }, [nodes, reviewOpen, flaggedIds]);
+  const displayEdges = useMemo(() => {
+    if (!reviewOpen) return edges;
+    return edges.map((e) =>
+      flaggedIds.has(e.source as NodeId)
+        ? { ...e, style: { stroke: '#bd842c', strokeWidth: 2, strokeDasharray: '5 4' } }
+        : e
+    );
+  }, [edges, reviewOpen, flaggedIds]);
 
   // Render the visible graph to a PNG data URL (React Flow's bounds recipe).
   // html-to-image and jspdf are both loaded on demand so they stay off the
@@ -260,8 +292,8 @@ function Flow() {
   return (
     <NodeEditingContext.Provider value={editing}>
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={displayNodes}
+        edges={displayEdges}
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onNodeClick={(_, node) => select(node.id as NodeId)}
