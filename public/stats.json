@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-06-13T08:46:45.381Z",
-  "commit": "ae3381b",
+  "generatedAt": "2026-06-13T08:49:26.530Z",
+  "commit": "bc47069",
   "headline": {
-    "linesTsJs": 8157,
-    "tests": 222,
+    "linesTsJs": 8208,
+    "tests": 225,
     "lineCoveragePct": 88.05,
-    "commits": 111,
+    "commits": 113,
     "ageDays": 2,
     "trackedFiles": 156,
     "featureManualPct": 100,
@@ -21,7 +21,7 @@
     {
       "category": "Unit tests",
       "files": 40,
-      "lines": 2678
+      "lines": 2729
     },
     {
       "category": "E2E tests (Playwright)",
@@ -51,8 +51,8 @@
       "total": 996
     },
     "statements": {
-      "pct": 85.84,
-      "covered": 1049,
+      "pct": 86,
+      "covered": 1051,
       "total": 1222
     },
     "functions": {
@@ -61,13 +61,13 @@
       "total": 376
     },
     "branches": {
-      "pct": 79.6,
-      "covered": 558,
+      "pct": 79.88,
+      "covered": 560,
       "total": 701
     }
   },
   "tests": {
-    "unit": 198,
+    "unit": 201,
     "e2e": 24
   },
   "domain": {
@@ -450,21 +450,21 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 2,
-    "commits": 111,
-    "commits7d": 111,
+    "commits": 113,
+    "commits7d": 113,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 78
+        "count": 79
       },
       {
         "name": "github-actions[bot]",
-        "count": 33
+        "count": 34
       }
     ],
     "churn30d": {
-      "added": 20612,
-      "removed": 2237
+      "added": 20694,
+      "removed": 2268
     },
     "changelogEntries": 41
   }
