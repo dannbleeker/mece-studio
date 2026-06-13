@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-06-13T09:11:21.297Z",
-  "commit": "c6c4eeb",
+  "generatedAt": "2026-06-13T16:03:13.086Z",
+  "commit": "3e5652b",
   "headline": {
-    "linesTsJs": 8606,
+    "linesTsJs": 8542,
     "tests": 260,
-    "lineCoveragePct": 94.47,
-    "commits": 121,
+    "lineCoveragePct": 94.41,
+    "commits": 123,
     "ageDays": 2,
-    "trackedFiles": 159,
+    "trackedFiles": 160,
     "featureManualPct": 100,
     "featureBookPct": 43.3,
     "featureExamplePct": 30
@@ -15,8 +15,8 @@
   "code": [
     {
       "category": "App code (src, excl. tests)",
-      "files": 38,
-      "lines": 3819
+      "files": 39,
+      "lines": 3755
     },
     {
       "category": "Unit tests",
@@ -46,24 +46,24 @@
   ],
   "coverage": {
     "lines": {
-      "pct": 94.47,
-      "covered": 941,
-      "total": 996
+      "pct": 94.41,
+      "covered": 930,
+      "total": 985
     },
     "statements": {
-      "pct": 92.3,
-      "covered": 1128,
-      "total": 1222
+      "pct": 92.63,
+      "covered": 1119,
+      "total": 1208
     },
     "functions": {
-      "pct": 92.02,
-      "covered": 346,
-      "total": 376
+      "pct": 92.26,
+      "covered": 358,
+      "total": 388
     },
     "branches": {
-      "pct": 86.16,
-      "covered": 604,
-      "total": 701
+      "pct": 86.58,
+      "covered": 600,
+      "total": 693
     }
   },
   "tests": {
@@ -74,7 +74,7 @@
     "features": 60,
     "areas": 14,
     "domainModules": 20,
-    "components": 16,
+    "components": 17,
     "exporters": 5
   },
   "footprint": {
@@ -83,11 +83,11 @@
     "biggestFiles": [
       {
         "name": "components/inspector/Inspector.tsx",
-        "lines": 451
+        "lines": 436
       },
       {
         "name": "domain/tree.ts",
-        "lines": 389
+        "lines": 386
       },
       {
         "name": "components/canvas/Canvas.tsx",
@@ -95,7 +95,7 @@
       },
       {
         "name": "store/index.ts",
-        "lines": 341
+        "lines": 332
       },
       {
         "name": "domain/mece/engine.ts",
@@ -119,11 +119,11 @@
       },
       {
         "file": "src/components/settings/SettingsDialog.tsx",
-        "pct": 88.88
+        "pct": 87.5
       },
       {
         "file": "src/components/inspector/Inspector.tsx",
-        "pct": 89.55
+        "pct": 89.85
       },
       {
         "file": "src/App.tsx",
@@ -137,15 +137,15 @@
     "churnHotspots": [
       {
         "file": "src/store/index.ts",
-        "commits": 18
+        "commits": 19
       },
       {
         "file": "src/components/inspector/Inspector.tsx",
-        "commits": 14
+        "commits": 15
       },
       {
         "file": "src/domain/tree.ts",
-        "commits": 13
+        "commits": 14
       },
       {
         "file": "src/components/canvas/Canvas.tsx",
@@ -173,8 +173,8 @@
     "nonNull": 1
   },
   "bundle": {
-    "eagerJsGzipKb": 155.4,
-    "totalJsGzipKb": 508.7,
+    "eagerJsGzipKb": 155.3,
+    "totalJsGzipKb": 508.6,
     "cssGzipKb": 6.7,
     "budgetKb": 165,
     "withinBudget": true
@@ -182,8 +182,8 @@
   "docs": {
     "bookWords": 20665,
     "chapters": 14,
-    "appLoc": 3819,
-    "docToCodeRatio": 0.53
+    "appLoc": 3755,
+    "docToCodeRatio": 0.54
   },
   "featureCoverage": {
     "total": 60,
@@ -444,21 +444,21 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 2,
-    "commits": 121,
-    "commits7d": 121,
+    "commits": 123,
+    "commits7d": 123,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 83
+        "count": 84
       },
       {
         "name": "github-actions[bot]",
-        "count": 38
+        "count": 39
       }
     ],
     "churn30d": {
-      "added": 21204,
-      "removed": 2389
+      "added": 21544,
+      "removed": 2798
     },
     "changelogEntries": 41
   }
