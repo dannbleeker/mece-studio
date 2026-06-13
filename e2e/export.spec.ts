@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { enterWorkspace } from './helpers';
 
 // The image render (html-to-image) + the export libraries can take a few seconds.
 test.describe(() => {
@@ -13,7 +14,7 @@ test.describe(() => {
   for (const { label, file } of cases) {
     test(`Export ${label} downloads ${file}`, async ({ page }) => {
       await page.goto('/');
-      await expect(page.locator('.react-flow__node').first()).toBeVisible();
+      await enterWorkspace(page);
 
       const download = page.waitForEvent('download');
       await page.getByRole('button', { name: label, exact: true }).click();

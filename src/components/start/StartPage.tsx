@@ -88,6 +88,7 @@ export function StartPage() {
   const newDoc = useStore((s) => s.newDoc);
   const openDoc = useStore((s) => s.openDoc);
   const switchDoc = useStore((s) => s.switchDoc);
+  const setView = useStore((s) => s.setView);
   const decompose = useStore((s) => s.decompose);
 
   const docs = useLibraryDocs();
@@ -119,7 +120,12 @@ export function StartPage() {
     decompose(useStore.getState().doc.rootId, type);
   };
   const onPickExample = (ex: ExampleTree) => openDoc(ex.build());
-  const onOpen = (id: string) => switchDoc(id);
+  // setView too: opening the already-active tree is a no-op in switchDoc, but we
+  // still want to leave the Start shell for the canvas.
+  const onOpen = (id: string) => {
+    switchDoc(id);
+    setView('workspace');
+  };
 
   return (
     <div className="flex h-full bg-[#faf9f5] text-neutral-800">

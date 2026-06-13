@@ -1,5 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
-import { resetApp } from './helpers';
+import { enterWorkspace, openExample, resetApp } from './helpers';
 
 async function nodeY(page: Page, text: string): Promise<number> {
   const box = await page.locator('.react-flow__node').filter({ hasText: text }).boundingBox();
@@ -12,7 +12,7 @@ test('settings: sort-by-priority reorders siblings on the canvas and persists', 
 
   // The profit example: Revenue's children are "Price per item" (no priority,
   // created first) and "Units sold" (HIGH priority, created second).
-  await page.getByRole('combobox', { name: 'Load an example tree' }).selectOption('profit');
+  await openExample(page, /Operating profit/);
   await page.waitForTimeout(500);
 
   // Default = creation order: "Price per item" sits above "Units sold".
@@ -30,8 +30,9 @@ test('settings: sort-by-priority reorders siblings on the canvas and persists', 
   // Now the high-priority "Units sold" sits above "Price per item".
   expect(await nodeY(page, 'Units sold')).toBeLessThan(await nodeY(page, 'Price per item'));
 
-  // The preference persists across a reload.
+  // The preference persists across a reload (which lands on Start; re-open the tree).
   await page.reload();
+  await enterWorkspace(page);
   await page.waitForTimeout(600);
   expect(await nodeY(page, 'Units sold')).toBeLessThan(await nodeY(page, 'Price per item'));
 });
