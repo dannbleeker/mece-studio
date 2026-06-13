@@ -41,12 +41,14 @@ you move into the **workspace**, where you build it:
 
 - **The canvas** (centre) shows the tree. Nodes are laid out automatically,
   left-to-right.
-- **The inspector** (right) shows everything about the currently selected node:
-  its decomposition, MECE status, priority, hypothesis status, value, evidence,
-  and notes.
-- **The header** (top) has **MECE Studio** / **← Start** to return to the library,
-  plus the New / Synthesis / Copy Markdown / Open / Save / Undo / Redo / ⚙ Settings /
-  About actions.
+- **The inspector** (right) is **tabbed** — *Issue · Logic · Evidence · Value* — so
+  you edit one facet of the selected node at a time; the **Logic** tab opens
+  automatically when a node's split needs a MECE review.
+- **The header** (top) is grouped into clusters: the **MECE Studio** wordmark and
+  **← Start** return to the library; a **MECE health** chip opens the tree-wide
+  review (below); then **Undo / Redo**, **Synthesis**, a filled **Export ▾** menu
+  (PNG / PDF / PowerPoint), **⚙ Settings**, **?** shortcuts, and an **⋯ overflow**
+  menu (Copy Markdown, Open JSON, Save JSON, About, New / Delete tree).
 
 Click a node to select it. Rename the root question to your real problem to
 begin — double-click it, or select it and press <kbd>Enter</kbd>.
@@ -59,6 +61,20 @@ tree and learn by poking at a real one. There are three: a value-driver tree
 evidence), and a decision frame (*subscription launch*, built on a provably-MECE
 binary split). Each opens as a new tree in your library, so your own work is
 untouched.
+
+## MECE health and the review dock
+
+The header's **MECE health** chip is the tree-level view of the differentiator: it
+reads **✓ MECE clean** when every split passes, or **⚠ N to review** when some
+don't. Click it to open the **review dock** (it replaces the inspector while open),
+which lists every flagged split with the engine's plain-language reason on each
+axis. For each one you can:
+
+- **Locate** it — centres the node on the canvas, which **dims the clean splits and
+  amber-dashes the flagged edges** so the issues stand out.
+- **Remedy** a gap in one click — *Add an "Other" bucket* for a segmentation, or
+  *Add a sub-issue* otherwise. There's no "resolve" button: warnings are computed
+  live from the tree, so they clear themselves the moment the split is actually MECE.
 
 ## The Start page
 
@@ -287,14 +303,13 @@ MECE Studio keeps a **library** of trees.
 Everything autosaves locally, but you can also take your work out in several
 formats:
 
-- **PNG** — export the canvas as an image.
-- **PDF** — export the canvas as a PDF.
-- **PowerPoint (PPTX)** — export the canvas as a slide.
-- **Markdown** — **Copy Markdown** (header) copies the tree as a structured
-  outline: each node's value, hypothesis status, priority, MECE state, notes,
-  and evidence, so a pasted outline holds the whole analysis.
-- **JSON** — **Save JSON** (header) downloads the full document.
-- **Open JSON** — **Open** (header) loads a saved `.json` tree back in. It's
+- **PNG / PDF / PowerPoint** — from the header's **Export ▾** menu, export the
+  canvas as an image, a PDF, or a slide.
+- **Markdown** — **⋯ → Copy Markdown** copies the tree as a structured outline:
+  each node's value, hypothesis status, priority, MECE state, notes, and evidence,
+  so a pasted outline holds the whole analysis.
+- **JSON** — **⋯ → Save JSON** downloads the full document.
+- **Open JSON** — **⋯ → Open JSON** loads a saved `.json` tree back in. It's
   validated, and it opens as a **new** entry in your library, so it never
   overwrites an existing tree.
 

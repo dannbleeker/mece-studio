@@ -21,6 +21,7 @@ test('inspector copies a "suggest a split" prompt for the selected node', async 
   await resetApp(page);
 
   await page.locator('.react-flow__node').first().click();
+  await page.getByRole('button', { name: 'Logic' }).click(); // decompose lives on the Logic tab
   await page.getByRole('button', { name: /suggest a split/ }).click();
 
   const clip = await page.evaluate(() => navigator.clipboard.readText());

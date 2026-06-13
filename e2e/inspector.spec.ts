@@ -9,6 +9,7 @@ async function freshRootSelected(page: Page) {
 test('set a value and unit, shown on the node', async ({ page }) => {
   await freshRootSelected(page);
 
+  await page.getByRole('button', { name: 'Value' }).click(); // value lives on the Value tab now
   await page.locator('aside input[type="number"]').fill('250');
   await page.locator('aside input[type="number"]').blur();
   await page.locator('aside input[placeholder="unit"]').fill('DKK');

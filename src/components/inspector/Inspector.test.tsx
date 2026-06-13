@@ -29,6 +29,11 @@ function selectRoot(): NodeId {
   return rootId;
 }
 
+/** Switch the tabbed inspector to a facet (Issue · Logic · Evidence · Value). */
+function goTab(name: 'Issue' | 'Logic' | 'Evidence' | 'Value') {
+  fireEvent.click(screen.getByRole('button', { name }));
+}
+
 describe('Inspector', () => {
   it('prompts to select a node when nothing is selected', () => {
     s().select(null);
@@ -46,8 +51,9 @@ describe('Inspector', () => {
   it('writes status and value edits through to the store', () => {
     const rootId = selectRoot();
     render(<Inspector />);
-    fireEvent.click(screen.getByRole('button', { name: 'supported' }));
+    fireEvent.click(screen.getByRole('button', { name: 'supported' })); // Issue tab
     expect(s().doc.nodes[rootId]?.status).toBe('supported');
+    goTab('Value');
     fireEvent.blur(screen.getByPlaceholderText('e.g. 100'), { target: { value: '42' } });
     expect(s().doc.nodes[rootId]?.value?.amount).toBe(42);
   });
@@ -64,6 +70,7 @@ describe('Inspector', () => {
   it('adds and removes evidence', () => {
     const rootId = selectRoot();
     render(<Inspector />);
+    goTab('Evidence');
     fireEvent.change(screen.getByPlaceholderText('Add evidence…'), {
       target: { value: 'It works' },
     });
@@ -77,6 +84,7 @@ describe('Inspector', () => {
   it('decomposes a leaf into a split', () => {
     selectRoot();
     render(<Inspector />);
+    goTab('Logic');
     expect(screen.getByText('Decompose by')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Binary (A / not-A)' }));
     expect(screen.getByText('How it splits')).toBeTruthy(); // a split now exists
@@ -88,6 +96,7 @@ describe('Inspector', () => {
     s().openDoc(profit.build());
     s().select(s().doc.rootId);
     render(<Inspector />);
+    goTab('Logic');
     expect(screen.getByText('How it splits')).toBeTruthy();
     expect(screen.getByText('Combine children by')).toBeTruthy();
     expect(screen.getByText(/Sensitivity/)).toBeTruthy();
@@ -99,8 +108,7 @@ describe('Inspector', () => {
     if (!child) throw new Error('no child');
     s().select(child.id);
     render(<Inspector />);
-    expect(screen.getByText('Issue')).toBeTruthy(); // non-root header
-    fireEvent.blur(screen.getByLabelText('Issue'), { target: { value: 'Renamed' } });
+    fireEvent.blur(screen.getByLabelText('Issue'), { target: { value: 'Renamed' } }); // non-root Issue field
     expect(s().doc.nodes[child.id]?.label).toBe('Renamed');
     fireEvent.blur(screen.getByLabelText('Notes'), { target: { value: 'a note' } });
     expect(s().doc.nodes[child.id]?.detail).toBe('a note');
@@ -111,6 +119,7 @@ describe('Inspector', () => {
   it('sets a unit after an amount', () => {
     const rootId = selectRoot();
     render(<Inspector />);
+    goTab('Value');
     fireEvent.blur(screen.getByPlaceholderText('e.g. 100'), { target: { value: '50' } });
     fireEvent.blur(screen.getByPlaceholderText('unit'), { target: { value: 'DKK' } });
     expect(s().doc.nodes[rootId]?.value).toEqual({ amount: 50, unit: 'DKK' });
@@ -119,6 +128,7 @@ describe('Inspector', () => {
   it('copies an AI prompt to suggest a split for a leaf node', () => {
     selectRoot();
     render(<Inspector />);
+    goTab('Logic');
     fireEvent.click(screen.getByText(/Copy an AI prompt to suggest a split/));
     expect(copyToClipboard).toHaveBeenCalledTimes(1);
   });
@@ -148,6 +158,7 @@ describe('Inspector', () => {
     const rootId = s().doc.rootId;
     s().select(rootId);
     render(<Inspector />);
+    goTab('Logic');
     const productOption = screen.getByRole('option', { name: 'Product (A × B × C)' });
     const operatorSelect = productOption.closest('select');
     if (!operatorSelect) throw new Error('no operator select');

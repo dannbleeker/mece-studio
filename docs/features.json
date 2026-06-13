@@ -1,6 +1,6 @@
 {
   "$schema": "./features.schema.json",
-  "note": "Curated catalogue of MECE Studio's user-facing features — the denominator for documentation-coverage metrics. `since` is the milestone the capability shipped in (1-6). `manual` = covered in USER_GUIDE.md; `book` = covered in a docs/guide chapter; `bookExample` = that chapter has a worked example. Keep in sync with CHANGELOG.md and bump `reviewedThroughChangelogEntries` after reconciling.",
+  "note": "Curated catalogue of MECE Studio's user-facing features — the denominator for documentation-coverage metrics. `since` is the milestone the capability shipped in (1-7). `manual` = covered in USER_GUIDE.md; `book` = covered in a docs/guide chapter; `bookExample` = that chapter has a worked example. Keep in sync with CHANGELOG.md and bump `reviewedThroughChangelogEntries` after reconciling.",
   "areas": [
     "Tree",
     "MECE",
@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 44,
+  "reviewedThroughChangelogEntries": 45,
   "features": [
     { "id": "issue-tree", "name": "Issue-tree canvas", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
     { "id": "root-question", "name": "Editable root question", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
@@ -98,6 +98,11 @@
     { "id": "library-cards", "name": "Tree library cards with live MECE status + preview", "area": "Documents", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "needs-review", "name": "Needs-review triage (trees with a flagged split)", "area": "MECE", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "manage-trees", "name": "Rename / duplicate / delete a tree from its card", "area": "Documents", "since": 6, "manual": true, "book": false, "bookExample": false },
-    { "id": "self-update", "name": "Self-update prompt + Check for updates", "area": "App", "since": 6, "manual": true, "book": false, "bookExample": false }
+    { "id": "self-update", "name": "Self-update prompt + Check for updates", "area": "App", "since": 6, "manual": true, "book": false, "bookExample": false },
+
+    { "id": "mece-review-dock", "name": "Tree-level MECE health chip + review dock (locate + remedy)", "area": "MECE", "since": 7, "manual": true, "book": false, "bookExample": false },
+    { "id": "canvas-review-overlay", "name": "Canvas review overlay (dim clean splits, amber-dash flagged edges)", "area": "Canvas", "since": 7, "manual": true, "book": false, "bookExample": false },
+    { "id": "clustered-header", "name": "Clustered editor header (title + type badge, Export menu, overflow)", "area": "App", "since": 7, "manual": true, "book": false, "bookExample": false },
+    { "id": "tabbed-inspector", "name": "Tabbed inspector (Issue / Logic / Evidence / Value)", "area": "Editing", "since": 7, "manual": true, "book": false, "bookExample": false }
   ]
 }

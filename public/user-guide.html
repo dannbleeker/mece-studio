@@ -72,12 +72,14 @@ you move into the <strong>workspace</strong>, where you build it:</p>
 <ul>
 <li><strong>The canvas</strong> (centre) shows the tree. Nodes are laid out automatically,
 left-to-right.</li>
-<li><strong>The inspector</strong> (right) shows everything about the currently selected node:
-its decomposition, MECE status, priority, hypothesis status, value, evidence,
-and notes.</li>
-<li><strong>The header</strong> (top) has <strong>MECE Studio</strong> / <strong>← Start</strong> to return to the library,
-plus the New / Synthesis / Copy Markdown / Open / Save / Undo / Redo / ⚙ Settings /
-About actions.</li>
+<li><strong>The inspector</strong> (right) is <strong>tabbed</strong> — <em>Issue · Logic · Evidence · Value</em> — so
+you edit one facet of the selected node at a time; the <strong>Logic</strong> tab opens
+automatically when a node&#39;s split needs a MECE review.</li>
+<li><strong>The header</strong> (top) is grouped into clusters: the <strong>MECE Studio</strong> wordmark and
+<strong>← Start</strong> return to the library; a <strong>MECE health</strong> chip opens the tree-wide
+review (below); then <strong>Undo / Redo</strong>, <strong>Synthesis</strong>, a filled <strong>Export ▾</strong> menu
+(PNG / PDF / PowerPoint), <strong>⚙ Settings</strong>, <strong>?</strong> shortcuts, and an <strong>⋯ overflow</strong>
+menu (Copy Markdown, Open JSON, Save JSON, About, New / Delete tree).</li>
 </ul>
 <p>Click a node to select it. Rename the root question to your real problem to
 begin — double-click it, or select it and press <kbd>Enter</kbd>.</p>
@@ -89,6 +91,19 @@ tree and learn by poking at a real one. There are three: a value-driver tree
 evidence), and a decision frame (<em>subscription launch</em>, built on a provably-MECE
 binary split). Each opens as a new tree in your library, so your own work is
 untouched.</p>
+<h2>MECE health and the review dock</h2>
+<p>The header&#39;s <strong>MECE health</strong> chip is the tree-level view of the differentiator: it
+reads <strong>✓ MECE clean</strong> when every split passes, or <strong>⚠ N to review</strong> when some
+don&#39;t. Click it to open the <strong>review dock</strong> (it replaces the inspector while open),
+which lists every flagged split with the engine&#39;s plain-language reason on each
+axis. For each one you can:</p>
+<ul>
+<li><strong>Locate</strong> it — centres the node on the canvas, which <strong>dims the clean splits and
+amber-dashes the flagged edges</strong> so the issues stand out.</li>
+<li><strong>Remedy</strong> a gap in one click — <em>Add an &quot;Other&quot; bucket</em> for a segmentation, or
+<em>Add a sub-issue</em> otherwise. There&#39;s no &quot;resolve&quot; button: warnings are computed
+live from the tree, so they clear themselves the moment the split is actually MECE.</li>
+</ul>
 <h2>The Start page</h2>
 <p>MECE Studio opens on the <strong>Start page</strong> — a workspace shell with a sidebar on the
 left. Open or create a tree from here and you move into the editing <strong>workspace</strong>
@@ -280,14 +295,13 @@ version. Nothing is lost.</li>
 <p>Everything autosaves locally, but you can also take your work out in several
 formats:</p>
 <ul>
-<li><strong>PNG</strong> — export the canvas as an image.</li>
-<li><strong>PDF</strong> — export the canvas as a PDF.</li>
-<li><strong>PowerPoint (PPTX)</strong> — export the canvas as a slide.</li>
-<li><strong>Markdown</strong> — <strong>Copy Markdown</strong> (header) copies the tree as a structured
-outline: each node&#39;s value, hypothesis status, priority, MECE state, notes,
-and evidence, so a pasted outline holds the whole analysis.</li>
-<li><strong>JSON</strong> — <strong>Save JSON</strong> (header) downloads the full document.</li>
-<li><strong>Open JSON</strong> — <strong>Open</strong> (header) loads a saved <code>.json</code> tree back in. It&#39;s
+<li><strong>PNG / PDF / PowerPoint</strong> — from the header&#39;s <strong>Export ▾</strong> menu, export the
+canvas as an image, a PDF, or a slide.</li>
+<li><strong>Markdown</strong> — <strong>⋯ → Copy Markdown</strong> copies the tree as a structured outline:
+each node&#39;s value, hypothesis status, priority, MECE state, notes, and evidence,
+so a pasted outline holds the whole analysis.</li>
+<li><strong>JSON</strong> — <strong>⋯ → Save JSON</strong> downloads the full document.</li>
+<li><strong>Open JSON</strong> — <strong>⋯ → Open JSON</strong> loads a saved <code>.json</code> tree back in. It&#39;s
 validated, and it opens as a <strong>new</strong> entry in your library, so it never
 overwrites an existing tree.</li>
 </ul>

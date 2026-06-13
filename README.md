@@ -9,6 +9,7 @@ Sibling to [TP Studio](https://tp-studio.struktureretsundfornuft.dk) (Theory of 
 ## What it does
 
 - **Issue trees, MECE by construction.** Decompose any node by **segment, process, binary (A / not-A), formula, framework, or freeform**. MECE is a property of each *split*, not a node: the engine evaluates **mutual exclusivity** and **collective exhaustiveness** on every change and shows the state as ME / CE dots on the node plus explained warnings in the inspector. Binary and formula splits are provably MECE; segments need an explicit "Other" bucket; looser splits get a sibling-overlap heuristic.
+- **Review every gap in one place.** A tree-level **MECE health** chip opens a **review dock** listing every flagged split with its ME / CE reason, a one-click **locate** (which dims the clean splits and amber-dashes the flagged edges on the canvas), and a one-click **remedy**. The inspector is **tabbed** (*Issue · Logic · Evidence · Value*), opening **Logic** automatically when the selected node's split needs review.
 - **Decomposition scaffolds.** "Decompose by …" seeds clean, type-appropriate starter sub-issues (binary → A / not-A, segments → two + Other, process → stages, formula → terms) that you rename.
 - **Prioritisation.** Mark each issue's **impact × ease**; nodes show a High / Medium / Low band so the 80/20 branches stand out, and the synthesis ranks by it.
 - **Hypotheses & evidence.** Set a node's status (open / supported / refuted / parked) and attach supporting or contradicting **evidence** with a strength.
