@@ -45,6 +45,7 @@ locally on your machine.</p>
 <h2>Contents</h2>
 <ol>
 <li><a href="#getting-started">Getting started</a></li>
+<li><a href="#the-start-page">The Start page</a></li>
 <li><a href="#building-the-tree">Building the tree</a></li>
 <li><a href="#mece-checking">MECE checking</a></li>
 <li><a href="#editing-nodes">Editing nodes</a></li>
@@ -65,27 +66,61 @@ locally on your machine.</p>
 </ol>
 <hr>
 <h2>Getting started</h2>
-<p>When you open MECE Studio you get a single <strong>root node</strong> holding the key
-question — for example <em>&quot;Why is this happening?&quot;</em>. Everything hangs off this
-question.</p>
+<p>When you open MECE Studio you land on the <strong>Start page</strong> — your library of trees and
+a place to begin (see <a href="#the-start-page">The Start page</a>). Create or open a tree and
+you move into the <strong>workspace</strong>, where you build it:</p>
 <ul>
 <li><strong>The canvas</strong> (centre) shows the tree. Nodes are laid out automatically,
 left-to-right.</li>
 <li><strong>The inspector</strong> (right) shows everything about the currently selected node:
 its decomposition, MECE status, priority, hypothesis status, value, evidence,
 and notes.</li>
-<li><strong>The header</strong> (top) has the document picker and the New / Examples / Synthesis /
-Copy Markdown / Open / Save / Undo / Redo / ⚙ Settings / About actions.</li>
+<li><strong>The header</strong> (top) has <strong>MECE Studio</strong> / <strong>← Start</strong> to return to the library,
+plus the New / Synthesis / Copy Markdown / Open / Save / Undo / Redo / ⚙ Settings /
+About actions.</li>
 </ul>
 <p>Click a node to select it. Rename the root question to your real problem to
 begin — double-click it, or select it and press <kbd>Enter</kbd>.</p>
-<p><strong>Start from an example.</strong> New to issue trees? Open the <strong>Examples…</strong> picker in
-the header to load a ready-made tree and learn by poking at a real one. There are
-three: a value-driver tree (<em>operating profit</em>, whose formula branches provably
-reconcile), an issue tree (<em>customer churn</em>, segmented with an &quot;Other&quot; bucket and
-carrying hypotheses and evidence), and a decision frame (<em>subscription launch</em>,
-built on a provably-MECE binary split). Each opens as a new tree in your library,
-so your own work is untouched.</p>
+<p><strong>Start from an example.</strong> New to issue trees? On the Start page, open the
+<strong>Templates</strong> section (or the example cards on the Start view) to load a ready-made
+tree and learn by poking at a real one. There are three: a value-driver tree
+(<em>operating profit</em>, whose formula branches provably reconcile), an issue tree
+(<em>customer churn</em>, segmented with an &quot;Other&quot; bucket and carrying hypotheses and
+evidence), and a decision frame (<em>subscription launch</em>, built on a provably-MECE
+binary split). Each opens as a new tree in your library, so your own work is
+untouched.</p>
+<h2>The Start page</h2>
+<p>MECE Studio opens on the <strong>Start page</strong> — a workspace shell with a sidebar on the
+left. Open or create a tree from here and you move into the editing <strong>workspace</strong>
+(canvas + inspector); the <strong>MECE Studio</strong> wordmark or <strong>← Start</strong> in the workspace
+header brings you back.</p>
+<p>The sidebar switches the main view:</p>
+<ul>
+<li><strong>Start</strong> — the key-question hero: type a question and <strong>Build an issue tree</strong>, or
+pick one of the example questions. Below it sit the framework and example strips and
+a &quot;pick up where you left off&quot; gallery of your recent trees.</li>
+<li><strong>All trees</strong> — every tree in your library, as cards.</li>
+<li><strong>Recent</strong> — the same trees as a compact, most-recently-edited-first list.</li>
+<li><strong>Templates</strong> — start from a pattern (below).</li>
+<li><strong>Needs review</strong> — only the trees with a split the MECE engine has flagged, so you
+can see at a glance what still needs attention.</li>
+<li><strong>Learn MECE</strong> — a short primer, with links to this guide and the book.</li>
+</ul>
+<p><strong>Templates.</strong> The Templates page (and the strips on Start) offers two ways to begin:</p>
+<ul>
+<li><strong>Decomposition frameworks</strong> — one tile per split type (formula, segments, process,
+binary, framework, freeform) with its hint and the starter branches it scaffolds;
+binary and formula are tagged <strong>provably MECE</strong>. Click one to create a new tree
+decomposed that way.</li>
+<li><strong>Example trees</strong> — the ready-made trees; click to open a fresh copy.</li>
+</ul>
+<p><strong>Tree cards.</strong> Each card shows a mini preview of the tree, its name and kind, when you
+last edited it, and a <strong>MECE pill</strong>: green <strong>MECE clean</strong> when every split passes, amber
+<strong><em>n</em> to check</strong> when splits are flagged for review, or grey when the tree isn&#39;t
+decomposed yet. The pill reads the <em>same</em> MECE result the canvas and inspector show, so
+it never disagrees with them.</p>
+<p><strong>Search.</strong> Press <kbd>⌘K</kbd> / <kbd>Ctrl+K</kbd> (or click the search box) to filter
+your trees by name.</p>
 <h2>Building the tree</h2>
 <p>A tree is built by <strong>decomposing</strong> each question into sub-issues.</p>
 <p><strong>Add a sub-issue.</strong> Select a node and click <strong>+ Add sub-issue</strong> in the
@@ -230,8 +265,8 @@ machine unless <em>you</em> paste it.</p>
 <h2>Working with multiple trees</h2>
 <p>MECE Studio keeps a <strong>library</strong> of trees.</p>
 <ul>
-<li>The <strong>document picker</strong> (header) lists every tree, named by its root question.
-Switch between them at any time.</li>
+<li>The <strong>Start page</strong> lists every tree (by its root question) as a card; click one to
+open it, or use <strong>All trees</strong> / <strong>Recent</strong> in the sidebar. Switch at any time.</li>
 <li><strong>+ New</strong> starts a fresh tree and adds it to the library; your current tree
 stays saved.</li>
 <li><strong>Delete</strong> removes the current tree (with confirmation). Deleting the last tree

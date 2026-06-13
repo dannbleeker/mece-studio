@@ -12,50 +12,89 @@ locally on your machine.
 ## Contents
 
 1. [Getting started](#getting-started)
-2. [Building the tree](#building-the-tree)
-3. [MECE checking](#mece-checking)
-4. [Editing nodes](#editing-nodes)
-5. [Navigating the canvas](#navigating-the-canvas)
-6. [Prioritising branches](#prioritising-branches)
-7. [Hypotheses and status](#hypotheses-and-status)
-8. [Evidence](#evidence)
-9. [Value-driver trees](#value-driver-trees)
-10. [Synthesis — reading the answer](#synthesis--reading-the-answer)
-11. [AI assist](#ai-assist)
-12. [Working with multiple trees](#working-with-multiple-trees)
-13. [Saving, exporting, and importing](#saving-exporting-and-importing)
-14. [Undo, redo, and autosave](#undo-redo-and-autosave)
-15. [Installing as an app (offline)](#installing-as-an-app-offline)
-16. [Settings](#settings)
-17. [Keyboard reference](#keyboard-reference)
-18. [Tips](#tips)
+2. [The Start page](#the-start-page)
+3. [Building the tree](#building-the-tree)
+4. [MECE checking](#mece-checking)
+5. [Editing nodes](#editing-nodes)
+6. [Navigating the canvas](#navigating-the-canvas)
+7. [Prioritising branches](#prioritising-branches)
+8. [Hypotheses and status](#hypotheses-and-status)
+9. [Evidence](#evidence)
+10. [Value-driver trees](#value-driver-trees)
+11. [Synthesis — reading the answer](#synthesis--reading-the-answer)
+12. [AI assist](#ai-assist)
+13. [Working with multiple trees](#working-with-multiple-trees)
+14. [Saving, exporting, and importing](#saving-exporting-and-importing)
+15. [Undo, redo, and autosave](#undo-redo-and-autosave)
+16. [Installing as an app (offline)](#installing-as-an-app-offline)
+17. [Settings](#settings)
+18. [Keyboard reference](#keyboard-reference)
+19. [Tips](#tips)
 
 ---
 
 ## Getting started
 
-When you open MECE Studio you get a single **root node** holding the key
-question — for example *"Why is this happening?"*. Everything hangs off this
-question.
+When you open MECE Studio you land on the **Start page** — your library of trees and
+a place to begin (see [The Start page](#the-start-page)). Create or open a tree and
+you move into the **workspace**, where you build it:
 
 - **The canvas** (centre) shows the tree. Nodes are laid out automatically,
   left-to-right.
 - **The inspector** (right) shows everything about the currently selected node:
   its decomposition, MECE status, priority, hypothesis status, value, evidence,
   and notes.
-- **The header** (top) has the document picker and the New / Examples / Synthesis /
-  Copy Markdown / Open / Save / Undo / Redo / ⚙ Settings / About actions.
+- **The header** (top) has **MECE Studio** / **← Start** to return to the library,
+  plus the New / Synthesis / Copy Markdown / Open / Save / Undo / Redo / ⚙ Settings /
+  About actions.
 
 Click a node to select it. Rename the root question to your real problem to
 begin — double-click it, or select it and press <kbd>Enter</kbd>.
 
-**Start from an example.** New to issue trees? Open the **Examples…** picker in
-the header to load a ready-made tree and learn by poking at a real one. There are
-three: a value-driver tree (*operating profit*, whose formula branches provably
-reconcile), an issue tree (*customer churn*, segmented with an "Other" bucket and
-carrying hypotheses and evidence), and a decision frame (*subscription launch*,
-built on a provably-MECE binary split). Each opens as a new tree in your library,
-so your own work is untouched.
+**Start from an example.** New to issue trees? On the Start page, open the
+**Templates** section (or the example cards on the Start view) to load a ready-made
+tree and learn by poking at a real one. There are three: a value-driver tree
+(*operating profit*, whose formula branches provably reconcile), an issue tree
+(*customer churn*, segmented with an "Other" bucket and carrying hypotheses and
+evidence), and a decision frame (*subscription launch*, built on a provably-MECE
+binary split). Each opens as a new tree in your library, so your own work is
+untouched.
+
+## The Start page
+
+MECE Studio opens on the **Start page** — a workspace shell with a sidebar on the
+left. Open or create a tree from here and you move into the editing **workspace**
+(canvas + inspector); the **MECE Studio** wordmark or **← Start** in the workspace
+header brings you back.
+
+The sidebar switches the main view:
+
+- **Start** — the key-question hero: type a question and **Build an issue tree**, or
+  pick one of the example questions. Below it sit the framework and example strips and
+  a "pick up where you left off" gallery of your recent trees.
+- **All trees** — every tree in your library, as cards.
+- **Recent** — the same trees as a compact, most-recently-edited-first list.
+- **Templates** — start from a pattern (below).
+- **Needs review** — only the trees with a split the MECE engine has flagged, so you
+  can see at a glance what still needs attention.
+- **Learn MECE** — a short primer, with links to this guide and the book.
+
+**Templates.** The Templates page (and the strips on Start) offers two ways to begin:
+
+- **Decomposition frameworks** — one tile per split type (formula, segments, process,
+  binary, framework, freeform) with its hint and the starter branches it scaffolds;
+  binary and formula are tagged **provably MECE**. Click one to create a new tree
+  decomposed that way.
+- **Example trees** — the ready-made trees; click to open a fresh copy.
+
+**Tree cards.** Each card shows a mini preview of the tree, its name and kind, when you
+last edited it, and a **MECE pill**: green **MECE clean** when every split passes, amber
+**_n_ to check** when splits are flagged for review, or grey when the tree isn't
+decomposed yet. The pill reads the *same* MECE result the canvas and inspector show, so
+it never disagrees with them.
+
+**Search.** Press <kbd>⌘K</kbd> / <kbd>Ctrl+K</kbd> (or click the search box) to filter
+your trees by name.
 
 ## Building the tree
 
@@ -232,8 +271,8 @@ machine unless *you* paste it.
 
 MECE Studio keeps a **library** of trees.
 
-- The **document picker** (header) lists every tree, named by its root question.
-  Switch between them at any time.
+- The **Start page** lists every tree (by its root question) as a card; click one to
+  open it, or use **All trees** / **Recent** in the sidebar. Switch at any time.
 - **+ New** starts a fresh tree and adds it to the library; your current tree
   stays saved.
 - **Delete** removes the current tree (with confirmation). Deleting the last tree
