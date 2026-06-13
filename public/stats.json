@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-06-13T08:49:26.530Z",
-  "commit": "bc47069",
+  "generatedAt": "2026-06-13T09:00:17.263Z",
+  "commit": "8cc97ba",
   "headline": {
-    "linesTsJs": 8208,
-    "tests": 225,
-    "lineCoveragePct": 88.05,
-    "commits": 113,
+    "linesTsJs": 8465,
+    "tests": 247,
+    "lineCoveragePct": 93.57,
+    "commits": 115,
     "ageDays": 2,
-    "trackedFiles": 156,
+    "trackedFiles": 159,
     "featureManualPct": 100,
     "featureBookPct": 43.3,
     "featureExamplePct": 30
@@ -20,8 +20,8 @@
     },
     {
       "category": "Unit tests",
-      "files": 40,
-      "lines": 2729
+      "files": 43,
+      "lines": 2986
     },
     {
       "category": "E2E tests (Playwright)",
@@ -46,28 +46,28 @@
   ],
   "coverage": {
     "lines": {
-      "pct": 88.05,
-      "covered": 877,
+      "pct": 93.57,
+      "covered": 932,
       "total": 996
     },
     "statements": {
-      "pct": 86,
-      "covered": 1051,
+      "pct": 90.91,
+      "covered": 1111,
       "total": 1222
     },
     "functions": {
-      "pct": 86.17,
-      "covered": 324,
+      "pct": 89.89,
+      "covered": 338,
       "total": 376
     },
     "branches": {
-      "pct": 79.88,
-      "covered": 560,
+      "pct": 83.88,
+      "covered": 588,
       "total": 701
     }
   },
   "tests": {
-    "unit": 201,
+    "unit": 223,
     "e2e": 24
   },
   "domain": {
@@ -111,11 +111,7 @@
     "leastCovered": [
       {
         "file": "src/components/canvas/Canvas.tsx",
-        "pct": 42.3
-      },
-      {
-        "file": "src/App.tsx",
-        "pct": 73.61
+        "pct": 74.61
       },
       {
         "file": "src/components/canvas/nodes/IssueNode.tsx",
@@ -128,6 +124,10 @@
       {
         "file": "src/components/settings/SettingsDialog.tsx",
         "pct": 88.88
+      },
+      {
+        "file": "src/App.tsx",
+        "pct": 90.27
       },
       {
         "file": "src/services/storage.ts",
@@ -160,13 +160,7 @@
         "commits": 10
       }
     ],
-    "risky": [
-      {
-        "file": "src/components/canvas/Canvas.tsx",
-        "commits": 13,
-        "pct": 42.3
-      }
-    ]
+    "risky": []
   },
   "hygiene": {
     "todo": 0,
@@ -450,21 +444,21 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 2,
-    "commits": 113,
-    "commits7d": 113,
+    "commits": 115,
+    "commits7d": 115,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 79
+        "count": 80
       },
       {
         "name": "github-actions[bot]",
-        "count": 34
+        "count": 35
       }
     ],
     "churn30d": {
-      "added": 20694,
-      "removed": 2268
+      "added": 20969,
+      "removed": 2289
     },
     "changelogEntries": 41
   }
