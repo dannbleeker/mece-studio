@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-06-13T09:04:12.396Z",
-  "commit": "7acd68b",
+  "generatedAt": "2026-06-13T09:09:22.582Z",
+  "commit": "263303a",
   "headline": {
-    "linesTsJs": 8533,
-    "tests": 253,
-    "lineCoveragePct": 94.17,
-    "commits": 117,
+    "linesTsJs": 8589,
+    "tests": 258,
+    "lineCoveragePct": 94.47,
+    "commits": 119,
     "ageDays": 2,
     "trackedFiles": 159,
     "featureManualPct": 100,
@@ -21,7 +21,7 @@
     {
       "category": "Unit tests",
       "files": 43,
-      "lines": 3054
+      "lines": 3110
     },
     {
       "category": "E2E tests (Playwright)",
@@ -46,28 +46,28 @@
   ],
   "coverage": {
     "lines": {
-      "pct": 94.17,
-      "covered": 938,
+      "pct": 94.47,
+      "covered": 941,
       "total": 996
     },
     "statements": {
-      "pct": 91.48,
-      "covered": 1118,
+      "pct": 92.3,
+      "covered": 1128,
       "total": 1222
     },
     "functions": {
-      "pct": 91.48,
-      "covered": 344,
+      "pct": 92.02,
+      "covered": 346,
       "total": 376
     },
     "branches": {
-      "pct": 84.59,
-      "covered": 593,
+      "pct": 85.73,
+      "covered": 601,
       "total": 701
     }
   },
   "tests": {
-    "unit": 229,
+    "unit": 234,
     "e2e": 24
   },
   "domain": {
@@ -115,7 +115,7 @@
       },
       {
         "file": "src/components/canvas/nodes/IssueNode.tsx",
-        "pct": 76.66
+        "pct": 86.66
       },
       {
         "file": "src/components/settings/SettingsDialog.tsx",
@@ -444,21 +444,21 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 2,
-    "commits": 117,
-    "commits7d": 117,
+    "commits": 119,
+    "commits7d": 119,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 81
+        "count": 82
       },
       {
         "name": "github-actions[bot]",
-        "count": 36
+        "count": 37
       }
     ],
     "churn30d": {
-      "added": 21071,
-      "removed": 2329
+      "added": 21161,
+      "removed": 2363
     },
     "changelogEntries": 41
   }
