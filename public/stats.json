@@ -1,32 +1,32 @@
 {
-  "generatedAt": "2026-06-13T21:37:11.524Z",
-  "commit": "5754157",
+  "generatedAt": "2026-06-13T21:53:27.734Z",
+  "commit": "92269a9",
   "headline": {
-    "linesTsJs": 11016,
+    "linesTsJs": 11107,
     "tests": 320,
-    "lineCoveragePct": 92.96,
-    "commits": 142,
+    "lineCoveragePct": 93.01,
+    "commits": 144,
     "ageDays": 2,
     "trackedFiles": 192,
     "featureManualPct": 100,
-    "featureBookPct": 39.4,
-    "featureExamplePct": 27.3
+    "featureBookPct": 37.1,
+    "featureExamplePct": 25.7
   },
   "code": [
     {
       "category": "App code (src, excl. tests)",
       "files": 56,
-      "lines": 5387
+      "lines": 5465
     },
     {
       "category": "Unit tests",
       "files": 54,
-      "lines": 3831
+      "lines": 3842
     },
     {
       "category": "E2E tests (Playwright)",
       "files": 15,
-      "lines": 627
+      "lines": 629
     },
     {
       "category": "Build scripts",
@@ -41,29 +41,29 @@
     {
       "category": "Docs (Markdown)",
       "files": 21,
-      "lines": 2072
+      "lines": 2089
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 92.96,
-      "covered": 1216,
-      "total": 1308
+      "pct": 93.01,
+      "covered": 1226,
+      "total": 1318
     },
     "statements": {
-      "pct": 91.03,
-      "covered": 1472,
-      "total": 1617
+      "pct": 91.09,
+      "covered": 1483,
+      "total": 1628
     },
     "functions": {
-      "pct": 89.85,
-      "covered": 487,
-      "total": 542
+      "pct": 89.92,
+      "covered": 491,
+      "total": 546
     },
     "branches": {
-      "pct": 82.05,
-      "covered": 773,
-      "total": 942
+      "pct": 82.13,
+      "covered": 800,
+      "total": 974
     }
   },
   "tests": {
@@ -71,7 +71,7 @@
     "e2e": 26
   },
   "domain": {
-    "features": 66,
+    "features": 70,
     "areas": 14,
     "domainModules": 21,
     "components": 34,
@@ -83,7 +83,7 @@
     "biggestFiles": [
       {
         "name": "components/inspector/Inspector.tsx",
-        "lines": 436
+        "lines": 514
       },
       {
         "name": "store/index.ts",
@@ -140,15 +140,15 @@
         "commits": 23
       },
       {
+        "file": "src/components/inspector/Inspector.tsx",
+        "commits": 16
+      },
+      {
         "file": "src/App.tsx",
         "commits": 15
       },
       {
         "file": "src/components/canvas/Canvas.tsx",
-        "commits": 15
-      },
-      {
-        "file": "src/components/inspector/Inspector.tsx",
         "commits": 15
       },
       {
@@ -179,8 +179,8 @@
     "nonNull": 0
   },
   "bundle": {
-    "eagerJsGzipKb": 163.4,
-    "totalJsGzipKb": 518.8,
+    "eagerJsGzipKb": 163.8,
+    "totalJsGzipKb": 519.3,
     "cssGzipKb": 7.9,
     "budgetKb": 165,
     "withinBudget": true
@@ -188,17 +188,17 @@
   "docs": {
     "bookWords": 20750,
     "chapters": 14,
-    "appLoc": 5387,
+    "appLoc": 5465,
     "docToCodeRatio": 0.38
   },
   "featureCoverage": {
-    "total": 66,
-    "manual": 66,
+    "total": 70,
+    "manual": 70,
     "manualPct": 100,
     "book": 26,
-    "bookPct": 39.4,
+    "bookPct": 37.1,
     "bookExample": 18,
-    "bookExamplePct": 27.3,
+    "bookExamplePct": 25.7,
     "byArea": {
       "Tree": {
         "total": 6,
@@ -206,8 +206,8 @@
         "book": 5
       },
       "MECE": {
-        "total": 10,
-        "manual": 10,
+        "total": 11,
+        "manual": 11,
         "book": 5
       },
       "Prioritisation": {
@@ -236,13 +236,13 @@
         "book": 2
       },
       "Canvas": {
-        "total": 8,
-        "manual": 8,
+        "total": 9,
+        "manual": 9,
         "book": 0
       },
       "Editing": {
-        "total": 7,
-        "manual": 7,
+        "total": 8,
+        "manual": 8,
         "book": 2
       },
       "Export": {
@@ -266,8 +266,8 @@
         "book": 0
       },
       "App": {
-        "total": 7,
-        "manual": 7,
+        "total": 8,
+        "manual": 8,
         "book": 0
       }
     },
@@ -473,6 +473,26 @@
           "id": "self-update",
           "name": "Self-update prompt + Check for updates",
           "since": 6
+        },
+        {
+          "id": "mece-review-dock",
+          "name": "Tree-level MECE health chip + review dock (locate + remedy)",
+          "since": 7
+        },
+        {
+          "id": "canvas-review-overlay",
+          "name": "Canvas review overlay (dim clean splits, amber-dash flagged edges)",
+          "since": 7
+        },
+        {
+          "id": "clustered-header",
+          "name": "Clustered editor header (title + type badge, Export menu, overflow)",
+          "since": 7
+        },
+        {
+          "id": "tabbed-inspector",
+          "name": "Tabbed inspector (Issue / Logic / Evidence / Value)",
+          "since": 7
         }
       ]
     }
@@ -480,22 +500,22 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 2,
-    "commits": 142,
-    "commits7d": 142,
+    "commits": 144,
+    "commits7d": 144,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 94
+        "count": 95
       },
       {
         "name": "github-actions[bot]",
-        "count": 48
+        "count": 49
       }
     ],
     "churn30d": {
-      "added": 24844,
-      "removed": 3485
+      "added": 25356,
+      "removed": 3875
     },
-    "changelogEntries": 44
+    "changelogEntries": 45
   }
 }
