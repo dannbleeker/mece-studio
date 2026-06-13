@@ -1,9 +1,9 @@
 // @vitest-environment happy-dom
-
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { ReactFlow, ReactFlowProvider } from '@xyflow/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useStore } from '@/store';
+import { type NodeEditing, NodeEditingContext } from '../nodeEditing';
 import type { IssueFlowNode } from '../projection';
 import { IssueNode } from './IssueNode';
 
@@ -23,7 +23,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-function renderNode(data: Partial<IssueFlowNode['data']>) {
+function renderNode(data: Partial<IssueFlowNode['data']>, editing?: NodeEditing) {
   const node: IssueFlowNode = {
     id: 'n1',
     type: 'issue',
@@ -44,10 +44,17 @@ function renderNode(data: Partial<IssueFlowNode['data']>) {
       ...data,
     },
   };
-  return render(
+  const flow = (
     <ReactFlowProvider>
       <ReactFlow nodes={[node]} edges={[]} nodeTypes={{ issue: IssueNode }} />
     </ReactFlowProvider>
+  );
+  return render(
+    editing ? (
+      <NodeEditingContext.Provider value={editing}>{flow}</NodeEditingContext.Provider>
+    ) : (
+      flow
+    )
   );
 }
 
@@ -68,7 +75,7 @@ describe('IssueNode', () => {
     expect(screen.getByText('✗ 1')).toBeTruthy();
     expect(screen.getByText('ME')).toBeTruthy();
     expect(screen.getByText('CE')).toBeTruthy();
-    expect(screen.getByText('▼')).toBeTruthy(); // collapse toggle
+    expect(screen.getByText('▼')).toBeTruthy();
   });
 
   it('shows the expand affordance with a hidden count when collapsed', () => {
@@ -79,5 +86,31 @@ describe('IssueNode', () => {
   it("falls back to 'Untitled' for an empty label", () => {
     renderNode({ label: '' });
     expect(screen.getByText('Untitled')).toBeTruthy();
+  });
+
+  it('renders status, matched, and selected styling without crashing', () => {
+    renderNode({
+      label: 'Refuted',
+      status: 'refuted',
+      matched: true,
+      selected: true,
+      hasNote: true,
+    });
+    expect(screen.getByText('Refuted')).toBeTruthy();
+    expect(screen.getByLabelText('Has notes')).toBeTruthy();
+  });
+
+  it('edits inline: commits on Enter and blur, cancels on Escape', () => {
+    const commit = vi.fn();
+    const cancel = vi.fn();
+    renderNode({ label: 'Old' }, { editingId: 'n1', start: vi.fn(), commit, cancel });
+    const ta = screen.getByLabelText('Edit node label');
+    fireEvent.change(ta, { target: { value: 'New' } });
+    fireEvent.keyDown(ta, { key: 'Enter' });
+    expect(commit).toHaveBeenCalledWith('n1', 'New');
+    fireEvent.keyDown(ta, { key: 'Escape' });
+    expect(cancel).toHaveBeenCalled();
+    fireEvent.blur(ta);
+    expect(commit).toHaveBeenCalledTimes(2);
   });
 });
