@@ -48,7 +48,7 @@ The tree at this point looks like this:
 
 Eight nodes. Enough structure to think with; not so much that you lose the map.
 
-You will go deeper on the branches that matter. But you do not go deeper yet — as the chapter on **The 80/20 lens** warns, decomposing everything before you know where the action is is how you boil the ocean.
+You will go deeper on the branches that matter. But you do not go deeper yet — as the chapter on **Prioritise the 80/20** warns, decomposing everything before you know where the action is is how you boil the ocean.
 
 ---
 
@@ -68,7 +68,7 @@ Everything else stays at the default (unset). You are not claiming the other bra
 
 ## Prioritise
 
-You have eight branches. You cannot work all of them equally. The chapter on **The 80/20 lens** says: score impact and ease, then focus where both are high.
+You have eight branches. You cannot work all of them equally. The chapter on **Prioritise the 80/20** says: score impact and ease, then focus where both are high.
 
 You score each L2 node in the impact × ease panel. The scoring is fast — you are working from intuition and a rough sense of the numbers, not from data yet:
 
@@ -116,7 +116,7 @@ Three hypotheses entered; one fully supported (activation), one supported but sm
 
 ## The numbers
 
-The tree is qualitatively convincing. Before you write a recommendation, you want to quantify it — not to reach a different conclusion, but to sharpen it. The chapter on **When the numbers matter** explains why: numbers tell you which driver dominates, which tells you how big a fix needs to be.
+The tree is qualitatively convincing. Before you write a recommendation, you want to quantify it — not to reach a different conclusion, but to sharpen it. The chapter on **Doing the numbers** explains why: numbers tell you which driver dominates, which tells you how big a fix needs to be.
 
 You put illustrative values on the value-driver leaves. All figures are monthly:
 

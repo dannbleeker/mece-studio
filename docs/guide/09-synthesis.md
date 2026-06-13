@@ -55,7 +55,7 @@ A well-built, prioritised, evidence-backed issue tree already contains everythin
 
 The **root question** becomes the occasion. ("We set out to understand why profits fell.")
 
-The **governing thought** comes from the highest-priority branches plus your hypothesis status. If your Revenue hypothesis was confirmed ("Revenue is down") and your Costs hypothesis was also confirmed ("Costs are up"), and sensitivity showed both are significant, your governing thought is: *Profit is being squeezed from both sides — lower revenue and higher costs — with volume and input costs as the primary drivers.*
+The **governing thought** comes from the highest-priority branches plus your hypothesis status. If your Revenue hypothesis was supported ("Revenue is down") and your Costs hypothesis was also supported ("Costs are up"), and sensitivity showed both are significant, your governing thought is: *Profit is being squeezed from both sides — lower revenue and higher costs — with volume and input costs as the primary drivers.*
 
 The **supporting arguments** come from the first-level branches, sorted by priority. The chapter **Prioritise** covered how to score each branch by impact and ease; that score now determines what you say first, second, third. High-priority, confirmed hypotheses become your headline arguments. Low-priority or unconfirmed branches either get a brief note ("Price was broadly stable") or are omitted.
 
@@ -73,7 +73,7 @@ It leads with the **highest-priority branch** — the one with the best impact �
 
 For each branch it surfaces:
 
-- The **hypothesis status** (confirmed ✓, rejected ✗, or open ⊘) so your audience can see what is settled and what is still uncertain
+- The **hypothesis status** (✓ supported, ✗ refuted, ⊘ parked; open branches carry no mark) so your audience can see what is settled and what is still uncertain
 - The **evidence** you attached to that branch — sources, data, observations
 - Any **MECE flags** — gaps or overlaps the live checker found
 
@@ -91,15 +91,16 @@ The tree synthesis gives you the logical structure. How you package it depends o
 
 **Meeting or verbal presentation** — Start with: "Here is what we found: [governing thought]." Then: "Let me walk you through the three reasons." Then one supporting argument at a time, with evidence. Questions will arrive; the tree structure means you can answer "where does that fit?" precisely — either it is on the tree, or it is not, and you can say which.
 
-## Handling confirmed, rejected, and open hypotheses
+## Handling supported, refuted, parked, and open hypotheses
 
-Not everything will be settled when you communicate. Some hypotheses stay open because you could not get the data in time. Some are rejected — which is itself a finding worth stating.
+Not everything will be settled when you communicate. Some hypotheses stay open because you could not get the data in time. Some are refuted — which is itself a finding worth stating.
 
 The pyramid handles this cleanly:
 
-- **Confirmed** hypotheses become supporting arguments. State them as facts.
-- **Rejected** hypotheses belong in a brief section ("What we ruled out") if your audience is likely to ask, or in an appendix. They are part of the story only if the audience needs to trust the process.
-- **Open** hypotheses should be named as uncertainties. "We believe X, but we have not yet confirmed the underlying driver. The risk is Y." An open hypothesis in the synthesis panel is flagged with ⊘ — it is a signal to you and your audience that work remains.
+- **Supported** hypotheses become supporting arguments. State them as facts.
+- **Refuted** hypotheses belong in a brief section ("What we ruled out") if your audience is likely to ask, or in an appendix. They are part of the story only if the audience needs to trust the process.
+- **Parked** hypotheses — ones you deliberately set aside — show a ⊘ mark in the synthesis. Name them as deferred so no one assumes they were tested and dismissed.
+- **Open** hypotheses should be named as uncertainties. "We believe X, but we have not yet confirmed the underlying driver. The risk is Y." Open branches carry no mark — they are simply untested, a signal to you and your audience that work remains.
 
 Hiding open hypotheses is a common failure mode. If you present a conclusion that rests on an unconfirmed assumption, and the audience later discovers this, you lose credibility. Better to name the uncertainty and state what it would take to resolve it.
 
@@ -121,11 +122,11 @@ A related check: is the governing thought something your audience can act on? "P
 
 ## The synthesis as a living document
 
-The synthesis panel in MECE Studio reflects the current state of the tree. As you gather more evidence, confirm or reject hypotheses, or adjust priorities, the synthesis updates. This means you can use it iteratively — not just at the end of the process, but throughout.
+The synthesis panel in MECE Studio reflects the current state of the tree. As you gather more evidence, mark hypotheses supported or refuted, or adjust priorities, the synthesis updates. This means you can use it iteratively — not just at the end of the process, but throughout.
 
 At each stage-gate in a project, you can read the synthesis and ask: given what we know now, what would we tell the client or the steering committee? This keeps the communication honest. It prevents the common failure of presenting a confident synthesis built on analysis that is actually three weeks out of date.
 
-When you copy the Markdown output, it includes a timestamp and a record of which hypotheses are confirmed, which are open, and which MECE flags are outstanding. Anyone reading the document later knows exactly what state the analysis was in when the snapshot was taken.
+When you copy the Markdown output, it captures the governing thought, the branches in priority order with their hypothesis status (✓ supported, ✗ refuted, ⊘ parked), the evidence on each, and any outstanding MECE flags — the whole state of the analysis as a structured snapshot. Anyone reading it later sees exactly which hypotheses were settled and which were still open.
 
 ## What you have, and what it is worth
 

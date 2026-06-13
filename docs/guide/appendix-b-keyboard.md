@@ -29,14 +29,21 @@ you're typing in an inspector field, so they never hijack your input.
 | Type in the Find box | Ring every node whose label matches |
 | <kbd>Enter</kbd> (in the Find box) | Zoom to the matching nodes |
 
-## A keyboard-only workflow
+## Help
 
-To build a tree from nothing without touching the mouse:
+| Keys | Action |
+| --- | --- |
+| <kbd>?</kbd> | Open the keyboard-shortcuts overlay (this list, inside the app) |
+
+## A keyboard-first workflow
+
+To build a tree quickly, with your hands mostly on the keyboard:
 
 1. Select the root and press <kbd>Enter</kbd> to name your key question.
-2. Press <kbd>Tab</kbd> to add the first sub-issue and type its label.
-3. Press <kbd>Enter</kbd> to commit, then <kbd>Tab</kbd> again for the next
-   sibling — or select a child and <kbd>Tab</kbd> to go a level deeper.
+2. Press <kbd>Tab</kbd> to add a sub-issue and type its label; <kbd>Enter</kbd> commits.
+3. <kbd>Tab</kbd> always adds a child of the *selected* node — so each <kbd>Tab</kbd>
+   right after a commit goes one level deeper. To add a sibling instead, select the
+   parent again and <kbd>Tab</kbd> from there.
 4. Use <kbd>Ctrl/⌘ + Z</kbd> freely; every change is undoable.
 
 The same labels and structure you build this way are what feed the MECE checks,

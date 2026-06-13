@@ -64,7 +64,7 @@ You don't need to read this front to back in one sitting. Each chapter is self-c
 
 The book follows the shape of a real analysis. You start by pinning down the right question — the chapter on **Start with the question** explains why the root of your tree matters so much, and how to sharpen a vague concern into something you can actually decompose. Then you build the tree itself, using the decomposition types covered in the chapter on **Ways to decompose**. You test each split for MECE, form and update working hypotheses, decide where to focus using the 80/20 lens, bring in evidence, and — when the numbers matter — you quantify.
 
-At the end, you synthesise: distill everything you've learned into a clear, answer-first communication. The chapter on **Answer-first synthesis** covers how to do this without losing the rigour underneath.
+At the end, you synthesise: distill everything you've learned into a clear, answer-first communication. The chapter on **Answer-first** covers how to do this without losing the rigour underneath.
 
 The final chapter walks through a complete worked example from blank canvas to finished synthesis, so you can see all the pieces fit together.
 

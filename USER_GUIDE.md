@@ -264,7 +264,7 @@ down the app's first load.
 ## Undo, redo, and autosave
 
 - **Undo / redo** every change with <kbd>Ctrl/⌘+Z</kbd> and
-  <kbd>Ctrl/⌘+Y</kbd> (or <kbd>Shift+Z</kbd>), or the header buttons.
+  <kbd>Ctrl/⌘+Y</kbd> (or <kbd>Ctrl/⌘+Shift+Z</kbd>), or the header buttons.
 - **Autosave** — every change is saved to your browser's local storage
   immediately. Close the tab and come back; your trees are still there.
 
