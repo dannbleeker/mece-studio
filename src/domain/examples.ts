@@ -178,6 +178,174 @@ function decisionTree(): IssueTreeDoc {
   return b.build();
 }
 
+/**
+ * A market-entry decision as four logical gates — each must hold for entry to
+ * make sense. A `framework` split: useful, but not guaranteed MECE.
+ */
+function marketEntryTree(): IssueTreeDoc {
+  const b = new TreeBuilder('Should we enter the [target] market?', {
+    detail:
+      'A market-entry decision framed as four logical gates — each must hold for entry to pay off. This is a "framework" split: a useful checklist, not a provable partition, so MECE Studio leaves exclusivity for you to confirm.',
+  });
+
+  const attractive = b.child(b.rootId, 'Is the market attractive?', {
+    impact: 'high',
+    ease: 'medium',
+  });
+  b.child(b.rootId, 'Can we beat the competition?');
+  b.child(b.rootId, 'Do we have the capabilities to win?');
+  b.child(b.rootId, 'Will entry be profitable?');
+  b.decompose(b.rootId, 'framework');
+
+  b.child(attractive, 'Market size & growth');
+  b.child(attractive, 'Profit margins');
+  b.child(attractive, 'Barriers to entry');
+  b.decompose(attractive, 'framework');
+
+  return b.build();
+}
+
+/**
+ * A fully worked M&A tree (the "Chicken Express" case): most branches are
+ * qualitative framework checks, but the synergies branch is a provable formula
+ * split whose numbers must clear the deal's profit goal.
+ */
+function acquisitionTree(): IssueTreeDoc {
+  const b = new TreeBuilder('Should we acquire Chicken Express?', {
+    detail:
+      'A worked M&A tree. The deal must clear a $200M combined-profit goal. Most branches are qualitative "framework" checks; the synergies branch is a provable formula split — edit the numbers and watch it reconcile against the goal.',
+  });
+
+  b.child(b.rootId, 'Is the market attractive?');
+  const target = b.child(b.rootId, 'Is Chicken Express a strong target?', {
+    status: 'supported',
+    impact: 'high',
+    ease: 'medium',
+    detail: 'A chicken-sandwich chain growing ~8%/yr versus ~3% for the industry.',
+  });
+  const synergies = b.child(b.rootId, 'Do synergies clear the $200M goal?', {
+    value: { amount: 225, unit: 'M$' },
+  });
+  b.child(b.rootId, 'Do the financials work?');
+  b.child(b.rootId, 'Can we manage the integration risk?');
+  b.decompose(b.rootId, 'framework');
+
+  b.evidence(target, 'Target grows ~8%/yr vs ~3% industry average', true, 'strong');
+
+  b.child(synergies, 'Revenue synergies', { value: { amount: 175, unit: 'M$' } });
+  b.child(synergies, 'Cost synergies', { value: { amount: 50, unit: 'M$' } });
+  b.decompose(synergies, 'formula', 'sum'); // 175 + 50 = 225 ≥ the 200 goal
+
+  return b.build();
+}
+
+/**
+ * A pricing decision triangulated from three reference points — the cost floor,
+ * the value ceiling, and where competitors sit. A `framework` split.
+ */
+function pricingTree(): IssueTreeDoc {
+  const b = new TreeBuilder('How should we price the new product?', {
+    detail:
+      'Triangulate three reference points: the cost floor, the value ceiling, and where competitors sit. A "framework" split — the three lenses inform one another rather than partitioning cleanly.',
+  });
+
+  const floor = b.child(b.rootId, 'Cost floor', {
+    detail: 'The lowest price that still covers unit cost plus a target margin.',
+  });
+  b.child(b.rootId, 'Value ceiling', {
+    detail: 'The most a customer will pay for the value delivered.',
+  });
+  b.child(b.rootId, 'Competitive anchor', {
+    detail: 'What close substitutes already charge.',
+  });
+  b.decompose(b.rootId, 'framework');
+
+  b.child(floor, 'Unit cost');
+  b.child(floor, 'Target margin');
+  b.decompose(floor, 'freeform');
+
+  return b.build();
+}
+
+/**
+ * A top-down market-sizing tree: start from the population and narrow with
+ * formula splits, so every level provably reconciles.
+ */
+function marketSizingTree(): IssueTreeDoc {
+  const b = new TreeBuilder('How big is the annual market for premium coffee in the city?', {
+    value: { amount: 600, unit: 'M DKK' },
+    detail:
+      'A top-down estimate: start from the population and narrow with formula splits, so the numbers provably reconcile. Always cross-check with a bottom-up build (outlets × cups/day × price).',
+  });
+
+  const drinkers = b.child(b.rootId, 'Premium-coffee drinkers', {
+    value: { amount: 300, unit: 'k people' },
+  });
+  b.child(b.rootId, 'Annual spend each', { value: { amount: 2, unit: 'k DKK' } });
+  b.decompose(b.rootId, 'formula', 'product'); // 300k × 2k DKK = 600 M DKK
+
+  b.child(drinkers, 'City population', { value: { amount: 600, unit: 'k people' } });
+  b.child(drinkers, 'Share drinking premium coffee', { value: { amount: 0.5 } });
+  b.decompose(drinkers, 'formula', 'product'); // 600k × 0.5 = 300k
+
+  return b.build();
+}
+
+/**
+ * A build / buy / partner sourcing decision — three named options weighed on the
+ * same trade-offs. A `framework` split, not a provable partition.
+ */
+function sourcingTree(): IssueTreeDoc {
+  const b = new TreeBuilder('How should we get the [capability] we lack?', {
+    detail:
+      'Three ways to get a capability you lack — weigh each on speed, control, capital, and execution risk. A "framework" split of named options, not a provable partition.',
+  });
+
+  b.child(b.rootId, 'Build in-house', {
+    detail: 'Slowest; most control; capital spread over time; execution risk on us.',
+  });
+  b.child(b.rootId, 'Partner (alliance / JV)', {
+    detail: 'Faster; shared control; low capital; dependency and coordination risk.',
+  });
+  b.child(b.rootId, 'Buy (acquire)', {
+    detail: 'Fastest; full control; high upfront capital; integration risk.',
+  });
+  b.decompose(b.rootId, 'framework');
+
+  return b.build();
+}
+
+/**
+ * A revenue value-driver tree: revenue = customers × revenue-per-customer, each
+ * split provably reconciling. Complements the profit tree by decomposing the top
+ * line by customers rather than price × volume.
+ */
+function revenueDriverTree(): IssueTreeDoc {
+  const b = new TreeBuilder('What is driving total revenue?', {
+    value: { amount: 2400, unit: 'M DKK' },
+    detail:
+      'A revenue value-driver tree: revenue = customers × revenue-per-customer, every split provably reconciling. Complements the profit tree by decomposing the top line by customers rather than price × volume.',
+  });
+
+  const customers = b.child(b.rootId, 'Number of customers', { value: { amount: 120, unit: 'k' } });
+  const perCustomer = b.child(b.rootId, 'Revenue per customer', {
+    value: { amount: 20, unit: 'k DKK' },
+    impact: 'high',
+    ease: 'medium',
+  });
+  b.decompose(b.rootId, 'formula', 'product'); // 120k × 20k DKK = 2400 M DKK
+
+  b.child(customers, 'New customers', { value: { amount: 30, unit: 'k' } });
+  b.child(customers, 'Returning customers', { value: { amount: 90, unit: 'k' } });
+  b.decompose(customers, 'formula', 'sum'); // 30 + 90 = 120
+
+  b.child(perCustomer, 'Orders per year', { value: { amount: 4 } });
+  b.child(perCustomer, 'Average order value', { value: { amount: 5, unit: 'k DKK' } });
+  b.decompose(perCustomer, 'formula', 'product'); // 4 × 5 = 20
+
+  return b.build();
+}
+
 export interface ExampleTree {
   id: string;
   name: string;
@@ -204,5 +372,41 @@ export const EXAMPLE_TREES: ExampleTree[] = [
     name: 'Subscription launch — decision',
     blurb: 'A binary split tested against a framework.',
     build: decisionTree,
+  },
+  {
+    id: 'market-entry',
+    name: 'Market entry — should we enter?',
+    blurb: 'Four logical gates: attractive, beatable, capable, profitable.',
+    build: marketEntryTree,
+  },
+  {
+    id: 'acquisition',
+    name: 'Acquisition — Chicken Express (M&A)',
+    blurb: 'Market, target, synergies (with the math), financials, risk.',
+    build: acquisitionTree,
+  },
+  {
+    id: 'pricing',
+    name: 'Pricing — floor, ceiling, anchor',
+    blurb: 'Triangulate the cost floor, value ceiling, and competitor price.',
+    build: pricingTree,
+  },
+  {
+    id: 'market-sizing',
+    name: 'Market sizing — top-down',
+    blurb: 'Population narrowed by formula splits that reconcile.',
+    build: marketSizingTree,
+  },
+  {
+    id: 'sourcing',
+    name: 'Build vs Buy vs Partner',
+    blurb: 'Three ways to get a capability, weighed on the trade-offs.',
+    build: sourcingTree,
+  },
+  {
+    id: 'revenue-drivers',
+    name: 'Revenue driver tree',
+    blurb: 'Revenue = customers × spend, each split provably reconciling.',
+    build: revenueDriverTree,
   },
 ];

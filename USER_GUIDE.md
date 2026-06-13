@@ -95,13 +95,25 @@ The sidebar switches the main view:
   can see at a glance what still needs attention.
 - **Learn MECE** — a short primer, with links to this guide and the book.
 
-**Templates.** The Templates page (and the strips on Start) offers two ways to begin:
+**Templates.** The Templates page offers three ways to begin:
 
 - **Decomposition frameworks** — one tile per split type (formula, segments, process,
   binary, framework, freeform) with its hint and the starter branches it scaffolds;
   binary and formula are tagged **provably MECE**. Click one to create a new tree
   decomposed that way.
-- **Example trees** — the ready-made trees; click to open a fresh copy.
+- **Named frameworks** — classic strategy, marketing, and diagnosis frameworks as
+  one-click starter trees: the **4Ps** and **Lauterborn 4Cs** marketing mixes, Ohmae's
+  **3Cs**, **Porter's Five Forces**, **PESTEL**, **SWOT**, the **BCG** and **Ansoff**
+  matrices, **McKinsey 7S**, the **AARRR** funnel, and a **fishbone (Ishikawa)** cause
+  checklist. Each opens with its canonical branches filled in. They organise your
+  thinking but **aren't guaranteed MECE** — they're typed as *framework* (or *process*
+  for AARRR), so the engine leaves exclusivity for you to confirm as you rename each
+  branch to your situation.
+- **Example trees** — the ready-made, multi-level worked trees; click to open a fresh
+  copy. Alongside the *operating-profit*, *customer-churn*, and *subscription-launch*
+  trees you'll find **market entry**, a worked **M&A acquisition** (with a provable
+  synergy formula), **pricing**, top-down **market sizing**, **build vs buy vs
+  partner**, and a **revenue value-driver** tree.
 
 **Tree cards.** Each card shows a mini preview of the tree, its name and kind, when you
 last edited it, and a **MECE pill**: green **MECE clean** when every split passes, amber

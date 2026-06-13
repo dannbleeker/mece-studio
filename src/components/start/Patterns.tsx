@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { DECOMPOSITION_HINTS, DECOMPOSITION_LABELS } from '@/domain/constants';
 import { EXAMPLE_TREES, type ExampleTree } from '@/domain/examples';
+import { FRAMEWORK_TEMPLATES, type FrameworkTemplate } from '@/domain/frameworks';
 import { scaffoldChildren } from '@/domain/scaffold';
 import type { DecompositionType } from '@/domain/types';
 import { decompositionMeta } from './meta';
@@ -47,6 +48,46 @@ export function FrameworksGroup({ onPick }: { onPick: (type: DecompositionType) 
             </span>
             <span className="mt-0.5 flex flex-wrap gap-1">
               {scaffoldChildren(type).map((label) => (
+                <span
+                  key={label}
+                  className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] text-neutral-600"
+                >
+                  {label}
+                </span>
+              ))}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * The named-framework library, mapped from FRAMEWORK_TEMPLATES — adding an entry
+ * there makes a card appear here with no edits. Each card shows the framework's
+ * canonical branches as chips; clicking opens a fresh starter tree for it.
+ */
+export function FrameworkTemplatesGroup({ onPick }: { onPick: (t: FrameworkTemplate) => void }) {
+  return (
+    <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(216px,1fr))]">
+      {FRAMEWORK_TEMPLATES.map((t) => {
+        const meta = decompositionMeta(t.decomposition);
+        return (
+          <button key={t.id} type="button" onClick={() => onPick(t)} className={TILE}>
+            <span className="flex items-center gap-2">
+              <span
+                aria-hidden="true"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[15px]"
+                style={{ color: meta.accent, background: `${meta.accent}14` }}
+              >
+                {meta.icon}
+              </span>
+              <span className="font-semibold text-[13px] text-neutral-800">{t.name}</span>
+            </span>
+            <span className="text-[12px] text-neutral-500 leading-snug">{t.blurb}</span>
+            <span className="mt-0.5 flex flex-wrap gap-1">
+              {t.children.map((label) => (
                 <span
                   key={label}
                   className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] text-neutral-600"

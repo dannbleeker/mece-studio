@@ -3,7 +3,8 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DECOMPOSITION_LABELS } from '@/domain/constants';
 import { EXAMPLE_TREES } from '@/domain/examples';
-import { ExampleTreesGroup, FrameworksGroup } from './Patterns';
+import { FRAMEWORK_TEMPLATES } from '@/domain/frameworks';
+import { ExampleTreesGroup, FrameworksGroup, FrameworkTemplatesGroup } from './Patterns';
 
 afterEach(cleanup);
 
@@ -26,6 +27,23 @@ describe('FrameworksGroup', () => {
     render(<FrameworksGroup onPick={onPick} />);
     fireEvent.click(screen.getByText(DECOMPOSITION_LABELS.binary));
     expect(onPick).toHaveBeenCalledWith('binary');
+  });
+});
+
+describe('FrameworkTemplatesGroup', () => {
+  it('renders exactly one card per FRAMEWORK_TEMPLATES entry (registry-driven)', () => {
+    render(<FrameworkTemplatesGroup onPick={vi.fn()} />);
+    expect(screen.getAllByRole('button')).toHaveLength(FRAMEWORK_TEMPLATES.length);
+    for (const t of FRAMEWORK_TEMPLATES) expect(screen.getByText(t.name)).toBeTruthy();
+  });
+
+  it('calls onPick with the chosen framework template', () => {
+    const onPick = vi.fn();
+    render(<FrameworkTemplatesGroup onPick={onPick} />);
+    const first = FRAMEWORK_TEMPLATES[0];
+    if (!first) throw new Error('no framework templates');
+    fireEvent.click(screen.getByText(first.name));
+    expect(onPick).toHaveBeenCalledWith(first);
   });
 });
 

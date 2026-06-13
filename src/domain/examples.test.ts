@@ -61,4 +61,33 @@ describe('example trees', () => {
     expect(rootSplit?.mece.exclusive.state).toBe('pass');
     expect(rootSplit?.mece.exhaustive.state).toBe('pass');
   });
+
+  it('the M&A example has a provable synergy formula that clears the goal', () => {
+    const doc = EXAMPLE_TREES.find((e) => e.id === 'acquisition')?.build();
+    if (!doc) throw new Error('missing acquisition example');
+    const synergies = nodeByLabel(doc, 'Do synergies clear the $200M goal?');
+    const split = splitOf(doc, synergies.id);
+    expect(split?.decomposition).toBe('formula');
+    expect(split?.mece.exhaustive.state).toBe('pass'); // 175 + 50 = 225
+  });
+
+  it('the market-sizing and revenue-driver trees reconcile at every formula split', () => {
+    for (const id of ['market-sizing', 'revenue-drivers']) {
+      const doc = EXAMPLE_TREES.find((e) => e.id === id)?.build();
+      if (!doc) throw new Error(`missing ${id} example`);
+      const formulaSplits = Object.values(doc.splits).filter((s) => s.decomposition === 'formula');
+      expect(formulaSplits.length).toBeGreaterThanOrEqual(2);
+      for (const s of formulaSplits) expect(s.mece.exhaustive.state).toBe('pass');
+    }
+  });
+
+  it('the framework example trees never falsely claim exhaustiveness', () => {
+    for (const id of ['market-entry', 'pricing', 'sourcing']) {
+      const doc = EXAMPLE_TREES.find((e) => e.id === id)?.build();
+      if (!doc) throw new Error(`missing ${id} example`);
+      const root = splitOf(doc, doc.rootId);
+      expect(root?.decomposition).toBe('framework');
+      expect(root?.mece.exhaustive.state).toBe('unknown');
+    }
+  });
 });

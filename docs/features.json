@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 45,
+  "reviewedThroughChangelogEntries": 46,
   "features": [
     { "id": "issue-tree", "name": "Issue-tree canvas", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
     { "id": "root-question", "name": "Editable root question", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
@@ -94,7 +94,8 @@
     { "id": "example-trees", "name": "Example / onboarding trees", "area": "App", "since": 6, "manual": true, "book": false, "bookExample": false },
 
     { "id": "start-page", "name": "Start page (workspace shell + sidebar sections)", "area": "App", "since": 6, "manual": true, "book": false, "bookExample": false },
-    { "id": "templates-gallery", "name": "Templates page (frameworks + example trees as cards)", "area": "App", "since": 6, "manual": true, "book": false, "bookExample": false },
+    { "id": "templates-gallery", "name": "Templates page (decomposition styles + named frameworks + example trees as cards)", "area": "App", "since": 6, "manual": true, "book": false, "bookExample": false },
+    { "id": "named-frameworks", "name": "Named framework templates (4Ps, 4Cs, 3Cs, Five Forces, PESTEL, SWOT, BCG, Ansoff, 7S, AARRR, fishbone)", "area": "App", "since": 7, "manual": true, "book": false, "bookExample": false },
     { "id": "library-cards", "name": "Tree library cards with live MECE status + preview", "area": "Documents", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "needs-review", "name": "Needs-review triage (trees with a flagged split)", "area": "MECE", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "manage-trees", "name": "Rename / duplicate / delete a tree from its card", "area": "Documents", "since": 6, "manual": true, "book": false, "bookExample": false },

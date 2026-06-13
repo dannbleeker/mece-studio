@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ExampleTree } from '@/domain/examples';
+import { buildFrameworkTree, type FrameworkTemplate } from '@/domain/frameworks';
 import { meceSummary } from '@/domain/meceStatus';
 import type { DecompositionType } from '@/domain/types';
 import { docName } from '@/services/storage';
 import { useStore } from '@/store';
 import { relativeTime, treeKind } from './format';
 import { LearnMece } from './LearnMece';
-import { ExampleTreesGroup, FrameworksGroup } from './Patterns';
+import { ExampleTreesGroup, FrameworksGroup, FrameworkTemplatesGroup } from './Patterns';
 import { type Section, Sidebar } from './Sidebar';
 import { StartHome } from './StartHome';
 import { type ManageHandlers, MecePill, TreeGallery } from './TreeGallery';
@@ -53,12 +54,14 @@ function RecentList({ docs, onOpen }: { docs: LibraryDoc[]; onOpen: (id: string)
   );
 }
 
-/** The full Templates page — the same two groups as the Start strips, with page headings. */
+/** The full Templates page — decomposition styles, named frameworks, and worked examples. */
 function TemplatesPage({
   onPickFramework,
+  onPickFrameworkTemplate,
   onPickExample,
 }: {
   onPickFramework: (type: DecompositionType) => void;
+  onPickFrameworkTemplate: (t: FrameworkTemplate) => void;
   onPickExample: (ex: ExampleTree) => void;
 }) {
   return (
@@ -70,6 +73,15 @@ function TemplatesPage({
           scaffold sensible starter branches you rename.
         </p>
         <FrameworksGroup onPick={onPickFramework} />
+      </section>
+      <section>
+        <h2 className="font-semibold text-[16px] text-neutral-800">Named frameworks</h2>
+        <p className="mt-1 mb-3 max-w-2xl text-[13px] text-neutral-500">
+          Classic strategy, marketing, and diagnosis frameworks, ready to fill in. They organise
+          your thinking but aren't guaranteed MECE — rename each branch to your situation and let
+          the checks flag overlaps and gaps.
+        </p>
+        <FrameworkTemplatesGroup onPick={onPickFrameworkTemplate} />
       </section>
       <section>
         <h2 className="font-semibold text-[16px] text-neutral-800">Example trees</h2>
@@ -123,6 +135,7 @@ export function StartPage() {
     decompose(useStore.getState().doc.rootId, type);
   };
   const onPickExample = (ex: ExampleTree) => openDoc(ex.build());
+  const onPickFrameworkTemplate = (t: FrameworkTemplate) => openDoc(buildFrameworkTree(t));
   // setView too: opening the already-active tree is a no-op in switchDoc, but we
   // still want to leave the Start shell for the canvas.
   const onOpen = (id: string) => {
@@ -195,7 +208,11 @@ export function StartPage() {
           )}
           {section === 'recent' && <RecentList docs={docs} onOpen={onOpen} />}
           {section === 'templates' && (
-            <TemplatesPage onPickFramework={onPickFramework} onPickExample={onPickExample} />
+            <TemplatesPage
+              onPickFramework={onPickFramework}
+              onPickFrameworkTemplate={onPickFrameworkTemplate}
+              onPickExample={onPickExample}
+            />
           )}
           {section === 'review' && (
             <div className="space-y-4">
