@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-06-13T08:42:03.093Z",
-  "commit": "ad3f339",
+  "generatedAt": "2026-06-13T08:46:45.381Z",
+  "commit": "ae3381b",
   "headline": {
-    "linesTsJs": 8108,
-    "tests": 218,
-    "lineCoveragePct": 87.34,
-    "commits": 109,
+    "linesTsJs": 8157,
+    "tests": 222,
+    "lineCoveragePct": 88.05,
+    "commits": 111,
     "ageDays": 2,
     "trackedFiles": 156,
     "featureManualPct": 100,
@@ -21,7 +21,7 @@
     {
       "category": "Unit tests",
       "files": 40,
-      "lines": 2629
+      "lines": 2678
     },
     {
       "category": "E2E tests (Playwright)",
@@ -46,28 +46,28 @@
   ],
   "coverage": {
     "lines": {
-      "pct": 87.34,
-      "covered": 870,
+      "pct": 88.05,
+      "covered": 877,
       "total": 996
     },
     "statements": {
-      "pct": 85.1,
-      "covered": 1040,
+      "pct": 85.84,
+      "covered": 1049,
       "total": 1222
     },
     "functions": {
-      "pct": 83.77,
-      "covered": 315,
+      "pct": 86.17,
+      "covered": 324,
       "total": 376
     },
     "branches": {
-      "pct": 78.88,
-      "covered": 553,
+      "pct": 79.6,
+      "covered": 558,
       "total": 701
     }
   },
   "tests": {
-    "unit": 194,
+    "unit": 198,
     "e2e": 24
   },
   "domain": {
@@ -118,12 +118,12 @@
         "pct": 73.61
       },
       {
-        "file": "src/components/inspector/Inspector.tsx",
-        "pct": 74.62
-      },
-      {
         "file": "src/components/canvas/nodes/IssueNode.tsx",
         "pct": 76.66
+      },
+      {
+        "file": "src/components/inspector/Inspector.tsx",
+        "pct": 82.08
       },
       {
         "file": "src/components/settings/SettingsDialog.tsx",
@@ -450,21 +450,21 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 2,
-    "commits": 109,
-    "commits7d": 109,
+    "commits": 111,
+    "commits7d": 111,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 77
+        "count": 78
       },
       {
         "name": "github-actions[bot]",
-        "count": 32
+        "count": 33
       }
     ],
     "churn30d": {
-      "added": 20552,
-      "removed": 2226
+      "added": 20612,
+      "removed": 2237
     },
     "changelogEntries": 41
   }
