@@ -94,4 +94,108 @@ describe('store', () => {
     expect(s().library).toHaveLength(start);
     expect(s().activeId).toBe(activeId); // the active doc is untouched
   });
+
+  it('setRootQuestion renames the root and syncs the library entry name', () => {
+    s().setRootQuestion('Where is margin leaking?');
+    expect(s().doc.nodes[s().doc.rootId]?.label).toBe('Where is margin leaking?');
+    const entry = s().library.find((e) => e.id === s().activeId);
+    expect(entry?.name).toBe('Where is margin leaking?');
+  });
+
+  it('setAmount sets a value, preserves the unit, then clears it', () => {
+    const root = s().doc.rootId;
+    s().setAmount(root, 100);
+    expect(s().doc.nodes[root]?.value).toEqual({ amount: 100 });
+    s().setUnit(root, 'DKK');
+    expect(s().doc.nodes[root]?.value).toEqual({ amount: 100, unit: 'DKK' });
+    s().setAmount(root, 250); // a new amount keeps the existing unit
+    expect(s().doc.nodes[root]?.value).toEqual({ amount: 250, unit: 'DKK' });
+    s().setAmount(root, undefined); // undefined clears the value entirely
+    expect(s().doc.nodes[root]?.value).toBeUndefined();
+  });
+
+  it('setUnit is a no-op (no history entry) when the node has no amount', () => {
+    s().addChild(s().doc.rootId, 'No value');
+    const child = childrenOf(s().doc, s().doc.rootId)[0];
+    if (!child) throw new Error('no child');
+    const before = s().doc;
+    s().setUnit(child.id, 'kg');
+    expect(s().doc).toBe(before); // same reference — the apply() no-op guard held
+    expect(s().doc.nodes[child.id]?.value).toBeUndefined();
+  });
+
+  it('setStatus and setPriority annotate a node, each undoable independently', () => {
+    s().addChild(s().doc.rootId, 'Claim');
+    const claim = childrenOf(s().doc, s().doc.rootId)[0];
+    if (!claim) throw new Error('no child');
+    s().setStatus(claim.id, 'supported');
+    expect(s().doc.nodes[claim.id]?.status).toBe('supported');
+    s().setPriority(claim.id, { impact: 'high', ease: 'high' });
+    expect(s().doc.nodes[claim.id]?.priority).toEqual({ impact: 'high', ease: 'high' });
+    s().undo(); // undo only the priority; status stays
+    expect(s().doc.nodes[claim.id]?.priority).toBeUndefined();
+    expect(s().doc.nodes[claim.id]?.status).toBe('supported');
+  });
+
+  it('adds, updates, and removes evidence on a node', () => {
+    const root = s().doc.rootId;
+    s().addEvidence(root, 'Survey n=200', true, 'strong');
+    const added = s().doc.nodes[root]?.evidence ?? [];
+    expect(added).toHaveLength(1);
+    expect(added[0]).toMatchObject({ summary: 'Survey n=200', supports: true, strength: 'strong' });
+    const id = added[0]?.id;
+    if (!id) throw new Error('no evidence id');
+    s().updateEvidence(root, id, { summary: 'Survey n=400', supports: false });
+    expect(s().doc.nodes[root]?.evidence[0]).toMatchObject({
+      summary: 'Survey n=400',
+      supports: false,
+    });
+    s().removeEvidence(root, id);
+    expect(s().doc.nodes[root]?.evidence ?? []).toHaveLength(0);
+  });
+
+  it('toggles collapse on one node and collapses / expands the whole tree', () => {
+    s().addChild(s().doc.rootId, 'Parent');
+    const parent = childrenOf(s().doc, s().doc.rootId)[0];
+    if (!parent) throw new Error('no parent');
+    s().addChild(parent.id, 'Kid'); // parent now has a child → it is collapsible
+    expect(s().doc.nodes[parent.id]?.collapsed).toBeFalsy();
+    s().toggleCollapse(parent.id);
+    expect(s().doc.nodes[parent.id]?.collapsed).toBeTruthy();
+    s().expandAll();
+    expect(s().doc.nodes[parent.id]?.collapsed).toBeFalsy();
+    s().collapseAll();
+    expect(s().doc.nodes[parent.id]?.collapsed).toBeTruthy();
+  });
+
+  it('reorders a sibling up and back down', () => {
+    s().addChild(s().doc.rootId, 'First');
+    s().addChild(s().doc.rootId, 'Second');
+    const labels = () => childrenOf(s().doc, s().doc.rootId).map((c) => c.label);
+    expect(labels()).toEqual(['First', 'Second']);
+    const second = childrenOf(s().doc, s().doc.rootId)[1];
+    if (!second) throw new Error('no second');
+    s().moveSibling(second.id, 'up');
+    expect(labels()).toEqual(['Second', 'First']);
+    s().moveSibling(second.id, 'down');
+    expect(labels()).toEqual(['First', 'Second']);
+  });
+
+  it('decompose seeds starter children and sets the split type', () => {
+    const root = s().doc.rootId;
+    expect(childrenOf(s().doc, root)).toHaveLength(0);
+    s().decompose(root, 'binary');
+    expect(childrenOf(s().doc, root).length).toBeGreaterThan(0);
+    expect(splitOf(s().doc, root)?.decomposition).toBe('binary');
+  });
+
+  it('sets the decomposition type and formula operator through the store', () => {
+    const root = s().doc.rootId;
+    s().addChild(root, 'A');
+    s().addChild(root, 'B'); // a second child gives the root a real split
+    s().setDecomposition(root, 'formula');
+    expect(splitOf(s().doc, root)?.decomposition).toBe('formula');
+    s().setOperator(root, 'product');
+    expect(splitOf(s().doc, root)?.operator).toBe('product');
+  });
 });

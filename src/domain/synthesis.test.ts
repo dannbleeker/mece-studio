@@ -47,6 +47,14 @@ describe('synthesise', () => {
     expect(out).toContain('set impact × ease'); // no priorities → tip lead
   });
 
+  it('shows contradicting evidence with an ✗ mark', () => {
+    let doc = createDoc('Q', 0);
+    const a = addChild(doc, doc.rootId, 'Claim');
+    doc = a.doc;
+    doc = addEvidence(doc, a.childId, createEvidence('Counter-point', false, 'indicative'));
+    expect(synthesise(doc)).toContain('evidence: ✗ Counter-point');
+  });
+
   it('flags MECE overlaps and gaps on a branch', () => {
     let doc = createDoc('Q', 0);
     const causes = addChild(doc, doc.rootId, 'Causes');

@@ -56,4 +56,15 @@ describe('toMarkdown', () => {
       .find((l) => l.includes('- Plain'));
     expect(line).toBe('- Plain');
   });
+
+  it('renders a unit-less value and evidence hung on the root', () => {
+    let doc = createDoc('Root', 0);
+    const { doc: d, childId } = addChild(doc, doc.rootId, 'Count');
+    doc = d;
+    doc = setNodeValue(doc, childId, { amount: 42 }); // no unit
+    doc = addEvidence(doc, doc.rootId, createEvidence('Root-level proof', false, 'indicative'));
+    const md = toMarkdown(doc);
+    expect(md).toContain('- Count (42)'); // unit-less value suffix
+    expect(md).toContain('- ✗ (indicative) Root-level proof'); // contradicting evidence on the root
+  });
 });
