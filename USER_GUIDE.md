@@ -251,7 +251,8 @@ formats:
 - **PDF** — export the canvas as a PDF.
 - **PowerPoint (PPTX)** — export the canvas as a slide.
 - **Markdown** — **Copy Markdown** (header) copies the tree as a structured
-  outline, with each split's MECE state annotated and notes included.
+  outline: each node's value, hypothesis status, priority, MECE state, notes,
+  and evidence, so a pasted outline holds the whole analysis.
 - **JSON** — **Save JSON** (header) downloads the full document.
 - **Open JSON** — **Open** (header) loads a saved `.json` tree back in. It's
   validated, and it opens as a **new** entry in your library, so it never

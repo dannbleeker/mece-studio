@@ -41,6 +41,7 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 - **Local gate + CI + working agreement.** `pnpm verify` runs the full fail-fast gate — typecheck → lint/format (Biome) → dead-code (knip) → tests (Vitest) → build → bundle-size budget — via shell-free node runners (`scripts/verify.mjs`, `scripts/build.mjs`) that work under the local AppLocker policy and on CI. CI runs the same gate. `CLAUDE.md` captures the working agreement; `bundle-budget.json` is the single source of truth for the size budget.
 
 ### Changed
+- **Richer Markdown export.** Copying a tree as Markdown now includes each node's hypothesis status, priority, and evidence — alongside the value, MECE state, and notes it already carried — so a pasted outline holds the whole analysis. The keyless AI-assist prompts (which embed the same Markdown) get the extra context too.
 - **Calmer auto-fit.** The canvas now re-centres only when a new or changed node would land outside the current view — so editing a large tree no longer yanks the whole thing back to a full fit on every change, while a node added off-screen still pulls into view. A freshly-opened tree still fits to the window.
 - **Send-to-Kindle activated.** With the repo SMTP secrets configured, the opt-in send-to-Kindle path is live and verified end-to-end — a manual **Rebuild book** dispatch (or a `[kindle]` commit) emails the freshly-built EPUB. Bumped `dawidd6/action-send-mail` from v3 to v17 so the email step runs on Node 24, ahead of GitHub's Node-20 action removal.
 
