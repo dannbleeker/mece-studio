@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { NodeId } from '@/domain/types';
 import { copyToClipboard, downloadText } from '@/services/download';
 import { useStore } from '@/store';
-import { App } from './App';
+import { App, Workspace } from './App';
 
 vi.mock('@/services/download', () => ({
   copyToClipboard: vi.fn(),
@@ -32,44 +32,57 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('App', () => {
-  it('renders the header, the canvas toolbar, and the empty inspector', () => {
+describe('App routing', () => {
+  it('lands on the Start page (not the canvas) by default', () => {
     render(<App />);
-    expect(screen.getByText('MECE Studio')).toBeTruthy();
-    expect(screen.getByRole('button', { name: '+ New' })).toBeTruthy();
+    expect(screen.getByText("What's your key question?")).toBeTruthy();
+    expect(screen.queryByLabelText('Find nodes')).toBeNull(); // the canvas is not mounted
+  });
+
+  it('shows the workspace once a tree is open', () => {
+    s().setView('workspace');
+    render(<App />);
+    expect(screen.getByLabelText('Find nodes')).toBeTruthy(); // canvas toolbar
+    expect(screen.getByRole('button', { name: '← Start' })).toBeTruthy();
+  });
+
+  it('returns to Start from the workspace Home button', () => {
+    s().setView('workspace');
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: '← Start' }));
+    expect(s().view).toBe('start');
+  });
+});
+
+describe('Workspace', () => {
+  it('renders the header, the canvas toolbar, and the empty inspector', () => {
+    render(<Workspace />);
+    expect(screen.getByRole('button', { name: 'MECE Studio' })).toBeTruthy();
     expect(screen.getByLabelText('Find nodes')).toBeTruthy();
     expect(screen.getByText(/Select a node to edit it/)).toBeTruthy();
   });
 
   it('opens the About dialog from the header', () => {
-    render(<App />);
+    render(<Workspace />);
     fireEvent.click(screen.getByRole('button', { name: 'About' }));
     expect(screen.getByRole('dialog', { name: 'About MECE Studio' })).toBeTruthy();
   });
 
   it('opens the keyboard-shortcuts overlay with the ? key', () => {
-    render(<App />);
+    render(<Workspace />);
     fireEvent.keyDown(window, { key: '?' });
     expect(screen.getByRole('dialog', { name: 'Keyboard shortcuts' })).toBeTruthy();
   });
 
-  it('loads an example from the header picker', () => {
-    render(<App />);
-    fireEvent.change(screen.getByLabelText('Load an example tree'), {
-      target: { value: 'profit' },
-    });
-    expect(useStore.getState().library).toHaveLength(2);
-  });
-
   it('copies the tree as Markdown (and flips the button to "Copied!")', () => {
-    render(<App />);
+    render(<Workspace />);
     fireEvent.click(screen.getByRole('button', { name: 'Copy Markdown' }));
     expect(copyToClipboard).toHaveBeenCalledTimes(1);
     expect(screen.getByRole('button', { name: 'Copied!' })).toBeTruthy();
   });
 
   it('saves the tree as JSON', () => {
-    render(<App />);
+    render(<Workspace />);
     fireEvent.click(screen.getByRole('button', { name: 'Save JSON' }));
     expect(downloadText).toHaveBeenCalledWith(
       'mece-tree.json',
@@ -79,14 +92,14 @@ describe('App', () => {
   });
 
   it('toggles the synthesis panel', () => {
-    render(<App />);
+    render(<Workspace />);
     fireEvent.click(screen.getByRole('button', { name: 'Synthesis' }));
     expect(screen.getByText('Answer-first synthesis')).toBeTruthy();
   });
 
   it('undoes a tree edit from the toolbar and redoes it with the keyboard', () => {
     s().addChild(s().doc.rootId, 'child');
-    render(<App />);
+    render(<Workspace />);
     const n = () => Object.keys(s().doc.nodes).length;
     expect(n()).toBe(2);
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
@@ -101,22 +114,13 @@ describe('App', () => {
       'confirm',
       vi.fn(() => true)
     );
-    render(<App />);
+    render(<Workspace />);
     fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
     expect(s().library).toHaveLength(1);
   });
 
-  it('switches documents from the picker', () => {
-    s().newDoc();
-    const b = s().activeId;
-    s().newDoc();
-    render(<App />);
-    fireEvent.change(screen.getByLabelText('Open tree'), { target: { value: b } });
-    expect(s().activeId).toBe(b);
-  });
-
   it('opens the Settings dialog from the header', () => {
-    render(<App />);
+    render(<Workspace />);
     fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
     expect(screen.getByRole('dialog', { name: 'Settings' })).toBeTruthy();
   });
@@ -125,7 +129,7 @@ describe('App', () => {
     s().setRootQuestion('Imported question');
     const json = JSON.stringify(s().doc);
     s().setRootQuestion('Diverged'); // so the import is what restores the label
-    const { container } = render(<App />);
+    const { container } = render(<Workspace />);
     const input = container.querySelector('input[type="file"]') as HTMLInputElement;
     fireEvent.change(input, {
       target: { files: [new File([json], 'tree.json', { type: 'application/json' })] },
@@ -136,7 +140,7 @@ describe('App', () => {
   it('alerts when an opened file is not a valid tree', async () => {
     const alertMock = vi.fn();
     vi.stubGlobal('alert', alertMock);
-    const { container } = render(<App />);
+    const { container } = render(<Workspace />);
     const input = container.querySelector('input[type="file"]') as HTMLInputElement;
     fireEvent.change(input, {
       target: { files: [new File(['not json'], 'bad.txt', { type: 'text/plain' })] },
@@ -149,7 +153,7 @@ describe('App', () => {
     const id = Object.keys(s().doc.nodes).find((k) => k !== s().doc.rootId);
     if (!id) throw new Error('no child');
     s().select(id as NodeId);
-    render(<App />);
+    render(<Workspace />);
     expect(Object.keys(s().doc.nodes)).toHaveLength(2);
     fireEvent.keyDown(window, { key: 'Delete' });
     expect(Object.keys(s().doc.nodes)).toHaveLength(1);
@@ -157,7 +161,7 @@ describe('App', () => {
 
   it('undoes with Ctrl+Z and redoes with Shift+Ctrl+Z', () => {
     s().addChild(s().doc.rootId, 'child');
-    render(<App />);
+    render(<Workspace />);
     const n = () => Object.keys(s().doc.nodes).length;
     expect(n()).toBe(2);
     fireEvent.keyDown(window, { key: 'z', ctrlKey: true });
@@ -167,7 +171,7 @@ describe('App', () => {
   });
 
   it('proxies a click from the Open button to the hidden file input', () => {
-    const { container } = render(<App />);
+    const { container } = render(<Workspace />);
     const input = container.querySelector('input[type="file"]') as HTMLInputElement;
     const clickSpy = vi.spyOn(input, 'click');
     fireEvent.click(screen.getByRole('button', { name: 'Open' }));

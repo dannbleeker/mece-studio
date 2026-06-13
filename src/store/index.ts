@@ -49,8 +49,11 @@ import {
 const HISTORY_LIMIT = 100;
 const STARTER_QUESTION = 'Why is this happening?';
 
-function freshDoc(options: MeceOptions): IssueTreeDoc {
-  return recomputeMece(createDoc(STARTER_QUESTION, Date.now()), options);
+/** Which top-level surface is showing: the Start workspace shell, or a tree on the canvas. */
+type AppView = 'start' | 'workspace';
+
+function freshDoc(options: MeceOptions, question: string = STARTER_QUESTION): IssueTreeDoc {
+  return recomputeMece(createDoc(question.trim() || STARTER_QUESTION, Date.now()), options);
 }
 
 function entryFor(doc: IssueTreeDoc): LibraryEntry {
@@ -92,11 +95,23 @@ function syncLibraryName(library: LibraryEntry[], doc: IssueTreeDoc): LibraryEnt
   return next;
 }
 
-/** Make `doc` the active document under `docs`: persist both, and reset history + selection. */
+/**
+ * Make `doc` the active document under `docs`: persist both, reset history +
+ * selection, and enter the canvas workspace (every entry point — new / open /
+ * switch / delete-and-reopen — opens the tree for editing).
+ */
 function activate(doc: IssueTreeDoc, docs: LibraryEntry[]) {
   saveDocById(doc);
   saveLibrary({ activeId: doc.id, docs });
-  return { doc, library: docs, activeId: doc.id, past: [], future: [], selectedId: null };
+  return {
+    doc,
+    library: docs,
+    activeId: doc.id,
+    past: [],
+    future: [],
+    selectedId: null,
+    view: 'workspace' as const,
+  };
 }
 
 interface AppState {
@@ -108,10 +123,14 @@ interface AppState {
   future: IssueTreeDoc[];
   selectedId: NodeId | null;
   settings: Settings;
+  /** Which top-level surface is showing: the Start shell or a tree on the canvas. */
+  view: AppView;
 
   select: (id: NodeId | null) => void;
+  setView: (view: AppView) => void;
   setSettings: (patch: Partial<Settings>) => void;
-  newDoc: () => void;
+  /** Create a fresh tree (optionally seeding the root question) and open it. */
+  newDoc: (question?: string) => void;
   switchDoc: (id: string) => void;
   deleteDoc: (id: string) => void;
   openDoc: (doc: IssueTreeDoc) => void;
@@ -182,8 +201,11 @@ export const useStore = create<AppState>((set, get) => {
     past: [],
     future: [],
     selectedId: null,
+    // Land on the Start shell; opening or creating a tree switches to 'workspace'.
+    view: 'start',
 
     select: (id) => set({ selectedId: id }),
+    setView: (view) => set({ view }),
     setSettings: (patch) =>
       set((s) => {
         const settings = { ...s.settings, ...patch };
@@ -194,9 +216,9 @@ export const useStore = create<AppState>((set, get) => {
         return { settings, doc };
       }),
 
-    newDoc: () =>
+    newDoc: (question) =>
       set((s) => {
-        const doc = freshDoc(meceOptions(s.settings));
+        const doc = freshDoc(meceOptions(s.settings), question);
         return activate(doc, [...s.library, entryFor(doc)]);
       }),
 

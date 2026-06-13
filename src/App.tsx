@@ -5,7 +5,7 @@ import { Inspector } from '@/components/inspector/Inspector';
 import { SynthesisPanel } from '@/components/SynthesisPanel';
 import { SettingsDialog } from '@/components/settings/SettingsDialog';
 import { ShortcutsDialog } from '@/components/shortcuts/ShortcutsDialog';
-import { EXAMPLE_TREES } from '@/domain/examples';
+import { StartPage } from '@/components/start/StartPage';
 import { toMarkdown } from '@/domain/export';
 import { copyToClipboard, downloadText } from '@/services/download';
 import { parseDoc } from '@/services/storage';
@@ -14,14 +14,14 @@ import { useStore } from '@/store';
 const GHOST_BTN =
   'rounded-md px-2.5 py-1.5 text-[13px] text-neutral-600 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:text-neutral-300';
 
-export function App() {
+/** The tree-editing surface: header actions + canvas + inspector. */
+export function Workspace() {
   const doc = useStore((s) => s.doc);
   const newDoc = useStore((s) => s.newDoc);
   const openDoc = useStore((s) => s.openDoc);
-  const library = useStore((s) => s.library);
   const activeId = useStore((s) => s.activeId);
-  const switchDoc = useStore((s) => s.switchDoc);
   const deleteDoc = useStore((s) => s.deleteDoc);
+  const setView = useStore((s) => s.setView);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
   const removeNode = useStore((s) => s.removeNode);
@@ -86,45 +86,29 @@ export function App() {
 
   return (
     <div className="flex h-full flex-col bg-[#faf9f5] text-neutral-800">
-      <header className="flex shrink-0 items-center gap-3 border-neutral-200 border-b bg-white px-5 py-2.5">
-        <span className="font-semibold text-[#3f6fb0] text-lg tracking-tight">MECE Studio</span>
-        <select
-          value={activeId}
-          onChange={(e) => switchDoc(e.target.value)}
-          aria-label="Open tree"
-          className="max-w-[220px] truncate rounded-md border border-neutral-200 bg-white px-2 py-1 text-[13px] text-neutral-700 focus:border-[#3f6fb0] focus:outline-none"
+      <header className="flex shrink-0 items-center gap-2 border-neutral-200 border-b bg-white px-5 py-2.5">
+        <button
+          type="button"
+          onClick={() => setView('start')}
+          className="rounded-md px-1 font-semibold text-[#3f6fb0] text-lg tracking-tight hover:opacity-80"
+          title="Back to Start"
         >
-          {library.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.name || 'Untitled tree'}
-            </option>
-          ))}
-        </select>
+          MECE Studio
+        </button>
+        <button
+          type="button"
+          onClick={() => setView('start')}
+          className={GHOST_BTN}
+          title="All trees (Start)"
+        >
+          ← Start
+        </button>
         <button type="button" onClick={() => newDoc()} className={GHOST_BTN} title="New tree">
           + New
         </button>
         <button type="button" onClick={onDelete} className={GHOST_BTN} title="Delete this tree">
           Delete
         </button>
-        <select
-          value=""
-          onChange={(e) => {
-            const ex = EXAMPLE_TREES.find((x) => x.id === e.target.value);
-            if (ex) openDoc(ex.build());
-          }}
-          aria-label="Load an example tree"
-          title="Open a ready-made example tree"
-          className="rounded-md border border-neutral-200 bg-white px-2 py-1 text-[13px] text-neutral-600 hover:bg-neutral-100 focus:border-[#3f6fb0] focus:outline-none"
-        >
-          <option value="" disabled>
-            Examples…
-          </option>
-          {EXAMPLE_TREES.map((ex) => (
-            <option key={ex.id} value={ex.id}>
-              {ex.name}
-            </option>
-          ))}
-        </select>
         <div className="ml-auto flex items-center gap-1">
           <button type="button" onClick={() => setShowSynthesis((v) => !v)} className={GHOST_BTN}>
             Synthesis
@@ -160,7 +144,7 @@ export function App() {
             type="button"
             disabled={!canRedo}
             onClick={redo}
-            title="Redo (Ctrl/⌘+Y or Shift+Z)"
+            title="Redo (Ctrl/⌘+Y or Ctrl/⌘+Shift+Z)"
             className={GHOST_BTN}
           >
             Redo
@@ -202,4 +186,10 @@ export function App() {
       </div>
     </div>
   );
+}
+
+/** Top-level router: the Start workspace shell, or a tree open on the canvas. */
+export function App() {
+  const view = useStore((s) => s.view);
+  return view === 'start' ? <StartPage /> : <Workspace />;
 }
