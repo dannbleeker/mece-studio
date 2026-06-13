@@ -41,7 +41,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: false,
-    include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx', 'src/**/*.test.ts'],
+    include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx', 'src/**/*.test.ts', 'src/**/*.test.tsx'],
     // Coverage runs only in the stats pipeline (`vitest run --coverage`), not in
     // the gate; build-stats.mjs reads coverage/coverage-summary.json.
     coverage: {
