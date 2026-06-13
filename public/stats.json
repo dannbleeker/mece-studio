@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-06-13T07:39:09.235Z",
-  "commit": "0e98309",
+  "generatedAt": "2026-06-13T07:42:00.690Z",
+  "commit": "fe9fc31",
   "headline": {
-    "linesTsJs": 7046,
-    "tests": 144,
-    "lineCoveragePct": 59.93,
-    "commits": 86,
+    "linesTsJs": 7143,
+    "tests": 148,
+    "lineCoveragePct": 60.14,
+    "commits": 88,
     "ageDays": 2,
-    "trackedFiles": 142,
+    "trackedFiles": 143,
     "featureManualPct": 100,
     "featureBookPct": 43.3,
     "featureExamplePct": 30
@@ -20,8 +20,8 @@
     },
     {
       "category": "Unit tests",
-      "files": 26,
-      "lines": 1567
+      "files": 27,
+      "lines": 1664
     },
     {
       "category": "E2E tests (Playwright)",
@@ -46,28 +46,28 @@
   ],
   "coverage": {
     "lines": {
-      "pct": 59.93,
-      "covered": 597,
+      "pct": 60.14,
+      "covered": 599,
       "total": 996
     },
     "statements": {
-      "pct": 56.71,
-      "covered": 693,
+      "pct": 56.87,
+      "covered": 695,
       "total": 1222
     },
     "functions": {
-      "pct": 44.68,
-      "covered": 168,
+      "pct": 45.21,
+      "covered": 170,
       "total": 376
     },
     "branches": {
-      "pct": 52.49,
-      "covered": 368,
+      "pct": 52.92,
+      "covered": 371,
       "total": 701
     }
   },
   "tests": {
-    "unit": 120,
+    "unit": 124,
     "e2e": 24
   },
   "domain": {
@@ -475,21 +475,21 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 2,
-    "commits": 86,
-    "commits7d": 86,
+    "commits": 88,
+    "commits7d": 88,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 65
+        "count": 66
       },
       {
         "name": "github-actions[bot]",
-        "count": 21
+        "count": 22
       }
     ],
     "churn30d": {
-      "added": 18972,
-      "removed": 1837
+      "added": 19100,
+      "removed": 1869
     },
     "changelogEntries": 41
   }
