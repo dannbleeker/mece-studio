@@ -44,10 +44,8 @@ export function TreePreview({ doc }: { doc: IssueTreeDoc }) {
       width="100%"
       height="100%"
       preserveAspectRatio="xMidYMid meet"
-      role="img"
-      aria-label="Tree preview"
+      aria-hidden="true"
     >
-      <title>Tree preview</title>
       {edges.map((e) => {
         const s = byId.get(e.source);
         const t = byId.get(e.target);

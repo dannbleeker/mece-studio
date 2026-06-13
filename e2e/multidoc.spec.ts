@@ -23,9 +23,9 @@ test('create a second tree and switch between them', async ({ page }) => {
   expect(await libraryCount(page)).toBe(2);
   await expect(page.locator('.react-flow__node').first()).toContainText('Why is this happening?');
 
-  // Switch back to "First tree" from the Start page's tree cards.
+  // Switch back to "First tree" from the Start page's tree cards (the card's open action).
   await gotoStart(page);
-  await page.getByRole('button', { name: /First tree/ }).click();
+  await page.getByRole('button', { name: 'Open First tree' }).click();
   await expect(page.locator('.react-flow__node').first()).toContainText('First tree');
 });
 

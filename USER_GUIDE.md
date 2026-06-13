@@ -91,7 +91,8 @@ The sidebar switches the main view:
 last edited it, and a **MECE pill**: green **MECE clean** when every split passes, amber
 **_n_ to check** when splits are flagged for review, or grey when the tree isn't
 decomposed yet. The pill reads the *same* MECE result the canvas and inspector show, so
-it never disagrees with them.
+it never disagrees with them. Hover (or keyboard-focus) a card for **Rename**,
+**Duplicate**, and **Delete** actions.
 
 **Search.** Press <kbd>⌘K</kbd> / <kbd>Ctrl+K</kbd> (or click the search box) to filter
 your trees by name.

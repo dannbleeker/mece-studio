@@ -133,6 +133,10 @@ interface AppState {
   newDoc: (question?: string) => void;
   switchDoc: (id: string) => void;
   deleteDoc: (id: string) => void;
+  /** Rename a tree (its root question) by id, without leaving the current view. */
+  renameDoc: (id: string, label: string) => void;
+  /** Copy a whole tree into the library as a new document, without opening it. */
+  duplicateDoc: (id: string) => void;
   openDoc: (doc: IssueTreeDoc) => void;
   setRootQuestion: (label: string) => void;
   addChild: (parentId: NodeId, label?: string) => void;
@@ -251,6 +255,38 @@ export const useStore = create<AppState>((set, get) => {
           recomputeMece(loadDocById(docs[0]?.id ?? '') ?? freshDoc(opts), opts),
           docs
         );
+      }),
+
+    renameDoc: (id, label) =>
+      set((s) => {
+        const name = label.trim();
+        if (!name) return s;
+        const base = id === s.activeId ? s.doc : loadDocById(id);
+        if (!base) return s;
+        const renamed = renameNodeOp(base, base.rootId, name);
+        if (renamed === base) return s; // unchanged → no-op
+        const doc = { ...renamed, updatedAt: Date.now() };
+        saveDocById(doc);
+        const library = s.library.map((e) => (e.id === id ? { ...e, name: docName(doc) } : e));
+        saveLibrary({ activeId: s.activeId, docs: library });
+        // Reflect the rename in the live doc too if it's the one currently open.
+        return id === s.activeId ? { doc, library } : { library };
+      }),
+
+    duplicateDoc: (id) =>
+      set((s) => {
+        const base = id === s.activeId ? s.doc : loadDocById(id);
+        if (!base) return s;
+        const now = Date.now();
+        const cloned = recomputeMece(
+          { ...base, id: nanoid() as DocId, createdAt: now, updatedAt: now },
+          meceOptions(s.settings)
+        );
+        const copy = renameNodeOp(cloned, cloned.rootId, `${docName(cloned)} (copy)`);
+        saveDocById(copy);
+        const library = [...s.library, entryFor(copy)];
+        saveLibrary({ activeId: s.activeId, docs: library });
+        return { library };
       }),
 
     openDoc: (incoming) =>

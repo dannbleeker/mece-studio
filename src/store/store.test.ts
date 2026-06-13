@@ -8,7 +8,7 @@ import {
   setOperator,
   splitOf,
 } from '../domain/tree';
-import { saveDocById, saveLibrary } from '../services/storage';
+import { docName, loadDocById, saveDocById, saveLibrary } from '../services/storage';
 import { useStore } from './index';
 
 function makeLocalStorage(): Storage {
@@ -248,5 +248,32 @@ describe('store', () => {
     s().undo();
     s().redo();
     expect(s().doc).toBe(doc);
+  });
+
+  it('renameDoc renames a non-active tree + its library entry, without switching to it', () => {
+    s().newDoc(); // B active; library [A, B]
+    const a = s().library.find((e) => e.id !== s().activeId)?.id ?? '';
+    const activeBefore = s().activeId;
+    s().renameDoc(a, 'Renamed offline');
+    expect(docName(loadDocById(a) ?? s().doc)).toBe('Renamed offline');
+    expect(s().library.find((e) => e.id === a)?.name).toBe('Renamed offline');
+    expect(s().activeId).toBe(activeBefore); // the open tree is untouched
+  });
+
+  it('renameDoc on the active tree updates the live doc; empty name is a no-op', () => {
+    s().renameDoc(s().activeId, 'Live rename');
+    expect(s().doc.nodes[s().doc.rootId]?.label).toBe('Live rename');
+    const before = s().doc;
+    s().renameDoc(s().activeId, '   ');
+    expect(s().doc).toBe(before);
+  });
+
+  it('duplicateDoc copies a tree into the library as "(copy)" without opening it', () => {
+    const before = s().library.length;
+    const activeBefore = s().activeId;
+    s().duplicateDoc(s().activeId);
+    expect(s().library).toHaveLength(before + 1);
+    expect(s().activeId).toBe(activeBefore); // no switch
+    expect(s().library.some((e) => e.name.endsWith('(copy)'))).toBe(true);
   });
 });

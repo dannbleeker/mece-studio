@@ -61,4 +61,44 @@ describe('StartPage', () => {
     const allTrees = screen.getByRole('button', { name: /All trees/ });
     expect(allTrees.textContent).toContain(String(s().library.length));
   });
+
+  it('renames a tree from its card', () => {
+    vi.stubGlobal(
+      'prompt',
+      vi.fn(() => 'Renamed from card')
+    );
+    render(<StartPage />);
+    fireEvent.click(screen.getByRole('button', { name: /All trees/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Rename/ }));
+    expect(s().doc.nodes[s().doc.rootId]?.label).toBe('Renamed from card');
+  });
+
+  it('duplicates a tree from its card', () => {
+    render(<StartPage />);
+    const before = s().library.length;
+    fireEvent.click(screen.getByRole('button', { name: /All trees/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Duplicate/ }));
+    expect(s().library).toHaveLength(before + 1);
+  });
+
+  it('marks the active sidebar item and labels cards for assistive tech', () => {
+    render(<StartPage />);
+    expect(screen.getByRole('button', { name: 'Start' }).getAttribute('aria-current')).toBe('page');
+    fireEvent.click(screen.getByRole('button', { name: /All trees/ }));
+    expect(screen.getByRole('button', { name: /^Open / })).toBeTruthy();
+  });
+
+  it('deletes a tree from its card and stays on Start', () => {
+    s().newDoc(); // two trees in the library
+    vi.stubGlobal(
+      'confirm',
+      vi.fn(() => true)
+    );
+    render(<StartPage />);
+    const before = s().library.length;
+    fireEvent.click(screen.getByRole('button', { name: /All trees/ }));
+    fireEvent.click(screen.getAllByRole('button', { name: /^Delete/ })[0]);
+    expect(s().library).toHaveLength(before - 1);
+    expect(s().view).toBe('start');
+  });
 });

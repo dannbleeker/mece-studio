@@ -9,7 +9,7 @@ import { LearnMece } from './LearnMece';
 import { ExampleTreesGroup, FrameworksGroup } from './Patterns';
 import { type Section, Sidebar } from './Sidebar';
 import { StartHome } from './StartHome';
-import { MecePill, TreeGallery } from './TreeGallery';
+import { type ManageHandlers, MecePill, TreeGallery } from './TreeGallery';
 import { type LibraryDoc, useLibraryDocs } from './useLibraryDocs';
 
 const SECTION_TITLE: Record<Section, string> = {
@@ -90,6 +90,9 @@ export function StartPage() {
   const switchDoc = useStore((s) => s.switchDoc);
   const setView = useStore((s) => s.setView);
   const decompose = useStore((s) => s.decompose);
+  const renameDoc = useStore((s) => s.renameDoc);
+  const duplicateDoc = useStore((s) => s.duplicateDoc);
+  const deleteDoc = useStore((s) => s.deleteDoc);
 
   const docs = useLibraryDocs();
   const reviewDocs = useMemo(
@@ -125,6 +128,20 @@ export function StartPage() {
   const onOpen = (id: string) => {
     switchDoc(id);
     setView('workspace');
+  };
+  const manage: ManageHandlers = {
+    onRename: (id) => {
+      const current = docs.find((d) => d.entry.id === id)?.entry.name ?? '';
+      const next = window.prompt('Rename this tree', current);
+      if (next !== null) renameDoc(id, next);
+    },
+    onDuplicate: (id) => duplicateDoc(id),
+    onDelete: (id) => {
+      if (window.confirm('Delete this tree? This cannot be undone.')) {
+        deleteDoc(id);
+        setView('start'); // stay on Start even if the deleted tree was the active one
+      }
+    },
   };
 
   return (
@@ -170,9 +187,12 @@ export function StartPage() {
               onPickExample={onPickExample}
               onOpen={onOpen}
               onSeeAllTrees={() => setSection('all')}
+              {...manage}
             />
           )}
-          {section === 'all' && <TreeGallery docs={docs} query={query} onOpen={onOpen} />}
+          {section === 'all' && (
+            <TreeGallery docs={docs} query={query} onOpen={onOpen} {...manage} />
+          )}
           {section === 'recent' && <RecentList docs={docs} onOpen={onOpen} />}
           {section === 'templates' && (
             <TemplatesPage onPickFramework={onPickFramework} onPickExample={onPickExample} />
@@ -189,6 +209,7 @@ export function StartPage() {
                 query={query}
                 emptyMessage="Nothing to review — every split is MECE clean."
                 onOpen={onOpen}
+                {...manage}
               />
             </div>
           )}

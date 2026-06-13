@@ -5,7 +5,7 @@ import type { DecompositionType } from '@/domain/types';
 import { docName } from '@/services/storage';
 import { relativeTime, treeKind } from './format';
 import { ExampleTreesGroup, FrameworksGroup } from './Patterns';
-import { MecePill, TreeGallery } from './TreeGallery';
+import { type ManageHandlers, MecePill, TreeGallery } from './TreeGallery';
 import { TreePreview } from './TreePreview';
 import type { LibraryDoc } from './useLibraryDocs';
 
@@ -17,7 +17,7 @@ const SAMPLE_QUESTIONS = [
 
 const GROUP_HEADING = 'mb-3 font-medium text-[12px] text-neutral-400 uppercase tracking-wider';
 
-interface StartHomeProps {
+interface StartHomeProps extends ManageHandlers {
   docs: LibraryDoc[];
   reviewCount: number;
   onBuild: (question: string) => void;
@@ -35,6 +35,9 @@ export function StartHome({
   onPickExample,
   onOpen,
   onSeeAllTrees,
+  onRename,
+  onDuplicate,
+  onDelete,
 }: StartHomeProps) {
   const [question, setQuestion] = useState('');
   const recent = [...docs].sort((a, b) => b.doc.updatedAt - a.doc.updatedAt);
@@ -145,7 +148,13 @@ export function StartHome({
 
           {rest.length > 0 && (
             <div className="mt-4">
-              <TreeGallery docs={rest} onOpen={onOpen} />
+              <TreeGallery
+                docs={rest}
+                onOpen={onOpen}
+                onRename={onRename}
+                onDuplicate={onDuplicate}
+                onDelete={onDelete}
+              />
             </div>
           )}
         </section>

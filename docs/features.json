@@ -96,6 +96,7 @@
     { "id": "start-page", "name": "Start page (workspace shell + sidebar sections)", "area": "App", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "templates-gallery", "name": "Templates page (frameworks + example trees as cards)", "area": "App", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "library-cards", "name": "Tree library cards with live MECE status + preview", "area": "Documents", "since": 6, "manual": true, "book": false, "bookExample": false },
-    { "id": "needs-review", "name": "Needs-review triage (trees with a flagged split)", "area": "MECE", "since": 6, "manual": true, "book": false, "bookExample": false }
+    { "id": "needs-review", "name": "Needs-review triage (trees with a flagged split)", "area": "MECE", "since": 6, "manual": true, "book": false, "bookExample": false },
+    { "id": "manage-trees", "name": "Rename / duplicate / delete a tree from its card", "area": "Documents", "since": 6, "manual": true, "book": false, "bookExample": false }
   ]
 }
