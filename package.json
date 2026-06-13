@@ -19,6 +19,7 @@
     "check:features": "node ./scripts/check-feature-coverage.mjs",
     "stats": "node ./scripts/build-stats.mjs",
     "docs": "node ./scripts/build-docs.mjs",
+    "icons": "node ./scripts/build-icons.mjs",
     "book": "node ./scripts/build-book.mjs",
     "book:epub": "node ./scripts/build-book-epub.mjs",
     "book:pdf": "node ./scripts/build-book-pdf.mjs",
