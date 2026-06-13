@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createDoc } from '../domain/factory';
 import {
   addChild,
@@ -8,14 +8,39 @@ import {
   setOperator,
   splitOf,
 } from '../domain/tree';
+import { saveDocById, saveLibrary } from '../services/storage';
 import { useStore } from './index';
 
-// The store is a singleton seeded at import; reset to that clean state per test.
+function makeLocalStorage(): Storage {
+  const m = new Map<string, string>();
+  return {
+    get length() {
+      return m.size;
+    },
+    clear: () => m.clear(),
+    getItem: (k) => (m.has(k) ? (m.get(k) as string) : null),
+    key: (i) => Array.from(m.keys())[i] ?? null,
+    removeItem: (k) => {
+      m.delete(k);
+    },
+    setItem: (k, v) => {
+      m.set(k, String(v));
+    },
+  };
+}
+
+// The store is a singleton seeded at import; reset to that clean state per test,
+// with a fresh in-memory localStorage so the persistence paths (switchDoc /
+// deleteDoc) can load saved documents.
 const FRESH = useStore.getState();
 const s = () => useStore.getState();
 beforeEach(() => {
+  vi.stubGlobal('localStorage', makeLocalStorage());
   useStore.setState(FRESH, true);
+  saveDocById(s().doc);
+  saveLibrary({ activeId: s().activeId, docs: s().library });
 });
+afterEach(() => vi.unstubAllGlobals());
 
 // A formula split that misses reconciliation by 1% (60 + 39 vs 100).
 function formulaDoc() {
@@ -197,5 +222,31 @@ describe('store', () => {
     expect(splitOf(s().doc, root)?.decomposition).toBe('formula');
     s().setOperator(root, 'product');
     expect(splitOf(s().doc, root)?.operator).toBe('product');
+  });
+
+  it('switchDoc loads another saved document and makes it active', () => {
+    s().newDoc(); // creates + activates B (persisted)
+    const b = s().activeId;
+    const a = s().library.find((e) => e.id !== b)?.id ?? '';
+    s().switchDoc(a);
+    expect(s().activeId).toBe(a);
+    expect(s().doc.id).toBe(a);
+  });
+
+  it('deleting the active document reopens another from the library', () => {
+    s().newDoc(); // B active; library [A, B]
+    const b = s().activeId;
+    s().deleteDoc(b);
+    expect(s().activeId).not.toBe(b);
+    expect(s().library.some((e) => e.id === b)).toBe(false);
+  });
+
+  it('undo / redo are no-ops with empty history', () => {
+    const doc = s().doc;
+    expect(s().canUndo()).toBe(false);
+    expect(s().canRedo()).toBe(false);
+    s().undo();
+    s().redo();
+    expect(s().doc).toBe(doc);
   });
 });
