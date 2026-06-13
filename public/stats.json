@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-06-13T16:07:40.536Z",
-  "commit": "04c03b7",
+  "generatedAt": "2026-06-13T18:02:47.706Z",
+  "commit": "59175d8",
   "headline": {
-    "linesTsJs": 8542,
-    "tests": 260,
-    "lineCoveragePct": 94.41,
-    "commits": 125,
+    "linesTsJs": 9635,
+    "tests": 278,
+    "lineCoveragePct": 92.47,
+    "commits": 129,
     "ageDays": 2,
-    "trackedFiles": 160,
+    "trackedFiles": 175,
     "featureManualPct": 100,
-    "featureBookPct": 43.3,
-    "featureExamplePct": 30
+    "featureBookPct": 40.6,
+    "featureExamplePct": 28.1
   },
   "code": [
     {
       "category": "App code (src, excl. tests)",
-      "files": 39,
-      "lines": 3755
+      "files": 50,
+      "lines": 4649
     },
     {
       "category": "Unit tests",
-      "files": 43,
-      "lines": 3127
+      "files": 47,
+      "lines": 3326
     },
     {
       "category": "E2E tests (Playwright)",
@@ -41,40 +41,40 @@
     {
       "category": "Docs (Markdown)",
       "files": 21,
-      "lines": 2022
+      "lines": 2062
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 94.41,
-      "covered": 930,
-      "total": 985
+      "pct": 92.47,
+      "covered": 1045,
+      "total": 1130
     },
     "statements": {
-      "pct": 92.63,
-      "covered": 1119,
-      "total": 1208
+      "pct": 90.47,
+      "covered": 1254,
+      "total": 1386
     },
     "functions": {
-      "pct": 92.26,
-      "covered": 358,
-      "total": 388
+      "pct": 88.54,
+      "covered": 402,
+      "total": 454
     },
     "branches": {
-      "pct": 86.58,
-      "covered": 600,
-      "total": 693
+      "pct": 82.39,
+      "covered": 660,
+      "total": 801
     }
   },
   "tests": {
-    "unit": 236,
+    "unit": 254,
     "e2e": 24
   },
   "domain": {
-    "features": 60,
+    "features": 64,
     "areas": 14,
-    "domainModules": 20,
-    "components": 17,
+    "domainModules": 21,
+    "components": 26,
     "exporters": 5
   },
   "footprint": {
@@ -95,7 +95,7 @@
       },
       {
         "name": "store/index.ts",
-        "lines": 332
+        "lines": 354
       },
       {
         "name": "domain/mece/engine.ts",
@@ -110,34 +110,34 @@
   "quality": {
     "leastCovered": [
       {
+        "file": "src/components/start/TreeGallery.tsx",
+        "pct": 36.36
+      },
+      {
+        "file": "src/components/start/StartPage.tsx",
+        "pct": 60.52
+      },
+      {
         "file": "src/components/canvas/Canvas.tsx",
         "pct": 74.61
       },
       {
+        "file": "src/components/start/StartHome.tsx",
+        "pct": 76.92
+      },
+      {
+        "file": "src/components/start/format.ts",
+        "pct": 78.57
+      },
+      {
         "file": "src/components/canvas/nodes/IssueNode.tsx",
         "pct": 86.66
-      },
-      {
-        "file": "src/components/settings/SettingsDialog.tsx",
-        "pct": 87.5
-      },
-      {
-        "file": "src/components/inspector/Inspector.tsx",
-        "pct": 89.85
-      },
-      {
-        "file": "src/App.tsx",
-        "pct": 91.66
-      },
-      {
-        "file": "src/services/storage.ts",
-        "pct": 96.36
       }
     ],
     "churnHotspots": [
       {
         "file": "src/store/index.ts",
-        "commits": 19
+        "commits": 20
       },
       {
         "file": "src/components/inspector/Inspector.tsx",
@@ -148,12 +148,12 @@
         "commits": 14
       },
       {
-        "file": "src/components/canvas/Canvas.tsx",
+        "file": "src/App.tsx",
         "commits": 13
       },
       {
-        "file": "src/App.tsx",
-        "commits": 12
+        "file": "src/components/canvas/Canvas.tsx",
+        "commits": 13
       },
       {
         "file": "src/components/canvas/nodes/IssueNode.tsx",
@@ -173,26 +173,26 @@
     "nonNull": 1
   },
   "bundle": {
-    "eagerJsGzipKb": 155.3,
-    "totalJsGzipKb": 508.6,
-    "cssGzipKb": 6.7,
+    "eagerJsGzipKb": 159.9,
+    "totalJsGzipKb": 513.2,
+    "cssGzipKb": 7.6,
     "budgetKb": 165,
     "withinBudget": true
   },
   "docs": {
     "bookWords": 20750,
     "chapters": 14,
-    "appLoc": 3755,
-    "docToCodeRatio": 0.54
+    "appLoc": 4649,
+    "docToCodeRatio": 0.44
   },
   "featureCoverage": {
-    "total": 60,
-    "manual": 60,
+    "total": 64,
+    "manual": 64,
     "manualPct": 100,
     "book": 26,
-    "bookPct": 43.3,
+    "bookPct": 40.6,
     "bookExample": 18,
-    "bookExamplePct": 30,
+    "bookExamplePct": 28.1,
     "byArea": {
       "Tree": {
         "total": 6,
@@ -200,8 +200,8 @@
         "book": 5
       },
       "MECE": {
-        "total": 9,
-        "manual": 9,
+        "total": 10,
+        "manual": 10,
         "book": 5
       },
       "Prioritisation": {
@@ -250,8 +250,8 @@
         "book": 0
       },
       "Documents": {
-        "total": 3,
-        "manual": 3,
+        "total": 4,
+        "manual": 4,
         "book": 0
       },
       "AI": {
@@ -260,8 +260,8 @@
         "book": 0
       },
       "App": {
-        "total": 4,
-        "manual": 4,
+        "total": 6,
+        "manual": 6,
         "book": 0
       }
     },
@@ -437,6 +437,26 @@
           "id": "example-trees",
           "name": "Example / onboarding trees",
           "since": 6
+        },
+        {
+          "id": "start-page",
+          "name": "Start page (workspace shell + sidebar sections)",
+          "since": 6
+        },
+        {
+          "id": "templates-gallery",
+          "name": "Templates page (frameworks + example trees as cards)",
+          "since": 6
+        },
+        {
+          "id": "library-cards",
+          "name": "Tree library cards with live MECE status + preview",
+          "since": 6
+        },
+        {
+          "id": "needs-review",
+          "name": "Needs-review triage (trees with a flagged split)",
+          "since": 6
         }
       ]
     }
@@ -444,22 +464,22 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 2,
-    "commits": 125,
-    "commits7d": 125,
+    "commits": 129,
+    "commits7d": 129,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 85
+        "count": 87
       },
       {
         "name": "github-actions[bot]",
-        "count": 40
+        "count": 42
       }
     ],
     "churn30d": {
-      "added": 21614,
-      "removed": 2860
+      "added": 22911,
+      "removed": 2999
     },
-    "changelogEntries": 41
+    "changelogEntries": 42
   }
 }
