@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EXAMPLE_TREES } from '@/domain/examples';
-import { childrenOf } from '@/domain/tree';
+import { childrenOf, splitOf } from '@/domain/tree';
 import type { NodeId } from '@/domain/types';
 import { copyToClipboard } from '@/services/download';
 import { useStore } from '@/store';
@@ -131,5 +131,42 @@ describe('Inspector', () => {
     render(<Inspector />);
     fireEvent.click(screen.getByRole('button', { name: 'Delete issue' }));
     expect(childrenOf(s().doc, s().doc.rootId)).toHaveLength(0);
+  });
+
+  it('adds a sub-issue from the inspector', () => {
+    const rootId = selectRoot();
+    render(<Inspector />);
+    const before = childrenOf(s().doc, rootId).length;
+    fireEvent.click(screen.getByRole('button', { name: '+ Add sub-issue' }));
+    expect(childrenOf(s().doc, rootId).length).toBe(before + 1);
+  });
+
+  it('changes the formula operator and rolls children up to the parent', () => {
+    const profit = EXAMPLE_TREES.find((e) => e.id === 'profit');
+    if (!profit) throw new Error('missing profit example');
+    s().openDoc(profit.build());
+    const rootId = s().doc.rootId;
+    s().select(rootId);
+    render(<Inspector />);
+    const productOption = screen.getByRole('option', { name: 'Product (A × B × C)' });
+    const operatorSelect = productOption.closest('select');
+    if (!operatorSelect) throw new Error('no operator select');
+    fireEvent.change(operatorSelect, { target: { value: 'product' } });
+    expect(splitOf(s().doc, rootId)?.operator).toBe('product');
+    fireEvent.click(screen.getByRole('button', { name: /Roll up children/ }));
+    expect(typeof s().doc.nodes[rootId]?.value?.amount).toBe('number');
+  });
+
+  it('moves a sibling down and duplicates a subtree from the inspector', () => {
+    s().addChild(s().doc.rootId, 'A');
+    s().addChild(s().doc.rootId, 'B');
+    const a = childrenOf(s().doc, s().doc.rootId)[0];
+    if (!a) throw new Error('no A');
+    s().select(a.id);
+    render(<Inspector />);
+    fireEvent.click(screen.getByRole('button', { name: '↓ Move down' }));
+    expect(childrenOf(s().doc, s().doc.rootId).map((c) => c.label)).toEqual(['B', 'A']);
+    fireEvent.click(screen.getByRole('button', { name: 'Duplicate subtree' }));
+    expect(childrenOf(s().doc, s().doc.rootId)).toHaveLength(3);
   });
 });

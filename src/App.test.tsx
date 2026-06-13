@@ -165,4 +165,12 @@ describe('App', () => {
     fireEvent.keyDown(window, { key: 'z', ctrlKey: true, shiftKey: true });
     expect(n()).toBe(2);
   });
+
+  it('proxies a click from the Open button to the hidden file input', () => {
+    const { container } = render(<App />);
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    const clickSpy = vi.spyOn(input, 'click');
+    fireEvent.click(screen.getByRole('button', { name: 'Open' }));
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+  });
 });
