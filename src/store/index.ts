@@ -153,7 +153,10 @@ export const useStore = create<AppState>((set, get) => {
    * MECE, and persist — the single path every mutation goes through. A no-op
    * transform (same doc reference) is ignored.
    */
-  function apply(transform: (doc: IssueTreeDoc) => IssueTreeDoc): void {
+  function apply(
+    transform: (doc: IssueTreeDoc) => IssueTreeDoc,
+    extras?: (newDoc: IssueTreeDoc, prev: AppState) => Partial<AppState>
+  ): void {
     set((s) => {
       const transformed = transform(s.doc);
       if (transformed === s.doc) return s;
@@ -164,6 +167,7 @@ export const useStore = create<AppState>((set, get) => {
         library: syncLibraryName(s.library, doc),
         past: [...s.past, s.doc].slice(-HISTORY_LIMIT),
         future: [],
+        ...extras?.(doc, s),
       };
     });
   }
@@ -276,39 +280,26 @@ export const useStore = create<AppState>((set, get) => {
       apply((doc) => decomposeOp(doc, parentId, decomposition)),
     moveNode: (id, newParentId) => apply((doc) => moveNodeOp(doc, id, newParentId)),
     moveSibling: (id, direction) => apply((doc) => moveSiblingOp(doc, id, direction)),
-    duplicateNode: (id) =>
-      set((s) => {
-        const { doc: transformed, newId } = duplicateNodeOp(s.doc, id);
-        if (transformed === s.doc) return s;
-        const doc = recomputeMece(
-          { ...transformed, updatedAt: Date.now() },
-          meceOptions(s.settings)
-        );
-        saveDocById(doc);
-        return {
-          doc,
-          past: [...s.past, s.doc].slice(-HISTORY_LIMIT),
-          future: [],
-          selectedId: newId,
-        };
-      }),
+    // Both go through `apply` (the single mutation path); they differ only in the
+    // selection side-effect — duplicate selects the copy, remove clears a deleted
+    // selection — expressed via apply's `extras`.
+    duplicateNode: (id) => {
+      let newId: NodeId | null = null;
+      apply(
+        (doc) => {
+          const result = duplicateNodeOp(doc, id);
+          newId = result.newId;
+          return result.doc;
+        },
+        () => (newId ? { selectedId: newId } : {})
+      );
+    },
 
     removeNode: (id) =>
-      set((s) => {
-        const transformed = removeNodeOp(s.doc, id);
-        if (transformed === s.doc) return s;
-        const doc = recomputeMece(
-          { ...transformed, updatedAt: Date.now() },
-          meceOptions(s.settings)
-        );
-        saveDocById(doc);
-        return {
-          doc,
-          past: [...s.past, s.doc].slice(-HISTORY_LIMIT),
-          future: [],
-          selectedId: s.selectedId === id ? null : s.selectedId,
-        };
-      }),
+      apply(
+        (doc) => removeNodeOp(doc, id),
+        (_doc, prev) => (prev.selectedId === id ? { selectedId: null } : {})
+      ),
 
     undo: () =>
       set((s) => {

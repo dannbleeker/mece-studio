@@ -26,6 +26,20 @@ interface IssueNodeData extends Record<string, unknown> {
 
 export type IssueFlowNode = Node<IssueNodeData, 'issue'>;
 
+/** Tally supporting vs contradicting evidence in one pass. */
+function evidenceCounts(evidence: IssueNode['evidence']): {
+  supports: number;
+  contradicts: number;
+} {
+  let supports = 0;
+  let contradicts = 0;
+  for (const e of evidence) {
+    if (e.supports) supports++;
+    else contradicts++;
+  }
+  return { supports, contradicts };
+}
+
 /**
  * Project the document into React Flow nodes + edges. Pure: positions come from
  * the deterministic dagre layout, edges are derived from splits. No React Flow
@@ -58,13 +72,7 @@ export function toFlow(
           hasChildren: split !== undefined,
           value: n.value,
           priority: n.priority ? priorityBand(n.priority) : null,
-          evidence:
-            n.evidence.length > 0
-              ? {
-                  supports: n.evidence.filter((e) => e.supports).length,
-                  contradicts: n.evidence.filter((e) => !e.supports).length,
-                }
-              : null,
+          evidence: n.evidence.length > 0 ? evidenceCounts(n.evidence) : null,
           hasNote: !!n.detail?.trim(),
           collapsed: n.collapsed === true,
           childCount: split ? split.childIds.length : 0,

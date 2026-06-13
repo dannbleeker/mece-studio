@@ -106,10 +106,28 @@ export function setOperator(
   return { ...doc, splits: { ...doc.splits, [split.id]: { ...split, operator } } };
 }
 
-export function renameNode(doc: IssueTreeDoc, nodeId: NodeId, label: string): IssueTreeDoc {
+/**
+ * Apply `fn` to the node at `nodeId`, returning the doc with that node replaced.
+ * Returns the doc UNCHANGED (same reference) when the node is missing or `fn`
+ * returns `null` — so a no-op edit never churns undo history. `fn` returns a full
+ * `IssueNode` (not a partial): `exactOptionalPropertyTypes` needs explicit
+ * `delete`s to clear optional fields, which a shallow merge can't express.
+ */
+function patchNode(
+  doc: IssueTreeDoc,
+  nodeId: NodeId,
+  fn: (node: IssueNode) => IssueNode | null
+): IssueTreeDoc {
   const node = doc.nodes[nodeId];
-  if (!node || node.label === label) return doc; // no-op edits don't churn undo history
-  return { ...doc, nodes: { ...doc.nodes, [nodeId]: { ...node, label } } };
+  if (!node) return doc;
+  const next = fn(node);
+  if (next === null || next === node) return doc;
+  return { ...doc, nodes: { ...doc.nodes, [nodeId]: next } };
+}
+
+export function renameNode(doc: IssueTreeDoc, nodeId: NodeId, label: string): IssueTreeDoc {
+  // no-op edits don't churn undo history
+  return patchNode(doc, nodeId, (node) => (node.label === label ? null : { ...node, label }));
 }
 
 /** Set or clear a node's numeric value (used by formula splits). */
@@ -118,36 +136,30 @@ export function setNodeValue(
   nodeId: NodeId,
   value: NumericValue | undefined
 ): IssueTreeDoc {
-  const node = doc.nodes[nodeId];
-  if (!node) return doc;
-  const cur = node.value;
-  const unchanged =
-    value === undefined
-      ? cur === undefined
-      : cur !== undefined && cur.amount === value.amount && cur.unit === value.unit;
-  if (unchanged) return doc; // no-op edits don't churn undo history
-  const next: IssueNode = { ...node };
-  if (value === undefined) {
-    delete next.value;
-  } else {
-    next.value = value;
-  }
-  return { ...doc, nodes: { ...doc.nodes, [nodeId]: next } };
+  return patchNode(doc, nodeId, (node) => {
+    const cur = node.value;
+    const unchanged =
+      value === undefined
+        ? cur === undefined
+        : cur !== undefined && cur.amount === value.amount && cur.unit === value.unit;
+    if (unchanged) return null; // no-op edits don't churn undo history
+    const next: IssueNode = { ...node };
+    if (value === undefined) delete next.value;
+    else next.value = value;
+    return next;
+  });
 }
 
 /** Set or clear a node's free-text notes (rationale, assumptions, sources). */
 export function setDetail(doc: IssueTreeDoc, nodeId: NodeId, detail: string): IssueTreeDoc {
-  const node = doc.nodes[nodeId];
-  if (!node) return doc;
-  const nextDetail = detail.trim() === '' ? undefined : detail;
-  if (node.detail === nextDetail) return doc; // no-op edits don't churn undo history
-  const next: IssueNode = { ...node };
-  if (nextDetail === undefined) {
-    delete next.detail;
-  } else {
-    next.detail = nextDetail;
-  }
-  return { ...doc, nodes: { ...doc.nodes, [nodeId]: next } };
+  return patchNode(doc, nodeId, (node) => {
+    const nextDetail = detail.trim() === '' ? undefined : detail;
+    if (node.detail === nextDetail) return null; // no-op edits don't churn undo history
+    const next: IssueNode = { ...node };
+    if (nextDetail === undefined) delete next.detail;
+    else next.detail = nextDetail;
+    return next;
+  });
 }
 
 /** Remove a node and its whole subtree. The root cannot be removed. */
@@ -294,25 +306,17 @@ export function setPriority(
   nodeId: NodeId,
   priority: Priority | undefined
 ): IssueTreeDoc {
-  const node = doc.nodes[nodeId];
-  if (!node) return doc;
-  const next: IssueNode = { ...node };
-  if (priority === undefined) {
-    delete next.priority;
-  } else {
-    next.priority = priority;
-  }
-  return { ...doc, nodes: { ...doc.nodes, [nodeId]: next } };
+  return patchNode(doc, nodeId, (node) => {
+    const next: IssueNode = { ...node };
+    if (priority === undefined) delete next.priority;
+    else next.priority = priority;
+    return next;
+  });
 }
 
 /** Attach an evidence item to a node. */
 export function addEvidence(doc: IssueTreeDoc, nodeId: NodeId, item: EvidenceItem): IssueTreeDoc {
-  const node = doc.nodes[nodeId];
-  if (!node) return doc;
-  return {
-    ...doc,
-    nodes: { ...doc.nodes, [nodeId]: { ...node, evidence: [...node.evidence, item] } },
-  };
+  return patchNode(doc, nodeId, (node) => ({ ...node, evidence: [...node.evidence, item] }));
 }
 
 export function removeEvidence(
@@ -320,11 +324,10 @@ export function removeEvidence(
   nodeId: NodeId,
   evidenceId: string
 ): IssueTreeDoc {
-  const node = doc.nodes[nodeId];
-  if (!node) return doc;
-  const evidence = node.evidence.filter((e) => e.id !== evidenceId);
-  if (evidence.length === node.evidence.length) return doc;
-  return { ...doc, nodes: { ...doc.nodes, [nodeId]: { ...node, evidence } } };
+  return patchNode(doc, nodeId, (node) => {
+    const evidence = node.evidence.filter((e) => e.id !== evidenceId);
+    return evidence.length === node.evidence.length ? null : { ...node, evidence };
+  });
 }
 
 export function updateEvidence(
@@ -333,36 +336,30 @@ export function updateEvidence(
   evidenceId: string,
   patch: Partial<EvidenceItem>
 ): IssueTreeDoc {
-  const node = doc.nodes[nodeId];
-  if (!node) return doc;
-  let changed = false;
-  const evidence = node.evidence.map((e) => {
-    if (e.id !== evidenceId) return e;
-    changed = true;
-    return { ...e, ...patch };
+  return patchNode(doc, nodeId, (node) => {
+    let changed = false;
+    const evidence = node.evidence.map((e) => {
+      if (e.id !== evidenceId) return e;
+      changed = true;
+      return { ...e, ...patch };
+    });
+    return changed ? { ...node, evidence } : null;
   });
-  if (!changed) return doc;
-  return { ...doc, nodes: { ...doc.nodes, [nodeId]: { ...node, evidence } } };
 }
 
 /** Set a node's hypothesis status (open / supported / refuted / parked). */
 export function setStatus(doc: IssueTreeDoc, nodeId: NodeId, status: NodeStatus): IssueTreeDoc {
-  const node = doc.nodes[nodeId];
-  if (!node || node.status === status) return doc;
-  return { ...doc, nodes: { ...doc.nodes, [nodeId]: { ...node, status } } };
+  return patchNode(doc, nodeId, (node) => (node.status === status ? null : { ...node, status }));
 }
 
 /** Collapse or expand a node's subtree (hides/shows its descendants on the canvas). */
 export function toggleCollapse(doc: IssueTreeDoc, nodeId: NodeId): IssueTreeDoc {
-  const node = doc.nodes[nodeId];
-  if (!node) return doc;
-  const next: IssueNode = { ...node };
-  if (node.collapsed) {
-    delete next.collapsed;
-  } else {
-    next.collapsed = true;
-  }
-  return { ...doc, nodes: { ...doc.nodes, [nodeId]: next } };
+  return patchNode(doc, nodeId, (node) => {
+    const next: IssueNode = { ...node };
+    if (node.collapsed) delete next.collapsed;
+    else next.collapsed = true;
+    return next;
+  });
 }
 
 /** Collapse every non-root node that has children, or expand all of them. */

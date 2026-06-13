@@ -1,13 +1,12 @@
 import { priorityBand, priorityScore } from './priority';
 import { childrenOf, splitOf } from './tree';
-import type { IssueNode, IssueTreeDoc, NodeId } from './types';
+import type { IssueNode, IssueTreeDoc, NodeId, Split } from './types';
 
 function scoreOf(node: IssueNode | undefined): number {
   return node?.priority ? priorityScore(node.priority) : 0;
 }
 
-function meceFlags(doc: IssueTreeDoc, id: NodeId): string {
-  const split = splitOf(doc, id);
+function meceFlags(split: Split | undefined): string {
   if (!split) return '';
   const issues: string[] = [];
   if (split.mece.exclusive.state === 'warn') issues.push('overlap');
@@ -18,6 +17,7 @@ function meceFlags(doc: IssueTreeDoc, id: NodeId): string {
 function render(doc: IssueTreeDoc, id: NodeId, depth: number, lines: string[]): void {
   const node = doc.nodes[id];
   if (!node) return;
+  const split = splitOf(doc, id);
   const indent = '  '.repeat(depth);
   const band = node.priority ? ` _(${priorityBand(node.priority)})_` : '';
   const mark =
@@ -28,12 +28,12 @@ function render(doc: IssueTreeDoc, id: NodeId, depth: number, lines: string[]): 
         : node.status === 'parked'
           ? '⊘ '
           : '';
-  lines.push(`${indent}- ${mark}${node.label}${band}${meceFlags(doc, id)}`);
+  lines.push(`${indent}- ${mark}${node.label}${band}${meceFlags(split)}`);
   if (node.evidence.length > 0) {
     const ev = node.evidence.map((e) => `${e.supports ? '✓' : '✗'} ${e.summary}`).join('; ');
     lines.push(`${indent}  evidence: ${ev}`);
   }
-  const childIds = splitOf(doc, id)?.childIds ?? [];
+  const childIds = split?.childIds ?? [];
   const ordered = [...childIds].sort((a, b) => scoreOf(doc.nodes[b]) - scoreOf(doc.nodes[a]));
   for (const childId of ordered) render(doc, childId, depth + 1, lines);
 }

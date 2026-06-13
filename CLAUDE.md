@@ -39,7 +39,7 @@ This machine's AppLocker blocks pnpm's `&&` script shell and the `node_modules/.
 ## Fix what's broken — honestly
 - Spot something stale / wrong / dead → fix it this session (chase the root cause, but stay bounded to the concrete fix + its siblings). Respect an explicit "leave it."
 - Don't paper over warnings. Fix real issues; for a genuine false positive, a **documented** suppression is the right tool — the warning list should mean something.
-  - **Documented relaxation:** `knip` has `exports`/`types` reporting **off** while `domain/` is an intentional forward API (defined ahead of M1 wiring; Biome already flags unused in-file symbols). knip still enforces unused files + unused/unlisted dependencies. Turn `exports` back on once M1 wires the model.
+  - **knip is unrelaxed.** `knip.json` carries no rule overrides — knip enforces unused files, exports, types, enum members, duplicates, and unused/unlisted dependencies (the `exports`/`types` rules were re-enabled once M1 wired the model; the `enumMembers`/`duplicates` relaxations were dropped once the tree was green without them). Biome additionally flags unused in-file symbols.
 
 ## Work efficiently
 - When a question spans 2+ areas of the code, fan out parallel exploration sub-agents instead of serial grepping; use the cheapest model that's enough.

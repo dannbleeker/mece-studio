@@ -16,6 +16,11 @@ import type {
 import { copyToClipboard } from '@/services/download';
 import { useStore } from '@/store';
 
+// Shared Tailwind class strings — named so the inspector's many labels/inputs can't drift.
+const LABEL_CLS = 'font-medium text-[11px] text-neutral-400 uppercase tracking-wider';
+const INPUT_CLS =
+  'rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none';
+
 const DECOMPOSITION_ORDER: DecompositionType[] = [
   'freeform',
   'segment',
@@ -97,14 +102,12 @@ export function Inspector() {
   return (
     <aside className="flex w-80 shrink-0 flex-col gap-4 overflow-y-auto border-neutral-200 border-l bg-white p-5">
       <label className="flex flex-col gap-1">
-        <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
-          {isRoot ? 'Key question' : 'Issue'}
-        </span>
+        <span className={LABEL_CLS}>{isRoot ? 'Key question' : 'Issue'}</span>
         <textarea
           key={selectedId}
           defaultValue={node.label}
           rows={2}
-          className="resize-none rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
+          className={`resize-none ${INPUT_CLS}`}
           onBlur={(e) =>
             isRoot ? setRootQuestion(e.target.value) : renameNode(selectedId, e.target.value)
           }
@@ -112,30 +115,26 @@ export function Inspector() {
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
-          Notes
-        </span>
+        <span className={LABEL_CLS}>Notes</span>
         <textarea
           key={`${selectedId}-detail`}
           defaultValue={node.detail ?? ''}
           rows={2}
           placeholder="Rationale, assumptions, data sources…"
-          className="resize-none rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
+          className={`resize-none ${INPUT_CLS}`}
           onBlur={(e) => setDetail(selectedId, e.target.value)}
         />
       </label>
 
       <div className="flex flex-col gap-1">
-        <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
-          Value (optional)
-        </span>
+        <span className={LABEL_CLS}>Value (optional)</span>
         <div className="flex gap-1.5">
           <input
             key={`${selectedId}-value`}
             type="number"
             defaultValue={node.value?.amount ?? ''}
             placeholder="e.g. 100"
-            className="w-0 flex-1 rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
+            className={`w-0 flex-1 ${INPUT_CLS}`}
             onBlur={(e) => {
               const raw = e.target.value.trim();
               const num = Number(raw);
@@ -148,16 +147,14 @@ export function Inspector() {
             defaultValue={node.value?.unit ?? ''}
             placeholder="unit"
             title="Unit (e.g. DKK, %, hrs) — set an amount first"
-            className="w-16 rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
+            className={`w-16 ${INPUT_CLS}`}
             onBlur={(e) => setUnit(selectedId, e.target.value.trim())}
           />
         </div>
       </div>
 
       <section className="flex flex-col gap-1.5 border-neutral-100 border-t pt-3">
-        <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
-          Status
-        </span>
+        <span className={LABEL_CLS}>Status</span>
         <div className="flex flex-wrap gap-1">
           {(['open', 'supported', 'refuted', 'parked'] as NodeStatus[]).map((st) => (
             <button
@@ -177,9 +174,7 @@ export function Inspector() {
       </section>
 
       <section className="flex flex-col gap-1.5 border-neutral-100 border-t pt-3">
-        <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
-          Priority
-        </span>
+        <span className={LABEL_CLS}>Priority</span>
         {(['impact', 'ease'] as const).map((axis) => (
           <div key={axis} className="flex items-center gap-2">
             <span className="w-12 text-[11px] text-neutral-500 capitalize">{axis}</span>
@@ -218,9 +213,7 @@ export function Inspector() {
       </section>
 
       <section className="flex flex-col gap-2 border-neutral-100 border-t pt-3">
-        <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
-          Evidence
-        </span>
+        <span className={LABEL_CLS}>Evidence</span>
         {node.evidence.length > 0 && (
           <ul className="flex flex-col gap-1">
             {node.evidence.map((e) => (
@@ -289,9 +282,7 @@ export function Inspector() {
 
       {!split && (
         <section className="flex flex-col gap-2 border-neutral-100 border-t pt-3">
-          <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
-            Decompose by
-          </span>
+          <span className={LABEL_CLS}>Decompose by</span>
           <div className="grid grid-cols-2 gap-1.5">
             {DECOMPOSITION_ORDER.map((d) => (
               <button
@@ -322,12 +313,10 @@ export function Inspector() {
       {split && (
         <section className="flex flex-col gap-2 border-neutral-100 border-t pt-3">
           <label className="flex flex-col gap-1">
-            <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
-              How it splits
-            </span>
+            <span className={LABEL_CLS}>How it splits</span>
             <select
               value={split.decomposition}
-              className="rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
+              className={INPUT_CLS}
               onChange={(e) => setDecomposition(selectedId, e.target.value as DecompositionType)}
             >
               {DECOMPOSITION_ORDER.map((d) => (
@@ -343,12 +332,10 @@ export function Inspector() {
 
           {split.decomposition === 'formula' && (
             <label className="flex flex-col gap-1">
-              <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
-                Combine children by
-              </span>
+              <span className={LABEL_CLS}>Combine children by</span>
               <select
                 value={split.operator ?? 'sum'}
-                className="rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
+                className={INPUT_CLS}
                 onChange={(e) => setOperator(selectedId, e.target.value as FormulaOperator)}
               >
                 <option value="sum">Sum (A + B + C)</option>
@@ -373,9 +360,7 @@ export function Inspector() {
           )}
           {drivers.length >= 2 && (
             <div className="flex flex-col gap-1 rounded-md bg-neutral-50 px-3 py-2">
-              <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
-                Sensitivity (±10%)
-              </span>
+              <span className={LABEL_CLS}>Sensitivity (±10%)</span>
               {drivers.map((d) => (
                 <div key={d.id} className="flex items-center gap-2 text-[11px]">
                   <span className="w-20 shrink-0 truncate text-neutral-700" title={d.label}>
