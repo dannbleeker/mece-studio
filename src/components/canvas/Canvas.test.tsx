@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { childrenOf } from '@/domain/tree';
 import { downloadDataUrl } from '@/services/download';
@@ -60,13 +60,11 @@ afterEach(() => {
 });
 
 describe('Canvas', () => {
-  it('renders the canvas toolbar (find, collapse, export)', () => {
+  it('renders the canvas toolbar (find, collapse)', () => {
     render(<Canvas />);
     expect(screen.getByLabelText('Find nodes')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Collapse all' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Expand all' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'PNG' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'PDF' })).toBeTruthy();
   });
 
   it('reports a match count while searching', async () => {
@@ -89,25 +87,33 @@ describe('Canvas', () => {
     expect(s().doc.nodes[a.id]?.collapsed).toBeUndefined();
   });
 
-  it('exports a PNG from the toolbar', async () => {
+  // Export moved to the header; the canvas fulfils a store request (exportRequest).
+  it('exports a PNG when the store requests it', async () => {
     render(<Canvas />);
-    fireEvent.click(screen.getByRole('button', { name: 'PNG' }));
+    act(() => {
+      s().requestExport('png');
+    });
     await waitFor(() =>
       expect(downloadDataUrl).toHaveBeenCalledWith('mece-tree.png', 'data:image/png;base64,AAAA')
     );
     expect(toPngMock).toHaveBeenCalledTimes(1);
+    expect(s().exportRequest).toBeNull(); // cleared after fulfilling
   });
 
-  it('exports a PDF from the toolbar', async () => {
+  it('exports a PDF when the store requests it', async () => {
     render(<Canvas />);
-    fireEvent.click(screen.getByRole('button', { name: 'PDF' }));
+    act(() => {
+      s().requestExport('pdf');
+    });
     await waitFor(() => expect(pdfSave).toHaveBeenCalledWith('mece-tree.pdf'));
     expect(pdfAddImage).toHaveBeenCalledTimes(1);
   });
 
-  it('exports a PPTX from the toolbar', async () => {
+  it('exports a PPTX when the store requests it', async () => {
     render(<Canvas />);
-    fireEvent.click(screen.getByRole('button', { name: 'PPTX' }));
+    act(() => {
+      s().requestExport('pptx');
+    });
     await waitFor(() => expect(pptxWrite).toHaveBeenCalledWith({ fileName: 'mece-tree.pptx' }));
     expect(pptxAddImage).toHaveBeenCalledTimes(1);
   });

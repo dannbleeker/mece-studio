@@ -52,6 +52,10 @@ const STARTER_QUESTION = 'Why is this happening?';
 /** Which top-level surface is showing: the Start workspace shell, or a tree on the canvas. */
 type AppView = 'start' | 'workspace';
 
+/** A canvas export format. The header requests one; the canvas (which owns the
+ * React Flow viewport needed to rasterise) fulfils it, then clears the request. */
+type ExportKind = 'png' | 'pdf' | 'pptx';
+
 function freshDoc(options: MeceOptions, question: string = STARTER_QUESTION): IssueTreeDoc {
   return recomputeMece(createDoc(question.trim() || STARTER_QUESTION, Date.now()), options);
 }
@@ -130,12 +134,16 @@ interface AppState {
   reviewOpen: boolean;
   /** Bumped by `locate` to ask the canvas to centre the (now-selected) node. */
   locateNonce: number;
+  /** A pending canvas export the header has asked for; the canvas clears it once done. */
+  exportRequest: ExportKind | null;
 
   select: (id: NodeId | null) => void;
   setView: (view: AppView) => void;
   setReviewOpen: (open: boolean) => void;
   /** Select a node and ask the canvas to centre it (used by the review dock). */
   locate: (id: NodeId) => void;
+  /** Ask the canvas to export the tree (header → canvas); pass null to clear. */
+  requestExport: (kind: ExportKind | null) => void;
   setSettings: (patch: Partial<Settings>) => void;
   /** Create a fresh tree (optionally seeding the root question) and open it. */
   newDoc: (question?: string) => void;
@@ -217,11 +225,13 @@ export const useStore = create<AppState>((set, get) => {
     view: 'start',
     reviewOpen: false,
     locateNonce: 0,
+    exportRequest: null,
 
     select: (id) => set({ selectedId: id }),
     setView: (view) => set({ view }),
     setReviewOpen: (open) => set({ reviewOpen: open }),
     locate: (id) => set((s) => ({ selectedId: id, locateNonce: s.locateNonce + 1 })),
+    requestExport: (kind) => set({ exportRequest: kind }),
     setSettings: (patch) =>
       set((s) => {
         const settings = { ...s.settings, ...patch };

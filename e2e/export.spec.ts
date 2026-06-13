@@ -16,6 +16,8 @@ test.describe(() => {
       await page.goto('/');
       await enterWorkspace(page);
 
+      // Export now lives in a header dropdown — open it, then pick the format.
+      await page.getByRole('button', { name: 'Export' }).click();
       const download = page.waitForEvent('download');
       await page.getByRole('button', { name: label, exact: true }).click();
       expect((await download).suggestedFilename()).toBe(file);

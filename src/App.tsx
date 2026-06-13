@@ -1,6 +1,7 @@
 import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { AboutDialog } from '@/components/about/AboutDialog';
 import { Canvas } from '@/components/canvas/Canvas';
+import { HeaderMenu, type MenuEntry } from '@/components/header/HeaderMenu';
 import { Inspector } from '@/components/inspector/Inspector';
 import { HealthChip } from '@/components/review/HealthChip';
 import { ReviewPanel } from '@/components/review/ReviewPanel';
@@ -8,13 +9,48 @@ import { SynthesisPanel } from '@/components/SynthesisPanel';
 import { SettingsDialog } from '@/components/settings/SettingsDialog';
 import { ShortcutsDialog } from '@/components/shortcuts/ShortcutsDialog';
 import { StartPage } from '@/components/start/StartPage';
+import { TREE_KIND_LABELS } from '@/domain/constants';
 import { toMarkdown } from '@/domain/export';
+import { splitOf } from '@/domain/tree';
 import { copyToClipboard, downloadText } from '@/services/download';
 import { parseDoc } from '@/services/storage';
 import { useStore } from '@/store';
 
 const GHOST_BTN =
   'rounded-md px-2.5 py-1.5 text-[13px] text-neutral-600 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:text-neutral-300';
+
+/** A thin vertical rule that separates header clusters. */
+function Divider() {
+  return <span className="mx-1 h-5 w-px bg-neutral-200" />;
+}
+
+/** A square icon button for the header (undo/redo, settings, shortcuts). */
+function IconBtn({
+  label,
+  title,
+  onClick,
+  disabled,
+  children,
+}: {
+  label: string;
+  title: string;
+  onClick: () => void;
+  disabled?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      title={title}
+      className="grid h-8 w-8 place-items-center rounded-md text-[15px] text-neutral-600 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:text-neutral-300"
+    >
+      {children}
+    </button>
+  );
+}
 
 /** The tree-editing surface: header actions + canvas + inspector. */
 export function Workspace() {
@@ -31,17 +67,13 @@ export function Workspace() {
   const canUndo = useStore((s) => s.canUndo());
   const canRedo = useStore((s) => s.canRedo());
   const reviewOpen = useStore((s) => s.reviewOpen);
-  const [copied, setCopied] = useState(false);
+  const requestExport = useStore((s) => s.requestExport);
   const [showSynthesis, setShowSynthesis] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
-  const onCopyMarkdown = () => {
-    void copyToClipboard(toMarkdown(doc));
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1500);
-  };
+  const onCopyMarkdown = () => void copyToClipboard(toMarkdown(doc));
   const onSaveJson = () => {
     downloadText('mece-tree.json', JSON.stringify(doc, null, 2), 'application/json');
   };
@@ -87,9 +119,32 @@ export function Workspace() {
     return () => window.removeEventListener('keydown', onKey);
   }, [undo, redo, removeNode, selectedId]);
 
+  // The tree's title + a type badge derived from how the root is decomposed.
+  const rootLabel = doc.nodes[doc.rootId]?.label ?? 'Untitled tree';
+  const rootSplit = splitOf(doc, doc.rootId);
+  const kindLabel = rootSplit ? TREE_KIND_LABELS[rootSplit.decomposition] : 'Issue tree';
+
+  const exportItems: MenuEntry[] = [
+    { key: 'png', label: 'PNG', onClick: () => requestExport('png') },
+    { key: 'pdf', label: 'PDF', onClick: () => requestExport('pdf') },
+    { key: 'pptx', label: 'PPTX', onClick: () => requestExport('pptx') },
+  ];
+  // Secondary actions, tucked into an overflow menu to keep the header clustered.
+  const overflowItems: MenuEntry[] = [
+    { key: 'copy', label: 'Copy Markdown', onClick: onCopyMarkdown },
+    { key: 'open', label: 'Open JSON…', onClick: () => fileInputRef.current?.click() },
+    { key: 'save', label: 'Save JSON', onClick: onSaveJson },
+    { key: 'sep1', divider: true },
+    { key: 'about', label: 'About', onClick: () => setShowAbout(true) },
+    { key: 'sep2', divider: true },
+    { key: 'new', label: 'New tree', onClick: () => newDoc() },
+    { key: 'delete', label: 'Delete tree', onClick: onDelete },
+  ];
+
   return (
     <div className="flex h-full flex-col bg-[#faf9f5] text-neutral-800">
-      <header className="flex shrink-0 items-center gap-2 border-neutral-200 border-b bg-white px-5 py-2.5">
+      <header className="flex shrink-0 items-center gap-2 border-neutral-200 border-b bg-white px-4 py-2.5">
+        {/* Left cluster — brand, back, and the tree's title + type */}
         <button
           type="button"
           onClick={() => setView('start')}
@@ -98,6 +153,7 @@ export function Workspace() {
         >
           MECE Studio
         </button>
+        <Divider />
         <button
           type="button"
           onClick={() => setView('start')}
@@ -106,28 +162,67 @@ export function Workspace() {
         >
           ← Start
         </button>
-        <button type="button" onClick={() => newDoc()} className={GHOST_BTN} title="New tree">
-          + New
-        </button>
-        <button type="button" onClick={onDelete} className={GHOST_BTN} title="Delete this tree">
-          Delete
-        </button>
+        <Divider />
+        <span className="flex min-w-0 items-center gap-2">
+          <span
+            className="max-w-[16rem] truncate font-medium text-[14px] text-neutral-800"
+            title={rootLabel}
+          >
+            {rootLabel}
+          </span>
+          <span className="shrink-0 rounded-md bg-[#eef2f9] px-1.5 py-0.5 font-medium text-[#3f6fb0] text-[10px]">
+            {kindLabel}
+          </span>
+        </span>
+
+        {/* Right cluster — health, history, synthesis, export, utilities */}
         <div className="ml-auto flex items-center gap-1">
           <HealthChip />
-          <span className="mx-1 h-5 w-px bg-neutral-200" />
+          <Divider />
+          <IconBtn label="Undo" title="Undo (Ctrl/⌘+Z)" disabled={!canUndo} onClick={undo}>
+            ↶
+          </IconBtn>
+          <IconBtn
+            label="Redo"
+            title="Redo (Ctrl/⌘+Y or Ctrl/⌘+Shift+Z)"
+            disabled={!canRedo}
+            onClick={redo}
+          >
+            ↷
+          </IconBtn>
+          <Divider />
           <button type="button" onClick={() => setShowSynthesis((v) => !v)} className={GHOST_BTN}>
             Synthesis
           </button>
-          <span className="mx-1 h-5 w-px bg-neutral-200" />
-          <button type="button" onClick={onCopyMarkdown} className={GHOST_BTN}>
-            {copied ? 'Copied!' : 'Copy Markdown'}
-          </button>
-          <button type="button" onClick={() => fileInputRef.current?.click()} className={GHOST_BTN}>
-            Open
-          </button>
-          <button type="button" onClick={onSaveJson} className={GHOST_BTN}>
-            Save JSON
-          </button>
+          <HeaderMenu
+            triggerLabel="Export"
+            triggerContent={
+              <>
+                Export
+                <span aria-hidden="true" className="text-[10px] opacity-70">
+                  ▾
+                </span>
+              </>
+            }
+            triggerClassName="inline-flex items-center gap-1.5 rounded-md bg-[#3f6fb0] px-3 py-1.5 font-medium text-[13px] text-white shadow-sm transition hover:bg-[#365f98] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3f6fb0]/40"
+            items={exportItems}
+          />
+          <IconBtn label="Settings" title="Settings" onClick={() => setShowSettings(true)}>
+            ⚙
+          </IconBtn>
+          <IconBtn
+            label="Keyboard shortcuts"
+            title="Keyboard shortcuts (?)"
+            onClick={() => setShowShortcuts(true)}
+          >
+            ?
+          </IconBtn>
+          <HeaderMenu
+            triggerLabel="More actions"
+            triggerContent={<span aria-hidden="true">⋯</span>}
+            triggerClassName="grid h-8 w-8 place-items-center rounded-md text-[18px] text-neutral-600 leading-none hover:bg-neutral-100"
+            items={overflowItems}
+          />
           <input
             ref={fileInputRef}
             type="file"
@@ -135,47 +230,6 @@ export function Workspace() {
             className="hidden"
             onChange={onOpenFile}
           />
-          <span className="mx-1 h-5 w-px bg-neutral-200" />
-          <button
-            type="button"
-            disabled={!canUndo}
-            onClick={undo}
-            title="Undo (Ctrl/⌘+Z)"
-            className={GHOST_BTN}
-          >
-            Undo
-          </button>
-          <button
-            type="button"
-            disabled={!canRedo}
-            onClick={redo}
-            title="Redo (Ctrl/⌘+Y or Ctrl/⌘+Shift+Z)"
-            className={GHOST_BTN}
-          >
-            Redo
-          </button>
-          <span className="mx-1 h-5 w-px bg-neutral-200" />
-          <button
-            type="button"
-            onClick={() => setShowSettings(true)}
-            className={GHOST_BTN}
-            title="Settings"
-            aria-label="Settings"
-          >
-            ⚙
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowShortcuts(true)}
-            className={GHOST_BTN}
-            title="Keyboard shortcuts (?)"
-            aria-label="Keyboard shortcuts"
-          >
-            ?
-          </button>
-          <button type="button" onClick={() => setShowAbout(true)} className={GHOST_BTN}>
-            About
-          </button>
         </div>
       </header>
 

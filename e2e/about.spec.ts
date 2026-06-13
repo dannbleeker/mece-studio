@@ -4,6 +4,8 @@ import { resetApp } from './helpers';
 test('About dialog opens, shows licensing + a notices link, and closes', async ({ page }) => {
   await resetApp(page);
 
+  // About moved into the header overflow (⋯) menu.
+  await page.getByRole('button', { name: 'More actions' }).click();
   await page.getByRole('button', { name: 'About' }).click();
   const dialog = page.getByRole('dialog', { name: 'About MECE Studio' });
   await expect(dialog).toBeVisible();

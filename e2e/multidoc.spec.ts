@@ -8,6 +8,12 @@ async function freshApp(page: Page) {
   await enterWorkspace(page);
 }
 
+/** Pick an item from the header overflow (⋯) menu, e.g. "New tree" / "Delete tree". */
+async function pickFromMenu(page: Page, name: string) {
+  await page.getByRole('button', { name: 'More actions' }).click();
+  await page.getByRole('button', { name }).click();
+}
+
 test('create a second tree and switch between them', async ({ page }) => {
   await freshApp(page);
 
@@ -19,7 +25,7 @@ test('create a second tree and switch between them', async ({ page }) => {
 
   expect(await libraryCount(page)).toBe(1);
 
-  await page.getByRole('button', { name: '+ New' }).click();
+  await pickFromMenu(page, 'New tree');
   expect(await libraryCount(page)).toBe(2);
   await expect(page.locator('.react-flow__node').first()).toContainText('Why is this happening?');
 
@@ -32,10 +38,10 @@ test('create a second tree and switch between them', async ({ page }) => {
 test('deleting the active tree falls back to another', async ({ page }) => {
   await freshApp(page);
 
-  await page.getByRole('button', { name: '+ New' }).click();
+  await pickFromMenu(page, 'New tree');
   expect(await libraryCount(page)).toBe(2);
 
   page.once('dialog', (d) => d.accept());
-  await page.getByRole('button', { name: 'Delete' }).click();
+  await pickFromMenu(page, 'Delete tree');
   expect(await libraryCount(page)).toBe(1);
 });

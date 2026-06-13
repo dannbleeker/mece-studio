@@ -32,6 +32,11 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+/** Open the header overflow (⋯) menu so its items are in the DOM. */
+function openOverflow() {
+  fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
+}
+
 describe('App routing', () => {
   it('lands on the Start page (not the canvas) by default', () => {
     render(<App />);
@@ -62,8 +67,9 @@ describe('Workspace', () => {
     expect(screen.getByText(/Select a node to edit it/)).toBeTruthy();
   });
 
-  it('opens the About dialog from the header', () => {
+  it('opens the About dialog from the overflow menu', () => {
     render(<Workspace />);
+    openOverflow();
     fireEvent.click(screen.getByRole('button', { name: 'About' }));
     expect(screen.getByRole('dialog', { name: 'About MECE Studio' })).toBeTruthy();
   });
@@ -74,15 +80,16 @@ describe('Workspace', () => {
     expect(screen.getByRole('dialog', { name: 'Keyboard shortcuts' })).toBeTruthy();
   });
 
-  it('copies the tree as Markdown (and flips the button to "Copied!")', () => {
+  it('copies the tree as Markdown from the overflow menu', () => {
     render(<Workspace />);
+    openOverflow();
     fireEvent.click(screen.getByRole('button', { name: 'Copy Markdown' }));
     expect(copyToClipboard).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole('button', { name: 'Copied!' })).toBeTruthy();
   });
 
-  it('saves the tree as JSON', () => {
+  it('saves the tree as JSON from the overflow menu', () => {
     render(<Workspace />);
+    openOverflow();
     fireEvent.click(screen.getByRole('button', { name: 'Save JSON' }));
     expect(downloadText).toHaveBeenCalledWith(
       'mece-tree.json',
@@ -115,7 +122,8 @@ describe('Workspace', () => {
       vi.fn(() => true)
     );
     render(<Workspace />);
-    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    openOverflow();
+    fireEvent.click(screen.getByRole('button', { name: 'Delete tree' }));
     expect(s().library).toHaveLength(1);
   });
 
@@ -170,11 +178,12 @@ describe('Workspace', () => {
     expect(n()).toBe(2);
   });
 
-  it('proxies a click from the Open button to the hidden file input', () => {
+  it('proxies a click from the Open JSON menu item to the hidden file input', () => {
     const { container } = render(<Workspace />);
     const input = container.querySelector('input[type="file"]') as HTMLInputElement;
     const clickSpy = vi.spyOn(input, 'click');
-    fireEvent.click(screen.getByRole('button', { name: 'Open' }));
+    openOverflow();
+    fireEvent.click(screen.getByRole('button', { name: /Open JSON/ }));
     expect(clickSpy).toHaveBeenCalledTimes(1);
   });
 

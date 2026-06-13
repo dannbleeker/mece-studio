@@ -24,6 +24,20 @@ export const DECOMPOSITION_LABELS: Record<DecompositionType, string> = {
   freeform: 'Freeform',
 };
 
+/**
+ * Short tree-type label for the editor header badge, keyed by the root split's
+ * decomposition. A formula root is the classic consulting "value-driver tree";
+ * an undecomposed root falls back to the generic "Issue tree".
+ */
+export const TREE_KIND_LABELS: Record<DecompositionType, string> = {
+  formula: 'Value-driver tree',
+  segment: 'Segmentation tree',
+  process: 'Process tree',
+  binary: 'Binary tree',
+  framework: 'Framework tree',
+  freeform: 'Issue tree',
+};
+
 /** Short hint shown under each decomposition type in the picker. */
 export const DECOMPOSITION_HINTS: Record<DecompositionType, string> = {
   formula: 'Numbers that combine to the parent — provably MECE.',

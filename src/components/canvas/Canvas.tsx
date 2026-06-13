@@ -42,6 +42,8 @@ function Flow() {
   const sortByPriority = useStore((s) => s.settings.sortSiblingsByPriority);
   const reviewOpen = useStore((s) => s.reviewOpen);
   const locateNonce = useStore((s) => s.locateNonce);
+  const exportRequest = useStore((s) => s.exportRequest);
+  const requestExport = useStore((s) => s.requestExport);
   const { fitView, getNodes, getIntersectingNodes, getViewport } = useReactFlow();
 
   // Inline label editing: double-click a node to edit its label in place.
@@ -227,7 +229,7 @@ function Flow() {
   // Render the visible graph to a PNG data URL (React Flow's bounds recipe).
   // html-to-image and jspdf are both loaded on demand so they stay off the
   // eager bundle.
-  const renderToImage = async (): Promise<{
+  const renderToImage = useCallback(async (): Promise<{
     dataUrl: string;
     width: number;
     height: number;
@@ -250,14 +252,14 @@ function Flow() {
       },
     });
     return { dataUrl, width, height };
-  };
+  }, [getNodes]);
 
-  const exportPng = async () => {
+  const exportPng = useCallback(async () => {
     const img = await renderToImage();
     if (img) downloadDataUrl('mece-tree.png', img.dataUrl);
-  };
+  }, [renderToImage]);
 
-  const exportPdf = async () => {
+  const exportPdf = useCallback(async () => {
     const img = await renderToImage();
     if (!img) return;
     const { jsPDF } = await import('jspdf');
@@ -268,9 +270,9 @@ function Flow() {
     });
     pdf.addImage(img.dataUrl, 'PNG', 0, 0, img.width, img.height);
     pdf.save('mece-tree.pdf');
-  };
+  }, [renderToImage]);
 
-  const exportPptx = async () => {
+  const exportPptx = useCallback(async () => {
     const img = await renderToImage();
     if (!img) return;
     const PptxGenJS = (await import('pptxgenjs')).default;
@@ -287,7 +289,18 @@ function Flow() {
     }
     slide.addImage({ data: img.dataUrl, x: (10 - w) / 2, y: (5.625 - h) / 2, w, h });
     await pptx.writeFile({ fileName: 'mece-tree.pptx' });
-  };
+  }, [renderToImage]);
+
+  // Fulfil an export the header asked for: run the matching renderer, then clear
+  // the request. The export fns own the React Flow viewport, so the header can't
+  // call them directly — it routes through the store and the canvas answers here.
+  useEffect(() => {
+    if (!exportRequest) return;
+    const run =
+      exportRequest === 'png' ? exportPng : exportRequest === 'pdf' ? exportPdf : exportPptx;
+    void run();
+    requestExport(null);
+  }, [exportRequest, exportPng, exportPdf, exportPptx, requestExport]);
 
   return (
     <NodeEditingContext.Provider value={editing}>
@@ -344,38 +357,6 @@ function Flow() {
                   : `${matchCount} match${matchCount === 1 ? '' : 'es'}`}
               </span>
             )}
-          </div>
-        </Panel>
-        <Panel position="top-right">
-          <div className="flex items-center gap-0.5 rounded-md border border-neutral-200 bg-white/90 px-1.5 py-1 shadow-sm">
-            <span className="px-1 text-[11px] text-neutral-400">Export</span>
-            <button
-              type="button"
-              onClick={() => {
-                void exportPng();
-              }}
-              className="rounded px-1.5 py-0.5 text-[12px] text-neutral-600 hover:bg-neutral-100"
-            >
-              PNG
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                void exportPdf();
-              }}
-              className="rounded px-1.5 py-0.5 text-[12px] text-neutral-600 hover:bg-neutral-100"
-            >
-              PDF
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                void exportPptx();
-              }}
-              className="rounded px-1.5 py-0.5 text-[12px] text-neutral-600 hover:bg-neutral-100"
-            >
-              PPTX
-            </button>
           </div>
         </Panel>
       </ReactFlow>
