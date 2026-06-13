@@ -1,6 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { createDoc } from './factory';
-import { renameNode, setDetail, setNodeValue } from './tree';
+import { createDoc, createEvidence } from './factory';
+import {
+  addEvidence,
+  removeEvidence,
+  renameNode,
+  setAllCollapsed,
+  setDetail,
+  setNodeValue,
+  setStatus,
+  toggleCollapse,
+  updateEvidence,
+} from './tree';
+import type { NodeId } from './types';
+
+const GHOST = 'ghost-node' as NodeId;
 
 // A no-op edit returns the SAME document reference, so the store's `apply` skips
 // it and it never adds a redundant step to undo/redo (e.g. focusing a field and
@@ -27,5 +40,31 @@ describe('no-op edits return the same document', () => {
     doc = setDetail(doc, doc.rootId, 'note');
     expect(setDetail(doc, doc.rootId, 'note')).toBe(doc);
     expect(setDetail(doc, doc.rootId, 'other')).not.toBe(doc);
+  });
+
+  it('edits targeting a missing node return the same document', () => {
+    const doc = createDoc('Q', 0);
+    const item = createEvidence('E', true, 'strong');
+    expect(addEvidence(doc, GHOST, item)).toBe(doc);
+    expect(removeEvidence(doc, GHOST, 'x')).toBe(doc);
+    expect(updateEvidence(doc, GHOST, 'x', { summary: 'y' })).toBe(doc);
+    expect(toggleCollapse(doc, GHOST)).toBe(doc);
+    expect(setStatus(doc, GHOST, 'supported')).toBe(doc);
+  });
+
+  it('evidence edits for an unknown id, and a status set to the current value, are no-ops', () => {
+    let doc = createDoc('Q', 0);
+    expect(setStatus(doc, doc.rootId, 'open')).toBe(doc); // already open
+    doc = addEvidence(doc, doc.rootId, createEvidence('E', true, 'strong'));
+    expect(removeEvidence(doc, doc.rootId, 'no-such-id')).toBe(doc);
+    expect(updateEvidence(doc, doc.rootId, 'no-such-id', { summary: 'z' })).toBe(doc);
+    const id = doc.nodes[doc.rootId]?.evidence[0]?.id;
+    if (!id) throw new Error('no evidence id');
+    expect(updateEvidence(doc, doc.rootId, id, { summary: 'z' })).not.toBe(doc); // real change
+  });
+
+  it('setAllCollapsed with nothing to change returns the same document', () => {
+    const doc = createDoc('Q', 0); // a lone root: nothing is collapsed, nothing to collapse
+    expect(setAllCollapsed(doc, false)).toBe(doc);
   });
 });

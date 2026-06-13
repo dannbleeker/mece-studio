@@ -23,9 +23,9 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-function renderNode(data: Partial<IssueFlowNode['data']>, editing?: NodeEditing) {
+function renderNode(data: Partial<IssueFlowNode['data']>, editing?: NodeEditing, nodeId = 'n1') {
   const node: IssueFlowNode = {
-    id: 'n1',
+    id: nodeId,
     type: 'issue',
     position: { x: 0, y: 0 },
     data: {
@@ -112,5 +112,22 @@ describe('IssueNode', () => {
     expect(cancel).toHaveBeenCalled();
     fireEvent.blur(ta);
     expect(commit).toHaveBeenCalledTimes(2);
+  });
+
+  it('toggles collapse through the store when the badge is clicked', () => {
+    // Render against a real store node so the click's action is observable.
+    const store = useStore.getState();
+    store.addChild(store.doc.rootId, 'Child');
+    const rootId = useStore.getState().doc.rootId;
+    renderNode({ hasChildren: true }, undefined, rootId);
+    fireEvent.click(screen.getByText('▼'));
+    expect(useStore.getState().doc.nodes[rootId]?.collapsed).toBe(true);
+  });
+
+  it('starts inline editing on double-click', () => {
+    const start = vi.fn();
+    renderNode({ label: 'Editable' }, { editingId: null, start, commit: vi.fn(), cancel: vi.fn() });
+    fireEvent.doubleClick(screen.getByText('Editable'));
+    expect(start).toHaveBeenCalledWith('n1');
   });
 });
