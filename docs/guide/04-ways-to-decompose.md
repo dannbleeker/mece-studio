@@ -129,6 +129,17 @@ A scaffold is a prompt, not an answer. The labels are generic; your job is to re
 
 You can ignore the scaffold and type your own children directly. The decomposition type still governs the MECE check, so a segments node without an Other child will still flag the CE warning. The scaffold just makes it easier to start right.
 
+## Named frameworks in MECE Studio
+
+Beyond the generic scaffolds, the **Templates** page carries a small library of **named frameworks** — the established lenses from the Framework section above, ready to drop onto a blank tree with their canonical branches already filled in. Pick one and you get a starter tree to rename to your situation:
+
+- **Marketing** — the 4 Ps (Product / Price / Place / Promotion) and Lauterborn's customer-centric 4 Cs (Consumer wants / Cost / Convenience / Communication).
+- **Strategy and industry** — Ohmae's 3 Cs (Company / Customers / Competitors), Porter's Five Forces, PESTEL, SWOT, and the BCG and Ansoff matrices.
+- **Organisation** — McKinsey's 7-S.
+- **Growth and diagnosis** — the AARRR "pirate metrics" funnel and the Ishikawa fishbone (the 6 Ms) for root-cause work.
+
+Two things are deliberate about how these behave. First, they are *starters*, not answers — the root is a placeholder you rename, and every branch is yours to adapt. Second, and more important, MECE Studio does **not** badge them as provably MECE. They are typed as framework (or process, for the AARRR funnel), so the tool reports their exclusivity and exhaustiveness as *unchecked* rather than guaranteed. This is honest by design. None of these famous lenses is a clean partition: PESTEL's Political and Legal factors overlap, SWOT is a discussion starter that makes no claim to be exhaustive, and Porter built the Five Forces precisely because he found SWOT lacking in rigour. The library gives you the speed of a recognised framework while the checks keep reminding you to verify the fit — which is exactly the discipline this chapter argues for.
+
 ## Summary
 
 Six decomposition types, each with a different MECE relationship:

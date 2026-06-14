@@ -30,6 +30,14 @@ export async function openExample(page: Page, name: RegExp) {
   await expect(page.locator('.react-flow__node').first()).toBeVisible();
 }
 
+/** From the workspace, go Home, open the Templates page, and open a named framework template. */
+export async function openFrameworkTemplate(page: Page, name: RegExp) {
+  await gotoStart(page);
+  await page.getByRole('button', { name: 'Templates' }).click();
+  await page.getByRole('button', { name }).click();
+  await expect(page.locator('.react-flow__node').first()).toBeVisible();
+}
+
 /** How many trees are in the saved library, read straight from localStorage. */
 export async function libraryCount(page: Page): Promise<number> {
   return page.evaluate(() => {

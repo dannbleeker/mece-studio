@@ -187,6 +187,20 @@ You copy that out of the synthesis panel. It leads with the answer (volume, not 
 
 ---
 
+## More worked examples
+
+This chapter worked one problem end to end. The **Templates** page in MECE Studio carries several more — each a ready-made tree you can open and pull apart the same way:
+
+- **Operating profit** — the value-driver tree behind this chapter, its formula splits already reconciling.
+- **Customer churn** — a lifecycle segmentation with an "Other" bucket, carrying hypotheses and evidence.
+- **Market entry** — the four-gate test: is the market attractive, can we beat the competition, do we have the capabilities, will it pay off?
+- **Acquisition (M&A)** — a "should we buy them?" tree whose synergy branch is a provable formula that has to clear a stated profit goal.
+- **Pricing**, **market sizing**, **build vs buy vs partner**, and a **revenue value-driver tree** — each modelling a different way to cut the problem.
+
+Open one and read it the way you would read someone else's working: check each split's type, look for the MECE flags, follow the evidence and the numbers. Reading good trees is one of the fastest ways to build the instinct for cutting your own.
+
+---
+
 ## Reflection
 
 Look at what just happened.
