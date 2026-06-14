@@ -4,7 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { NodeId } from '@/domain/types';
 import { copyToClipboard, downloadText } from '@/services/download';
 import { useStore } from '@/store';
-import { App, Workspace } from './App';
+import { App } from './App';
+import { Workspace } from './Workspace';
 
 vi.mock('@/services/download', () => ({
   copyToClipboard: vi.fn(),
@@ -44,17 +45,18 @@ describe('App routing', () => {
     expect(screen.queryByLabelText('Find nodes')).toBeNull(); // the canvas is not mounted
   });
 
-  it('shows the workspace once a tree is open', () => {
+  it('shows the workspace once a tree is open', async () => {
     s().setView('workspace');
     render(<App />);
-    expect(screen.getByLabelText('Find nodes')).toBeTruthy(); // canvas toolbar
+    // Workspace is a lazy chunk now, so wait for it to resolve behind Suspense.
+    expect(await screen.findByLabelText('Find nodes')).toBeTruthy(); // canvas toolbar
     expect(screen.getByRole('button', { name: '← Start' })).toBeTruthy();
   });
 
-  it('returns to Start from the workspace Home button', () => {
+  it('returns to Start from the workspace Home button', async () => {
     s().setView('workspace');
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: '← Start' }));
+    fireEvent.click(await screen.findByRole('button', { name: '← Start' }));
     expect(s().view).toBe('start');
   });
 });
