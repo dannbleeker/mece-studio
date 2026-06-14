@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-06-14T04:21:51.189Z",
-  "commit": "534342a",
+  "generatedAt": "2026-06-14T04:45:37.756Z",
+  "commit": "c02397e",
   "headline": {
-    "linesTsJs": 11678,
-    "tests": 329,
+    "linesTsJs": 11712,
+    "tests": 330,
     "lineCoveragePct": 93.38,
-    "commits": 150,
+    "commits": 152,
     "ageDays": 3,
-    "trackedFiles": 196,
+    "trackedFiles": 197,
     "featureManualPct": 100,
-    "featureBookPct": 36.6,
+    "featureBookPct": 39.4,
     "featureExamplePct": 25.4
   },
   "code": [
@@ -25,8 +25,8 @@
     },
     {
       "category": "E2E tests (Playwright)",
-      "files": 16,
-      "lines": 671
+      "files": 17,
+      "lines": 705
     },
     {
       "category": "Build scripts",
@@ -41,7 +41,7 @@
     {
       "category": "Docs (Markdown)",
       "files": 21,
-      "lines": 2103
+      "lines": 2128
     }
   ],
   "coverage": {
@@ -68,7 +68,7 @@
   },
   "tests": {
     "unit": 302,
-    "e2e": 27
+    "e2e": 28
   },
   "domain": {
     "features": 71,
@@ -191,7 +191,7 @@
     "withinBudget": true
   },
   "docs": {
-    "bookWords": 20750,
+    "bookWords": 21208,
     "chapters": 14,
     "appLoc": 5902,
     "docToCodeRatio": 0.36
@@ -200,8 +200,8 @@
     "total": 71,
     "manual": 71,
     "manualPct": 100,
-    "book": 26,
-    "bookPct": 36.6,
+    "book": 28,
+    "bookPct": 39.4,
     "bookExample": 18,
     "bookExamplePct": 25.4,
     "byArea": {
@@ -273,7 +273,7 @@
       "App": {
         "total": 9,
         "manual": 9,
-        "book": 0
+        "book": 2
       }
     },
     "gaps": {
@@ -445,11 +445,6 @@
           "since": 1
         },
         {
-          "id": "example-trees",
-          "name": "Example / onboarding trees",
-          "since": 6
-        },
-        {
           "id": "start-page",
           "name": "Start page (workspace shell + sidebar sections)",
           "since": 6
@@ -458,11 +453,6 @@
           "id": "templates-gallery",
           "name": "Templates page (decomposition styles + named frameworks + example trees as cards)",
           "since": 6
-        },
-        {
-          "id": "named-frameworks",
-          "name": "Named framework templates (4Ps, 4Cs, 3Cs, Five Forces, PESTEL, SWOT, BCG, Ansoff, 7S, AARRR, fishbone)",
-          "since": 7
         },
         {
           "id": "library-cards",
@@ -510,21 +500,21 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 3,
-    "commits": 150,
-    "commits7d": 150,
+    "commits": 152,
+    "commits7d": 152,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 98
+        "count": 99
       },
       {
         "name": "github-actions[bot]",
-        "count": 52
+        "count": 53
       }
     ],
     "churn30d": {
-      "added": 26385,
-      "removed": 4270
+      "added": 26487,
+      "removed": 4314
     },
     "changelogEntries": 47
   }
