@@ -80,9 +80,9 @@ The profit has gone from 194 000 to zero. That is the question. The tree tells y
 
 ## Entering values and units in MECE Studio
 
-On a leaf node, open the node panel and enter a numeric value and a unit. Units matter: they prevent category errors (adding DKK to units), and they appear on exports so your audience can see what they are reading.
+On a leaf node, open the inspector's **Value** tab and enter a numeric value and a unit. Units matter: they prevent category errors (adding DKK to units), and they appear on exports so your audience can see what they are reading.
 
-On an interior node, set the operator (sum / product / difference) and leave the value field blank — the tool computes it. If you do enter a value manually on an interior node, the **reconciliation check** activates.
+On an interior node, the operator (sum / product / difference) lives on the **Logic** tab — alongside the **Roll up children** button and the sensitivity bars — so leave the Value tab's field blank and the tool computes the node from its children. If you do enter a value manually on an interior node, the **reconciliation check** activates.
 
 ## The reconciliation check
 

@@ -70,7 +70,7 @@ MECE is a standard to aim at, not a gate you must pass before doing any work. Th
 
 MECE Studio embeds the MECE check into the canvas so you see problems as they arise rather than discovering them in a review meeting.
 
-Every node that has children displays two small dots — one for ME, one for CE. A green dot means the check passes; a red or amber dot means something is worth looking at. You can open the **inspector** on any node and read a plain-language explanation of what triggered the warning.
+Every node that has children displays two small dots — one for ME, one for CE. A green dot means the check passes; a red or amber dot means something is worth looking at. Select the node and open the inspector's **Logic** tab to read a plain-language explanation of what triggered the warning (the Logic tab opens by itself when the selected node's split needs a review).
 
 The tool applies different logic depending on how you chose to decompose:
 
@@ -78,11 +78,24 @@ The tool applies different logic depending on how you chose to decompose:
 
 **Formula splits reconcile.** If you set up a formula node (Revenue = Price × Volume), the tool checks that the arithmetic closes. If it does, exhaustiveness is confirmed by the equation. If you add a term that doesn't fit the formula, a warning tells you the equation no longer balances.
 
-**Segment splits require an "Other" bucket.** If you chose the segments decomposition type and haven't included an "Other" child, the CE dot flags it. The tool isn't insisting on a specific answer — it is making the gap deliberate. You can add Other or dismiss the warning if you are confident the listed segments are truly exhaustive for your scope.
+**Segment splits require an "Other" bucket.** If you chose the segments decomposition type and haven't included an "Other" child, the CE dot flags it. The tool isn't insisting on a specific answer — it is making the gap deliberate. One click on *Add an "Other" bucket* (offered on the Logic tab and in the review dock) closes it; the warning then clears itself, because the check is recomputed live from the tree.
 
 **Looser splits use a shared-word overlap heuristic.** For freeform and framework splits, where the structure is more open, MECE Studio looks for children whose labels share significant words — "Digital Marketing" and "Marketing Spend" would trigger an ME warning. The heuristic deliberately ignores generic or placeholder words (things like "other", "costs", "issues") so routine labels don't create noise.
 
-The value of the tool here is not that it makes the MECE decision for you — it doesn't. It makes gaps and overlaps **visible** so you decide deliberately. A red dot is an invitation to think, not a veto. You may look at a warning and conclude the split is good enough for your purpose. The discipline is in making that choice consciously rather than missing the problem entirely.
+The value of the tool here is not that it makes the MECE decision for you — it doesn't. It makes gaps and overlaps **visible** so you decide deliberately. A red dot is an invitation to think, not a veto. You may look at a warning and conclude the split is good enough for your purpose — there is no "dismiss"; the flag simply stays in the tree's review list (below) until the split is genuinely MECE, so a choice to live with it remains visible rather than buried. The discipline is in making that choice consciously rather than missing the problem entirely.
+
+## Reviewing the whole tree at once
+
+Per-node dots are perfect while you are building one branch, but on a large tree you don't want to hunt for the red ones. MECE Studio rolls every split's status up to the **tree level**.
+
+A **MECE health chip** sits in the header. It reads **✓ MECE clean** when every split passes, or **⚠ N to review** when some don't — so you know at a glance whether the tree still has open MECE questions, without scanning it node by node.
+
+Click the chip to open the **review dock**: one panel listing every flagged split, each with the plain-language reason on the axis that's failing — the overlap it suspects, or the gap it found. For each one you can:
+
+- **Locate** it — one click centres that node on the canvas and, while the dock is open, dims the clean splits and amber-dashes the edges of the flagged ones, so the problems literally stand out.
+- **Remedy** a gap — for a missing-bucket (CE) gap, one click adds the right fix: an *"Other"* bucket for a segmentation, or a fresh sub-issue otherwise.
+
+There is no "resolve" or "dismiss" button, by design: the warnings are computed live, so a split leaves the list the moment it is actually MECE — never because you silenced it. The dock is the fastest way to walk a finished tree and close its last gaps before you present it.
 
 ## A worked example
 
@@ -104,6 +117,6 @@ Walking the tree this way — split by split, ME test then CE test — takes min
 
 ## Summary
 
-MECE is judged split by split, not across the whole tree. Mutually exclusive prevents double-counting; collectively exhaustive prevents missing the answer. Test each split with two quick questions: could something belong to two of these, and is there anything that fits none of them? Aim for MECE, accept a useful near-MECE split over a perfect unusable one, and use an explicit "Other" bucket rather than leaving a silent gap. MECE Studio's live dots and inspector make violations visible as you build — the decision is always yours, but the problem is no longer hidden.
+MECE is judged split by split, not across the whole tree. Mutually exclusive prevents double-counting; collectively exhaustive prevents missing the answer. Test each split with two quick questions: could something belong to two of these, and is there anything that fits none of them? Aim for MECE, accept a useful near-MECE split over a perfect unusable one, and use an explicit "Other" bucket rather than leaving a silent gap. MECE Studio's live dots, the Logic tab's explanations, and the tree-level review dock make violations visible as you build — the decision is always yours, but the problem is no longer hidden.
 
 In *Ways to decompose*, you will see how choosing the right type of split — binary, segments, formula, process, or framework — makes MECE easier to achieve from the start.
