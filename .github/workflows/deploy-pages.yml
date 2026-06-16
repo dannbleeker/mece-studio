@@ -11,6 +11,15 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # The Rebuild-book and Stats workflows commit their regenerated artifacts
+  # (PDF/EPUB, stats.json) back to `main` using GITHUB_TOKEN, and GitHub does
+  # NOT raise a `push` event for GITHUB_TOKEN pushes — so without this, those
+  # refreshed artifacts never reach the live site until the next human push.
+  # Re-run Deploy when those workflows finish so prod catches up.
+  workflow_run:
+    workflows: ['Rebuild book', 'Stats']
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: read
@@ -26,10 +35,17 @@ concurrency:
 jobs:
   build:
     name: Build dist
+    # On a workflow_run trigger, only deploy if the rebuild/stats run succeeded.
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
+        # Always build main's tip. A workflow_run trigger hands us the
+        # *triggering* commit, which predates the bot's artifact commit, so pin
+        # the ref to main to publish the freshest artifacts.
         uses: actions/checkout@v6
+        with:
+          ref: main
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6
