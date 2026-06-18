@@ -48,7 +48,7 @@ describe('storage', () => {
     saveDocById(doc);
     saveLibrary({ activeId: doc.id, docs: [{ id: doc.id, name: docName(doc) }] });
     const ws = loadWorkspace();
-    expect(ws?.doc.rootId).toBe(doc.rootId);
+    expect(ws?.doc?.rootId).toBe(doc.rootId);
     expect(ws?.library.docs).toHaveLength(1);
     expect(ws?.library.activeId).toBe(doc.id);
   });
@@ -64,11 +64,19 @@ describe('storage', () => {
     expect(loadWorkspace()).toBeNull();
   });
 
+  it('loads an emptied library as an empty state, not a reseeded starter', () => {
+    saveLibrary({ activeId: '', docs: [] });
+    const ws = loadWorkspace();
+    expect(ws).not.toBeNull();
+    expect(ws?.library.docs).toHaveLength(0);
+    expect(ws?.doc).toBeNull();
+  });
+
   it('migrates a legacy single-document save into the library', () => {
     const legacy = createDoc('Legacy tree', 1);
     localStorage.setItem('mece-studio:doc:v1', JSON.stringify(legacy));
     const ws = loadWorkspace();
-    expect(ws?.doc.rootId).toBe(legacy.rootId);
+    expect(ws?.doc?.rootId).toBe(legacy.rootId);
     expect(ws?.library.docs).toHaveLength(1);
     expect(ws?.library.docs[0]?.id).toBe(legacy.id);
     expect(localStorage.getItem('mece-studio:doc:v1')).toBeNull(); // legacy key cleared

@@ -75,8 +75,10 @@ function initialState(): {
   const options = meceOptions(settings);
   const ws = loadWorkspace();
   if (ws) {
+    // An emptied library loads with no active doc — hold a throwaway blank as the
+    // workspace doc (the canvas always needs one) but leave the library empty.
     return {
-      doc: recomputeMece(ws.doc, options),
+      doc: ws.doc ? recomputeMece(ws.doc, options) : freshDoc(options),
       library: ws.library.docs,
       activeId: ws.library.activeId,
       settings,
@@ -268,15 +270,28 @@ export const useStore = create<AppState>((set, get) => {
           saveLibrary({ activeId: s.activeId, docs });
           return { library: docs };
         }
-        // Deleting the active doc: open another, or seed a fresh one if none remain.
-        if (docs.length === 0) {
-          const doc = freshDoc(opts);
-          return activate(doc, [entryFor(doc)]);
+        // Deleting the active doc while others remain: open the next one.
+        if (docs.length > 0) {
+          return activate(
+            recomputeMece(loadDocById(docs[0]?.id ?? '') ?? freshDoc(opts), opts),
+            docs
+          );
         }
-        return activate(
-          recomputeMece(loadDocById(docs[0]?.id ?? '') ?? freshDoc(opts), opts),
-          docs
-        );
+        // Deleting the LAST tree: the library is now empty. Persist it empty and
+        // return to Start (the empty gallery) — don't reseed a starter, which
+        // would look like the delete never happened. A throwaway blank doc keeps
+        // the canvas type-safe; it isn't listed until the user starts a new tree.
+        saveLibrary({ activeId: '', docs: [] });
+        return {
+          doc: freshDoc(opts),
+          library: [],
+          activeId: '',
+          past: [],
+          future: [],
+          selectedId: null,
+          view: 'start',
+          reviewOpen: false,
+        };
       }),
 
     renameDoc: (id, label) =>

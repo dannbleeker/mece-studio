@@ -101,4 +101,17 @@ describe('StartPage', () => {
     expect(s().library).toHaveLength(before - 1);
     expect(s().view).toBe('start');
   });
+
+  it('deleting the last tree empties the gallery (no reseeded duplicate)', () => {
+    vi.stubGlobal(
+      'confirm',
+      vi.fn(() => true)
+    );
+    render(<StartPage />);
+    expect(s().library).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button', { name: /All trees/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Delete/ }));
+    expect(s().library).toHaveLength(0);
+    expect(screen.getByText('No trees yet.')).toBeTruthy();
+  });
 });

@@ -241,6 +241,17 @@ describe('store', () => {
     expect(s().library.some((e) => e.id === b)).toBe(false);
   });
 
+  it('deleting the only document empties the library and returns to Start', () => {
+    expect(s().library).toHaveLength(1);
+    s().setView('workspace');
+    s().deleteDoc(s().activeId);
+    expect(s().library).toHaveLength(0);
+    expect(s().activeId).toBe('');
+    expect(s().view).toBe('start'); // no reseeded starter — land on the empty gallery
+    // A blank workspace doc remains so the canvas stays type-safe, but it isn't listed.
+    expect(s().library.some((e) => e.id === s().doc.id)).toBe(false);
+  });
+
   it('undo / redo are no-ops with empty history', () => {
     const doc = s().doc;
     expect(s().canUndo()).toBe(false);

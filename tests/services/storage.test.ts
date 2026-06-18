@@ -46,7 +46,7 @@ describe('workspace storage', () => {
     saveLibrary({ activeId: doc.id, docs: [{ id: doc.id, name: docName(doc) }] });
 
     const ws = loadWorkspace();
-    expect(ws?.doc.id).toBe(doc.id);
+    expect(ws?.doc?.id).toBe(doc.id);
     expect(ws?.library.activeId).toBe(doc.id);
     expect(ws?.library.docs).toHaveLength(1);
   });
@@ -56,10 +56,10 @@ describe('workspace storage', () => {
     localStorage.setItem('mece-studio:doc:v1', JSON.stringify(doc));
 
     const ws = loadWorkspace();
-    expect(ws?.doc.id).toBe(doc.id);
+    expect(ws?.doc?.id).toBe(doc.id);
     expect(ws?.library.docs[0]?.name).toBe('Legacy question');
     expect(localStorage.getItem('mece-studio:doc:v1')).toBeNull(); // legacy key migrated away
-    expect(loadWorkspace()?.doc.id).toBe(doc.id); // second load reads the migrated library
+    expect(loadWorkspace()?.doc?.id).toBe(doc.id); // second load reads the migrated library
   });
 
   it('docName uses the root question', () => {

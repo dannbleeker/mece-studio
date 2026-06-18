@@ -150,10 +150,13 @@ describe('store', () => {
     expect(useStore.getState().activeId).toBe(firstId);
   });
 
-  it('deleting the last tree seeds a fresh one', () => {
+  it('deleting the last tree empties the library and returns to Start', () => {
     const onlyId = useStore.getState().doc.id;
+    useStore.getState().setView('workspace');
     useStore.getState().deleteDoc(onlyId);
-    expect(useStore.getState().library).toHaveLength(1);
-    expect(useStore.getState().activeId).not.toBe(onlyId);
+    // No reseeded starter — the library is empty and we land on the Start gallery.
+    expect(useStore.getState().library).toHaveLength(0);
+    expect(useStore.getState().activeId).toBe('');
+    expect(useStore.getState().view).toBe('start');
   });
 });

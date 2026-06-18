@@ -107,9 +107,12 @@ export function saveLibrary(library: Library): void {
 /**
  * Load the persisted library and its active document, migrating a legacy
  * single-document save (`mece-studio:doc:v1`) into the library on first run.
- * Returns null if there is nothing usable stored (the store then seeds a fresh tree).
+ * Returns `null` only when there is no saved library at all (a first-ever run —
+ * the store then seeds a fresh starter tree). A library the user emptied by
+ * deleting every tree is a real, loadable state: it returns with `doc: null` so
+ * the store keeps an empty library instead of reseeding a starter.
  */
-export function loadWorkspace(): { library: Library; doc: IssueTreeDoc } | null {
+export function loadWorkspace(): { library: Library; doc: IssueTreeDoc | null } | null {
   const s = storage();
   if (!s) return null;
 
@@ -123,7 +126,11 @@ export function loadWorkspace(): { library: Library; doc: IssueTreeDoc } | null 
       saveLibrary(library);
     }
   }
-  if (!library || library.docs.length === 0) return null;
+  if (!library) return null; // never used → caller seeds the onboarding starter
+
+  // A library the user emptied (deleted every tree) is an intentional empty
+  // state, not a cold start — load it as empty rather than reseeding a starter.
+  if (library.docs.length === 0) return { library: { activeId: '', docs: [] }, doc: null };
 
   // Fall back to the first doc if the active id is stale.
   const activeId = library.docs.some((d) => d.id === library.activeId)

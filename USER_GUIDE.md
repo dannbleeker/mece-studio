@@ -304,8 +304,10 @@ MECE Studio keeps a **library** of trees.
   open it, or use **All trees** / **Recent** in the sidebar. Switch at any time.
 - **⋯ → New tree** (the header overflow menu) starts a fresh tree and adds it to
   the library; your current tree stays saved.
-- **⋯ → Delete tree** removes the current tree (with confirmation). Deleting the
-  last tree starts a fresh empty one.
+- **⋯ → Delete tree** removes the current tree (with confirmation), then opens
+  the next tree in your library. Deleting your last tree leaves the library
+  empty and returns you to the Start page, where **+ New tree** (or the
+  key-question box) starts a fresh one.
 - **Automatic migration** — if you used an earlier single-tree version, your tree
   is folded into the library automatically the first time you open the new
   version. Nothing is lost.
