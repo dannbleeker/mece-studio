@@ -76,4 +76,13 @@ describe('toMarkdown', () => {
     expect(md).toContain('- Count (42)'); // unit-less value suffix
     expect(md).toContain('- ✗ (indicative) Root-level proof'); // contradicting evidence on the root
   });
+
+  it('nests descendants with indentation', () => {
+    let doc = createDoc('Root', 0);
+    const { doc: d1, childId } = addChild(doc, doc.rootId, 'Parent');
+    doc = addChild(d1, childId, 'Child').doc;
+    const md = toMarkdown(doc);
+    expect(md).toContain('- Parent');
+    expect(md).toContain('  - Child'); // a grandchild indents one level deeper
+  });
 });

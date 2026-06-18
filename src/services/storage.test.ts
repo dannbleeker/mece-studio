@@ -87,6 +87,7 @@ describe('storage', () => {
     const doc = createDoc('Q', 1);
     expect(parseDoc(JSON.stringify(doc))?.rootId).toBe(doc.rootId);
     expect(parseDoc('{"not":"a doc"}')).toBeNull();
+    expect(parseDoc('null')).toBeNull(); // parses to null → rejected by the null guard
     expect(parseDoc('not json')).toBeNull();
   });
 

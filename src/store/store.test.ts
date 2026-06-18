@@ -139,6 +139,15 @@ describe('store', () => {
     expect(s().doc.nodes[root]?.value).toBeUndefined();
   });
 
+  it('setUnit("") clears just the unit, keeping the amount', () => {
+    const root = s().doc.rootId;
+    s().setAmount(root, 100);
+    s().setUnit(root, 'DKK');
+    expect(s().doc.nodes[root]?.value).toEqual({ amount: 100, unit: 'DKK' });
+    s().setUnit(root, ''); // empty unit drops the unit but keeps the amount
+    expect(s().doc.nodes[root]?.value).toEqual({ amount: 100 });
+  });
+
   it('setUnit is a no-op (no history entry) when the node has no amount', () => {
     s().addChild(s().doc.rootId, 'No value');
     const child = childrenOf(s().doc, s().doc.rootId)[0];
