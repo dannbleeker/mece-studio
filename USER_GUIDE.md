@@ -47,7 +47,7 @@ you move into the **workspace**, where you build it:
 - **The header** (top) is grouped into clusters: the **MECE Studio** wordmark and
   **← Start** return to the library; a **MECE health** chip opens the tree-wide
   review (below); then **Undo / Redo**, **Synthesis**, a filled **Export ▾** menu
-  (PNG / PDF / PowerPoint), **⚙ Settings**, **?** shortcuts, and an **⋯ overflow**
+  (PNG / PDF / PowerPoint / JSON), **⚙ Settings**, **?** shortcuts, and an **⋯ overflow**
   menu (Copy Markdown, Open file, Save / Save As, About, New / Delete tree).
 
 Click a node to select it. Rename the root question to your real problem to
@@ -317,8 +317,10 @@ MECE Studio keeps a **library** of trees.
 Everything autosaves locally, but you can also take your work out in several
 formats:
 
-- **PNG / PDF / PowerPoint** — from the header's **Export ▾** menu, export the
-  canvas as an image, a PDF, or a slide.
+- **PNG / PDF / PowerPoint / JSON** — from the header's **Export ▾** menu,
+  export the canvas as an image, a PDF, or a slide, or download the raw tree as
+  **JSON** (which round-trips with **Open file…**). Diagram exports are always
+  rasterised (never live SVG), so an exported file can never carry script.
 - **Markdown** — **⋯ → Copy Markdown** copies the tree as a structured outline:
   each node's value, hypothesis status, priority, MECE state, notes, and evidence,
   so a pasted outline holds the whole analysis.

@@ -117,6 +117,17 @@ describe('Workspace', () => {
     );
   });
 
+  it('exports the tree as JSON from the Export menu', () => {
+    render(<Workspace />);
+    fireEvent.click(screen.getByRole('button', { name: 'Export' }));
+    fireEvent.click(screen.getByRole('button', { name: 'JSON' }));
+    expect(downloadText).toHaveBeenCalledWith(
+      'mece-tree.json',
+      expect.any(String),
+      'application/json'
+    );
+  });
+
   it('toggles the synthesis panel', () => {
     render(<Workspace />);
     fireEvent.click(screen.getByRole('button', { name: 'Synthesis' }));

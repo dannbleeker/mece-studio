@@ -11,7 +11,8 @@ import { ShortcutsDialog } from '@/components/shortcuts/ShortcutsDialog';
 import { TREE_KIND_LABELS } from '@/domain/constants';
 import { toMarkdown } from '@/domain/export';
 import { splitOf } from '@/domain/tree';
-import { copyToClipboard } from '@/services/download';
+import { copyToClipboard, downloadText } from '@/services/download';
+import { treeToJson } from '@/services/exporters';
 import { clearFileHandle, getFileHandle, setFileHandle } from '@/services/fileHandles';
 import {
   InvalidTreeFileError,
@@ -145,10 +146,14 @@ export function Workspace() {
   const rootSplit = splitOf(doc, doc.rootId);
   const kindLabel = rootSplit ? TREE_KIND_LABELS[rootSplit.decomposition] : 'Issue tree';
 
+  // PNG/PDF/PPTX render the canvas, so they route through the store to the
+  // canvas; JSON only needs the document, so it downloads straight from here.
+  const onExportJson = () => downloadText('mece-tree.json', treeToJson(doc), 'application/json');
   const exportItems: MenuEntry[] = [
     { key: 'png', label: 'PNG', onClick: () => requestExport('png') },
     { key: 'pdf', label: 'PDF', onClick: () => requestExport('pdf') },
     { key: 'pptx', label: 'PPTX', onClick: () => requestExport('pptx') },
+    { key: 'json', label: 'JSON', onClick: onExportJson },
   ];
   // Secondary actions, tucked into an overflow menu to keep the header clustered.
   const overflowItems: MenuEntry[] = [

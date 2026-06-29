@@ -14,6 +14,7 @@
 
 import type { IssueTreeDoc } from '@/domain/types';
 import { downloadText } from '@/services/download';
+import { treeToJson } from '@/services/exporters/json';
 import { docName, parseDoc } from '@/services/storage';
 
 const JSON_MIME = 'application/json';
@@ -80,9 +81,9 @@ function isAbort(error: unknown): boolean {
   return error instanceof Error && error.name === 'AbortError';
 }
 
-/** Pretty-print a document for a `.json` file. */
+/** Pretty-print a document for a `.json` file (canonical JSON serializer). */
 export function serializeTree(doc: IssueTreeDoc): string {
-  return JSON.stringify(doc, null, 2);
+  return treeToJson(doc);
 }
 
 /** A filesystem-friendly filename derived from the tree's root question. */

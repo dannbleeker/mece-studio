@@ -78,7 +78,7 @@ automatically when a node&#39;s split needs a MECE review.</li>
 <li><strong>The header</strong> (top) is grouped into clusters: the <strong>MECE Studio</strong> wordmark and
 <strong>← Start</strong> return to the library; a <strong>MECE health</strong> chip opens the tree-wide
 review (below); then <strong>Undo / Redo</strong>, <strong>Synthesis</strong>, a filled <strong>Export ▾</strong> menu
-(PNG / PDF / PowerPoint), <strong>⚙ Settings</strong>, <strong>?</strong> shortcuts, and an <strong>⋯ overflow</strong>
+(PNG / PDF / PowerPoint / JSON), <strong>⚙ Settings</strong>, <strong>?</strong> shortcuts, and an <strong>⋯ overflow</strong>
 menu (Copy Markdown, Open file, Save / Save As, About, New / Delete tree).</li>
 </ul>
 <p>Click a node to select it. Rename the root question to your real problem to
@@ -309,8 +309,10 @@ version. Nothing is lost.</li>
 <p>Everything autosaves locally, but you can also take your work out in several
 formats:</p>
 <ul>
-<li><strong>PNG / PDF / PowerPoint</strong> — from the header&#39;s <strong>Export ▾</strong> menu, export the
-canvas as an image, a PDF, or a slide.</li>
+<li><strong>PNG / PDF / PowerPoint / JSON</strong> — from the header&#39;s <strong>Export ▾</strong> menu,
+export the canvas as an image, a PDF, or a slide, or download the raw tree as
+<strong>JSON</strong> (which round-trips with <strong>Open file…</strong>). Diagram exports are always
+rasterised (never live SVG), so an exported file can never carry script.</li>
 <li><strong>Markdown</strong> — <strong>⋯ → Copy Markdown</strong> copies the tree as a structured outline:
 each node&#39;s value, hypothesis status, priority, MECE state, notes, and evidence,
 so a pasted outline holds the whole analysis.</li>
