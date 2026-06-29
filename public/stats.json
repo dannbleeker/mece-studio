@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-06-29T15:20:33.954Z",
-  "commit": "ae907f3",
+  "generatedAt": "2026-06-29T15:55:09.190Z",
+  "commit": "d076e6c",
   "headline": {
-    "linesTsJs": 13621,
-    "tests": 363,
-    "lineCoveragePct": 91.97,
-    "commits": 179,
+    "linesTsJs": 13673,
+    "tests": 366,
+    "lineCoveragePct": 92.82,
+    "commits": 184,
     "ageDays": 18,
-    "trackedFiles": 225,
+    "trackedFiles": 227,
     "featureManualPct": 100,
-    "featureBookPct": 39.4,
-    "featureExamplePct": 25.4
+    "featureBookPct": 100,
+    "featureExamplePct": 23.1
   },
   "code": [
     {
       "category": "App code (src, excl. tests)",
       "files": 77,
-      "lines": 7355
+      "lines": 7362
     },
     {
       "category": "Unit tests",
       "files": 57,
-      "lines": 4211
+      "lines": 4251
     },
     {
       "category": "E2E tests (Playwright)",
@@ -31,7 +31,7 @@
     {
       "category": "Build scripts",
       "files": 14,
-      "lines": 1171
+      "lines": 1176
     },
     {
       "category": "Styles (CSS)",
@@ -40,46 +40,46 @@
     },
     {
       "category": "Docs (Markdown)",
-      "files": 22,
-      "lines": 2239
+      "files": 24,
+      "lines": 2449
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 91.97,
-      "covered": 1627,
+      "pct": 92.82,
+      "covered": 1642,
       "total": 1769
     },
     "statements": {
-      "pct": 89.53,
-      "covered": 1942,
+      "pct": 90.54,
+      "covered": 1964,
       "total": 2169
     },
     "functions": {
-      "pct": 87.77,
-      "covered": 603,
+      "pct": 88.93,
+      "covered": 611,
       "total": 687
     },
     "branches": {
-      "pct": 78.74,
-      "covered": 982,
-      "total": 1247
+      "pct": 79.34,
+      "covered": 991,
+      "total": 1249
     }
   },
   "tests": {
-    "unit": 327,
+    "unit": 330,
     "e2e": 36
   },
   "domain": {
-    "features": 71,
+    "features": 78,
     "areas": 14,
     "domainModules": 27,
     "components": 41,
-    "exporters": 5
+    "exporters": 8
   },
   "footprint": {
     "depsProd": 9,
-    "depsDev": 21,
+    "depsDev": 22,
     "biggestFiles": [
       {
         "name": "components/inspector/Inspector.tsx",
@@ -110,10 +110,6 @@
   "quality": {
     "leastCovered": [
       {
-        "file": "src/services/fileHandles.ts",
-        "pct": 48.48
-      },
-      {
         "file": "src/components/about/AboutDialog.tsx",
         "pct": 54.54
       },
@@ -132,6 +128,10 @@
       {
         "file": "src/components/start/format.ts",
         "pct": 78.57
+      },
+      {
+        "file": "src/Workspace.tsx",
+        "pct": 81.63
       }
     ],
     "churnHotspots": [
@@ -186,29 +186,29 @@
     "withinBudget": true
   },
   "docs": {
-    "bookWords": 21539,
-    "chapters": 14,
-    "appLoc": 7355,
-    "docToCodeRatio": 0.3
+    "bookWords": 23521,
+    "chapters": 16,
+    "appLoc": 7362,
+    "docToCodeRatio": 0.33
   },
   "featureCoverage": {
-    "total": 71,
-    "manual": 71,
+    "total": 78,
+    "manual": 78,
     "manualPct": 100,
-    "book": 28,
-    "bookPct": 39.4,
+    "book": 78,
+    "bookPct": 100,
     "bookExample": 18,
-    "bookExamplePct": 25.4,
+    "bookExamplePct": 23.1,
     "byArea": {
       "Tree": {
         "total": 6,
         "manual": 6,
-        "book": 5
+        "book": 6
       },
       "MECE": {
         "total": 11,
         "manual": 11,
-        "book": 5
+        "book": 11
       },
       "Prioritisation": {
         "total": 2,
@@ -218,12 +218,12 @@
       "Hypotheses": {
         "total": 2,
         "manual": 2,
-        "book": 1
+        "book": 2
       },
       "Evidence": {
         "total": 3,
         "manual": 3,
-        "book": 2
+        "book": 3
       },
       "Value": {
         "total": 6,
@@ -238,282 +238,66 @@
       "Canvas": {
         "total": 9,
         "manual": 9,
-        "book": 0
+        "book": 9
       },
       "Editing": {
-        "total": 8,
-        "manual": 8,
-        "book": 2
+        "total": 9,
+        "manual": 9,
+        "book": 9
       },
       "Export": {
-        "total": 5,
-        "manual": 5,
-        "book": 1
+        "total": 8,
+        "manual": 8,
+        "book": 8
       },
       "Import": {
-        "total": 1,
-        "manual": 1,
-        "book": 0
+        "total": 2,
+        "manual": 2,
+        "book": 2
       },
       "Documents": {
-        "total": 5,
-        "manual": 5,
-        "book": 0
+        "total": 6,
+        "manual": 6,
+        "book": 6
       },
       "AI": {
         "total": 2,
         "manual": 2,
-        "book": 0
+        "book": 2
       },
       "App": {
-        "total": 9,
-        "manual": 9,
-        "book": 2
+        "total": 10,
+        "manual": 10,
+        "book": 10
       }
     },
     "gaps": {
       "noManual": [],
-      "noBook": [
-        {
-          "id": "delete-node",
-          "name": "Delete a node and its subtree",
-          "since": 1
-        },
-        {
-          "id": "mece-dots",
-          "name": "ME / CE status dots on the node",
-          "since": 1
-        },
-        {
-          "id": "mece-warnings",
-          "name": "Explained MECE warnings in the inspector",
-          "since": 1
-        },
-        {
-          "id": "setting-strict-overlap",
-          "name": "Stricter overlap detection (opt-in, Settings)",
-          "since": 6
-        },
-        {
-          "id": "setting-formula-tolerance",
-          "name": "Configurable formula tolerance (Settings)",
-          "since": 6
-        },
-        {
-          "id": "status-edge-colour",
-          "name": "Colour-coded status edge on the node",
-          "since": 4
-        },
-        {
-          "id": "evidence-counts",
-          "name": "Evidence count badges on the node",
-          "since": 3
-        },
-        {
-          "id": "auto-layout",
-          "name": "Auto-layout (dagre, left-to-right)",
-          "since": 1
-        },
-        {
-          "id": "auto-fit",
-          "name": "Auto-fit on tree changes",
-          "since": 1
-        },
-        {
-          "id": "setting-sort-priority",
-          "name": "Sort siblings by priority (opt-in, Settings)",
-          "since": 6
-        },
-        {
-          "id": "drag-reparent",
-          "name": "Drag a node onto another to re-parent its subtree",
-          "since": 6
-        },
-        {
-          "id": "drop-highlight",
-          "name": "Drop-target highlight while dragging",
-          "since": 6
-        },
-        {
-          "id": "collapse-subtree",
-          "name": "Collapse / expand a subtree",
-          "since": 6
-        },
-        {
-          "id": "collapse-all",
-          "name": "Collapse all / Expand all",
-          "since": 6
-        },
-        {
-          "id": "canvas-search",
-          "name": "Find on the canvas (ring matches + zoom)",
-          "since": 6
-        },
-        {
-          "id": "inline-edit",
-          "name": "Inline label editing (double-click / Enter / F2)",
-          "since": 6
-        },
-        {
-          "id": "duplicate-subtree",
-          "name": "Duplicate a node and its subtree",
-          "since": 6
-        },
-        {
-          "id": "reorder-siblings",
-          "name": "Reorder siblings (move up / down)",
-          "since": 6
-        },
-        {
-          "id": "node-notes",
-          "name": "Per-node notes",
-          "since": 6
-        },
-        {
-          "id": "shortcuts-overlay",
-          "name": "Keyboard shortcuts overlay (?)",
-          "since": 6
-        },
-        {
-          "id": "export-png",
-          "name": "PNG export",
-          "since": 5
-        },
-        {
-          "id": "export-pdf",
-          "name": "PDF export",
-          "since": 6
-        },
-        {
-          "id": "export-pptx",
-          "name": "PowerPoint (PPTX) export",
-          "since": 6
-        },
-        {
-          "id": "export-json",
-          "name": "Save as JSON",
-          "since": 3
-        },
-        {
-          "id": "import-json",
-          "name": "Open a saved JSON tree",
-          "since": 6
-        },
-        {
-          "id": "multi-document",
-          "name": "Multiple trees (document library + picker)",
-          "since": 6
-        },
-        {
-          "id": "new-tree",
-          "name": "New tree",
-          "since": 6
-        },
-        {
-          "id": "legacy-migration",
-          "name": "Automatic legacy single-doc migration",
-          "since": 6
-        },
-        {
-          "id": "ai-critique",
-          "name": "AI critique prompt (keyless)",
-          "since": 6
-        },
-        {
-          "id": "ai-suggest-split",
-          "name": "AI suggest-a-split prompt (keyless)",
-          "since": 6
-        },
-        {
-          "id": "undo-redo",
-          "name": "Undo / redo history",
-          "since": 1
-        },
-        {
-          "id": "local-persistence",
-          "name": "Local persistence (localStorage)",
-          "since": 1
-        },
-        {
-          "id": "pwa",
-          "name": "Installable, offline-capable PWA",
-          "since": 1
-        },
-        {
-          "id": "start-page",
-          "name": "Start page (workspace shell + sidebar sections)",
-          "since": 6
-        },
-        {
-          "id": "templates-gallery",
-          "name": "Templates page (decomposition styles + named frameworks + example trees as cards)",
-          "since": 6
-        },
-        {
-          "id": "library-cards",
-          "name": "Tree library cards with live MECE status + preview",
-          "since": 6
-        },
-        {
-          "id": "needs-review",
-          "name": "Needs-review triage (trees with a flagged split)",
-          "since": 6
-        },
-        {
-          "id": "manage-trees",
-          "name": "Rename / duplicate / delete a tree from its card",
-          "since": 6
-        },
-        {
-          "id": "self-update",
-          "name": "Self-update prompt + Check for updates",
-          "since": 6
-        },
-        {
-          "id": "mece-review-dock",
-          "name": "Tree-level MECE health chip + review dock (locate + remedy)",
-          "since": 7
-        },
-        {
-          "id": "canvas-review-overlay",
-          "name": "Canvas review overlay (dim clean splits, amber-dash flagged edges)",
-          "since": 7
-        },
-        {
-          "id": "clustered-header",
-          "name": "Clustered editor header (title + type badge, Export menu, overflow)",
-          "since": 7
-        },
-        {
-          "id": "tabbed-inspector",
-          "name": "Tabbed inspector (Issue / Logic / Evidence / Value)",
-          "since": 7
-        }
-      ]
+      "noBook": []
     }
   },
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 18,
-    "commits": 179,
-    "commits7d": 12,
+    "commits": 184,
+    "commits7d": 17,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 106
+        "count": 107
       },
       {
         "name": "github-actions[bot]",
-        "count": 65
+        "count": 66
       },
       {
         "name": "Claude",
-        "count": 8
+        "count": 11
       }
     ],
     "churn30d": {
-      "added": 29901,
-      "removed": 5601
+      "added": 30326,
+      "removed": 5754
     },
     "changelogEntries": 56
   }
