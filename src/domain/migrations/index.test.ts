@@ -69,4 +69,31 @@ describe('migrateToCurrent', () => {
     migrateToCurrent(input);
     expect(input.schemaVersion).toBe(0);
   });
+
+  // Exercise the forward-migration mechanics with an injected registry, since
+  // the real registry is empty until the first schema bump.
+  it('applies a registered migration chain step by step', () => {
+    const v1ToV2: Migration = {
+      from: 1,
+      to: 2,
+      migrate: (d) => ({ ...d, addedInV2: true }),
+    };
+    const v2ToV3: Migration = {
+      from: 2,
+      to: 3,
+      migrate: (d) => ({ ...d, addedInV3: true }),
+    };
+    const migrated = migrateToCurrent({ schemaVersion: 1, rootId: 'r' }, [v1ToV2, v2ToV3], 3);
+    expect(migrated.addedInV2).toBe(true);
+    expect(migrated.addedInV3).toBe(true);
+    expect(migrated.schemaVersion).toBe(3);
+  });
+
+  it('stops at a gap in the chain (missing intermediate migration)', () => {
+    const v1ToV2: Migration = { from: 1, to: 2, migrate: (d) => ({ ...d, addedInV2: true }) };
+    // No 2→3 migration registered: it applies what it can, then stamps target.
+    const migrated = migrateToCurrent({ schemaVersion: 1, rootId: 'r' }, [v1ToV2], 3);
+    expect(migrated.addedInV2).toBe(true);
+    expect(migrated.schemaVersion).toBe(3);
+  });
 });

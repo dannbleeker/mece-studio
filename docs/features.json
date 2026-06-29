@@ -1,6 +1,6 @@
 {
   "$schema": "./features.schema.json",
-  "note": "Curated catalogue of MECE Studio's user-facing features — the denominator for documentation-coverage metrics. `since` is the milestone the capability shipped in (1-7). `manual` = covered in USER_GUIDE.md; `book` = covered in a docs/guide chapter; `bookExample` = that chapter has a worked example. Keep in sync with CHANGELOG.md and bump `reviewedThroughChangelogEntries` after reconciling.",
+  "note": "Curated catalogue of MECE Studio's user-facing features — the denominator for documentation-coverage metrics. `since` is the milestone the capability shipped in (1-8). `manual` = covered in USER_GUIDE.md; `book` = covered in a docs/guide chapter; `bookExample` = that chapter has a worked example. Keep in sync with CHANGELOG.md and bump `reviewedThroughChangelogEntries` after reconciling.",
   "areas": [
     "Tree",
     "MECE",
@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 48,
+  "reviewedThroughChangelogEntries": 56,
   "features": [
     { "id": "issue-tree", "name": "Issue-tree canvas", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
     { "id": "root-question", "name": "Editable root question", "area": "Tree", "since": 1, "manual": true, "book": true, "bookExample": true },
@@ -104,6 +104,13 @@
     { "id": "mece-review-dock", "name": "Tree-level MECE health chip + review dock (locate + remedy)", "area": "MECE", "since": 7, "manual": true, "book": false, "bookExample": false },
     { "id": "canvas-review-overlay", "name": "Canvas review overlay (dim clean splits, amber-dash flagged edges)", "area": "Canvas", "since": 7, "manual": true, "book": false, "bookExample": false },
     { "id": "clustered-header", "name": "Clustered editor header (title + type badge, Export menu, overflow)", "area": "App", "since": 7, "manual": true, "book": false, "bookExample": false },
-    { "id": "tabbed-inspector", "name": "Tabbed inspector (Issue / Logic / Evidence / Value)", "area": "Editing", "since": 7, "manual": true, "book": false, "bookExample": false }
+    { "id": "tabbed-inspector", "name": "Tabbed inspector (Issue / Logic / Evidence / Value)", "area": "Editing", "since": 7, "manual": true, "book": false, "bookExample": false },
+    { "id": "file-save-to-disk", "name": "Open / Save / Save As real files, written back to the same file (File System Access)", "area": "Export", "since": 8, "manual": true, "book": false, "bookExample": false },
+    { "id": "export-svg", "name": "SVG export (sanitised vector)", "area": "Export", "since": 8, "manual": true, "book": false, "bookExample": false },
+    { "id": "import-markdown", "name": "Import a Markdown outline (paste-to-tree)", "area": "Import", "since": 8, "manual": true, "book": false, "bookExample": false },
+    { "id": "print-preview", "name": "Print preview (tree as a nested outline)", "area": "Export", "since": 8, "manual": true, "book": false, "bookExample": false },
+    { "id": "presentation", "name": "Presentation step-through mode", "area": "App", "since": 8, "manual": true, "book": false, "bookExample": false },
+    { "id": "document-tabs", "name": "Multi-document tabs (keep several trees open)", "area": "Documents", "since": 8, "manual": true, "book": false, "bookExample": false },
+    { "id": "quick-capture", "name": "Quick add issues (many children at once)", "area": "Editing", "since": 8, "manual": true, "book": false, "bookExample": false }
   ]
 }

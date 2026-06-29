@@ -43,22 +43,29 @@ export const MIGRATIONS: readonly Migration[] = [];
  *   can't safely downgrade, so we hand it back and let the caller's structural
  *   guard decide whether it is loadable — never a crash.
  */
-export function migrateToCurrent(raw: RawDocument): RawDocument {
+export function migrateToCurrent(
+  raw: RawDocument,
+  // Injectable for tests, so the forward-migration mechanics can be exercised
+  // before the registry has its first real entry. Production always uses the
+  // module defaults.
+  migrations: readonly Migration[] = MIGRATIONS,
+  target: SchemaVersion = CURRENT_SCHEMA_VERSION
+): RawDocument {
   const startVersion = readVersion(raw);
 
   // A save from a newer app version: don't touch it, just pass it through.
-  if (startVersion > CURRENT_SCHEMA_VERSION) return raw;
+  if (startVersion > target) return raw;
 
   let version = startVersion;
   let doc = raw;
-  while (version < CURRENT_SCHEMA_VERSION) {
-    const migration = MIGRATIONS.find((m) => m.from === version);
+  while (version < target) {
+    const migration = migrations.find((m) => m.from === version);
     if (!migration) break; // no transform registered for this step → compatible
     doc = migration.migrate(doc);
     version = migration.to;
   }
 
-  // Stamp the current version so legacy/unversioned saves are written back
+  // Stamp the target version so legacy/unversioned saves are written back
   // consistent with what this app produces.
-  return { ...doc, schemaVersion: CURRENT_SCHEMA_VERSION };
+  return { ...doc, schemaVersion: target };
 }
