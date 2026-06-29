@@ -1,4 +1,4 @@
-import { type ChangeEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AboutDialog } from '@/components/about/AboutDialog';
 import { Canvas } from '@/components/canvas/Canvas';
 import { HeaderMenu, type MenuEntry } from '@/components/header/HeaderMenu';
@@ -11,8 +11,14 @@ import { ShortcutsDialog } from '@/components/shortcuts/ShortcutsDialog';
 import { TREE_KIND_LABELS } from '@/domain/constants';
 import { toMarkdown } from '@/domain/export';
 import { splitOf } from '@/domain/tree';
-import { copyToClipboard, downloadText } from '@/services/download';
-import { parseDoc } from '@/services/storage';
+import { copyToClipboard } from '@/services/download';
+import { clearFileHandle, getFileHandle, setFileHandle } from '@/services/fileHandles';
+import {
+  InvalidTreeFileError,
+  openTreeFile,
+  saveTreeFile,
+  saveTreeFileAs,
+} from '@/services/fileSystemAccess';
 import { useStore } from '@/store';
 
 const GHOST_BTN =
@@ -73,23 +79,39 @@ export function Workspace() {
   const [showSettings, setShowSettings] = useState(false);
 
   const onCopyMarkdown = () => void copyToClipboard(toMarkdown(doc));
-  const onSaveJson = () => {
-    downloadText('mece-tree.json', JSON.stringify(doc, null, 2), 'application/json');
-  };
-  const onDelete = () => {
-    if (window.confirm('Delete this tree? This cannot be undone.')) deleteDoc(activeId);
+
+  // Open a .json tree from disk; bind its file handle to the freshly-imported
+  // id so a later Save writes back to the same file. (openDoc re-ids on import.)
+  const onOpenFile = async () => {
+    try {
+      const opened = await openTreeFile();
+      if (!opened) return; // user cancelled the picker
+      openDoc(opened.doc);
+      if (opened.handle) await setFileHandle(useStore.getState().doc.id, opened.handle);
+    } catch (err) {
+      window.alert(err instanceof InvalidTreeFileError ? err.message : 'Could not open that file.');
+    }
   };
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const onOpenFile = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = ''; // let the same file be re-opened later
-    if (!file) return;
-    void file.text().then((text) => {
-      const next = parseDoc(text);
-      if (next) openDoc(next);
-      else window.alert('That file is not a valid MECE Studio tree (.json).');
-    });
+  // Save: write back to the bound file if we have one, else prompt for a location.
+  const onSaveJson = async () => {
+    const id = doc.id;
+    const existing = await getFileHandle(id);
+    const handle = await saveTreeFile(doc, existing);
+    if (handle && handle !== existing) await setFileHandle(id, handle);
+  };
+
+  // Save As: always prompt for a new location, then bind to it.
+  const onSaveAs = async () => {
+    const handle = await saveTreeFileAs(doc);
+    if (handle) await setFileHandle(doc.id, handle);
+  };
+
+  const onDelete = () => {
+    if (window.confirm('Delete this tree? This cannot be undone.')) {
+      void clearFileHandle(activeId);
+      deleteDoc(activeId);
+    }
   };
 
   // Keyboard shortcuts: undo / redo, and Delete to remove the selected node.
@@ -131,8 +153,9 @@ export function Workspace() {
   // Secondary actions, tucked into an overflow menu to keep the header clustered.
   const overflowItems: MenuEntry[] = [
     { key: 'copy', label: 'Copy Markdown', onClick: onCopyMarkdown },
-    { key: 'open', label: 'Open JSON…', onClick: () => fileInputRef.current?.click() },
-    { key: 'save', label: 'Save JSON', onClick: onSaveJson },
+    { key: 'open', label: 'Open file…', onClick: () => void onOpenFile() },
+    { key: 'save', label: 'Save', onClick: () => void onSaveJson() },
+    { key: 'saveAs', label: 'Save As…', onClick: () => void onSaveAs() },
     { key: 'sep1', divider: true },
     { key: 'about', label: 'About', onClick: () => setShowAbout(true) },
     { key: 'sep2', divider: true },
@@ -221,13 +244,6 @@ export function Workspace() {
             triggerContent={<span aria-hidden="true">⋯</span>}
             triggerClassName="grid h-8 w-8 place-items-center rounded-md text-[18px] text-neutral-600 leading-none hover:bg-neutral-100"
             items={overflowItems}
-          />
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="application/json,.json"
-            className="hidden"
-            onChange={onOpenFile}
           />
         </div>
       </header>

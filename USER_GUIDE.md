@@ -48,7 +48,7 @@ you move into the **workspace**, where you build it:
   **← Start** return to the library; a **MECE health** chip opens the tree-wide
   review (below); then **Undo / Redo**, **Synthesis**, a filled **Export ▾** menu
   (PNG / PDF / PowerPoint), **⚙ Settings**, **?** shortcuts, and an **⋯ overflow**
-  menu (Copy Markdown, Open JSON, Save JSON, About, New / Delete tree).
+  menu (Copy Markdown, Open file, Save / Save As, About, New / Delete tree).
 
 Click a node to select it. Rename the root question to your real problem to
 begin — double-click it, or select it and press <kbd>Enter</kbd>.
@@ -322,8 +322,11 @@ formats:
 - **Markdown** — **⋯ → Copy Markdown** copies the tree as a structured outline:
   each node's value, hypothesis status, priority, MECE state, notes, and evidence,
   so a pasted outline holds the whole analysis.
-- **JSON** — **⋯ → Save JSON** downloads the full document.
-- **Open JSON** — **⋯ → Open JSON** loads a saved `.json` tree back in. It's
+- **Save to a file** — **⋯ → Save** writes the full document to a `.json` file.
+  In browsers that support it (Chrome, Edge), the first Save asks where to put
+  the file and every later **Save** writes straight back to it; **Save As…**
+  picks a new location. Elsewhere (Firefox, Safari) Save downloads the file.
+- **Open a file** — **⋯ → Open file…** loads a saved `.json` tree back in. It's
   validated, and it opens as a **new** entry in your library, so it never
   overwrites an existing tree.
 
