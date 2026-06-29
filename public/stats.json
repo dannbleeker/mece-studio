@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-06-22T12:26:49.000Z",
-  "commit": "a023f5f",
+  "generatedAt": "2026-06-29T11:24:20.829Z",
+  "commit": "3953cf4",
   "headline": {
     "linesTsJs": 11263,
     "tests": 292,
     "lineCoveragePct": 93.39,
-    "commits": 166,
-    "ageDays": 11,
+    "commits": 167,
+    "ageDays": 18,
     "trackedFiles": 189,
     "featureManualPct": 100,
     "featureBookPct": 39.4,
@@ -499,9 +499,9 @@
   },
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
-    "ageDays": 11,
-    "commits": 166,
-    "commits7d": 9,
+    "ageDays": 18,
+    "commits": 167,
+    "commits7d": 1,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
@@ -509,12 +509,12 @@
       },
       {
         "name": "github-actions[bot]",
-        "count": 62
+        "count": 63
       }
     ],
     "churn30d": {
-      "added": 27069,
-      "removed": 5280
+      "added": 27089,
+      "removed": 5290
     },
     "changelogEntries": 48
   }
