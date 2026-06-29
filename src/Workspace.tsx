@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AboutDialog } from '@/components/about/AboutDialog';
 import { Canvas } from '@/components/canvas/Canvas';
+import { QuickCaptureDialog } from '@/components/capture/QuickCaptureDialog';
 import { HeaderMenu, type MenuEntry } from '@/components/header/HeaderMenu';
 import { ImportDialog } from '@/components/import/ImportDialog';
 import { Inspector } from '@/components/inspector/Inspector';
@@ -11,6 +12,7 @@ import { ReviewPanel } from '@/components/review/ReviewPanel';
 import { SynthesisPanel } from '@/components/SynthesisPanel';
 import { SettingsDialog } from '@/components/settings/SettingsDialog';
 import { ShortcutsDialog } from '@/components/shortcuts/ShortcutsDialog';
+import { TabStrip } from '@/components/tabs/TabStrip';
 import { TREE_KIND_LABELS } from '@/domain/constants';
 import { toMarkdown } from '@/domain/export';
 import { splitOf } from '@/domain/tree';
@@ -84,6 +86,7 @@ export function Workspace() {
   const [showImport, setShowImport] = useState(false);
   const [showPrint, setShowPrint] = useState(false);
   const [showPresentation, setShowPresentation] = useState(false);
+  const [showQuickCapture, setShowQuickCapture] = useState(false);
 
   const onCopyMarkdown = () => void copyToClipboard(toMarkdown(doc));
 
@@ -163,6 +166,8 @@ export function Workspace() {
   ];
   // Secondary actions, tucked into an overflow menu to keep the header clustered.
   const overflowItems: MenuEntry[] = [
+    { key: 'quickAdd', label: 'Quick add issues…', onClick: () => setShowQuickCapture(true) },
+    { key: 'sep0', divider: true },
     { key: 'copy', label: 'Copy Markdown', onClick: onCopyMarkdown },
     { key: 'open', label: 'Open file…', onClick: () => void onOpenFile() },
     { key: 'import', label: 'Import outline…', onClick: () => setShowImport(true) },
@@ -263,6 +268,8 @@ export function Workspace() {
         </div>
       </header>
 
+      <TabStrip />
+
       <div className="flex min-h-0 flex-1">
         <main className="relative min-w-0 flex-1">
           <Canvas />
@@ -273,6 +280,7 @@ export function Workspace() {
           {showImport && <ImportDialog onClose={() => setShowImport(false)} />}
           {showPrint && <PrintPreview onClose={() => setShowPrint(false)} />}
           {showPresentation && <PresentationView onClose={() => setShowPresentation(false)} />}
+          {showQuickCapture && <QuickCaptureDialog onClose={() => setShowQuickCapture(false)} />}
         </main>
         {reviewOpen ? <ReviewPanel /> : <Inspector />}
       </div>

@@ -190,6 +190,11 @@ canvas. With a node selected, press <kbd>Enter</kbd> or <kbd>F2</kbd> to edit.
 drops you straight into editing its label — so you can build a whole tree without
 touching the mouse.
 
+**Quick add.** To dump a whole decomposition at once, use **⋯ → Quick add
+issues…**: type one issue per line and they're all added as children of the
+selected node (or the root) in a single, undoable step. <kbd>⌘/Ctrl</kbd> +
+<kbd>Enter</kbd> adds.
+
 **Detail and notes.** The inspector has a label, an optional longer **detail**
 field, and a **notes** field for rationale, assumptions, or data sources. A node
 that carries notes shows a small marker on the canvas, and notes flow into the
@@ -302,6 +307,11 @@ MECE Studio keeps a **library** of trees.
 
 - The **Start page** lists every tree (by its root question) as a card; click one to
   open it, or use **All trees** / **Recent** in the sidebar. Switch at any time.
+- **Tabs** — every tree you open or create gets a **tab** in a strip above the
+  canvas (shown once more than one is open). Click a tab to switch, **×** to
+  close it (the tree stays in your library; closing the last tab returns to
+  Start), and **+** to start a new one. Your open tabs are remembered across
+  reloads.
 - **⋯ → New tree** (the header overflow menu) starts a fresh tree and adds it to
   the library; your current tree stays saved.
 - **⋯ → Delete tree** removes the current tree (with confirmation), then opens

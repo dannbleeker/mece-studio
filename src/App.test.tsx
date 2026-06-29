@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { childrenOf } from '@/domain/tree';
 import type { NodeId } from '@/domain/types';
 import { copyToClipboard, downloadText } from '@/services/download';
 import { useStore } from '@/store';
@@ -240,6 +241,32 @@ describe('Workspace', () => {
     openOverflow();
     fireEvent.click(screen.getByRole('button', { name: 'Open file…' }));
     await waitFor(() => expect(picker).toHaveBeenCalledTimes(1));
+  });
+
+  it('quick-adds several issues from the overflow menu', () => {
+    render(<Workspace />);
+    openOverflow();
+    fireEvent.click(screen.getByRole('button', { name: 'Quick add issues…' }));
+    fireEvent.change(screen.getByLabelText('Issues to add, one per line'), {
+      target: { value: 'Pricing\nDemand\nDistribution' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Add issues' }));
+    expect(childrenOf(s().doc, s().doc.rootId).map((n) => n.label)).toEqual([
+      'Pricing',
+      'Demand',
+      'Distribution',
+    ]);
+  });
+
+  it('shows a tab strip with multiple trees open and closes a tab', () => {
+    s().newDoc(); // two trees open → strip appears
+    render(<Workspace />);
+    expect(screen.getByRole('navigation', { name: 'Open trees' })).toBeTruthy();
+    const closeButtons = screen.getAllByRole('button', { name: /^Close / });
+    fireEvent.click(closeButtons[0] as HTMLElement);
+    expect(s().openTabs).toHaveLength(1);
+    // strip hides with one tree
+    expect(screen.queryByRole('navigation', { name: 'Open trees' })).toBeNull();
   });
 
   it('toggles the MECE review dock from the health chip', () => {

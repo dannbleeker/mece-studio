@@ -6,6 +6,7 @@ const LIBRARY_KEY = 'mece-studio:library:v1';
 const LEGACY_DOC_KEY = 'mece-studio:doc:v1';
 const docKey = (id: string) => `mece-studio:doc:${id}`;
 const SETTINGS_KEY = 'mece-studio:settings:v1';
+const OPEN_TABS_KEY = 'mece-studio:tabs:v1';
 
 /** One entry in the document library — enough to list it without loading it. */
 export interface LibraryEntry {
@@ -189,4 +190,14 @@ export function loadSettings(): Settings {
 
 export function saveSettings(settings: Settings): void {
   writeJson(SETTINGS_KEY, settings);
+}
+
+/** The ids of the trees the user had open in tabs (empty/absent on first run). */
+export function loadOpenTabs(): string[] {
+  const raw = readJson<unknown[]>(OPEN_TABS_KEY, Array.isArray);
+  return raw ? raw.filter((id): id is string => typeof id === 'string') : [];
+}
+
+export function saveOpenTabs(ids: string[]): void {
+  writeJson(OPEN_TABS_KEY, ids);
 }
