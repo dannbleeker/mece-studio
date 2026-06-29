@@ -16,8 +16,8 @@ import { NODE_HEIGHT, NODE_WIDTH } from '@/domain/constants';
 import { flaggedSplits } from '@/domain/meceStatus';
 import { childrenOf, descendantIds, parentOf } from '@/domain/tree';
 import type { NodeId } from '@/domain/types';
-import { downloadDataUrl } from '@/services/download';
-import { renderCanvasPng, saveTreePdf, saveTreePptx } from '@/services/exporters';
+import { downloadDataUrl, downloadText } from '@/services/download';
+import { renderCanvasPng, renderCanvasSvg, saveTreePdf, saveTreePptx } from '@/services/exporters';
 import { useStore } from '@/store';
 import { type NodeEditing, NodeEditingContext } from './nodeEditing';
 import { IssueNode } from './nodes/IssueNode';
@@ -233,6 +233,12 @@ function Flow() {
   useEffect(() => {
     if (!exportRequest) return;
     const run = async () => {
+      // SVG goes straight to a (sanitised) text file — no raster step.
+      if (exportRequest === 'svg') {
+        const rendered = await renderCanvasSvg(getNodes());
+        if (rendered) downloadText('mece-tree.svg', rendered.svg, 'image/svg+xml');
+        return;
+      }
       const image = await renderCanvasPng(getNodes());
       if (!image) return;
       if (exportRequest === 'png') downloadDataUrl('mece-tree.png', image.dataUrl);

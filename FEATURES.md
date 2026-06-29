@@ -14,7 +14,7 @@ Shipped detail lives in `CHANGELOG.md`; this is the at-a-glance parity map.
 |------|-------------|-------|
 | **Schema migrations** | Forward-only migration runner; every load / import migrates before the doc is trusted (legacy/unversioned → current; unknown future version passed through, never a crash). | `domain/migrations/` |
 | **File System Access** | Open / Save / Save As real `.json` files with a reusable handle (write back to the same file), persisted per-doc in IndexedDB; falls back to a file picker + download where unsupported. Sits on top of the localStorage autosave. | `services/fileSystemAccess.ts`, `services/fileHandles.ts` |
-| **Export breadth** | One `exporters/` module, one lazy-loaded function per format: PNG / PDF / PPTX (raster) and JSON (round-trips with open). | `services/exporters/` |
+| **Export breadth** | One `exporters/` module, one lazy-loaded function per format: PNG / PDF / PPTX (raster), **SVG** (vector, sanitised at the sink), and JSON (round-trips with open). | `services/exporters/` |
 | **Import** | Markdown-outline paste-to-tree + a format-detecting dispatcher (JSON runs through the migration runner). Opens as a new library entry. | `domain/markdownImport.ts`, `services/import.ts` |
 | **Print** | Print preview + a print stylesheet that renders the tree as a clean nested outline and hides the app chrome when printing. | `components/print/` |
 | **Presentation** | Full-screen step-through that walks the tree one decomposition at a time (depth-first), with the split's MECE status per slide. | `components/present/`, `domain/presentation.ts` |
@@ -24,7 +24,6 @@ Shipped detail lives in `CHANGELOG.md`; this is the at-a-glance parity map.
 
 | Item | Why |
 |------|-----|
-| **SVG diagram export** | MECE rasterises every diagram export on purpose — its sibling MindMap Studio had a stored XSS via live-SVG export, and `components/canvas/export-safety.test.ts` locks the raster-only property in. A live-SVG path would reintroduce that vulnerability class, so it stays out unless added with a sanitiser-at-the-sink and a deliberate guard update. |
 | **TOC-shaped features** | Evaporating Cloud, junctors, CLR scrutiny, assumptions, three-cloud, the TOC pattern library, comments, revision history, and the TOC-shaped exporters (FlyingLogic / risk register / PRT / TT) have no MECE meaning. Out of scope by design. |
 
 ## Pending — arrives with studio-kit adoption (not built now to avoid drift)

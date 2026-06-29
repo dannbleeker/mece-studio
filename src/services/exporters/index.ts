@@ -4,11 +4,12 @@
  * document. Heavy libraries (`html-to-image`, `jspdf`, `pptxgenjs`) are
  * imported lazily inside each exporter so they stay off the eager bundle.
  *
- * Note: there is deliberately no SVG/HTML diagram export — see
+ * SVG export is allowed but **sanitised at the sink** (`renderCanvasSvg` →
+ * `sanitizeSvg`) so an exported file can never execute script — see
  * `components/canvas/export-safety.test.ts` for the XSS-safety rationale.
  */
 
-export { renderCanvasPng } from './image';
+export { renderCanvasPng, renderCanvasSvg } from './image';
 export { treeToJson } from './json';
 export { saveTreePdf } from './pdf';
 export { saveTreePptx } from './pptx';

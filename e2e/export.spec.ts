@@ -7,6 +7,7 @@ test.describe(() => {
 
   const cases = [
     { label: 'PNG', file: 'mece-tree.png' },
+    { label: 'SVG', file: 'mece-tree.svg' },
     { label: 'PDF', file: 'mece-tree.pdf' },
     { label: 'PPTX', file: 'mece-tree.pptx' },
     { label: 'JSON', file: 'mece-tree.json' },

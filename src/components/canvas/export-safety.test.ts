@@ -9,23 +9,25 @@ import { describe, expect, it } from 'vitest';
  * The sibling MindMap Studio had a stored XSS where user text was re-injected as
  * LIVE markup into an exported SVG and embedded inline in an HTML / print-to-PDF
  * document, so an `<img onerror>` / `javascript:` payload executed when the
- * exported file was opened. MECE Studio is structurally immune, for two reasons
- * this test locks in:
+ * exported file was opened. MECE Studio defends against this on two fronts this
+ * test locks in:
  *
- *  1. The diagram is only ever exported as a RASTER image. `Canvas.tsx`
- *     `renderToImage` uses `html-to-image`'s `toPng` (a bitmap); the PDF and
- *     PPTX exports embed that same PNG via `addImage`. Rasterisation flattens
- *     any markup to pixels and never runs script — there is NO `toSvg`, no
- *     `.svg`/`.html` diagram export, so nowhere can a live `<foreignObject>`
- *     clone be written to a file and re-opened as an executable document.
+ *  1. Diagram exports never carry script. PNG / PDF / PPTX are RASTER (a
+ *     `toPng` bitmap embedded via `addImage`), which flattens any markup to
+ *     pixels. SVG export IS offered, but is **sanitised at the sink**:
+ *     `renderCanvasSvg` runs the serialised markup through `sanitizeSvg`, which
+ *     strips `<script>`, inline event handlers, and script-bearing URLs before
+ *     the file is written. So every file the app emits is inert. (Guard: any
+ *     file using `toSvg` must also use `sanitizeSvg`.)
  *  2. The app never injects raw HTML: no `dangerouslySetInnerHTML`, no
  *     `el.innerHTML = …`. Every user value (labels, values, notes) is a React
  *     text child or a textarea value — escaped on the live canvas and in the
- *     inspector — so even the rasterised snapshot starts from inert content.
+ *     inspector — so the snapshot the exporters serialise starts from inert
+ *     content.
  *
- * If a future change adds an SVG/HTML export, or renders user content as raw
- * HTML, it must escape/sanitise at the sink (cf. mindmap-studio
- * src/io/svgSanitize.ts) and these guards be updated deliberately.
+ * If a future change adds another live-markup export (SVG/HTML) or renders user
+ * content as raw HTML, it must escape/sanitise at the sink (cf.
+ * `services/exporters/svgSanitize.ts`) and these guards be updated deliberately.
  */
 
 const SRC = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -46,12 +48,14 @@ describe('export XSS safety', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('exports stay rasterised — no live-SVG (toSvg) export path', () => {
+  it('sanitises every SVG export at the sink (toSvg ⇒ sanitizeSvg)', () => {
     const files = sourceFiles();
-    expect(files.filter((rel) => /\btoSvg\b/.test(read(rel)))).toEqual([]);
-    // Sanity: the raster path the safety argument depends on is actually
-    // present, so this test fails loudly if the export is ripped out rather
-    // than passing vacuously.
+    // Any file that serialises an SVG via html-to-image's `toSvg` must also run
+    // it through the sanitiser — never write raw `toSvg` output to a file.
+    const svgExporters = files.filter((rel) => /\btoSvg\b/.test(read(rel)));
+    expect(svgExporters.length).toBeGreaterThan(0); // the SVG path exists…
+    for (const rel of svgExporters) expect(read(rel)).toMatch(/\bsanitizeSvg\b/); // …and is sanitised
+    // Sanity: the raster path is still present (PNG underpins PDF/PPTX too).
     expect(files.some((rel) => /\btoPng\b/.test(read(rel)))).toBe(true);
   });
 });
