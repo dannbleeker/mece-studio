@@ -331,6 +331,11 @@ formats:
 - **Open a file** — **⋯ → Open file…** loads a saved `.json` tree back in. It's
   validated, and it opens as a **new** entry in your library, so it never
   overwrites an existing tree.
+- **Import an outline** — **⋯ → Import outline…** turns a pasted **Markdown
+  outline** (headings or `-`/`*`/numbered bullets, nested by indentation) into a
+  fresh tree: the first heading or line becomes the root question, everything
+  else nests beneath it. It also accepts a tree's **JSON** (auto-detected).
+  Imports open as a **new** library entry, so your current tree is untouched.
 
 The PNG / PDF / PowerPoint exporters are loaded on demand, so they don't slow
 down the app's first load.

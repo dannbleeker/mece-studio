@@ -206,6 +206,30 @@ describe('Workspace', () => {
     expect(n()).toBe(2);
   });
 
+  it('imports a Markdown outline as a new tree from the overflow menu', () => {
+    const before = s().library.length;
+    render(<Workspace />);
+    openOverflow();
+    fireEvent.click(screen.getByRole('button', { name: 'Import outline…' }));
+    fireEvent.change(screen.getByLabelText('Outline or JSON to import'), {
+      target: { value: '# Imported outline\n- One\n- Two' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Import' }));
+    expect(s().library.length).toBe(before + 1);
+    expect(s().doc.nodes[s().doc.rootId]?.label).toBe('Imported outline');
+  });
+
+  it('shows an error for unparseable import text and keeps the dialog open', () => {
+    render(<Workspace />);
+    openOverflow();
+    fireEvent.click(screen.getByRole('button', { name: 'Import outline…' }));
+    fireEvent.change(screen.getByLabelText('Outline or JSON to import'), {
+      target: { value: '{bad json that is not a tree' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Import' }));
+    expect(screen.getByText(/Couldn't read that/)).toBeTruthy();
+  });
+
   it('invokes the file picker from the Open file menu item', async () => {
     const picker = vi.fn(async () => {
       throw Object.assign(new Error('cancel'), { name: 'AbortError' });

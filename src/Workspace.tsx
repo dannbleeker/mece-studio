@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { AboutDialog } from '@/components/about/AboutDialog';
 import { Canvas } from '@/components/canvas/Canvas';
 import { HeaderMenu, type MenuEntry } from '@/components/header/HeaderMenu';
+import { ImportDialog } from '@/components/import/ImportDialog';
 import { Inspector } from '@/components/inspector/Inspector';
 import { HealthChip } from '@/components/review/HealthChip';
 import { ReviewPanel } from '@/components/review/ReviewPanel';
@@ -78,6 +79,7 @@ export function Workspace() {
   const [showAbout, setShowAbout] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showImport, setShowImport] = useState(false);
 
   const onCopyMarkdown = () => void copyToClipboard(toMarkdown(doc));
 
@@ -159,6 +161,7 @@ export function Workspace() {
   const overflowItems: MenuEntry[] = [
     { key: 'copy', label: 'Copy Markdown', onClick: onCopyMarkdown },
     { key: 'open', label: 'Open file…', onClick: () => void onOpenFile() },
+    { key: 'import', label: 'Import outline…', onClick: () => setShowImport(true) },
     { key: 'save', label: 'Save', onClick: () => void onSaveJson() },
     { key: 'saveAs', label: 'Save As…', onClick: () => void onSaveAs() },
     { key: 'sep1', divider: true },
@@ -260,6 +263,7 @@ export function Workspace() {
           {showAbout && <AboutDialog onClose={() => setShowAbout(false)} />}
           {showShortcuts && <ShortcutsDialog onClose={() => setShowShortcuts(false)} />}
           {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
+          {showImport && <ImportDialog onClose={() => setShowImport(false)} />}
         </main>
         {reviewOpen ? <ReviewPanel /> : <Inspector />}
       </div>
