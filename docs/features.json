@@ -73,15 +73,15 @@
     { "id": "keyboard-shortcuts", "name": "Keyboard shortcuts (undo / redo / delete)", "area": "Editing", "since": 6, "manual": true, "book": true, "bookExample": false },
     { "id": "shortcuts-overlay", "name": "Keyboard shortcuts overlay (?)", "area": "Editing", "since": 6, "manual": true, "book": false, "bookExample": false },
 
-    { "id": "export-png", "name": "PNG export", "area": "Export", "since": 5, "manual": true, "book": false, "bookExample": false },
-    { "id": "export-pdf", "name": "PDF export", "area": "Export", "since": 6, "manual": true, "book": false, "bookExample": false },
-    { "id": "export-pptx", "name": "PowerPoint (PPTX) export", "area": "Export", "since": 6, "manual": true, "book": false, "bookExample": false },
+    { "id": "export-png", "name": "PNG export", "area": "Export", "since": 5, "manual": true, "book": true, "bookExample": false },
+    { "id": "export-pdf", "name": "PDF export", "area": "Export", "since": 6, "manual": true, "book": true, "bookExample": false },
+    { "id": "export-pptx", "name": "PowerPoint (PPTX) export", "area": "Export", "since": 6, "manual": true, "book": true, "bookExample": false },
     { "id": "export-markdown", "name": "Markdown outline export", "area": "Export", "since": 3, "manual": true, "book": true, "bookExample": false },
-    { "id": "export-json", "name": "Save as JSON", "area": "Export", "since": 3, "manual": true, "book": false, "bookExample": false },
+    { "id": "export-json", "name": "Save as JSON", "area": "Export", "since": 3, "manual": true, "book": true, "bookExample": false },
 
-    { "id": "import-json", "name": "Open a saved JSON tree", "area": "Import", "since": 6, "manual": true, "book": false, "bookExample": false },
+    { "id": "import-json", "name": "Open a saved JSON tree", "area": "Import", "since": 6, "manual": true, "book": true, "bookExample": false },
 
-    { "id": "multi-document", "name": "Multiple trees (document library + picker)", "area": "Documents", "since": 6, "manual": true, "book": false, "bookExample": false },
+    { "id": "multi-document", "name": "Multiple trees (document library + picker)", "area": "Documents", "since": 6, "manual": true, "book": true, "bookExample": false },
     { "id": "new-tree", "name": "New tree", "area": "Documents", "since": 6, "manual": true, "book": false, "bookExample": false },
     { "id": "legacy-migration", "name": "Automatic legacy single-doc migration", "area": "Documents", "since": 6, "manual": true, "book": false, "bookExample": false },
 
@@ -105,12 +105,12 @@
     { "id": "canvas-review-overlay", "name": "Canvas review overlay (dim clean splits, amber-dash flagged edges)", "area": "Canvas", "since": 7, "manual": true, "book": false, "bookExample": false },
     { "id": "clustered-header", "name": "Clustered editor header (title + type badge, Export menu, overflow)", "area": "App", "since": 7, "manual": true, "book": false, "bookExample": false },
     { "id": "tabbed-inspector", "name": "Tabbed inspector (Issue / Logic / Evidence / Value)", "area": "Editing", "since": 7, "manual": true, "book": false, "bookExample": false },
-    { "id": "file-save-to-disk", "name": "Open / Save / Save As real files, written back to the same file (File System Access)", "area": "Export", "since": 8, "manual": true, "book": false, "bookExample": false },
-    { "id": "export-svg", "name": "SVG export (sanitised vector)", "area": "Export", "since": 8, "manual": true, "book": false, "bookExample": false },
-    { "id": "import-markdown", "name": "Import a Markdown outline (paste-to-tree)", "area": "Import", "since": 8, "manual": true, "book": false, "bookExample": false },
-    { "id": "print-preview", "name": "Print preview (tree as a nested outline)", "area": "Export", "since": 8, "manual": true, "book": false, "bookExample": false },
-    { "id": "presentation", "name": "Presentation step-through mode", "area": "App", "since": 8, "manual": true, "book": false, "bookExample": false },
-    { "id": "document-tabs", "name": "Multi-document tabs (keep several trees open)", "area": "Documents", "since": 8, "manual": true, "book": false, "bookExample": false },
-    { "id": "quick-capture", "name": "Quick add issues (many children at once)", "area": "Editing", "since": 8, "manual": true, "book": false, "bookExample": false }
+    { "id": "file-save-to-disk", "name": "Open / Save / Save As real files, written back to the same file (File System Access)", "area": "Export", "since": 8, "manual": true, "book": true, "bookExample": false },
+    { "id": "export-svg", "name": "SVG export (sanitised vector)", "area": "Export", "since": 8, "manual": true, "book": true, "bookExample": false },
+    { "id": "import-markdown", "name": "Import a Markdown outline (paste-to-tree)", "area": "Import", "since": 8, "manual": true, "book": true, "bookExample": false },
+    { "id": "print-preview", "name": "Print preview (tree as a nested outline)", "area": "Export", "since": 8, "manual": true, "book": true, "bookExample": false },
+    { "id": "presentation", "name": "Presentation step-through mode", "area": "App", "since": 8, "manual": true, "book": true, "bookExample": false },
+    { "id": "document-tabs", "name": "Multi-document tabs (keep several trees open)", "area": "Documents", "since": 8, "manual": true, "book": true, "bookExample": false },
+    { "id": "quick-capture", "name": "Quick add issues (many children at once)", "area": "Editing", "since": 8, "manual": true, "book": true, "bookExample": false }
   ]
 }

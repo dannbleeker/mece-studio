@@ -42,9 +42,11 @@ export const CHAPTER_FILES = [
   '08-the-numbers.md',
   '09-synthesis.md',
   '10-a-worked-example.md',
+  '11-presenting-and-sharing.md',
   'appendix-a-glossary.md',
   'appendix-b-keyboard.md',
   'appendix-c-further-reading.md',
+  'appendix-d-the-app.md',
 ];
 
 // TOC parts — grouped labels for the contents page (PDF) and nav (EPUB).
@@ -52,7 +54,7 @@ const TOC_GROUPS = [
   { label: 'Beginning', match: (f) => f.startsWith('00-') },
   { label: 'Structuring the problem', match: (f) => /^0[1-4]-/.test(f) },
   { label: 'Working the tree', match: (f) => /^0[5-8]-/.test(f) },
-  { label: 'Communicating the answer', match: (f) => /^(09|10)-/.test(f) },
+  { label: 'Communicating the answer', match: (f) => /^(09|10|11)-/.test(f) },
   { label: 'Appendices', match: (f) => f.startsWith('appendix-') },
 ];
 

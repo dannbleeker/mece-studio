@@ -94,7 +94,10 @@ async function main() {
   const chapters = loadChapters();
   const html = buildHtml(chapters);
 
-  const browser = await chromium.launch();
+  // Honour an explicit Chromium path when set (headless / sandboxed CI where the
+  // default Playwright browser build isn't present); otherwise use the default.
+  const executablePath = process.env.PW_CHROMIUM_PATH;
+  const browser = await chromium.launch(executablePath ? { executablePath } : {});
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: 'networkidle' });
   const pdfBytes = await page.pdf({ format: 'A4', printBackground: true, preferCSSPageSize: true });
