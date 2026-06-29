@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { childrenOf } from '@/domain/tree';
 import type { NodeId } from '@/domain/types';
 import { copyToClipboard, downloadText } from '@/services/download';
 import { useStore } from '@/store';
@@ -36,6 +37,20 @@ afterEach(() => {
 /** Open the header overflow (⋯) menu so its items are in the DOM. */
 function openOverflow() {
   fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
+}
+
+/** Stub the File System Access open picker to return a handle over `file`. */
+function stubOpenPicker(file: File) {
+  const handle = {
+    name: file.name,
+    getFile: async () => file,
+    createWritable: async () => ({ write: async () => {}, close: async () => {} }),
+  };
+  vi.stubGlobal(
+    'showOpenFilePicker',
+    vi.fn(async () => [handle])
+  );
+  vi.stubGlobal('showSaveFilePicker', vi.fn());
 }
 
 describe('App routing', () => {
@@ -89,10 +104,24 @@ describe('Workspace', () => {
     expect(copyToClipboard).toHaveBeenCalledTimes(1);
   });
 
-  it('saves the tree as JSON from the overflow menu', () => {
+  it('saves the tree to a file from the overflow menu (download fallback)', async () => {
+    // happy-dom has no File System Access API, so Save falls back to a download.
     render(<Workspace />);
     openOverflow();
-    fireEvent.click(screen.getByRole('button', { name: 'Save JSON' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() =>
+      expect(downloadText).toHaveBeenCalledWith(
+        expect.stringMatching(/\.json$/),
+        expect.any(String),
+        'application/json'
+      )
+    );
+  });
+
+  it('exports the tree as JSON from the Export menu', () => {
+    render(<Workspace />);
+    fireEvent.click(screen.getByRole('button', { name: 'Export' }));
+    fireEvent.click(screen.getByRole('button', { name: 'JSON' }));
     expect(downloadText).toHaveBeenCalledWith(
       'mece-tree.json',
       expect.any(String),
@@ -135,26 +164,24 @@ describe('Workspace', () => {
     expect(screen.getByRole('dialog', { name: 'Settings' })).toBeTruthy();
   });
 
-  it('opens a valid JSON tree from a file', async () => {
+  it('opens a valid JSON tree from a file (File System Access)', async () => {
     s().setRootQuestion('Imported question');
     const json = JSON.stringify(s().doc);
     s().setRootQuestion('Diverged'); // so the import is what restores the label
-    const { container } = render(<Workspace />);
-    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
-    fireEvent.change(input, {
-      target: { files: [new File([json], 'tree.json', { type: 'application/json' })] },
-    });
+    stubOpenPicker(new File([json], 'tree.json', { type: 'application/json' }));
+    render(<Workspace />);
+    openOverflow();
+    fireEvent.click(screen.getByRole('button', { name: 'Open file…' }));
     await waitFor(() => expect(s().doc.nodes[s().doc.rootId]?.label).toBe('Imported question'));
   });
 
   it('alerts when an opened file is not a valid tree', async () => {
     const alertMock = vi.fn();
     vi.stubGlobal('alert', alertMock);
-    const { container } = render(<Workspace />);
-    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
-    fireEvent.change(input, {
-      target: { files: [new File(['not json'], 'bad.txt', { type: 'text/plain' })] },
-    });
+    stubOpenPicker(new File(['not json'], 'bad.txt', { type: 'text/plain' }));
+    render(<Workspace />);
+    openOverflow();
+    fireEvent.click(screen.getByRole('button', { name: 'Open file…' }));
     await waitFor(() => expect(alertMock).toHaveBeenCalled());
   });
 
@@ -180,13 +207,66 @@ describe('Workspace', () => {
     expect(n()).toBe(2);
   });
 
-  it('proxies a click from the Open JSON menu item to the hidden file input', () => {
-    const { container } = render(<Workspace />);
-    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
-    const clickSpy = vi.spyOn(input, 'click');
+  it('imports a Markdown outline as a new tree from the overflow menu', () => {
+    const before = s().library.length;
+    render(<Workspace />);
     openOverflow();
-    fireEvent.click(screen.getByRole('button', { name: /Open JSON/ }));
-    expect(clickSpy).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Import outline…' }));
+    fireEvent.change(screen.getByLabelText('Outline or JSON to import'), {
+      target: { value: '# Imported outline\n- One\n- Two' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Import' }));
+    expect(s().library.length).toBe(before + 1);
+    expect(s().doc.nodes[s().doc.rootId]?.label).toBe('Imported outline');
+  });
+
+  it('shows an error for unparseable import text and keeps the dialog open', () => {
+    render(<Workspace />);
+    openOverflow();
+    fireEvent.click(screen.getByRole('button', { name: 'Import outline…' }));
+    fireEvent.change(screen.getByLabelText('Outline or JSON to import'), {
+      target: { value: '{bad json that is not a tree' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Import' }));
+    expect(screen.getByText(/Couldn't read that/)).toBeTruthy();
+  });
+
+  it('invokes the file picker from the Open file menu item', async () => {
+    const picker = vi.fn(async () => {
+      throw Object.assign(new Error('cancel'), { name: 'AbortError' });
+    });
+    vi.stubGlobal('showOpenFilePicker', picker);
+    vi.stubGlobal('showSaveFilePicker', vi.fn());
+    render(<Workspace />);
+    openOverflow();
+    fireEvent.click(screen.getByRole('button', { name: 'Open file…' }));
+    await waitFor(() => expect(picker).toHaveBeenCalledTimes(1));
+  });
+
+  it('quick-adds several issues from the overflow menu', () => {
+    render(<Workspace />);
+    openOverflow();
+    fireEvent.click(screen.getByRole('button', { name: 'Quick add issues…' }));
+    fireEvent.change(screen.getByLabelText('Issues to add, one per line'), {
+      target: { value: 'Pricing\nDemand\nDistribution' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Add issues' }));
+    expect(childrenOf(s().doc, s().doc.rootId).map((n) => n.label)).toEqual([
+      'Pricing',
+      'Demand',
+      'Distribution',
+    ]);
+  });
+
+  it('shows a tab strip with multiple trees open and closes a tab', () => {
+    s().newDoc(); // two trees open → strip appears
+    render(<Workspace />);
+    expect(screen.getByRole('navigation', { name: 'Open trees' })).toBeTruthy();
+    const closeButtons = screen.getAllByRole('button', { name: /^Close / });
+    fireEvent.click(closeButtons[0] as HTMLElement);
+    expect(s().openTabs).toHaveLength(1);
+    // strip hides with one tree
+    expect(screen.queryByRole('navigation', { name: 'Open trees' })).toBeNull();
   });
 
   it('toggles the MECE review dock from the health chip', () => {

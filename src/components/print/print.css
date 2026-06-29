@@ -1,0 +1,39 @@
+/*
+ * Print rules for the issue-tree print preview.
+ *
+ * On screen the preview is just an overlay; when printing we hide the whole app
+ * and show only the `.print-area` (the paper), so File → Print from the preview
+ * yields a clean tree document with no app chrome.
+ */
+@media print {
+  body {
+    background: #fff;
+  }
+  /* Hide everything, then reveal only the print area and its contents. */
+  body * {
+    visibility: hidden;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    box-shadow: none;
+  }
+  /* Toolbar / controls never print. The `body` prefix lifts specificity above
+     the utility classes on the element, so no !important is needed. */
+  body .print-hide {
+    display: none;
+  }
+  /* Avoid breaking a node and its children across a page where possible. */
+  .print-node {
+    break-inside: avoid;
+  }
+}

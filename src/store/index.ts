@@ -5,6 +5,7 @@ import { type MeceOptions, recomputeMece } from '@/domain/mece';
 import { meceOptions, type Settings } from '@/domain/settings';
 import {
   addChild as addChildOp,
+  addChildren as addChildrenOp,
   addEvidence as addEvidenceOp,
   decompose as decomposeOp,
   duplicateNode as duplicateNodeOp,
@@ -38,11 +39,13 @@ import {
   docName,
   type LibraryEntry,
   loadDocById,
+  loadOpenTabs,
   loadSettings,
   loadWorkspace,
   removeDocById,
   saveDocById,
   saveLibrary,
+  saveOpenTabs,
   saveSettings,
 } from '@/services/storage';
 
@@ -64,11 +67,25 @@ function entryFor(doc: IssueTreeDoc): LibraryEntry {
   return { id: doc.id, name: docName(doc) };
 }
 
+/**
+ * The tabs to restore: the persisted set, narrowed to trees that still exist,
+ * always including the active one (so the open tree is always a tab). Empty
+ * when there is no active doc (an emptied library).
+ */
+function restoreTabs(library: LibraryEntry[], activeId: string): string[] {
+  if (!activeId) return [];
+  const ids = new Set(library.map((e) => e.id));
+  const tabs = loadOpenTabs().filter((id) => ids.has(id));
+  if (!tabs.includes(activeId)) tabs.unshift(activeId);
+  return tabs;
+}
+
 /** Seed the workspace from storage, migrating a legacy single-doc save, or start fresh. */
 function initialState(): {
   doc: IssueTreeDoc;
   library: LibraryEntry[];
   activeId: string;
+  openTabs: string[];
   settings: Settings;
 } {
   const settings = loadSettings();
@@ -77,10 +94,13 @@ function initialState(): {
   if (ws) {
     // An emptied library loads with no active doc — hold a throwaway blank as the
     // workspace doc (the canvas always needs one) but leave the library empty.
+    const openTabs = restoreTabs(ws.library.docs, ws.library.activeId);
+    saveOpenTabs(openTabs);
     return {
       doc: ws.doc ? recomputeMece(ws.doc, options) : freshDoc(options),
       library: ws.library.docs,
       activeId: ws.library.activeId,
+      openTabs,
       settings,
     };
   }
@@ -88,7 +108,8 @@ function initialState(): {
   saveDocById(doc);
   const library = [entryFor(doc)];
   saveLibrary({ activeId: doc.id, docs: library });
-  return { doc, library, activeId: doc.id, settings };
+  saveOpenTabs([doc.id]);
+  return { doc, library, activeId: doc.id, openTabs: [doc.id], settings };
 }
 
 /** Keep the active doc's library name in sync with its root question; persist on change. */
@@ -101,18 +122,26 @@ function syncLibraryName(library: LibraryEntry[], doc: IssueTreeDoc): LibraryEnt
   return next;
 }
 
+/** Add `id` to the open-tabs list if it isn't already there. */
+function withTab(tabs: string[], id: string): string[] {
+  return tabs.includes(id) ? tabs : [...tabs, id];
+}
+
 /**
- * Make `doc` the active document under `docs`: persist both, reset history +
- * selection, and enter the canvas workspace (every entry point — new / open /
- * switch / delete-and-reopen — opens the tree for editing).
+ * Make `doc` the active document under `docs`: persist both, ensure it's an open
+ * tab, reset history + selection, and enter the canvas workspace (every entry
+ * point — new / open / switch / delete-and-reopen — opens the tree for editing).
  */
-function activate(doc: IssueTreeDoc, docs: LibraryEntry[]) {
+function activate(doc: IssueTreeDoc, docs: LibraryEntry[], prevTabs: string[]) {
   saveDocById(doc);
   saveLibrary({ activeId: doc.id, docs });
+  const openTabs = withTab(prevTabs, doc.id);
+  saveOpenTabs(openTabs);
   return {
     doc,
     library: docs,
     activeId: doc.id,
+    openTabs,
     past: [],
     future: [],
     selectedId: null,
@@ -126,6 +155,8 @@ interface AppState {
   /** All saved trees (for the document picker). */
   library: LibraryEntry[];
   activeId: string;
+  /** Ids of the trees open in tabs (a subset of the library); `activeId` is the current one. */
+  openTabs: string[];
   past: IssueTreeDoc[];
   future: IssueTreeDoc[];
   selectedId: NodeId | null;
@@ -150,6 +181,8 @@ interface AppState {
   /** Create a fresh tree (optionally seeding the root question) and open it. */
   newDoc: (question?: string) => void;
   switchDoc: (id: string) => void;
+  /** Close a tab (without deleting the tree); switches to a neighbour or Start. */
+  closeTab: (id: string) => void;
   deleteDoc: (id: string) => void;
   /** Rename a tree (its root question) by id, without leaving the current view. */
   renameDoc: (id: string, label: string) => void;
@@ -158,6 +191,8 @@ interface AppState {
   openDoc: (doc: IssueTreeDoc) => void;
   setRootQuestion: (label: string) => void;
   addChild: (parentId: NodeId, label?: string) => void;
+  /** Add several children under `parentId` in one undoable step (quick capture). */
+  addChildren: (parentId: NodeId, labels: string[]) => void;
   renameNode: (id: NodeId, label: string) => void;
   setDetail: (id: NodeId, detail: string) => void;
   setAmount: (id: NodeId, amount: number | undefined) => void;
@@ -219,6 +254,7 @@ export const useStore = create<AppState>((set, get) => {
     doc: init.doc,
     library: init.library,
     activeId: init.activeId,
+    openTabs: init.openTabs,
     settings: init.settings,
     past: [],
     future: [],
@@ -247,7 +283,7 @@ export const useStore = create<AppState>((set, get) => {
     newDoc: (question) =>
       set((s) => {
         const doc = freshDoc(meceOptions(s.settings), question);
-        return activate(doc, [...s.library, entryFor(doc)]);
+        return activate(doc, [...s.library, entryFor(doc)], s.openTabs);
       }),
 
     switchDoc: (id) =>
@@ -255,7 +291,24 @@ export const useStore = create<AppState>((set, get) => {
         if (id === s.activeId) return s;
         const target = loadDocById(id);
         if (!target) return s;
-        return activate(recomputeMece(target, meceOptions(s.settings)), s.library);
+        return activate(recomputeMece(target, meceOptions(s.settings)), s.library, s.openTabs);
+      }),
+
+    closeTab: (id) =>
+      set((s) => {
+        if (!s.openTabs.includes(id)) return s;
+        const tabs = s.openTabs.filter((t) => t !== id);
+        saveOpenTabs(tabs);
+        // Closing a background tab just drops it.
+        if (id !== s.activeId) return { openTabs: tabs };
+        // Closing the active tab: open a neighbour, or fall back to Start when
+        // none remain (the tree still lives in the library, just no open tab).
+        if (tabs.length === 0) return { openTabs: tabs, view: 'start' as const };
+        const closedAt = s.openTabs.indexOf(id);
+        const nextId = tabs[Math.min(closedAt, tabs.length - 1)] ?? '';
+        const target = loadDocById(nextId);
+        if (!target) return { openTabs: tabs };
+        return activate(recomputeMece(target, meceOptions(s.settings)), s.library, tabs);
       }),
 
     deleteDoc: (id) =>
@@ -264,28 +317,32 @@ export const useStore = create<AppState>((set, get) => {
         removeDocById(id);
         const docs = s.library.filter((e) => e.id !== id);
         const opts = meceOptions(s.settings);
+        // A deleted tree can't stay an open tab.
+        const tabs = s.openTabs.filter((t) => t !== id);
 
-        // Deleting a non-active doc: just drop it from the library.
+        // Deleting a non-active doc: just drop it from the library (and any tab).
         if (id !== s.activeId) {
           saveLibrary({ activeId: s.activeId, docs });
-          return { library: docs };
+          saveOpenTabs(tabs);
+          return { library: docs, openTabs: tabs };
         }
-        // Deleting the active doc while others remain: open the next one.
+        // Deleting the active doc while others remain: open the next tab, else
+        // the first remaining library tree.
         if (docs.length > 0) {
-          return activate(
-            recomputeMece(loadDocById(docs[0]?.id ?? '') ?? freshDoc(opts), opts),
-            docs
-          );
+          const nextId = tabs[0] ?? docs[0]?.id ?? '';
+          return activate(recomputeMece(loadDocById(nextId) ?? freshDoc(opts), opts), docs, tabs);
         }
         // Deleting the LAST tree: the library is now empty. Persist it empty and
         // return to Start (the empty gallery) — don't reseed a starter, which
         // would look like the delete never happened. A throwaway blank doc keeps
         // the canvas type-safe; it isn't listed until the user starts a new tree.
         saveLibrary({ activeId: '', docs: [] });
+        saveOpenTabs([]);
         return {
           doc: freshDoc(opts),
           library: [],
           activeId: '',
+          openTabs: [],
           past: [],
           future: [],
           selectedId: null,
@@ -333,12 +390,13 @@ export const useStore = create<AppState>((set, get) => {
           { ...incoming, id: nanoid() as DocId, updatedAt: Date.now() },
           meceOptions(s.settings)
         );
-        return activate(doc, [...s.library, entryFor(doc)]);
+        return activate(doc, [...s.library, entryFor(doc)], s.openTabs);
       }),
 
     setRootQuestion: (label) => apply((doc) => renameNodeOp(doc, doc.rootId, label)),
     addChild: (parentId, label) =>
       apply((doc) => addChildOp(doc, parentId, label ?? 'New issue').doc),
+    addChildren: (parentId, labels) => apply((doc) => addChildrenOp(doc, parentId, labels)),
     renameNode: (id, label) => apply((doc) => renameNodeOp(doc, id, label)),
     setDetail: (id, detail) => apply((doc) => setDetailOp(doc, id, detail)),
     setAmount: (id, amount) =>

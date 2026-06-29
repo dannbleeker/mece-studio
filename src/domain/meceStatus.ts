@@ -1,4 +1,23 @@
-import type { DecompositionType, IssueTreeDoc, NodeId } from './types';
+import type { DecompositionType, IssueTreeDoc, NodeId, Split } from './types';
+
+/** Default messages shown when the engine flags a split but leaves no message. */
+const DEFAULT_EXCLUSIVE_WARNING = 'Siblings may overlap.';
+const DEFAULT_EXHAUSTIVE_WARNING = 'Children may not cover the parent.';
+
+/**
+ * The MECE warnings on a single split — a `warn` on mutual-exclusivity and/or
+ * collective-exhaustiveness — using the engine's own message, or a default.
+ * Pure; reads the cached `split.mece`. The single source of truth both the
+ * review dock and the print / presentation surfaces draw their wording from.
+ */
+export function splitWarnings(split: Split): string[] {
+  const out: string[] = [];
+  if (split.mece.exclusive.state === 'warn')
+    out.push(split.mece.exclusive.message ?? DEFAULT_EXCLUSIVE_WARNING);
+  if (split.mece.exhaustive.state === 'warn')
+    out.push(split.mece.exhaustive.message ?? DEFAULT_EXHAUSTIVE_WARNING);
+  return out;
+}
 
 /**
  * How many of a document's splits are flagged for a MECE review — i.e. have a
@@ -66,10 +85,8 @@ export function flaggedSplits(doc: IssueTreeDoc): FlaggedSplit[] {
       nodeId: split.parentId,
       label: node.label,
       decomposition: split.decomposition,
-      exclusive: exWarn ? (split.mece.exclusive.message ?? 'Siblings may overlap.') : null,
-      exhaustive: ceWarn
-        ? (split.mece.exhaustive.message ?? 'Children may not cover the parent.')
-        : null,
+      exclusive: exWarn ? (split.mece.exclusive.message ?? DEFAULT_EXCLUSIVE_WARNING) : null,
+      exhaustive: ceWarn ? (split.mece.exhaustive.message ?? DEFAULT_EXHAUSTIVE_WARNING) : null,
     });
   }
   return out;

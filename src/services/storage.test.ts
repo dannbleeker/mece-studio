@@ -91,6 +91,19 @@ describe('storage', () => {
     expect(parseDoc('not json')).toBeNull();
   });
 
+  it('migrates an unversioned saved doc on load', () => {
+    const { schemaVersion: _omit, ...unversioned } = createDoc('Old Q', 1);
+    localStorage.setItem(`mece-studio:doc:${unversioned.id}`, JSON.stringify(unversioned));
+    const loaded = loadDocById(unversioned.id);
+    expect(loaded?.rootId).toBe(unversioned.rootId);
+    expect(loaded?.schemaVersion).toBe(1); // stamped by the migration runner
+  });
+
+  it('migrates an unversioned doc through parseDoc (file import path)', () => {
+    const { schemaVersion: _omit, ...unversioned } = createDoc('Imported', 1);
+    expect(parseDoc(JSON.stringify(unversioned))?.schemaVersion).toBe(1);
+  });
+
   it('round-trips settings and falls back to defaults for bad values', () => {
     saveSettings({ sortSiblingsByPriority: true, strictOverlap: false, formulaTolerance: 0.02 });
     const s = loadSettings();

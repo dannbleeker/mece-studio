@@ -47,8 +47,8 @@ you move into the **workspace**, where you build it:
 - **The header** (top) is grouped into clusters: the **MECE Studio** wordmark and
   **← Start** return to the library; a **MECE health** chip opens the tree-wide
   review (below); then **Undo / Redo**, **Synthesis**, a filled **Export ▾** menu
-  (PNG / PDF / PowerPoint), **⚙ Settings**, **?** shortcuts, and an **⋯ overflow**
-  menu (Copy Markdown, Open JSON, Save JSON, About, New / Delete tree).
+  (PNG / PDF / PowerPoint / JSON), **⚙ Settings**, **?** shortcuts, and an **⋯ overflow**
+  menu (Copy Markdown, Open file, Save / Save As, About, New / Delete tree).
 
 Click a node to select it. Rename the root question to your real problem to
 begin — double-click it, or select it and press <kbd>Enter</kbd>.
@@ -190,6 +190,11 @@ canvas. With a node selected, press <kbd>Enter</kbd> or <kbd>F2</kbd> to edit.
 drops you straight into editing its label — so you can build a whole tree without
 touching the mouse.
 
+**Quick add.** To dump a whole decomposition at once, use **⋯ → Quick add
+issues…**: type one issue per line and they're all added as children of the
+selected node (or the root) in a single, undoable step. <kbd>⌘/Ctrl</kbd> +
+<kbd>Enter</kbd> adds.
+
 **Detail and notes.** The inspector has a label, an optional longer **detail**
 field, and a **notes** field for rationale, assumptions, or data sources. A node
 that carries notes shows a small marker on the canvas, and notes flow into the
@@ -302,6 +307,11 @@ MECE Studio keeps a **library** of trees.
 
 - The **Start page** lists every tree (by its root question) as a card; click one to
   open it, or use **All trees** / **Recent** in the sidebar. Switch at any time.
+- **Tabs** — every tree you open or create gets a **tab** in a strip above the
+  canvas (shown once more than one is open). Click a tab to switch, **×** to
+  close it (the tree stays in your library; closing the last tab returns to
+  Start), and **+** to start a new one. Your open tabs are remembered across
+  reloads.
 - **⋯ → New tree** (the header overflow menu) starts a fresh tree and adds it to
   the library; your current tree stays saved.
 - **⋯ → Delete tree** removes the current tree (with confirmation), then opens
@@ -317,18 +327,39 @@ MECE Studio keeps a **library** of trees.
 Everything autosaves locally, but you can also take your work out in several
 formats:
 
-- **PNG / PDF / PowerPoint** — from the header's **Export ▾** menu, export the
-  canvas as an image, a PDF, or a slide.
+- **PNG / PDF / PowerPoint / JSON** — from the header's **Export ▾** menu,
+  export the canvas as an image, a PDF, or a slide, or download the raw tree as
+  **JSON** (which round-trips with **Open file…**). Diagram exports are always
+  rasterised (never live SVG), so an exported file can never carry script.
 - **Markdown** — **⋯ → Copy Markdown** copies the tree as a structured outline:
   each node's value, hypothesis status, priority, MECE state, notes, and evidence,
   so a pasted outline holds the whole analysis.
-- **JSON** — **⋯ → Save JSON** downloads the full document.
-- **Open JSON** — **⋯ → Open JSON** loads a saved `.json` tree back in. It's
+- **Save to a file** — **⋯ → Save** writes the full document to a `.json` file.
+  In browsers that support it (Chrome, Edge), the first Save asks where to put
+  the file and every later **Save** writes straight back to it; **Save As…**
+  picks a new location. Elsewhere (Firefox, Safari) Save downloads the file.
+- **Open a file** — **⋯ → Open file…** loads a saved `.json` tree back in. It's
   validated, and it opens as a **new** entry in your library, so it never
   overwrites an existing tree.
+- **Import an outline** — **⋯ → Import outline…** turns a pasted **Markdown
+  outline** (headings or `-`/`*`/numbered bullets, nested by indentation) into a
+  fresh tree: the first heading or line becomes the root question, everything
+  else nests beneath it. It also accepts a tree's **JSON** (auto-detected).
+  Imports open as a **new** library entry, so your current tree is untouched.
 
 The PNG / PDF / PowerPoint exporters are loaded on demand, so they don't slow
 down the app's first load.
+
+### Present and print
+
+- **Present** — **⋯ → Present** opens a full-screen, step-through presentation
+  that walks the tree one decomposition at a time (depth-first). Each slide
+  shows a question, its branches, and that split's MECE status. Use **← / →**
+  (or **Space**) to move between steps and **Esc** to exit.
+- **Print** — **⋯ → Print…** opens a print preview that lays the whole tree out
+  as a clean nested outline. Click **Print** to print it (or save as PDF from
+  your browser's print dialog); the app chrome is hidden so only the tree
+  prints.
 
 ## Undo, redo, and autosave
 

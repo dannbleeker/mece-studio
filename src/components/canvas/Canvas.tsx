@@ -2,8 +2,6 @@ import {
   Background,
   BackgroundVariant,
   Controls,
-  getNodesBounds,
-  getViewportForBounds,
   type Node,
   type NodeTypes,
   Panel,
@@ -19,6 +17,7 @@ import { flaggedSplits } from '@/domain/meceStatus';
 import { childrenOf, descendantIds, parentOf } from '@/domain/tree';
 import type { NodeId } from '@/domain/types';
 import { downloadDataUrl } from '@/services/download';
+import { renderCanvasPng, saveTreePdf, saveTreePptx } from '@/services/exporters';
 import { useStore } from '@/store';
 import { type NodeEditing, NodeEditingContext } from './nodeEditing';
 import { IssueNode } from './nodes/IssueNode';
@@ -226,81 +225,23 @@ function Flow() {
     );
   }, [edges, reviewOpen, flaggedIds]);
 
-  // Render the visible graph to a PNG data URL (React Flow's bounds recipe).
-  // html-to-image and jspdf are both loaded on demand so they stay off the
-  // eager bundle.
-  const renderToImage = useCallback(async (): Promise<{
-    dataUrl: string;
-    width: number;
-    height: number;
-  } | null> => {
-    const bounds = getNodesBounds(getNodes());
-    const width = Math.max(640, Math.min(2600, Math.round(bounds.width + 160)));
-    const height = Math.max(480, Math.min(2600, Math.round(bounds.height + 160)));
-    const { x, y, zoom } = getViewportForBounds(bounds, width, height, 0.5, 2, 0.12);
-    const viewport = document.querySelector<HTMLElement>('.react-flow__viewport');
-    if (!viewport) return null;
-    const { toPng } = await import('html-to-image');
-    const dataUrl = await toPng(viewport, {
-      backgroundColor: '#faf9f5',
-      width,
-      height,
-      style: {
-        width: `${width}px`,
-        height: `${height}px`,
-        transform: `translate(${x}px, ${y}px) scale(${zoom})`,
-      },
-    });
-    return { dataUrl, width, height };
-  }, [getNodes]);
-
-  const exportPng = useCallback(async () => {
-    const img = await renderToImage();
-    if (img) downloadDataUrl('mece-tree.png', img.dataUrl);
-  }, [renderToImage]);
-
-  const exportPdf = useCallback(async () => {
-    const img = await renderToImage();
-    if (!img) return;
-    const { jsPDF } = await import('jspdf');
-    const pdf = new jsPDF({
-      orientation: img.width >= img.height ? 'landscape' : 'portrait',
-      unit: 'px',
-      format: [img.width, img.height],
-    });
-    pdf.addImage(img.dataUrl, 'PNG', 0, 0, img.width, img.height);
-    pdf.save('mece-tree.pdf');
-  }, [renderToImage]);
-
-  const exportPptx = useCallback(async () => {
-    const img = await renderToImage();
-    if (!img) return;
-    const PptxGenJS = (await import('pptxgenjs')).default;
-    const pptx = new PptxGenJS();
-    const slide = pptx.addSlide();
-    // Fit the image, centred, on the default 16:9 slide (10 × 5.625 in).
-    const margin = 0.3;
-    const aspect = img.width / img.height;
-    let w = 10 - margin * 2;
-    let h = w / aspect;
-    if (h > 5.625 - margin * 2) {
-      h = 5.625 - margin * 2;
-      w = h * aspect;
-    }
-    slide.addImage({ data: img.dataUrl, x: (10 - w) / 2, y: (5.625 - h) / 2, w, h });
-    await pptx.writeFile({ fileName: 'mece-tree.pptx' });
-  }, [renderToImage]);
-
-  // Fulfil an export the header asked for: run the matching renderer, then clear
-  // the request. The export fns own the React Flow viewport, so the header can't
-  // call them directly — it routes through the store and the canvas answers here.
+  // Fulfil an export the header asked for: render the canvas once, hand the
+  // raster image to the matching exporter, then clear the request. The render
+  // needs the React Flow viewport, so the header can't export directly — it
+  // routes through the store and the canvas answers here. The heavy exporter
+  // libraries are loaded on demand (see services/exporters).
   useEffect(() => {
     if (!exportRequest) return;
-    const run =
-      exportRequest === 'png' ? exportPng : exportRequest === 'pdf' ? exportPdf : exportPptx;
+    const run = async () => {
+      const image = await renderCanvasPng(getNodes());
+      if (!image) return;
+      if (exportRequest === 'png') downloadDataUrl('mece-tree.png', image.dataUrl);
+      else if (exportRequest === 'pdf') await saveTreePdf(image, 'mece-tree.pdf');
+      else await saveTreePptx(image, 'mece-tree.pptx');
+    };
     void run();
     requestExport(null);
-  }, [exportRequest, exportPng, exportPdf, exportPptx, requestExport]);
+  }, [exportRequest, getNodes, requestExport]);
 
   return (
     <NodeEditingContext.Provider value={editing}>

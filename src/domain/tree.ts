@@ -84,6 +84,19 @@ export function addChild(
   return { doc: { ...doc, nodes, splits }, childId: child.id };
 }
 
+/**
+ * Add several child issues under `parentId` in one transform (one undo entry).
+ * Blank labels are skipped; returns the doc unchanged if none are added.
+ */
+export function addChildren(doc: IssueTreeDoc, parentId: NodeId, labels: string[]): IssueTreeDoc {
+  let next = doc;
+  for (const raw of labels) {
+    const label = raw.trim();
+    if (label) next = addChild(next, parentId, label).doc;
+  }
+  return next;
+}
+
 /** Change how `parentId` decomposes. No-op if it has no split yet. */
 export function setDecomposition(
   doc: IssueTreeDoc,

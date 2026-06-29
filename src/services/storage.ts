@@ -1,3 +1,4 @@
+import { migrateToCurrent, type RawDocument } from '@/domain/migrations';
 import { DEFAULT_SETTINGS, type Settings } from '@/domain/settings';
 import type { IssueTreeDoc } from '@/domain/types';
 
@@ -5,6 +6,7 @@ const LIBRARY_KEY = 'mece-studio:library:v1';
 const LEGACY_DOC_KEY = 'mece-studio:doc:v1';
 const docKey = (id: string) => `mece-studio:doc:${id}`;
 const SETTINGS_KEY = 'mece-studio:settings:v1';
+const OPEN_TABS_KEY = 'mece-studio:tabs:v1';
 
 /** One entry in the document library — enough to list it without loading it. */
 export interface LibraryEntry {
@@ -46,6 +48,31 @@ function isLibrary(value: unknown): value is Library {
   return typeof l.activeId === 'string' && Array.isArray(l.docs);
 }
 
+/**
+ * Migrate an unvalidated, parsed value up to the current schema, then validate
+ * its shape. Returns `null` for anything that isn't an object or fails the
+ * structural guard after migration. This is the single seam every document
+ * read — localStorage, the legacy key, and file import — passes through.
+ */
+function coerceDoc(parsed: unknown): IssueTreeDoc | null {
+  if (typeof parsed !== 'object' || parsed === null) return null;
+  const migrated = migrateToCurrent(parsed as RawDocument);
+  return isDoc(migrated) ? migrated : null;
+}
+
+/** Read a stored document by key, migrating it before its shape is trusted. */
+function readDoc(key: string): IssueTreeDoc | null {
+  const s = storage();
+  if (!s) return null;
+  try {
+    const raw = s.getItem(key);
+    if (!raw) return null;
+    return coerceDoc(JSON.parse(raw));
+  } catch {
+    return null;
+  }
+}
+
 function readJson<T>(key: string, guard: (v: unknown) => v is T): T | null {
   const s = storage();
   if (!s) return null;
@@ -72,8 +99,7 @@ function writeJson(key: string, value: unknown): void {
 /** Parse + validate a JSON string as a document (for file import). */
 export function parseDoc(json: string): IssueTreeDoc | null {
   try {
-    const parsed: unknown = JSON.parse(json);
-    return isDoc(parsed) ? parsed : null;
+    return coerceDoc(JSON.parse(json));
   } catch {
     return null;
   }
@@ -85,7 +111,7 @@ export function docName(doc: IssueTreeDoc): string {
 }
 
 export function loadDocById(id: string): IssueTreeDoc | null {
-  return readJson(docKey(id), isDoc);
+  return readDoc(docKey(id));
 }
 
 export function saveDocById(doc: IssueTreeDoc): void {
@@ -118,7 +144,7 @@ export function loadWorkspace(): { library: Library; doc: IssueTreeDoc | null } 
 
   let library = loadLibrary();
   if (!library) {
-    const legacy = readJson(LEGACY_DOC_KEY, isDoc);
+    const legacy = readDoc(LEGACY_DOC_KEY);
     if (legacy) {
       saveDocById(legacy);
       s.removeItem(LEGACY_DOC_KEY);
@@ -164,4 +190,14 @@ export function loadSettings(): Settings {
 
 export function saveSettings(settings: Settings): void {
   writeJson(SETTINGS_KEY, settings);
+}
+
+/** The ids of the trees the user had open in tabs (empty/absent on first run). */
+export function loadOpenTabs(): string[] {
+  const raw = readJson<unknown[]>(OPEN_TABS_KEY, Array.isArray);
+  return raw ? raw.filter((id): id is string => typeof id === 'string') : [];
+}
+
+export function saveOpenTabs(ids: string[]): void {
+  writeJson(OPEN_TABS_KEY, ids);
 }

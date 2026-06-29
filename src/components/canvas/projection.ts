@@ -1,6 +1,7 @@
 import type { Edge, Node } from '@xyflow/react';
 import { layoutTree } from '@/domain/layout';
 import { type PriorityBand, priorityBand, sortSiblingsByPriority } from '@/domain/priority';
+import { matchesQuery } from '@/domain/search';
 import { hiddenNodeIds, splitOf } from '@/domain/tree';
 import type { IssueNode, IssueTreeDoc, MeceStatus } from '@/domain/types';
 
@@ -51,7 +52,6 @@ export function toFlow(
   query = '',
   sortByPriority = false
 ): { nodes: IssueFlowNode[]; edges: Edge[] } {
-  const q = query.trim().toLowerCase();
   const hidden = hiddenNodeIds(doc);
   // Sibling order is a view concern — sort for layout without mutating the doc.
   const layoutDoc = sortByPriority ? sortSiblingsByPriority(doc) : doc;
@@ -76,7 +76,7 @@ export function toFlow(
           hasNote: !!n.detail?.trim(),
           collapsed: n.collapsed === true,
           childCount: split ? split.childIds.length : 0,
-          matched: q !== '' && n.label.toLowerCase().includes(q),
+          matched: matchesQuery(n.label, query),
           selected: n.id === selectedId,
         },
       };

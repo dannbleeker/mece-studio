@@ -78,8 +78,8 @@ automatically when a node&#39;s split needs a MECE review.</li>
 <li><strong>The header</strong> (top) is grouped into clusters: the <strong>MECE Studio</strong> wordmark and
 <strong>← Start</strong> return to the library; a <strong>MECE health</strong> chip opens the tree-wide
 review (below); then <strong>Undo / Redo</strong>, <strong>Synthesis</strong>, a filled <strong>Export ▾</strong> menu
-(PNG / PDF / PowerPoint), <strong>⚙ Settings</strong>, <strong>?</strong> shortcuts, and an <strong>⋯ overflow</strong>
-menu (Copy Markdown, Open JSON, Save JSON, About, New / Delete tree).</li>
+(PNG / PDF / PowerPoint / JSON), <strong>⚙ Settings</strong>, <strong>?</strong> shortcuts, and an <strong>⋯ overflow</strong>
+menu (Copy Markdown, Open file, Save / Save As, About, New / Delete tree).</li>
 </ul>
 <p>Click a node to select it. Rename the root question to your real problem to
 begin — double-click it, or select it and press <kbd>Enter</kbd>.</p>
@@ -204,6 +204,10 @@ canvas. With a node selected, press <kbd>Enter</kbd> or <kbd>F2</kbd> to edit.
 <p><strong>Keyboard tree-building.</strong> With a node selected, <kbd>Tab</kbd> adds a child and
 drops you straight into editing its label — so you can build a whole tree without
 touching the mouse.</p>
+<p><strong>Quick add.</strong> To dump a whole decomposition at once, use <strong>⋯ → Quick add
+issues…</strong>: type one issue per line and they&#39;re all added as children of the
+selected node (or the root) in a single, undoable step. <kbd>⌘/Ctrl</kbd> +
+<kbd>Enter</kbd> adds.</p>
 <p><strong>Detail and notes.</strong> The inspector has a label, an optional longer <strong>detail</strong>
 field, and a <strong>notes</strong> field for rationale, assumptions, or data sources. A node
 that carries notes shows a small marker on the canvas, and notes flow into the
@@ -295,6 +299,11 @@ machine unless <em>you</em> paste it.</p>
 <ul>
 <li>The <strong>Start page</strong> lists every tree (by its root question) as a card; click one to
 open it, or use <strong>All trees</strong> / <strong>Recent</strong> in the sidebar. Switch at any time.</li>
+<li><strong>Tabs</strong> — every tree you open or create gets a <strong>tab</strong> in a strip above the
+canvas (shown once more than one is open). Click a tab to switch, <strong>×</strong> to
+close it (the tree stays in your library; closing the last tab returns to
+Start), and <strong>+</strong> to start a new one. Your open tabs are remembered across
+reloads.</li>
 <li><strong>⋯ → New tree</strong> (the header overflow menu) starts a fresh tree and adds it to
 the library; your current tree stays saved.</li>
 <li><strong>⋯ → Delete tree</strong> removes the current tree (with confirmation), then opens
@@ -309,18 +318,39 @@ version. Nothing is lost.</li>
 <p>Everything autosaves locally, but you can also take your work out in several
 formats:</p>
 <ul>
-<li><strong>PNG / PDF / PowerPoint</strong> — from the header&#39;s <strong>Export ▾</strong> menu, export the
-canvas as an image, a PDF, or a slide.</li>
+<li><strong>PNG / PDF / PowerPoint / JSON</strong> — from the header&#39;s <strong>Export ▾</strong> menu,
+export the canvas as an image, a PDF, or a slide, or download the raw tree as
+<strong>JSON</strong> (which round-trips with <strong>Open file…</strong>). Diagram exports are always
+rasterised (never live SVG), so an exported file can never carry script.</li>
 <li><strong>Markdown</strong> — <strong>⋯ → Copy Markdown</strong> copies the tree as a structured outline:
 each node&#39;s value, hypothesis status, priority, MECE state, notes, and evidence,
 so a pasted outline holds the whole analysis.</li>
-<li><strong>JSON</strong> — <strong>⋯ → Save JSON</strong> downloads the full document.</li>
-<li><strong>Open JSON</strong> — <strong>⋯ → Open JSON</strong> loads a saved <code>.json</code> tree back in. It&#39;s
+<li><strong>Save to a file</strong> — <strong>⋯ → Save</strong> writes the full document to a <code>.json</code> file.
+In browsers that support it (Chrome, Edge), the first Save asks where to put
+the file and every later <strong>Save</strong> writes straight back to it; <strong>Save As…</strong>
+picks a new location. Elsewhere (Firefox, Safari) Save downloads the file.</li>
+<li><strong>Open a file</strong> — <strong>⋯ → Open file…</strong> loads a saved <code>.json</code> tree back in. It&#39;s
 validated, and it opens as a <strong>new</strong> entry in your library, so it never
 overwrites an existing tree.</li>
+<li><strong>Import an outline</strong> — <strong>⋯ → Import outline…</strong> turns a pasted <strong>Markdown
+outline</strong> (headings or <code>-</code>/<code>*</code>/numbered bullets, nested by indentation) into a
+fresh tree: the first heading or line becomes the root question, everything
+else nests beneath it. It also accepts a tree&#39;s <strong>JSON</strong> (auto-detected).
+Imports open as a <strong>new</strong> library entry, so your current tree is untouched.</li>
 </ul>
 <p>The PNG / PDF / PowerPoint exporters are loaded on demand, so they don&#39;t slow
 down the app&#39;s first load.</p>
+<h3>Present and print</h3>
+<ul>
+<li><strong>Present</strong> — <strong>⋯ → Present</strong> opens a full-screen, step-through presentation
+that walks the tree one decomposition at a time (depth-first). Each slide
+shows a question, its branches, and that split&#39;s MECE status. Use <strong>← / →</strong>
+(or <strong>Space</strong>) to move between steps and <strong>Esc</strong> to exit.</li>
+<li><strong>Print</strong> — <strong>⋯ → Print…</strong> opens a print preview that lays the whole tree out
+as a clean nested outline. Click <strong>Print</strong> to print it (or save as PDF from
+your browser&#39;s print dialog); the app chrome is hidden so only the tree
+prints.</li>
+</ul>
 <h2>Undo, redo, and autosave</h2>
 <ul>
 <li><strong>Undo / redo</strong> every change with <kbd>Ctrl/⌘+Z</kbd> and

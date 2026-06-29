@@ -9,6 +9,7 @@ test.describe(() => {
     { label: 'PNG', file: 'mece-tree.png' },
     { label: 'PDF', file: 'mece-tree.pdf' },
     { label: 'PPTX', file: 'mece-tree.pptx' },
+    { label: 'JSON', file: 'mece-tree.json' },
   ];
 
   for (const { label, file } of cases) {

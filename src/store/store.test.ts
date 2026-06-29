@@ -313,4 +313,66 @@ describe('store', () => {
     expect(s().selectedId).toBe(id);
     expect(s().locateNonce).toBe(before + 1);
   });
+
+  it('addChildren adds several children in one undoable step', () => {
+    const root = s().doc.rootId;
+    s().addChildren(root, ['Pricing', '  ', 'Demand', 'Distribution']);
+    expect(childrenOf(s().doc, root).map((n) => n.label)).toEqual([
+      'Pricing',
+      'Demand',
+      'Distribution',
+    ]); // blank line skipped
+    s().undo();
+    expect(childrenOf(s().doc, root)).toHaveLength(0); // a single undo removes them all
+  });
+
+  describe('tabs', () => {
+    it('opens a tab per tree and switches between them', () => {
+      const first = s().activeId;
+      expect(s().openTabs).toContain(first);
+      s().newDoc();
+      const second = s().activeId;
+      expect(s().openTabs).toEqual([first, second]);
+
+      s().switchDoc(first);
+      expect(s().activeId).toBe(first);
+      expect(s().openTabs).toEqual([first, second]); // switching doesn't add a tab
+    });
+
+    it('closes a background tab without changing the active one', () => {
+      const first = s().activeId;
+      s().newDoc();
+      const second = s().activeId;
+      s().closeTab(first);
+      expect(s().openTabs).toEqual([second]);
+      expect(s().activeId).toBe(second);
+    });
+
+    it('closing the active tab opens a neighbour', () => {
+      const first = s().activeId;
+      s().newDoc();
+      const second = s().activeId;
+      s().closeTab(second);
+      expect(s().openTabs).toEqual([first]);
+      expect(s().activeId).toBe(first);
+    });
+
+    it('closing the last tab returns to Start (the tree stays in the library)', () => {
+      const only = s().activeId;
+      s().closeTab(only);
+      expect(s().openTabs).toEqual([]);
+      expect(s().view).toBe('start');
+      expect(s().library.some((e) => e.id === only)).toBe(true); // not deleted
+    });
+
+    it('deleting a tree also removes its tab', () => {
+      const first = s().activeId;
+      s().newDoc();
+      const second = s().activeId;
+      expect(s().openTabs).toEqual([first, second]);
+      s().deleteDoc(second);
+      expect(s().openTabs).toEqual([first]);
+      expect(s().activeId).toBe(first);
+    });
+  });
 });
