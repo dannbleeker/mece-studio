@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-06-29T15:09:15.009Z",
-  "commit": "bc53cc0",
+  "generatedAt": "2026-06-29T15:20:33.954Z",
+  "commit": "ae907f3",
   "headline": {
-    "linesTsJs": 13423,
-    "tests": 356,
-    "lineCoveragePct": 91.85,
-    "commits": 176,
+    "linesTsJs": 13621,
+    "tests": 363,
+    "lineCoveragePct": 91.97,
+    "commits": 179,
     "ageDays": 18,
-    "trackedFiles": 223,
+    "trackedFiles": 225,
     "featureManualPct": 100,
     "featureBookPct": 39.4,
     "featureExamplePct": 25.4
@@ -15,18 +15,18 @@
   "code": [
     {
       "category": "App code (src, excl. tests)",
-      "files": 76,
-      "lines": 7237
+      "files": 77,
+      "lines": 7355
     },
     {
       "category": "Unit tests",
-      "files": 56,
-      "lines": 4132
+      "files": 57,
+      "lines": 4211
     },
     {
       "category": "E2E tests (Playwright)",
       "files": 22,
-      "lines": 883
+      "lines": 884
     },
     {
       "category": "Build scripts",
@@ -41,33 +41,33 @@
     {
       "category": "Docs (Markdown)",
       "files": 22,
-      "lines": 2235
+      "lines": 2239
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 91.85,
-      "covered": 1591,
-      "total": 1732
+      "pct": 91.97,
+      "covered": 1627,
+      "total": 1769
     },
     "statements": {
-      "pct": 89.54,
-      "covered": 1902,
-      "total": 2124
+      "pct": 89.53,
+      "covered": 1942,
+      "total": 2169
     },
     "functions": {
-      "pct": 87.81,
-      "covered": 598,
-      "total": 681
+      "pct": 87.77,
+      "covered": 603,
+      "total": 687
     },
     "branches": {
-      "pct": 78.8,
-      "covered": 959,
-      "total": 1217
+      "pct": 78.74,
+      "covered": 982,
+      "total": 1247
     }
   },
   "tests": {
-    "unit": 320,
+    "unit": 327,
     "e2e": 36
   },
   "domain": {
@@ -99,11 +99,11 @@
       },
       {
         "name": "components/canvas/Canvas.tsx",
-        "lines": 315
+        "lines": 321
       },
       {
         "name": "Workspace.tsx",
-        "lines": 290
+        "lines": 291
       }
     ]
   },
@@ -123,7 +123,7 @@
       },
       {
         "file": "src/components/canvas/Canvas.tsx",
-        "pct": 69.74
+        "pct": 70.73
       },
       {
         "file": "src/components/start/StartHome.tsx",
@@ -137,11 +137,11 @@
     "churnHotspots": [
       {
         "file": "src/store/index.ts",
-        "commits": 25
+        "commits": 26
       },
       {
         "file": "src/components/canvas/Canvas.tsx",
-        "commits": 16
+        "commits": 17
       },
       {
         "file": "src/App.tsx",
@@ -162,11 +162,6 @@
     ],
     "risky": [
       {
-        "file": "src/components/canvas/Canvas.tsx",
-        "commits": 16,
-        "pct": 69.74
-      },
-      {
         "file": "src/components/about/AboutDialog.tsx",
         "commits": 5,
         "pct": 54.54
@@ -185,7 +180,7 @@
   },
   "bundle": {
     "eagerJsGzipKb": 100.5,
-    "totalJsGzipKb": 527.6,
+    "totalJsGzipKb": 528.1,
     "cssGzipKb": 8.5,
     "budgetKb": 115,
     "withinBudget": true
@@ -193,8 +188,8 @@
   "docs": {
     "bookWords": 21539,
     "chapters": 14,
-    "appLoc": 7237,
-    "docToCodeRatio": 0.31
+    "appLoc": 7355,
+    "docToCodeRatio": 0.3
   },
   "featureCoverage": {
     "total": 71,
@@ -500,26 +495,26 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 18,
-    "commits": 176,
-    "commits7d": 9,
+    "commits": 179,
+    "commits7d": 12,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 105
+        "count": 106
       },
       {
         "name": "github-actions[bot]",
-        "count": 64
+        "count": 65
       },
       {
         "name": "Claude",
-        "count": 7
+        "count": 8
       }
     ],
     "churn30d": {
-      "added": 29566,
-      "removed": 5472
+      "added": 29901,
+      "removed": 5601
     },
-    "changelogEntries": 55
+    "changelogEntries": 56
   }
 }
