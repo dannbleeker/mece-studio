@@ -4,6 +4,8 @@ import { Canvas } from '@/components/canvas/Canvas';
 import { HeaderMenu, type MenuEntry } from '@/components/header/HeaderMenu';
 import { ImportDialog } from '@/components/import/ImportDialog';
 import { Inspector } from '@/components/inspector/Inspector';
+import { PresentationView } from '@/components/present/PresentationView';
+import { PrintPreview } from '@/components/print/PrintPreview';
 import { HealthChip } from '@/components/review/HealthChip';
 import { ReviewPanel } from '@/components/review/ReviewPanel';
 import { SynthesisPanel } from '@/components/SynthesisPanel';
@@ -80,6 +82,8 @@ export function Workspace() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const [showPrint, setShowPrint] = useState(false);
+  const [showPresentation, setShowPresentation] = useState(false);
 
   const onCopyMarkdown = () => void copyToClipboard(toMarkdown(doc));
 
@@ -165,8 +169,11 @@ export function Workspace() {
     { key: 'save', label: 'Save', onClick: () => void onSaveJson() },
     { key: 'saveAs', label: 'Save As…', onClick: () => void onSaveAs() },
     { key: 'sep1', divider: true },
-    { key: 'about', label: 'About', onClick: () => setShowAbout(true) },
+    { key: 'present', label: 'Present', onClick: () => setShowPresentation(true) },
+    { key: 'print', label: 'Print…', onClick: () => setShowPrint(true) },
     { key: 'sep2', divider: true },
+    { key: 'about', label: 'About', onClick: () => setShowAbout(true) },
+    { key: 'sep3', divider: true },
     { key: 'new', label: 'New tree', onClick: () => newDoc() },
     { key: 'delete', label: 'Delete tree', onClick: onDelete },
   ];
@@ -264,6 +271,8 @@ export function Workspace() {
           {showShortcuts && <ShortcutsDialog onClose={() => setShowShortcuts(false)} />}
           {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
           {showImport && <ImportDialog onClose={() => setShowImport(false)} />}
+          {showPrint && <PrintPreview onClose={() => setShowPrint(false)} />}
+          {showPresentation && <PresentationView onClose={() => setShowPresentation(false)} />}
         </main>
         {reviewOpen ? <ReviewPanel /> : <Inspector />}
       </div>

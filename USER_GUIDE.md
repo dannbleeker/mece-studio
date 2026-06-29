@@ -340,6 +340,17 @@ formats:
 The PNG / PDF / PowerPoint exporters are loaded on demand, so they don't slow
 down the app's first load.
 
+### Present and print
+
+- **Present** — **⋯ → Present** opens a full-screen, step-through presentation
+  that walks the tree one decomposition at a time (depth-first). Each slide
+  shows a question, its branches, and that split's MECE status. Use **← / →**
+  (or **Space**) to move between steps and **Esc** to exit.
+- **Print** — **⋯ → Print…** opens a print preview that lays the whole tree out
+  as a clean nested outline. Click **Print** to print it (or save as PDF from
+  your browser's print dialog); the app chrome is hidden so only the tree
+  prints.
+
 ## Undo, redo, and autosave
 
 - **Undo / redo** every change with <kbd>Ctrl/⌘+Z</kbd> and
