@@ -2,21 +2,25 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { childrenOf } from '@/domain/tree';
-import { downloadDataUrl } from '@/services/download';
+import { downloadDataUrl, downloadText } from '@/services/download';
 import { useStore } from '@/store';
 import { Canvas } from './Canvas';
 
 // Export uses dynamic import() of these heavy libs. Mock them so a toolbar click
 // drives the real export plumbing (bounds → render → save) without the actual
 // rasteriser / encoders, which don't run under happy-dom.
-const { toPngMock, pdfSave, pdfAddImage, pptxWrite, pptxAddImage } = vi.hoisted(() => ({
+const { toPngMock, toSvgMock, pdfSave, pdfAddImage, pptxWrite, pptxAddImage } = vi.hoisted(() => ({
   toPngMock: vi.fn(async () => 'data:image/png;base64,AAAA'),
+  toSvgMock: vi.fn(
+    async () =>
+      `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><script>alert(1)</script><rect/></svg>')}`
+  ),
   pdfSave: vi.fn(),
   pdfAddImage: vi.fn(),
   pptxWrite: vi.fn(async () => undefined),
   pptxAddImage: vi.fn(),
 }));
-vi.mock('html-to-image', () => ({ toPng: toPngMock }));
+vi.mock('html-to-image', () => ({ toPng: toPngMock, toSvg: toSvgMock }));
 // Real classes (not vi.fn) — a mock fn used with `new` doesn't reliably return
 // the factory object, so instance methods would be undefined.
 vi.mock('jspdf', () => ({
@@ -98,6 +102,22 @@ describe('Canvas', () => {
     );
     expect(toPngMock).toHaveBeenCalledTimes(1);
     expect(s().exportRequest).toBeNull(); // cleared after fulfilling
+  });
+
+  it('exports a sanitised SVG when the store requests it', async () => {
+    render(<Canvas />);
+    act(() => {
+      s().requestExport('svg');
+    });
+    await waitFor(() => expect(downloadText).toHaveBeenCalledTimes(1));
+    expect(toSvgMock).toHaveBeenCalledTimes(1);
+    const [filename, svg, mime] = (downloadText as unknown as { mock: { calls: string[][] } }).mock
+      .calls[0] as [string, string, string];
+    expect(filename).toBe('mece-tree.svg');
+    expect(mime).toBe('image/svg+xml');
+    expect(svg).toContain('<rect'); // benign content survives
+    expect(svg).not.toContain('<script'); // the script was stripped at the sink
+    expect(svg).not.toContain('alert(1)');
   });
 
   it('exports a PDF when the store requests it', async () => {

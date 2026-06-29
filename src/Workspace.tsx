@@ -160,6 +160,7 @@ export function Workspace() {
   const onExportJson = () => downloadText('mece-tree.json', treeToJson(doc), 'application/json');
   const exportItems: MenuEntry[] = [
     { key: 'png', label: 'PNG', onClick: () => requestExport('png') },
+    { key: 'svg', label: 'SVG', onClick: () => requestExport('svg') },
     { key: 'pdf', label: 'PDF', onClick: () => requestExport('pdf') },
     { key: 'pptx', label: 'PPTX', onClick: () => requestExport('pptx') },
     { key: 'json', label: 'JSON', onClick: onExportJson },

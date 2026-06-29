@@ -4,6 +4,9 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 
 ## [Unreleased]
 
+### Added
+- **SVG export.** The **Export ▾** menu gains **SVG** — a true vector export of the canvas, alongside PNG / PDF / PPTX / JSON. Because an `.svg` is a document a browser executes when opened, the export is **sanitised at the sink**: the serialised markup is run through a new `sanitizeSvg` that strips any `<script>`, inline event handler (`on*`), and script-bearing URL (`javascript:` / `data:text/html`) before the file is written — and fails closed on anything unparseable. The export-safety guard was updated deliberately from “no SVG path” to “any SVG export must go through the sanitiser”, backed by unit tests proving scripts/handlers/URLs are removed.
+
 ### Fixed
 - **Deleting your last tree now clears it instead of silently re-creating it.** Removing the only tree — from a Start card or **⋯ → Delete tree** — used to immediately reseed a fresh `Why is this happening?` tree with the same default title, so it looked like the delete did nothing. Deleting the last tree now empties the library and returns you to the Start page's empty gallery, and an emptied library stays empty across reloads (only a genuine first run still seeds a starter tree).
 
