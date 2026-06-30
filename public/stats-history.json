@@ -78,5 +78,15 @@
     "featureManualPct": 100,
     "featureBookPct": 100,
     "featureExamplePct": 23.1
+  },
+  {
+    "date": "2026-06-30",
+    "linesTsJs": 13673,
+    "coveragePct": 92.82,
+    "tests": 366,
+    "bundleKb": 100.5,
+    "featureManualPct": 100,
+    "featureBookPct": 100,
+    "featureExamplePct": 23.1
   }
 ]
