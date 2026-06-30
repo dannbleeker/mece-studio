@@ -21,8 +21,10 @@ export default defineConfig({
         // SPA deep links fall back to the app shell...
         navigateFallback: '/index.html',
         // ...but never rewrite the standalone pages (/user-guide.html, /notices.html,
-        // /dashboard.html) into it. (No /api/ — the app has no backend.)
-        navigateFallbackDenylist: [/\.html$/],
+        // /dashboard.html) or the book downloads (.pdf/.epub) into it — opening those
+        // in a new tab is a navigation request, so without this the SW would serve the
+        // app instead of the file. (No /api/ — the app has no backend.)
+        navigateFallbackDenylist: [/\.html$/, /\.(?:pdf|epub)$/],
       },
       manifest: {
         name: 'MECE Studio',
