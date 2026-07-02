@@ -30,6 +30,7 @@ import { CanvasCoach } from './CanvasCoach';
 import { type NodeEditing, NodeEditingContext } from './nodeEditing';
 import { IssueNode } from './nodes/IssueNode';
 import { type IssueFlowNode, toFlow } from './projection';
+import { SelectionBar } from './SelectionBar';
 import { boundsWithinViewport, nodesBounds } from './viewport';
 
 const nodeTypes: NodeTypes = { issue: IssueNode };
@@ -59,7 +60,9 @@ const DROP_TARGET_CLASS = 'rounded-lg ring-2 ring-[#3f7d54] ring-offset-2 ring-o
 function Flow() {
   const doc = useStore((s) => s.doc);
   const selectedId = useStore((s) => s.selectedId);
+  const selectedIds = useStore((s) => s.selectedIds);
   const select = useStore((s) => s.select);
+  const toggleSelect = useStore((s) => s.toggleSelect);
   const moveNode = useStore((s) => s.moveNode);
   const renameNode = useStore((s) => s.renameNode);
   const addChild = useStore((s) => s.addChild);
@@ -146,8 +149,8 @@ function Flow() {
   }, [selectedId, editingId, addChild, select]);
 
   const { nodes: layoutNodes, edges } = useMemo(
-    () => toFlow(doc, selectedId, query, sortByPriority),
-    [doc, selectedId, query, sortByPriority]
+    () => toFlow(doc, selectedIds, query, sortByPriority),
+    [doc, selectedIds, query, sortByPriority]
   );
   const [nodes, setNodes, onNodesChange] = useNodesState(layoutNodes);
 
@@ -242,9 +245,9 @@ function Flow() {
       dropTargetRef.current = null;
       if (target) moveNode(dragged.id as NodeId, target.id as NodeId);
       const st = useStore.getState();
-      setNodes(toFlow(st.doc, selectedId, '', st.settings.sortSiblingsByPriority).nodes);
+      setNodes(toFlow(st.doc, st.selectedIds, '', st.settings.sortSiblingsByPriority).nodes);
     },
-    [findDropTarget, moveNode, selectedId, setNodes]
+    [findDropTarget, moveNode, setNodes]
   );
 
   // Zoom to the nodes whose label matches the search query.
@@ -319,7 +322,11 @@ function Flow() {
         edges={displayEdges}
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
-        onNodeClick={(_, node) => select(node.id as NodeId)}
+        onNodeClick={(evt, node) =>
+          evt.shiftKey || evt.metaKey || evt.ctrlKey
+            ? toggleSelect(node.id as NodeId)
+            : select(node.id as NodeId)
+        }
         onNodeDrag={onNodeDrag}
         onNodeDragStop={onNodeDragStop}
         onPaneClick={() => select(null)}
@@ -341,6 +348,9 @@ function Flow() {
         />
         <Panel position="top-center">
           <CanvasCoach show={Object.keys(doc.splits).length === 0} />
+        </Panel>
+        <Panel position="bottom-center">
+          <SelectionBar />
         </Panel>
         <Panel position="top-left">
           <div className="flex flex-col gap-1">

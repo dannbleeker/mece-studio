@@ -98,6 +98,32 @@ describe('store', () => {
     expect(s().selectedId).not.toBe(orig.id);
   });
 
+  it('toggleSelect builds and narrows the multi-selection', () => {
+    s().addChild(s().doc.rootId, 'A');
+    s().addChild(s().doc.rootId, 'B');
+    const kids = childrenOf(s().doc, s().doc.rootId);
+    const a = kids[0];
+    const b = kids[1];
+    if (!a || !b) throw new Error('missing children');
+    s().select(a.id);
+    expect(s().selectedIds).toEqual([a.id]);
+    s().toggleSelect(b.id);
+    expect(s().selectedIds).toEqual([a.id, b.id]);
+    expect(s().selectedId).toBe(b.id);
+    s().toggleSelect(a.id);
+    expect(s().selectedIds).toEqual([b.id]);
+  });
+
+  it('removeNodes deletes the whole selection in one undo step', () => {
+    s().addChild(s().doc.rootId, 'A');
+    s().addChild(s().doc.rootId, 'B');
+    const ids = childrenOf(s().doc, s().doc.rootId).map((k) => k.id);
+    const before = s().past.length;
+    s().removeNodes(ids);
+    expect(childrenOf(s().doc, s().doc.rootId)).toHaveLength(0);
+    expect(s().past.length).toBe(before + 1);
+  });
+
   it('removes a node and clears the selection when it was selected', () => {
     s().addChild(s().doc.rootId, 'Doomed');
     const child = childrenOf(s().doc, s().doc.rootId)[0];

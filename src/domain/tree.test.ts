@@ -10,6 +10,7 @@ import {
   moveSibling,
   parentOf,
   removeNode,
+  removeNodes,
   renameNode,
   setAllCollapsed,
   setAnswer,
@@ -18,6 +19,8 @@ import {
   setDimension,
   setNodeValue,
   setOperator,
+  setPriorityMany,
+  setStatusMany,
   splitOf,
   toggleCollapse,
 } from '@/domain/tree';
@@ -71,6 +74,28 @@ describe('tree ops', () => {
     const formula = setDecomposition(d1, doc0.rootId, 'formula');
     const product = setOperator(formula, doc0.rootId, 'product');
     expect(splitOf(product, doc0.rootId)?.operator).toBe('product');
+  });
+
+  it('removeNodes / setStatusMany / setPriorityMany act on several nodes at once', () => {
+    let doc = seed();
+    const a = addChild(doc, doc.rootId, 'A');
+    doc = a.doc;
+    const b = addChild(doc, doc.rootId, 'B');
+    doc = b.doc;
+    const c = addChild(doc, doc.rootId, 'C');
+    doc = c.doc;
+    const ids = [a.childId, b.childId, c.childId];
+
+    const parked = setStatusMany(doc, ids, 'parked');
+    expect(ids.every((id) => parked.nodes[id]?.status === 'parked')).toBe(true);
+
+    const prioritised = setPriorityMany(doc, ids, { impact: 'high', ease: 'high' });
+    expect(ids.every((id) => prioritised.nodes[id]?.priority?.impact === 'high')).toBe(true);
+    const cleared = setPriorityMany(prioritised, ids, undefined);
+    expect(ids.every((id) => cleared.nodes[id]?.priority === undefined)).toBe(true);
+
+    const pruned = removeNodes(doc, [a.childId, c.childId]);
+    expect(childrenOf(pruned, doc.rootId).map((n) => n.label)).toEqual(['B']);
   });
 
   it('setAnswer sets (trimmed), no-ops when unchanged, and clears on blank', () => {

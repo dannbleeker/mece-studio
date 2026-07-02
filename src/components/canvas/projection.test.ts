@@ -42,7 +42,7 @@ const yOf = (nodes: IssueFlowNode[], id: string): number => {
 describe('toFlow projection', () => {
   it('maps node data and derives edges from splits', () => {
     const { doc, revenueId, costsId } = sample();
-    const { nodes, edges } = toFlow(doc, null);
+    const { nodes, edges } = toFlow(doc, []);
     const byId = new Map(nodes.map((n) => [n.id, n]));
 
     const rev = byId.get(revenueId);
@@ -58,9 +58,17 @@ describe('toFlow projection', () => {
     expect(edges).toHaveLength(4);
   });
 
+  it('marks every node in the selection set', () => {
+    const { doc, revenueId, costsId } = sample();
+    const byId = new Map(toFlow(doc, [revenueId, costsId]).nodes.map((n) => [n.id, n]));
+    expect(byId.get(revenueId)?.data.selected).toBe(true);
+    expect(byId.get(costsId)?.data.selected).toBe(true);
+    expect(byId.get(doc.rootId)?.data.selected).toBe(false);
+  });
+
   it('flags only the nodes matching the search query', () => {
     const { doc } = sample();
-    const matched = toFlow(doc, null, 'rev')
+    const matched = toFlow(doc, [], 'rev')
       .nodes.filter((n) => n.data.matched)
       .map((n) => n.data.label);
     expect(matched).toEqual(['Revenue']);
@@ -68,7 +76,7 @@ describe('toFlow projection', () => {
 
   it('hides descendants of a collapsed node but keeps the node itself', () => {
     const { doc, revenueId } = sample();
-    const { nodes } = toFlow(toggleCollapse(doc, revenueId), null);
+    const { nodes } = toFlow(toggleCollapse(doc, revenueId), []);
     const rev = nodes.find((n) => n.id === revenueId);
     expect(rev?.data.collapsed).toBe(true);
     expect(rev?.data.childCount).toBe(2);
@@ -86,11 +94,11 @@ describe('toFlow projection', () => {
     doc = setPriority(doc, second.childId, { impact: 'high', ease: 'high' });
 
     // Default: creation order (First above Second).
-    const def = toFlow(doc, null).nodes;
+    const def = toFlow(doc, []).nodes;
     expect(yOf(def, first.childId)).toBeLessThan(yOf(def, second.childId));
 
     // Sorted: highest priority first (Second above First).
-    const sorted = toFlow(doc, null, '', true).nodes;
+    const sorted = toFlow(doc, [], '', true).nodes;
     expect(yOf(sorted, second.childId)).toBeLessThan(yOf(sorted, first.childId));
   });
 });

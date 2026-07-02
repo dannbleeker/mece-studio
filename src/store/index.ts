@@ -14,6 +14,7 @@ import {
   moveSibling as moveSiblingOp,
   removeEvidence as removeEvidenceOp,
   removeNode as removeNodeOp,
+  removeNodes as removeNodesOp,
   renameNode as renameNodeOp,
   setAllCollapsed as setAllCollapsedOp,
   setAnswer as setAnswerOp,
@@ -22,7 +23,9 @@ import {
   setDimension as setDimensionOp,
   setNodeValue as setNodeValueOp,
   setOperator as setOperatorOp,
+  setPriorityMany as setPriorityManyOp,
   setPriority as setPriorityOp,
+  setStatusMany as setStatusManyOp,
   setStatus as setStatusOp,
   toggleCollapse as toggleCollapseOp,
   updateEvidence as updateEvidenceOp,
@@ -152,6 +155,7 @@ function activate(doc: IssueTreeDoc, docs: LibraryEntry[], prevTabs: string[]) {
     past: [],
     future: [],
     selectedId: null,
+    selectedIds: [],
     view: 'workspace' as const,
     reviewOpen: false,
   };
@@ -167,6 +171,8 @@ interface AppState {
   past: IssueTreeDoc[];
   future: IssueTreeDoc[];
   selectedId: NodeId | null;
+  /** The full multi-selection (⌘/Ctrl/Shift-click); `selectedId` is the primary. */
+  selectedIds: NodeId[];
   settings: Settings;
   /** Which top-level surface is showing: the Start shell or a tree on the canvas. */
   view: AppView;
@@ -178,6 +184,8 @@ interface AppState {
   exportRequest: ExportKind | null;
 
   select: (id: NodeId | null) => void;
+  /** Add or remove a node from the multi-selection (⌘/Ctrl/Shift-click). */
+  toggleSelect: (id: NodeId) => void;
   setView: (view: AppView) => void;
   setReviewOpen: (open: boolean) => void;
   /** Select a node and ask the canvas to centre it (used by the review dock). */
@@ -234,6 +242,10 @@ interface AppState {
   moveSibling: (id: NodeId, direction: 'up' | 'down') => void;
   duplicateNode: (id: NodeId) => void;
   removeNode: (id: NodeId) => void;
+  /** Bulk actions over a multi-selection — each one undoable step. */
+  removeNodes: (ids: readonly NodeId[]) => void;
+  setStatusMany: (ids: readonly NodeId[], status: NodeStatus) => void;
+  setPriorityMany: (ids: readonly NodeId[], priority: Priority | undefined) => void;
   undo: () => void;
   redo: () => void;
   canUndo: () => boolean;
@@ -277,16 +289,27 @@ export const useStore = create<AppState>((set, get) => {
     past: [],
     future: [],
     selectedId: null,
+    selectedIds: [],
     // Land on the Start shell; opening or creating a tree switches to 'workspace'.
     view: 'start',
     reviewOpen: false,
     locateNonce: 0,
     exportRequest: null,
 
-    select: (id) => set({ selectedId: id }),
+    select: (id) => set({ selectedId: id, selectedIds: id ? [id] : [] }),
+    toggleSelect: (id) =>
+      set((s) => {
+        const has = s.selectedIds.includes(id);
+        const selectedIds = has ? s.selectedIds.filter((x) => x !== id) : [...s.selectedIds, id];
+        return {
+          selectedIds,
+          selectedId: has ? (selectedIds[selectedIds.length - 1] ?? null) : id,
+        };
+      }),
     setView: (view) => set({ view }),
     setReviewOpen: (open) => set({ reviewOpen: open }),
-    locate: (id) => set((s) => ({ selectedId: id, locateNonce: s.locateNonce + 1 })),
+    locate: (id) =>
+      set((s) => ({ selectedId: id, selectedIds: [id], locateNonce: s.locateNonce + 1 })),
     requestExport: (kind) => set({ exportRequest: kind }),
     setSettings: (patch) =>
       set((s) => {
@@ -364,6 +387,7 @@ export const useStore = create<AppState>((set, get) => {
           past: [],
           future: [],
           selectedId: null,
+          selectedIds: [],
           view: 'start',
           reviewOpen: false,
         };
@@ -483,15 +507,37 @@ export const useStore = create<AppState>((set, get) => {
           newId = result.newId;
           return result.doc;
         },
-        () => (newId ? { selectedId: newId } : {})
+        () => (newId ? { selectedId: newId, selectedIds: [newId] } : {})
       );
     },
 
     removeNode: (id) =>
       apply(
         (doc) => removeNodeOp(doc, id),
-        (_doc, prev) => (prev.selectedId === id ? { selectedId: null } : {})
+        (newDoc, prev) => {
+          const selectedIds = prev.selectedIds.filter((x) => newDoc.nodes[x]);
+          const primaryGone = prev.selectedId != null && !newDoc.nodes[prev.selectedId];
+          return {
+            selectedIds,
+            selectedId: primaryGone
+              ? (selectedIds[selectedIds.length - 1] ?? null)
+              : prev.selectedId,
+          };
+        }
       ),
+
+    // Bulk actions over a multi-selection — one undo step each. Delete drops the
+    // whole selection; set-status / set-priority leave it in place.
+    removeNodes: (ids) =>
+      apply(
+        (doc) => removeNodesOp(doc, ids),
+        (newDoc, prev) => {
+          const selectedIds = prev.selectedIds.filter((x) => newDoc.nodes[x]);
+          return { selectedIds, selectedId: selectedIds[selectedIds.length - 1] ?? null };
+        }
+      ),
+    setStatusMany: (ids, status) => apply((doc) => setStatusManyOp(doc, ids, status)),
+    setPriorityMany: (ids, priority) => apply((doc) => setPriorityManyOp(doc, ids, priority)),
 
     undo: () =>
       set((s) => {

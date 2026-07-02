@@ -69,6 +69,7 @@ function MeceRow({ label, result }: { label: string; result: CheckResult }) {
 export function Inspector() {
   const doc = useStore((s) => s.doc);
   const selectedId = useStore((s) => s.selectedId);
+  const selectedIds = useStore((s) => s.selectedIds);
   const setRootQuestion = useStore((s) => s.setRootQuestion);
   const renameNode = useStore((s) => s.renameNode);
   const setDetail = useStore((s) => s.setDetail);
@@ -136,6 +137,11 @@ export function Inspector() {
 
   return (
     <aside className="flex h-full w-full flex-col border-neutral-200 bg-white sm:w-80 sm:shrink-0 sm:border-l">
+      {selectedIds.length > 1 && (
+        <div className="border-[#e7e4dc] border-b bg-[#f6f9fd] px-5 py-1.5 text-[11px] text-[#3f6fb0]">
+          {selectedIds.length} nodes selected — bulk actions in the canvas toolbar
+        </div>
+      )}
       <div className="flex items-center gap-2 px-5 pt-4 pb-2">
         <span className="truncate font-semibold text-[14px] text-neutral-800">
           {node.label || 'Untitled'}

@@ -210,6 +210,12 @@ selected node (or the root) in a single, undoable step. **Indent** a line (Tab /
 spaces, or a bullet) to nest it as a sub-issue, so a whole multi-level outline
 drops in at once. <kbd>⌘/Ctrl</kbd> + <kbd>Enter</kbd> adds.
 
+**Multi-select and bulk actions.** Hold <kbd>⌘/Ctrl</kbd> or <kbd>Shift</kbd> and
+click to select several nodes at once — each shows the selection ring. A floating
+**action bar** then lets you set their **status** or **priority**, or **delete**
+them, all in one undoable step; <kbd>Delete</kbd> / <kbd>Backspace</kbd> removes the
+whole selection. (The inspector keeps editing the primary node.)
+
 **Detail and notes.** The inspector has a label, an optional longer **detail**
 field, and a **notes** field for rationale, assumptions, or data sources. A node
 that carries notes shows a small marker on the canvas, and notes flow into the

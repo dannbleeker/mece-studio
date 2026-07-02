@@ -387,6 +387,35 @@ export function setStatus(doc: IssueTreeDoc, nodeId: NodeId, status: NodeStatus)
   return patchNode(doc, nodeId, (node) => (node.status === status ? null : { ...node, status }));
 }
 
+/** Remove several nodes (and their subtrees) in one transform — one undo step. */
+export function removeNodes(doc: IssueTreeDoc, ids: readonly NodeId[]): IssueTreeDoc {
+  let next = doc;
+  for (const id of ids) next = removeNode(next, id);
+  return next;
+}
+
+/** Set the hypothesis status on several nodes in one transform — one undo step. */
+export function setStatusMany(
+  doc: IssueTreeDoc,
+  ids: readonly NodeId[],
+  status: NodeStatus
+): IssueTreeDoc {
+  let next = doc;
+  for (const id of ids) next = setStatus(next, id, status);
+  return next;
+}
+
+/** Set or clear priority on several nodes in one transform — one undo step. */
+export function setPriorityMany(
+  doc: IssueTreeDoc,
+  ids: readonly NodeId[],
+  priority: Priority | undefined
+): IssueTreeDoc {
+  let next = doc;
+  for (const id of ids) next = setPriority(next, id, priority);
+  return next;
+}
+
 /** Collapse or expand a node's subtree (hides/shows its descendants on the canvas). */
 export function toggleCollapse(doc: IssueTreeDoc, nodeId: NodeId): IssueTreeDoc {
   return patchNode(doc, nodeId, (node) => {

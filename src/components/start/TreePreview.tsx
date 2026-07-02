@@ -17,7 +17,7 @@ const STATUS_STRIPE: Record<NodeStatus, string | null> = {
  * omitted: at thumbnail scale the shape reads, the text wouldn't.
  */
 export function TreePreview({ doc }: { doc: IssueTreeDoc }) {
-  const { nodes, edges } = useMemo(() => toFlow(doc, null), [doc]);
+  const { nodes, edges } = useMemo(() => toFlow(doc), [doc]);
 
   const box = useMemo(() => {
     if (nodes.length === 0) return null;

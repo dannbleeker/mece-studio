@@ -3,7 +3,7 @@ import { layoutTree } from '@/domain/layout';
 import { type PriorityBand, priorityBand, sortSiblingsByPriority } from '@/domain/priority';
 import { matchesQuery } from '@/domain/search';
 import { hiddenNodeIds, splitOf } from '@/domain/tree';
-import type { IssueNode, IssueTreeDoc, MeceStatus } from '@/domain/types';
+import type { IssueNode, IssueTreeDoc, MeceStatus, NodeId } from '@/domain/types';
 
 /** Data carried by each React Flow node. Must extend Record for React Flow v12. */
 interface IssueNodeData extends Record<string, unknown> {
@@ -50,10 +50,11 @@ function evidenceCounts(evidence: IssueNode['evidence']): {
  */
 export function toFlow(
   doc: IssueTreeDoc,
-  selectedId: string | null,
+  selectedIds: readonly NodeId[] = [],
   query = '',
   sortByPriority = false
 ): { nodes: IssueFlowNode[]; edges: Edge[] } {
+  const selected = new Set(selectedIds);
   const hidden = hiddenNodeIds(doc);
   // Sibling order is a view concern — sort for layout without mutating the doc.
   const layoutDoc = sortByPriority ? sortSiblingsByPriority(doc) : doc;
@@ -80,7 +81,7 @@ export function toFlow(
           collapsed: n.collapsed === true,
           childCount: split ? split.childIds.length : 0,
           matched: matchesQuery(n.label, query),
-          selected: n.id === selectedId,
+          selected: selected.has(n.id),
         },
       };
     });

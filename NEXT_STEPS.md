@@ -8,9 +8,10 @@ Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 ## Deferred from the 2026-07 UI/feature review implementation
 These are the review recommendations not yet shipped — the heaviest items, left as
 clean follow-ups (everything else from the review landed):
-- **Multi-select for bulk canvas actions (F13).** A `selectedIds` model + React Flow
-  rubber-band/shift-select + a selection action bar (bulk delete / status / priority /
-  re-parent in one undo step). The batch-op precedent is `addChildren`/`captureChildren`.
+- **Rubber-band (box) select (F13 residual).** Multi-select via ⌘/Ctrl/Shift-click + a
+  bulk action bar shipped; box/rubber-band select still to add — it needs switching to
+  React-Flow-owned selection + `onSelectionChange` sync (a larger change to the canvas
+  interaction model). Bulk multi-node re-parent is also out (drag re-parents one node).
 - **Editable native PPTX (F9).** Render the tree as native pptx text boxes + connector lines
   from the dagre positions (instead of one embedded raster), keeping the raster path as a
   fallback for very large trees.

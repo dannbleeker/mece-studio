@@ -78,10 +78,11 @@ export function Workspace() {
   const setView = useStore((s) => s.setView);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
-  const removeNode = useStore((s) => s.removeNode);
+  const removeNodes = useStore((s) => s.removeNodes);
   const setPriority = useStore((s) => s.setPriority);
   const saveAsTemplate = useStore((s) => s.saveAsTemplate);
   const selectedId = useStore((s) => s.selectedId);
+  const selectedIds = useStore((s) => s.selectedIds);
   const select = useStore((s) => s.select);
   const setReviewOpen = useStore((s) => s.setReviewOpen);
   // Below ~640px the header collapses and the inspector becomes a bottom sheet.
@@ -149,9 +150,9 @@ export function Workspace() {
       } else if (mod && (key === 'y' || (key === 'z' && e.shiftKey))) {
         e.preventDefault();
         redo();
-      } else if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId) {
+      } else if ((e.key === 'Delete' || e.key === 'Backspace') && selectedIds.length > 0) {
         e.preventDefault();
-        removeNode(selectedId);
+        removeNodes(selectedIds);
       } else if (key === 'p' && !mod && selectedId) {
         // Bump the selected node's priority: none → low → medium → high → none
         // (both axes together — a quick keyboard flag for "this matters").
@@ -168,7 +169,7 @@ export function Workspace() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [undo, redo, removeNode, setPriority, selectedId]);
+  }, [undo, redo, removeNodes, setPriority, selectedId, selectedIds]);
 
   // The tree's title + a type badge derived from how the root is decomposed.
   const rootLabel = doc.nodes[doc.rootId]?.label ?? 'Untitled tree';
