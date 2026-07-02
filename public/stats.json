@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-07-02T10:11:09.919Z",
-  "commit": "e0561b1",
+  "generatedAt": "2026-07-02T10:16:36.863Z",
+  "commit": "fb3db7c",
   "headline": {
-    "linesTsJs": 15538,
+    "linesTsJs": 15560,
     "tests": 393,
-    "lineCoveragePct": 88.92,
-    "commits": 210,
+    "lineCoveragePct": 88.97,
+    "commits": 212,
     "ageDays": 21,
     "trackedFiles": 239,
     "featureManualPct": 100,
@@ -16,7 +16,7 @@
     {
       "category": "App code (src, excl. tests)",
       "files": 85,
-      "lines": 8886
+      "lines": 8908
     },
     {
       "category": "Unit tests",
@@ -41,29 +41,29 @@
     {
       "category": "Docs (Markdown)",
       "files": 24,
-      "lines": 2497
+      "lines": 2500
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 88.92,
-      "covered": 1952,
-      "total": 2195
+      "pct": 88.97,
+      "covered": 1961,
+      "total": 2204
     },
     "statements": {
-      "pct": 87.14,
-      "covered": 2325,
-      "total": 2668
+      "pct": 87.13,
+      "covered": 2336,
+      "total": 2681
     },
     "functions": {
-      "pct": 84.72,
-      "covered": 688,
-      "total": 812
+      "pct": 84.74,
+      "covered": 689,
+      "total": 813
     },
     "branches": {
-      "pct": 77.41,
-      "covered": 1224,
-      "total": 1581
+      "pct": 77.46,
+      "covered": 1234,
+      "total": 1593
     }
   },
   "tests": {
@@ -189,8 +189,8 @@
     "nonNull": 0
   },
   "bundle": {
-    "eagerJsGzipKb": 103.7,
-    "totalJsGzipKb": 535.7,
+    "eagerJsGzipKb": 103.8,
+    "totalJsGzipKb": 535.8,
     "cssGzipKb": 8.9,
     "budgetKb": 115,
     "withinBudget": true
@@ -198,7 +198,7 @@
   "docs": {
     "bookWords": 23521,
     "chapters": 16,
-    "appLoc": 8886,
+    "appLoc": 8908,
     "docToCodeRatio": 0.28
   },
   "featureCoverage": {
@@ -289,16 +289,16 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 21,
-    "commits": 210,
-    "commits7d": 43,
+    "commits": 212,
+    "commits7d": 45,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 122
+        "count": 123
       },
       {
         "name": "github-actions[bot]",
-        "count": 77
+        "count": 78
       },
       {
         "name": "Claude",
@@ -306,9 +306,9 @@
       }
     ],
     "churn30d": {
-      "added": 33010,
-      "removed": 6684
+      "added": 33089,
+      "removed": 6738
     },
-    "changelogEntries": 76
+    "changelogEntries": 77
   }
 }
