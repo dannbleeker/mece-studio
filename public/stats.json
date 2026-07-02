@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-07-02T10:16:36.863Z",
-  "commit": "fb3db7c",
+  "generatedAt": "2026-07-02T10:18:50.889Z",
+  "commit": "8309fe4",
   "headline": {
     "linesTsJs": 15560,
     "tests": 393,
     "lineCoveragePct": 88.97,
-    "commits": 212,
+    "commits": 214,
     "ageDays": 21,
     "trackedFiles": 239,
-    "featureManualPct": 100,
-    "featureBookPct": 100,
-    "featureExamplePct": 23.1
+    "featureManualPct": 87.7,
+    "featureBookPct": 73.6,
+    "featureExamplePct": 17
   },
   "code": [
     {
@@ -71,11 +71,11 @@
     "e2e": 37
   },
   "domain": {
-    "features": 78,
+    "features": 106,
     "areas": 14,
     "domainModules": 29,
     "components": 45,
-    "exporters": 8
+    "exporters": 13
   },
   "footprint": {
     "depsProd": 9,
@@ -202,27 +202,27 @@
     "docToCodeRatio": 0.28
   },
   "featureCoverage": {
-    "total": 78,
-    "manual": 78,
-    "manualPct": 100,
+    "total": 106,
+    "manual": 93,
+    "manualPct": 87.7,
     "book": 78,
-    "bookPct": 100,
+    "bookPct": 73.6,
     "bookExample": 18,
-    "bookExamplePct": 23.1,
+    "bookExamplePct": 17,
     "byArea": {
       "Tree": {
-        "total": 6,
+        "total": 7,
         "manual": 6,
         "book": 6
       },
       "MECE": {
-        "total": 11,
-        "manual": 11,
+        "total": 17,
+        "manual": 16,
         "book": 11
       },
       "Prioritisation": {
-        "total": 2,
-        "manual": 2,
+        "total": 3,
+        "manual": 3,
         "book": 2
       },
       "Hypotheses": {
@@ -231,7 +231,7 @@
         "book": 2
       },
       "Evidence": {
-        "total": 3,
+        "total": 4,
         "manual": 3,
         "book": 3
       },
@@ -241,64 +241,271 @@
         "book": 6
       },
       "Synthesis": {
-        "total": 2,
-        "manual": 2,
+        "total": 5,
+        "manual": 5,
         "book": 2
       },
       "Canvas": {
-        "total": 9,
+        "total": 12,
         "manual": 9,
         "book": 9
       },
       "Editing": {
-        "total": 9,
-        "manual": 9,
+        "total": 11,
+        "manual": 11,
         "book": 9
       },
       "Export": {
-        "total": 8,
-        "manual": 8,
+        "total": 13,
+        "manual": 12,
         "book": 8
       },
       "Import": {
-        "total": 2,
+        "total": 3,
         "manual": 2,
         "book": 2
       },
       "Documents": {
-        "total": 6,
+        "total": 8,
         "manual": 6,
         "book": 6
       },
       "AI": {
-        "total": 2,
+        "total": 3,
         "manual": 2,
         "book": 2
       },
       "App": {
-        "total": 10,
+        "total": 12,
         "manual": 10,
         "book": 10
       }
     },
     "gaps": {
-      "noManual": [],
-      "noBook": []
+      "noManual": [
+        {
+          "id": "evidence-fast-entry",
+          "name": "Evidence: strength up front, stance toggle",
+          "since": 9
+        },
+        {
+          "id": "print-parity",
+          "name": "Print / PDF carries status, priority, evidence",
+          "since": 9
+        },
+        {
+          "id": "import-opml",
+          "name": "OPML import (outliners / mind-mappers)",
+          "since": 9
+        },
+        {
+          "id": "dialogs-native-free",
+          "name": "In-app confirm / rename dialogs",
+          "since": 9
+        },
+        {
+          "id": "ai-paste-back",
+          "name": "Keyless-AI split paste-back",
+          "since": 9
+        },
+        {
+          "id": "first-split-chooser",
+          "name": "Scaffold the first split from the Build CTA",
+          "since": 9
+        },
+        {
+          "id": "canvas-coach",
+          "name": "First-run canvas coach",
+          "since": 9
+        },
+        {
+          "id": "canvas-minimap",
+          "name": "Minimap + always-on flagged-edge cue",
+          "since": 9
+        },
+        {
+          "id": "review-dock-triage",
+          "name": "Review dock: grouped by axis, ranked by priority",
+          "since": 9
+        },
+        {
+          "id": "dense-node-layout",
+          "name": "Content-derived node height (no sibling overlap)",
+          "since": 9
+        },
+        {
+          "id": "custom-templates",
+          "name": "Save any tree as a reusable custom template",
+          "since": 9
+        },
+        {
+          "id": "cross-tree-search",
+          "name": "Cross-tree content search across the library",
+          "since": 9
+        },
+        {
+          "id": "per-tab-health",
+          "name": "Per-tab MECE health dot",
+          "since": 9
+        }
+      ],
+      "noBook": [
+        {
+          "id": "mece-colour-independent",
+          "name": "MECE state legible without colour (glyphs + aria)",
+          "since": 9
+        },
+        {
+          "id": "mece-ce-guidance",
+          "name": "CE guidance for process / framework splits",
+          "since": 9
+        },
+        {
+          "id": "mece-overlap-quality",
+          "name": "Dimension-aware sibling-overlap heuristic (names the pair)",
+          "since": 9
+        },
+        {
+          "id": "mece-formula-doublecount",
+          "name": "Formula double-count check",
+          "since": 9
+        },
+        {
+          "id": "split-dimension",
+          "name": "Name the dimension a split is cut on",
+          "since": 9
+        },
+        {
+          "id": "priority-matrix",
+          "name": "Impact x ease priority matrix + P shortcut",
+          "since": 9
+        },
+        {
+          "id": "evidence-fast-entry",
+          "name": "Evidence: strength up front, stance toggle",
+          "since": 9
+        },
+        {
+          "id": "governing-answer",
+          "name": "Governing answer banner + rolled-up verdict",
+          "since": 9
+        },
+        {
+          "id": "synthesis-numbers",
+          "name": "Values / roll-up / sensitivity in the synthesis",
+          "since": 9
+        },
+        {
+          "id": "answer-one-pager",
+          "name": "One-page answer HTML deliverable export",
+          "since": 9
+        },
+        {
+          "id": "export-csv",
+          "name": "CSV value-model export",
+          "since": 9
+        },
+        {
+          "id": "export-copy-image",
+          "name": "Copy tree image to clipboard",
+          "since": 9
+        },
+        {
+          "id": "export-share-link",
+          "name": "Backend-free share link",
+          "since": 9
+        },
+        {
+          "id": "export-branded",
+          "name": "Titled (dated) PDF / PPTX exports",
+          "since": 9
+        },
+        {
+          "id": "print-parity",
+          "name": "Print / PDF carries status, priority, evidence",
+          "since": 9
+        },
+        {
+          "id": "import-opml",
+          "name": "OPML import (outliners / mind-mappers)",
+          "since": 9
+        },
+        {
+          "id": "capture-nested",
+          "name": "Nested quick capture (indented outline)",
+          "since": 9
+        },
+        {
+          "id": "keyboard-outliner",
+          "name": "Keyboard navigation + add-sibling",
+          "since": 9
+        },
+        {
+          "id": "dialogs-native-free",
+          "name": "In-app confirm / rename dialogs",
+          "since": 9
+        },
+        {
+          "id": "ai-paste-back",
+          "name": "Keyless-AI split paste-back",
+          "since": 9
+        },
+        {
+          "id": "first-split-chooser",
+          "name": "Scaffold the first split from the Build CTA",
+          "since": 9
+        },
+        {
+          "id": "canvas-coach",
+          "name": "First-run canvas coach",
+          "since": 9
+        },
+        {
+          "id": "canvas-minimap",
+          "name": "Minimap + always-on flagged-edge cue",
+          "since": 9
+        },
+        {
+          "id": "review-dock-triage",
+          "name": "Review dock: grouped by axis, ranked by priority",
+          "since": 9
+        },
+        {
+          "id": "dense-node-layout",
+          "name": "Content-derived node height (no sibling overlap)",
+          "since": 9
+        },
+        {
+          "id": "custom-templates",
+          "name": "Save any tree as a reusable custom template",
+          "since": 9
+        },
+        {
+          "id": "cross-tree-search",
+          "name": "Cross-tree content search across the library",
+          "since": 9
+        },
+        {
+          "id": "per-tab-health",
+          "name": "Per-tab MECE health dot",
+          "since": 9
+        }
+      ]
     }
   },
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 21,
-    "commits": 212,
-    "commits7d": 45,
+    "commits": 214,
+    "commits7d": 47,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 123
+        "count": 124
       },
       {
         "name": "github-actions[bot]",
-        "count": 78
+        "count": 79
       },
       {
         "name": "Claude",
@@ -306,8 +513,8 @@
       }
     ],
     "churn30d": {
-      "added": 33089,
-      "removed": 6738
+      "added": 34076,
+      "removed": 6864
     },
     "changelogEntries": 77
   }
