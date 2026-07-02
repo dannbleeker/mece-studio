@@ -1,5 +1,6 @@
 import { CHECK_STATE_COLOR } from '@/components/checkColors';
 import { type MeceSummary, meceSummary } from '@/domain/meceStatus';
+import { searchNodes } from '@/domain/search';
 import type { IssueTreeDoc } from '@/domain/types';
 import { docName } from '@/services/storage';
 import { relativeTime, treeKind } from './format';
@@ -47,14 +48,35 @@ export function MecePill({ summary }: { summary: MeceSummary }) {
   );
 }
 
+/**
+ * Match a tree against a query across its content — name, node labels, and notes
+ * — so a library search finds "which tree has the pricing-floor logic?", not just
+ * matching titles. Returns a hint (the matching node's label) for a content match.
+ */
+function treeMatch(doc: IssueTreeDoc, q: string): { match: boolean; hint?: string } {
+  if (!q) return { match: true };
+  if (docName(doc).toLowerCase().includes(q)) return { match: true };
+  const nodeHit = searchNodes(doc, q)[0];
+  if (nodeHit) return { match: true, hint: doc.nodes[nodeHit]?.label };
+  const noteHit = Object.values(doc.nodes).find((n) => n.detail?.toLowerCase().includes(q));
+  if (noteHit) return { match: true, hint: noteHit.label };
+  return { match: false };
+}
+
 function TreeCard({
   id,
   doc,
   onOpen,
+  matchHint,
   onRename,
   onDuplicate,
   onDelete,
-}: { id: string; doc: IssueTreeDoc; onOpen: () => void } & ManageHandlers) {
+}: {
+  id: string;
+  doc: IssueTreeDoc;
+  onOpen: () => void;
+  matchHint?: string | undefined;
+} & ManageHandlers) {
   const name = docName(doc);
   const hasActions = onRename || onDuplicate || onDelete;
   return (
@@ -69,6 +91,11 @@ function TreeCard({
         <span className="text-[12px] text-neutral-500">
           {treeKind(doc)} · edited {relativeTime(doc.updatedAt)}
         </span>
+        {matchHint && (
+          <span className="truncate text-[11px] text-[#3f6fb0]" title={matchHint}>
+            matches “{matchHint}”
+          </span>
+        )}
         <MecePill summary={meceSummary(doc)} />
       </button>
       {hasActions && (
@@ -129,9 +156,9 @@ export function TreeGallery({
   onDelete,
 }: TreeGalleryProps) {
   const q = query.trim().toLowerCase();
-  const filtered = q ? docs.filter((d) => docName(d.doc).toLowerCase().includes(q)) : docs;
+  const results = docs.map((d) => ({ d, ...treeMatch(d.doc, q) })).filter((r) => r.match);
 
-  if (filtered.length === 0) {
+  if (results.length === 0) {
     return (
       <p className="rounded-xl border border-[#e7e4dc] border-dashed bg-white/50 px-4 py-8 text-center text-[13px] text-neutral-500">
         {emptyMessage ?? (q ? `No trees match “${query}”.` : 'No trees yet.')}
@@ -141,12 +168,13 @@ export function TreeGallery({
 
   return (
     <div className="grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(240px,1fr))]">
-      {filtered.map(({ entry, doc }) => (
+      {results.map(({ d: { entry, doc }, hint }) => (
         <TreeCard
           key={entry.id}
           id={entry.id}
           doc={doc}
           onOpen={() => onOpen(entry.id)}
+          matchHint={hint}
           onRename={onRename}
           onDuplicate={onDuplicate}
           onDelete={onDelete}

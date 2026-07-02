@@ -7,6 +7,7 @@ import { QuickCaptureDialog } from '@/components/capture/QuickCaptureDialog';
 import { HeaderMenu, type MenuEntry } from '@/components/header/HeaderMenu';
 import { ImportDialog } from '@/components/import/ImportDialog';
 import { Inspector } from '@/components/inspector/Inspector';
+import { PromptDialog } from '@/components/PromptDialog';
 import { PresentationView } from '@/components/present/PresentationView';
 import { PrintPreview } from '@/components/print/PrintPreview';
 import { HealthChip } from '@/components/review/HealthChip';
@@ -78,6 +79,7 @@ export function Workspace() {
   const redo = useStore((s) => s.redo);
   const removeNode = useStore((s) => s.removeNode);
   const setPriority = useStore((s) => s.setPriority);
+  const saveAsTemplate = useStore((s) => s.saveAsTemplate);
   const selectedId = useStore((s) => s.selectedId);
   const canUndo = useStore((s) => s.canUndo());
   const canRedo = useStore((s) => s.canRedo());
@@ -92,6 +94,7 @@ export function Workspace() {
   const [showPresentation, setShowPresentation] = useState(false);
   const [showQuickCapture, setShowQuickCapture] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
 
   const onCopyMarkdown = () => void copyToClipboard(toMarkdown(doc));
 
@@ -202,6 +205,7 @@ export function Workspace() {
     { key: 'import', label: 'Import outline…', onClick: () => setShowImport(true) },
     { key: 'save', label: 'Save', onClick: () => void onSaveJson() },
     { key: 'saveAs', label: 'Save As…', onClick: () => void onSaveAs() },
+    { key: 'template', label: 'Save as template…', onClick: () => setShowSaveTemplate(true) },
     { key: 'sep1', divider: true },
     { key: 'present', label: 'Present', onClick: () => setShowPresentation(true) },
     { key: 'print', label: 'Print…', onClick: () => setShowPrint(true) },
@@ -325,6 +329,16 @@ export function Workspace() {
               destructive
               onConfirm={doDelete}
               onClose={() => setShowDeleteConfirm(false)}
+            />
+          )}
+          {showSaveTemplate && (
+            <PromptDialog
+              label="Save as template"
+              subtitle="Reuse this tree's structure on a future engagement — values, evidence, and status are stripped."
+              initialValue={rootLabel}
+              submitLabel="Save template"
+              onSubmit={(name) => saveAsTemplate(name)}
+              onClose={() => setShowSaveTemplate(false)}
             />
           )}
         </main>

@@ -6,7 +6,7 @@ import type { ExampleTree } from '@/domain/examples';
 import { buildFrameworkTree, type FrameworkTemplate } from '@/domain/frameworks';
 import { meceSummary } from '@/domain/meceStatus';
 import type { DecompositionType } from '@/domain/types';
-import { docName } from '@/services/storage';
+import { docName, type UserTemplate } from '@/services/storage';
 import { useStore } from '@/store';
 import { relativeTime, treeKind } from './format';
 import { LearnMece } from './LearnMece';
@@ -57,18 +57,60 @@ function RecentList({ docs, onOpen }: { docs: LibraryDoc[]; onOpen: (id: string)
   );
 }
 
-/** The full Templates page — decomposition styles, named frameworks, and worked examples. */
+/** The full Templates page — your saved templates, decomposition styles, named frameworks, and worked examples. */
 function TemplatesPage({
+  userTemplates,
+  onOpenTemplate,
+  onDeleteTemplate,
   onPickFramework,
   onPickFrameworkTemplate,
   onPickExample,
 }: {
+  userTemplates: UserTemplate[];
+  onOpenTemplate: (t: UserTemplate) => void;
+  onDeleteTemplate: (id: string) => void;
   onPickFramework: (type: DecompositionType) => void;
   onPickFrameworkTemplate: (t: FrameworkTemplate) => void;
   onPickExample: (ex: ExampleTree) => void;
 }) {
   return (
     <div className="space-y-8">
+      {userTemplates.length > 0 && (
+        <section>
+          <h2 className="font-semibold text-[16px] text-neutral-800">Your templates</h2>
+          <p className="mt-1 mb-3 max-w-2xl text-[13px] text-neutral-500">
+            Trees you saved as reusable starting points (structure only — values, evidence, and
+            status are stripped). Save the current tree from <strong>⋯ → Save as template…</strong>.
+          </p>
+          <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(216px,1fr))]">
+            {userTemplates.map((t) => (
+              <div
+                key={t.id}
+                className="relative flex flex-col gap-1 rounded-xl border border-[#e7e4dc] bg-white p-3.5 shadow-sm transition hover:border-[#3f6fb0] hover:shadow-md"
+              >
+                <button
+                  type="button"
+                  onClick={() => onOpenTemplate(t)}
+                  className="pr-5 text-left font-semibold text-[13px] text-neutral-800 hover:text-[#3f6fb0] focus:outline-none"
+                  aria-label={`Open template ${t.name}`}
+                >
+                  {t.name}
+                </button>
+                <span className="text-[11px] text-neutral-400">Custom template</span>
+                <button
+                  type="button"
+                  onClick={() => onDeleteTemplate(t.id)}
+                  aria-label={`Delete template ${t.name}`}
+                  title="Delete template"
+                  className="absolute top-2 right-2 rounded px-1 text-[12px] text-neutral-300 hover:text-[#bd4a3a]"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
       <section>
         <h2 className="font-semibold text-[16px] text-neutral-800">Decomposition frameworks</h2>
         <p className="mt-1 mb-3 max-w-2xl text-[13px] text-neutral-500">
@@ -108,6 +150,8 @@ export function StartPage() {
   const renameDoc = useStore((s) => s.renameDoc);
   const duplicateDoc = useStore((s) => s.duplicateDoc);
   const deleteDoc = useStore((s) => s.deleteDoc);
+  const userTemplates = useStore((s) => s.userTemplates);
+  const deleteTemplate = useStore((s) => s.deleteTemplate);
 
   const docs = useLibraryDocs();
   const reviewDocs = useMemo(
@@ -218,6 +262,9 @@ export function StartPage() {
           {section === 'recent' && <RecentList docs={docs} onOpen={onOpen} />}
           {section === 'templates' && (
             <TemplatesPage
+              userTemplates={userTemplates}
+              onOpenTemplate={(t) => openDoc(t.doc)}
+              onDeleteTemplate={deleteTemplate}
               onPickFramework={onPickFramework}
               onPickFrameworkTemplate={onPickFrameworkTemplate}
               onPickExample={onPickExample}

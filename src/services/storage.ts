@@ -7,6 +7,14 @@ const LEGACY_DOC_KEY = 'mece-studio:doc:v1';
 const docKey = (id: string) => `mece-studio:doc:${id}`;
 const SETTINGS_KEY = 'mece-studio:settings:v1';
 const OPEN_TABS_KEY = 'mece-studio:tabs:v1';
+const USER_TEMPLATES_KEY = 'mece-studio:userTemplates:v1';
+
+/** A user-saved reusable template — a tree's structure with instance data stripped. */
+export interface UserTemplate {
+  id: string;
+  name: string;
+  doc: IssueTreeDoc;
+}
 
 /** One entry in the document library — enough to list it without loading it. */
 export interface LibraryEntry {
@@ -200,4 +208,27 @@ export function loadOpenTabs(): string[] {
 
 export function saveOpenTabs(ids: string[]): void {
   writeJson(OPEN_TABS_KEY, ids);
+}
+
+function isUserTemplateList(v: unknown): v is UserTemplate[] {
+  return (
+    Array.isArray(v) &&
+    v.every(
+      (t) =>
+        typeof t === 'object' &&
+        t !== null &&
+        typeof (t as UserTemplate).id === 'string' &&
+        typeof (t as UserTemplate).name === 'string' &&
+        isDoc((t as UserTemplate).doc)
+    )
+  );
+}
+
+/** The user's saved custom templates (empty on first run). */
+export function loadUserTemplates(): UserTemplate[] {
+  return readJson(USER_TEMPLATES_KEY, isUserTemplateList) ?? [];
+}
+
+export function saveUserTemplates(list: UserTemplate[]): void {
+  writeJson(USER_TEMPLATES_KEY, list);
 }

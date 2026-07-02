@@ -38,18 +38,22 @@ import type {
   NodeStatus,
   Priority,
 } from '@/domain/types';
+import { templateFromDoc } from '@/domain/userTemplate';
 import {
   docName,
   type LibraryEntry,
   loadDocById,
   loadOpenTabs,
   loadSettings,
+  loadUserTemplates,
   loadWorkspace,
   removeDocById,
   saveDocById,
   saveLibrary,
   saveOpenTabs,
   saveSettings,
+  saveUserTemplates,
+  type UserTemplate,
 } from '@/services/storage';
 
 const HISTORY_LIMIT = 100;
@@ -191,6 +195,11 @@ interface AppState {
   renameDoc: (id: string, label: string) => void;
   /** Copy a whole tree into the library as a new document, without opening it. */
   duplicateDoc: (id: string) => void;
+  /** The user's saved custom templates. */
+  userTemplates: UserTemplate[];
+  /** Save the current tree as a reusable custom template (instance data stripped). */
+  saveAsTemplate: (name: string) => void;
+  deleteTemplate: (id: string) => void;
   openDoc: (doc: IssueTreeDoc) => void;
   setRootQuestion: (label: string) => void;
   /** Set or clear the governing answer / hypothesis the tree argues for. */
@@ -264,6 +273,7 @@ export const useStore = create<AppState>((set, get) => {
     activeId: init.activeId,
     openTabs: init.openTabs,
     settings: init.settings,
+    userTemplates: loadUserTemplates(),
     past: [],
     future: [],
     selectedId: null,
@@ -389,6 +399,24 @@ export const useStore = create<AppState>((set, get) => {
         const library = [...s.library, entryFor(copy)];
         saveLibrary({ activeId: s.activeId, docs: library });
         return { library };
+      }),
+
+    saveAsTemplate: (name) =>
+      set((s) => {
+        const template: UserTemplate = {
+          id: nanoid(),
+          name: name.trim() || docName(s.doc),
+          doc: templateFromDoc(s.doc),
+        };
+        const userTemplates = [...s.userTemplates, template];
+        saveUserTemplates(userTemplates);
+        return { userTemplates };
+      }),
+    deleteTemplate: (id) =>
+      set((s) => {
+        const userTemplates = s.userTemplates.filter((t) => t.id !== id);
+        saveUserTemplates(userTemplates);
+        return { userTemplates };
       }),
 
     openDoc: (incoming) =>

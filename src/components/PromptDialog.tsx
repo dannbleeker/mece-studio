@@ -7,6 +7,7 @@ import { Dialog } from './Dialog';
  */
 export function PromptDialog({
   label,
+  subtitle,
   initialValue = '',
   placeholder,
   submitLabel = 'Save',
@@ -14,6 +15,7 @@ export function PromptDialog({
   onClose,
 }: {
   label: string;
+  subtitle?: string;
   initialValue?: string;
   placeholder?: string;
   submitLabel?: string;
@@ -37,7 +39,7 @@ export function PromptDialog({
   };
 
   return (
-    <Dialog label={label} onClose={onClose}>
+    <Dialog label={label} subtitle={subtitle} onClose={onClose}>
       <input
         ref={inputRef}
         aria-label={label}
