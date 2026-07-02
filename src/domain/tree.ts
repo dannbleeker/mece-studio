@@ -58,6 +58,20 @@ export function hiddenNodeIds(doc: IssueTreeDoc): Set<NodeId> {
 }
 
 /**
+ * 0-based depth of every node (root = 0), walking the full tree root-down. The
+ * single source for the canvas `aria-level` (which is `depth + 1`, 1-based).
+ */
+export function nodeDepths(doc: IssueTreeDoc): Record<NodeId, number> {
+  const depths: Record<NodeId, number> = {};
+  const walk = (id: NodeId, depth: number): void => {
+    depths[id] = depth;
+    for (const child of childrenOf(doc, id)) walk(child.id, depth + 1);
+  };
+  walk(doc.rootId, 0);
+  return depths;
+}
+
+/**
  * Add a child issue under `parentId`, creating the parent's split if it has
  * none. Returns the new doc and the new child's id.
  */

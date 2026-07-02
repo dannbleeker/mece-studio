@@ -2,6 +2,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { ReactFlow, ReactFlowProvider } from '@xyflow/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { childrenOf } from '@/domain/tree';
 import { useStore } from '@/store';
 import { type NodeEditing, NodeEditingContext } from '../nodeEditing';
 import type { IssueFlowNode } from '../projection';
@@ -42,6 +43,7 @@ function renderNode(data: Partial<IssueFlowNode['data']>, editing?: NodeEditing,
       childCount: 0,
       matched: false,
       selected: false,
+      depth: 0,
       ...data,
     },
   };
@@ -123,6 +125,24 @@ describe('IssueNode', () => {
     renderNode({ hasChildren: true }, undefined, rootId);
     fireEvent.click(screen.getByText('▼'));
     expect(useStore.getState().doc.nodes[rootId]?.collapsed).toBe(true);
+  });
+
+  it('adds a child through the store and opens it for editing when the on-node + is clicked', () => {
+    // Render against a real store node so the click's store action is observable.
+    const rootId = useStore.getState().doc.rootId;
+    const start = vi.fn();
+    renderNode(
+      { selected: true },
+      { editingId: null, start, commit: vi.fn(), cancel: vi.fn() },
+      rootId
+    );
+    const before = childrenOf(useStore.getState().doc, rootId).length;
+    fireEvent.click(screen.getByLabelText('Add sub-issue'));
+    const kids = childrenOf(useStore.getState().doc, rootId);
+    expect(kids.length).toBe(before + 1);
+    const newId = kids[kids.length - 1]?.id;
+    expect(useStore.getState().selectedId).toBe(newId);
+    expect(start).toHaveBeenCalledWith(newId);
   });
 
   it('starts inline editing on double-click', () => {

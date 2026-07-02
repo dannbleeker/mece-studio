@@ -2,7 +2,7 @@ import type { Edge, Node } from '@xyflow/react';
 import { layoutTree } from '@/domain/layout';
 import { type PriorityBand, priorityBand, sortSiblingsByPriority } from '@/domain/priority';
 import { matchesQuery } from '@/domain/search';
-import { hiddenNodeIds, splitOf } from '@/domain/tree';
+import { hiddenNodeIds, nodeDepths, splitOf } from '@/domain/tree';
 import type { IssueNode, IssueTreeDoc, MeceStatus, NodeId } from '@/domain/types';
 
 /** Data carried by each React Flow node. Must extend Record for React Flow v12. */
@@ -25,6 +25,8 @@ interface IssueNodeData extends Record<string, unknown> {
   /** Label matches the active search query. */
   matched: boolean;
   selected: boolean;
+  /** 0-based tree depth (root = 0); aria-level is `depth + 1`. */
+  depth: number;
 }
 
 export type IssueFlowNode = Node<IssueNodeData, 'issue'>;
@@ -56,6 +58,7 @@ export function toFlow(
 ): { nodes: IssueFlowNode[]; edges: Edge[] } {
   const selected = new Set(selectedIds);
   const hidden = hiddenNodeIds(doc);
+  const depths = nodeDepths(doc);
   // Sibling order is a view concern — sort for layout without mutating the doc.
   const layoutDoc = sortByPriority ? sortSiblingsByPriority(doc) : doc;
   const positions = layoutTree(layoutDoc, layoutDoc.layout.direction, hidden);
@@ -64,10 +67,21 @@ export function toFlow(
     .filter((n) => !hidden.has(n.id))
     .map((n) => {
       const split = splitOf(doc, n.id);
+      const level = (depths[n.id] ?? 0) + 1;
       return {
         id: n.id,
         type: 'issue',
         position: positions[n.id] ?? { x: 0, y: 0 },
+        // ARIA tree semantics for assistive tech: React Flow spreads these onto
+        // the `.react-flow__node` wrapper (role/aria-label/domAttributes). Only
+        // nodes with children carry aria-expanded; leaves omit it entirely.
+        ariaRole: 'treeitem',
+        ariaLabel: n.label || 'Untitled',
+        domAttributes: {
+          'aria-level': level,
+          'aria-selected': selected.has(n.id),
+          ...(split !== undefined ? { 'aria-expanded': n.collapsed !== true } : {}),
+        },
         data: {
           label: n.label,
           status: n.status,
@@ -82,6 +96,7 @@ export function toFlow(
           childCount: split ? split.childIds.length : 0,
           matched: matchesQuery(n.label, query),
           selected: selected.has(n.id),
+          depth: depths[n.id] ?? 0,
         },
       };
     });

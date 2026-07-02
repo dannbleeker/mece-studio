@@ -185,6 +185,10 @@ How each split type is judged:
   content word (a sign they may not be mutually exclusive) and **names the pair**.
   A word that *every* sibling shares (with three or more branches) is treated as
   the split's dimension, not an overlap; generic and placeholder words are ignored.
+- **Mixed axes** — if the branches each *name a different way to cut* the level
+  (e.g. *"By region" / "By segment" / "By quarter"* as siblings) instead of one
+  axis's categories, you're warned to pick a single axis per level. It's
+  conservative: it fires only when branches literally state differing axes up front.
 
 **Name the dimension.** In the **Logic** tab you can name the single axis a split
 is cut on (e.g. *by geography*), with one-click common axes. One consistent
@@ -203,6 +207,10 @@ canvas. With a node selected, press <kbd>Enter</kbd> or <kbd>F2</kbd> to edit.
 **Keyboard tree-building.** With a node selected, <kbd>Tab</kbd> adds a child and
 drops you straight into editing its label — so you can build a whole tree without
 touching the mouse.
+
+**Add from the node.** Selecting or hovering a node shows a **＋** on its child
+(right) edge — click it to add a sub-issue and start editing its label, the same
+as <kbd>Tab</kbd> but with the mouse.
 
 **Quick add.** To dump a whole decomposition at once, use **⋯ → Quick add
 issues…**: type one issue per line and they're all added as children of the
@@ -251,6 +259,10 @@ or unfold the whole tree at once.
 matches as you type and shows a match count. Press <kbd>Enter</kbd> to zoom to the
 matches — useful in a large tree.
 
+**Screen readers.** The canvas is a proper **tree** to assistive tech — each node
+is a *treeitem* that announces its depth, whether it's expanded or collapsed, and
+whether it's selected — so the structure keyboard navigation walks is spoken too.
+
 ## Prioritising branches
 
 Not every branch is worth chasing. In the inspector, mark each issue's **impact**
@@ -274,9 +286,10 @@ the whole tree, and the synthesis flags ✓ supported, ✗ refuted, ⊘ parked.
 ## Evidence
 
 Attach **evidence** to any node from the inspector — each item is **supporting**
-or **contradicting**, with a **strength** you can cycle. Nodes show ✓/✗ count
-badges so you can see where the case is strong or thin. Evidence feeds the
-synthesis and your hypothesis decisions.
+or **contradicting**, with a **strength** you can cycle. **Click an item's text to
+edit it in place** (it commits on blur / Enter). Nodes show ✓/✗ count badges so you
+can see where the case is strong or thin. Evidence feeds the synthesis and your
+hypothesis decisions.
 
 ## Value-driver trees
 

@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 77,
+  "reviewedThroughChangelogEntries": 83,
   "features": [
     {
       "id": "issue-tree",
@@ -970,6 +970,42 @@
       "area": "App",
       "since": 9,
       "manual": false,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "evidence-edit-text",
+      "name": "Inline-edit evidence text",
+      "area": "Evidence",
+      "since": 10,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "on-node-add-child",
+      "name": "On-node add-sub-issue affordance",
+      "area": "Editing",
+      "since": 10,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "mece-mixed-axis",
+      "name": "Mixed-axis overlap warning",
+      "area": "MECE",
+      "since": 10,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "canvas-tree-a11y",
+      "name": "Canvas ARIA tree semantics",
+      "area": "Editing",
+      "since": 10,
+      "manual": true,
       "book": false,
       "bookExample": false
     }

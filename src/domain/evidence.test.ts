@@ -18,6 +18,18 @@ describe('evidence', () => {
     expect(d3.nodes[doc0.rootId]?.evidence).toHaveLength(0);
   });
 
+  it('edits an evidence item summary text via updateEvidence', () => {
+    const doc0 = createDoc('Root', 1000);
+    const item = createEvidence('Draft claim', true);
+    const d1 = addEvidence(doc0, doc0.rootId, item);
+
+    const d2 = updateEvidence(d1, doc0.rootId, item.id, { summary: 'Survey n=400 confirms it' });
+    expect(d2.nodes[doc0.rootId]?.evidence[0]?.summary).toBe('Survey n=400 confirms it');
+    // Only the summary changed — stance/strength untouched.
+    expect(d2.nodes[doc0.rootId]?.evidence[0]?.supports).toBe(true);
+    expect(d2.nodes[doc0.rootId]?.evidence[0]?.strength).toBe(item.strength);
+  });
+
   it('createEvidence defaults strength to indicative and assigns an id', () => {
     const e = createEvidence('note', true);
     expect(e.strength).toBe('indicative');

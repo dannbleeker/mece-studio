@@ -317,80 +317,88 @@ function Flow() {
 
   return (
     <NodeEditingContext.Provider value={editing}>
-      <ReactFlow
-        nodes={displayNodes}
-        edges={displayEdges}
-        nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onNodeClick={(evt, node) =>
-          evt.shiftKey || evt.metaKey || evt.ctrlKey
-            ? toggleSelect(node.id as NodeId)
-            : select(node.id as NodeId)
-        }
-        onNodeDrag={onNodeDrag}
-        onNodeDragStop={onNodeDragStop}
-        onPaneClick={() => select(null)}
-        nodesConnectable={false}
-        deleteKeyCode={null}
-        fitView
-        fitViewOptions={FIT_VIEW_OPTIONS}
-        proOptions={{ hideAttribution: true }}
+      {/* role="tree" lives here, not on <ReactFlow> — RF hardcodes role="application"
+          on its own .react-flow div. Screen readers still associate the treeitems. */}
+      <div
+        role="tree"
+        aria-label={`Issue tree: ${doc.nodes[doc.rootId]?.label ?? 'Issue tree'}`}
+        className="h-full w-full"
       >
-        <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e2dfd6" />
-        <Controls showInteractive={false} />
-        <MiniMap
-          pannable
-          zoomable
-          nodeColor={(n) => minimapNodeColor(n as IssueFlowNode)}
-          nodeStrokeWidth={2}
-          maskColor="rgba(250,249,245,0.6)"
-          className="!bottom-2 !right-2 !border !border-[#e7e4dc] !bg-white/85 hidden sm:block"
-        />
-        <Panel position="top-center">
-          <CanvasCoach show={Object.keys(doc.splits).length === 0} />
-        </Panel>
-        <Panel position="bottom-center">
-          <SelectionBar />
-        </Panel>
-        <Panel position="top-left">
-          <div className="flex flex-col gap-1">
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') fitToMatches();
-                e.stopPropagation();
-              }}
-              placeholder="Find…"
-              aria-label="Find nodes"
-              className="nodrag w-44 rounded-md border border-neutral-200 bg-white/90 px-2.5 py-1 text-[12px] text-neutral-700 shadow-sm focus:border-[#3f6fb0] focus:outline-none"
-            />
-            <div className="flex gap-1">
-              <button
-                type="button"
-                onClick={() => collapseAll()}
-                className="nodrag rounded-md border border-neutral-200 bg-white/90 px-2 py-0.5 text-[11px] text-neutral-600 shadow-sm hover:bg-white"
-              >
-                Collapse all
-              </button>
-              <button
-                type="button"
-                onClick={() => expandAll()}
-                className="nodrag rounded-md border border-neutral-200 bg-white/90 px-2 py-0.5 text-[11px] text-neutral-600 shadow-sm hover:bg-white"
-              >
-                Expand all
-              </button>
+        <ReactFlow
+          nodes={displayNodes}
+          edges={displayEdges}
+          nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          onNodeClick={(evt, node) =>
+            evt.shiftKey || evt.metaKey || evt.ctrlKey
+              ? toggleSelect(node.id as NodeId)
+              : select(node.id as NodeId)
+          }
+          onNodeDrag={onNodeDrag}
+          onNodeDragStop={onNodeDragStop}
+          onPaneClick={() => select(null)}
+          nodesConnectable={false}
+          deleteKeyCode={null}
+          fitView
+          fitViewOptions={FIT_VIEW_OPTIONS}
+          proOptions={{ hideAttribution: true }}
+        >
+          <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e2dfd6" />
+          <Controls showInteractive={false} />
+          <MiniMap
+            pannable
+            zoomable
+            nodeColor={(n) => minimapNodeColor(n as IssueFlowNode)}
+            nodeStrokeWidth={2}
+            maskColor="rgba(250,249,245,0.6)"
+            className="!bottom-2 !right-2 !border !border-[#e7e4dc] !bg-white/85 hidden sm:block"
+          />
+          <Panel position="top-center">
+            <CanvasCoach show={Object.keys(doc.splits).length === 0} />
+          </Panel>
+          <Panel position="bottom-center">
+            <SelectionBar />
+          </Panel>
+          <Panel position="top-left">
+            <div className="flex flex-col gap-1">
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') fitToMatches();
+                  e.stopPropagation();
+                }}
+                placeholder="Find…"
+                aria-label="Find nodes"
+                className="nodrag w-44 rounded-md border border-neutral-200 bg-white/90 px-2.5 py-1 text-[12px] text-neutral-700 shadow-sm focus:border-[#3f6fb0] focus:outline-none"
+              />
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={() => collapseAll()}
+                  className="nodrag rounded-md border border-neutral-200 bg-white/90 px-2 py-0.5 text-[11px] text-neutral-600 shadow-sm hover:bg-white"
+                >
+                  Collapse all
+                </button>
+                <button
+                  type="button"
+                  onClick={() => expandAll()}
+                  className="nodrag rounded-md border border-neutral-200 bg-white/90 px-2 py-0.5 text-[11px] text-neutral-600 shadow-sm hover:bg-white"
+                >
+                  Expand all
+                </button>
+              </div>
+              {query.trim() !== '' && (
+                <span className="px-0.5 text-[10px] text-neutral-400">
+                  {matchCount === 0
+                    ? 'No matches'
+                    : `${matchCount} match${matchCount === 1 ? '' : 'es'}`}
+                </span>
+              )}
             </div>
-            {query.trim() !== '' && (
-              <span className="px-0.5 text-[10px] text-neutral-400">
-                {matchCount === 0
-                  ? 'No matches'
-                  : `${matchCount} match${matchCount === 1 ? '' : 'es'}`}
-              </span>
-            )}
-          </div>
-        </Panel>
-      </ReactFlow>
+          </Panel>
+        </ReactFlow>
+      </div>
     </NodeEditingContext.Provider>
   );
 }

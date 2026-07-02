@@ -1,6 +1,7 @@
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import { useEffect, useRef } from 'react';
 import { CHECK_STATE_COLOR, CHECK_STATE_GLYPH, CHECK_STATE_LABEL } from '@/components/checkColors';
+import { childrenOf } from '@/domain/tree';
 import type { CheckResult, NodeId, NodeStatus } from '@/domain/types';
 import { useStore } from '@/store';
 import { useNodeEditing } from '../nodeEditing';
@@ -66,7 +67,20 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
   } = data;
   const { editingId, start, commit, cancel } = useNodeEditing();
   const toggleCollapse = useStore((s) => s.toggleCollapse);
+  const addChild = useStore((s) => s.addChild);
+  const select = useStore((s) => s.select);
   const isEditing = id === editingId;
+  // Add a child and drop straight into inline editing — the same gesture as the
+  // keyboard Tab outliner (Canvas `addAndEdit`), reachable now from the node itself.
+  const addChildAndEdit = () => {
+    addChild(id as NodeId);
+    const kids = childrenOf(useStore.getState().doc, id as NodeId);
+    const newId = kids[kids.length - 1]?.id;
+    if (newId) {
+      select(newId);
+      start(newId);
+    }
+  };
   const inputRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     if (!isEditing) return;
@@ -85,7 +99,7 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: canvas node; keyboard editing is via Enter/F2 (handled in Canvas)
     <div
-      className={`relative flex h-full w-full flex-col justify-center rounded-lg bg-white px-3 py-2 shadow-sm${matched ? ' ring-2 ring-[#d99a2b] ring-offset-1' : ''}`}
+      className={`group relative flex h-full w-full flex-col justify-center rounded-lg bg-white px-3 py-2 shadow-sm${matched ? ' ring-2 ring-[#d99a2b] ring-offset-1' : ''}`}
       onDoubleClick={() => start(id)}
       style={{
         borderStyle: 'solid',
@@ -213,6 +227,20 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
           {collapsed ? `▶ ${childCount}` : '▼'}
         </button>
       )}
+
+      <button
+        type="button"
+        title="Add a sub-issue"
+        aria-label="Add sub-issue"
+        className={`nodrag absolute top-1/2 -right-2.5 z-10 -translate-y-1/2 rounded-full border border-neutral-300 bg-white px-1.5 py-px font-medium text-[11px] leading-none shadow-sm transition-opacity hover:border-[#3f6fb0] hover:text-[#3f6fb0] focus-visible:opacity-100 ${selected ? 'text-[#3f6fb0] opacity-100' : 'text-neutral-500 opacity-0 group-hover:opacity-100'}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          addChildAndEdit();
+        }}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        ＋
+      </button>
 
       <Handle type="source" position={Position.Right} className="!bg-neutral-400" />
     </div>

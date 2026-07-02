@@ -8,6 +8,7 @@ import {
   hiddenNodeIds,
   moveNode,
   moveSibling,
+  nodeDepths,
   parentOf,
   removeNode,
   removeNodes,
@@ -37,6 +38,16 @@ describe('tree ops', () => {
     const { doc: doc2 } = addChild(doc1, doc0.rootId, 'Cost');
     expect(childrenOf(doc2, doc0.rootId).map((n) => n.label)).toEqual(['Revenue', 'Cost']);
     expect(Object.keys(doc2.splits)).toHaveLength(1);
+  });
+
+  it('nodeDepths assigns 0-based depth root-down', () => {
+    const doc0 = seed();
+    const { doc: doc1, childId: branch } = addChild(doc0, doc0.rootId, 'Branch');
+    const { doc: doc2, childId: leaf } = addChild(doc1, branch, 'Leaf');
+    const depths = nodeDepths(doc2);
+    expect(depths[doc0.rootId]).toBe(0);
+    expect(depths[branch]).toBe(1);
+    expect(depths[leaf]).toBe(2);
   });
 
   it('setDecomposition changes the split type', () => {

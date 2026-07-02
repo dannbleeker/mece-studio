@@ -34,3 +34,19 @@ test('adding notes shows a marker on the node', async ({ page }) => {
     page.locator('.react-flow__node').first().locator('span[aria-label="Has notes"]')
   ).toBeVisible();
 });
+
+test('evidence text is editable inline', async ({ page }) => {
+  await freshRootSelected(page);
+
+  await page.getByRole('button', { name: 'Evidence' }).click();
+  await page.getByPlaceholder('Add evidence…').fill('Draft claim');
+  await page.getByRole('button', { name: '+ Supports' }).click();
+
+  const row = page.getByLabel('Edit evidence text');
+  await expect(row).toHaveValue('Draft claim');
+  await row.fill('Survey n=400 confirms it');
+  await row.blur();
+
+  const doc = await activeDoc(page);
+  expect(doc.nodes[doc.rootId].evidence[0].summary).toBe('Survey n=400 confirms it');
+});

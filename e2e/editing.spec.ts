@@ -51,6 +51,22 @@ test('Tab on the selected node adds a child and edits it', async ({ page }) => {
   expect(doc.nodes[split.childIds[0]].label).toBe('Revenue');
 });
 
+test('the on-node + affordance adds a child and edits it', async ({ page }) => {
+  const root = await freshRoot(page);
+  await root.click(); // select the root → reveals the + affordance
+  await root.getByRole('button', { name: 'Add sub-issue' }).click();
+
+  await expect(page.locator('.react-flow__node')).toHaveCount(2);
+  const input = page.locator('.react-flow__node textarea');
+  await expect(input).toBeVisible();
+  await input.fill('Revenue');
+  await input.press('Enter');
+
+  const doc = await activeDoc(page);
+  const split = Object.values(doc.splits).find((s) => s.parentId === doc.rootId);
+  expect(doc.nodes[split.childIds[0]].label).toBe('Revenue');
+});
+
 test('Escape cancels the edit without changing the label', async ({ page }) => {
   const root = await freshRoot(page);
   await root.click();

@@ -67,6 +67,34 @@ describe('MECE rules — overlap heuristic (dimension-aware)', () => {
   });
 });
 
+describe('MECE rules — mixed-axis advisory', () => {
+  it('flags branches that each name a different cut-axis', () => {
+    const doc = withChildren(['By region', 'By product', 'By customer segment']);
+    const res = rootMece(doc).exclusive;
+    expect(res.state).toBe('warn');
+    expect(res.message).toMatch(/mix.*axes/i);
+  });
+
+  it('does not treat a mid-label "by" as an axis (means, not a cut)', () => {
+    const doc = withChildren(['Grow revenue by expansion', 'Cut cost by automation']);
+    expect(rootMece(doc).exclusive.state).not.toBe('warn');
+  });
+
+  it('stays quiet when every branch shares one axis', () => {
+    const doc = withChildren(['By region north', 'By region south', 'By region east']);
+    expect(rootMece(doc).exclusive.state).not.toBe('warn');
+  });
+
+  it('does not mask a concrete word-overlap (overlap wins)', () => {
+    // Both start with the same axis word AND overlap on it — the overlap check
+    // fires first, so the message names the overlapping pair, not the axis mix.
+    const doc = withChildren(['Online marketing', 'Online sales']);
+    const res = rootMece(doc).exclusive;
+    expect(res.state).toBe('warn');
+    expect(res.message).toMatch(/overlap/i);
+  });
+});
+
 describe('MECE rules — formula exclusivity (double-count smells)', () => {
   function formula(labels: string[], operator?: 'sum' | 'product' | 'difference'): IssueTreeDoc {
     let doc = withChildren(labels);

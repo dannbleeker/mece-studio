@@ -66,6 +66,38 @@ describe('toFlow projection', () => {
     expect(byId.get(doc.rootId)?.data.selected).toBe(false);
   });
 
+  it('carries ARIA tree semantics: role, level, selection, expansion', () => {
+    const { doc, revenueId } = sample();
+    const nodes = toFlow(doc, [revenueId]).nodes;
+    const byId = new Map(nodes.map((n) => [n.id, n]));
+    const root = byId.get(doc.rootId);
+    const rev = byId.get(revenueId);
+
+    expect(root?.ariaRole).toBe('treeitem');
+    expect(root?.ariaLabel).toBe('Root');
+    // aria-level is 1-based; depth (0-based) rides in data for the node UI.
+    expect(root?.domAttributes?.['aria-level']).toBe(1);
+    expect(root?.data.depth).toBe(0);
+    expect(rev?.domAttributes?.['aria-level']).toBe(2);
+    expect(rev?.data.depth).toBe(1);
+
+    // Store selection flows to aria-selected.
+    expect(rev?.domAttributes?.['aria-selected']).toBe(true);
+    expect(root?.domAttributes?.['aria-selected']).toBe(false);
+
+    // Parents expose aria-expanded; leaves omit the attribute entirely.
+    expect(rev?.domAttributes && 'aria-expanded' in rev.domAttributes).toBe(true);
+    expect(rev?.domAttributes?.['aria-expanded']).toBe(true);
+    const price = nodes.find((n) => n.data.label === 'Price');
+    expect(price?.domAttributes && 'aria-expanded' in price.domAttributes).toBe(false);
+  });
+
+  it('a collapsed parent reports aria-expanded=false', () => {
+    const { doc, revenueId } = sample();
+    const rev = toFlow(toggleCollapse(doc, revenueId), []).nodes.find((n) => n.id === revenueId);
+    expect(rev?.domAttributes?.['aria-expanded']).toBe(false);
+  });
+
   it('flags only the nodes matching the search query', () => {
     const { doc } = sample();
     const matched = toFlow(doc, [], 'rev')

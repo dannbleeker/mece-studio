@@ -466,7 +466,25 @@ export function Inspector() {
                     >
                       {e.supports ? '✓' : '✗'}
                     </button>
-                    <span className="flex-1 text-neutral-700 leading-snug">{e.summary}</span>
+                    <input
+                      defaultValue={e.summary}
+                      aria-label="Edit evidence text"
+                      className="min-w-0 flex-1 rounded-sm border border-transparent bg-transparent px-1 py-0.5 text-neutral-700 leading-snug hover:border-neutral-200 focus:border-[#3f6fb0] focus:bg-white focus:outline-none"
+                      onBlur={(ev) => {
+                        const next = ev.target.value.trim();
+                        if (!next || next === e.summary) {
+                          ev.target.value = e.summary;
+                          return;
+                        }
+                        updateEvidence(selectedId, e.id, { summary: next });
+                      }}
+                      onKeyDown={(ev) => {
+                        if (ev.key === 'Enter') {
+                          ev.preventDefault();
+                          ev.currentTarget.blur();
+                        }
+                      }}
+                    />
                     <span className="flex shrink-0 gap-0.5">
                       {STRENGTHS.map((st) => (
                         <button

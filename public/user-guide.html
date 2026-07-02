@@ -203,6 +203,10 @@ end? does the framework leave anything important outside?).</li>
 content word (a sign they may not be mutually exclusive) and <strong>names the pair</strong>.
 A word that <em>every</em> sibling shares (with three or more branches) is treated as
 the split&#39;s dimension, not an overlap; generic and placeholder words are ignored.</li>
+<li><strong>Mixed axes</strong> — if the branches each <em>name a different way to cut</em> the level
+(e.g. <em>&quot;By region&quot; / &quot;By segment&quot; / &quot;By quarter&quot;</em> as siblings) instead of one
+axis&#39;s categories, you&#39;re warned to pick a single axis per level. It&#39;s
+conservative: it fires only when branches literally state differing axes up front.</li>
 </ul>
 <p><strong>Name the dimension.</strong> In the <strong>Logic</strong> tab you can name the single axis a split
 is cut on (e.g. <em>by geography</em>), with one-click common axes. One consistent
@@ -217,6 +221,9 @@ canvas. With a node selected, press <kbd>Enter</kbd> or <kbd>F2</kbd> to edit.
 <p><strong>Keyboard tree-building.</strong> With a node selected, <kbd>Tab</kbd> adds a child and
 drops you straight into editing its label — so you can build a whole tree without
 touching the mouse.</p>
+<p><strong>Add from the node.</strong> Selecting or hovering a node shows a <strong>＋</strong> on its child
+(right) edge — click it to add a sub-issue and start editing its label, the same
+as <kbd>Tab</kbd> but with the mouse.</p>
 <p><strong>Quick add.</strong> To dump a whole decomposition at once, use <strong>⋯ → Quick add
 issues…</strong>: type one issue per line and they&#39;re all added as children of the
 selected node (or the root) in a single, undoable step. <strong>Indent</strong> a line (Tab /
@@ -253,6 +260,9 @@ or unfold the whole tree at once.</p>
 <p><strong>Find on the canvas.</strong> The search box (top-left) rings every node whose label
 matches as you type and shows a match count. Press <kbd>Enter</kbd> to zoom to the
 matches — useful in a large tree.</p>
+<p><strong>Screen readers.</strong> The canvas is a proper <strong>tree</strong> to assistive tech — each node
+is a <em>treeitem</em> that announces its depth, whether it&#39;s expanded or collapsed, and
+whether it&#39;s selected — so the structure keyboard navigation walks is spoken too.</p>
 <h2>Prioritising branches</h2>
 <p>Not every branch is worth chasing. In the inspector, mark each issue&#39;s <strong>impact</strong>
 and <strong>ease</strong> (each on a small scale). MECE Studio combines them into a <strong>priority
@@ -271,9 +281,10 @@ test. Set a node&#39;s <strong>status</strong> in the inspector:</p>
 the whole tree, and the synthesis flags ✓ supported, ✗ refuted, ⊘ parked.</p>
 <h2>Evidence</h2>
 <p>Attach <strong>evidence</strong> to any node from the inspector — each item is <strong>supporting</strong>
-or <strong>contradicting</strong>, with a <strong>strength</strong> you can cycle. Nodes show ✓/✗ count
-badges so you can see where the case is strong or thin. Evidence feeds the
-synthesis and your hypothesis decisions.</p>
+or <strong>contradicting</strong>, with a <strong>strength</strong> you can cycle. <strong>Click an item&#39;s text to
+edit it in place</strong> (it commits on blur / Enter). Nodes show ✓/✗ count badges so you
+can see where the case is strong or thin. Evidence feeds the synthesis and your
+hypothesis decisions.</p>
 <h2>Value-driver trees</h2>
 <p>When a question is quantitative, make it a <strong>formula</strong> split and put numbers on
 the leaves.</p>

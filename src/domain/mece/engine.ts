@@ -131,6 +131,41 @@ function siblingOverlap(children: IssueNode[], strict: boolean): CheckResult {
   };
 }
 
+// A branch whose *whole* label states an axis to cut on ("By region", "Per
+// quarter") rather than a category. Anchored to the start so it catches the
+// real mistake — listing cut-methods as branches — without firing on ordinary
+// labels that merely contain "by"/"per" (e.g. "Grow revenue by expansion").
+const AXIS_PHRASE = /^(?:by|per)\s+([a-z][a-z-]{2,})/i;
+
+function axisMarker(label: string): string | null {
+  const m = AXIS_PHRASE.exec(label.trim());
+  return m?.[1] ? m[1].toLowerCase() : null;
+}
+
+/**
+ * Conservative lexical mixed-axis check: fires only when ≥2 siblings each *name*
+ * a decomposition axis up front ("By X" / "Per X") and those axes differ — the
+ * classic non-ME slip of listing several ways to cut instead of one cut's
+ * categories. High-precision by design (you're flagged only if you wrote the
+ * axes out), and it runs only after `siblingOverlap` finds nothing, so it adds
+ * signal without masking a concrete overlap.
+ */
+function mixedAxis(children: IssueNode[]): CheckResult {
+  const markers = children.map((c) => axisMarker(c.label)).filter((m): m is string => m !== null);
+  const distinct = [...new Set(markers)];
+  if (markers.length >= 2 && distinct.length >= 2) {
+    const named = distinct
+      .slice(0, 3)
+      .map((m) => `"${m}"`)
+      .join(', ');
+    return {
+      state: 'warn',
+      message: `These branches mix decomposition axes (${named}) — cut the level on one axis so the branches don't overlap.`,
+    };
+  }
+  return { state: 'unknown' };
+}
+
 /** CE check for segments: they're only exhaustive with an explicit "Other" bucket. */
 function segmentExhaustive(children: IssueNode[]): CheckResult {
   const hasOther = children.some((c) => OTHER_BUCKET.test(c.label));
@@ -236,8 +271,14 @@ function exclusiveStatus(split: Split, children: IssueNode[], options: MeceOptio
           };
     case 'formula':
       return formulaExclusive(split, children);
-    default:
-      return siblingOverlap(children, options.strictOverlap);
+    default: {
+      // A concrete word-overlap is the stronger, more specific finding — keep it
+      // first. Only when nothing overlaps do we look for a mixed-axis slip.
+      const overlap = siblingOverlap(children, options.strictOverlap);
+      if (overlap.state === 'warn') return overlap;
+      const mixed = mixedAxis(children);
+      return mixed.state === 'warn' ? mixed : overlap;
+    }
   }
 }
 

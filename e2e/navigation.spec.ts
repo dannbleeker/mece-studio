@@ -31,6 +31,22 @@ test('collapse hides a subtree and expand restores it', async ({ page }) => {
   await expect(page.locator('.react-flow__node')).toHaveCount(3);
 });
 
+test('exposes ARIA tree semantics for assistive tech', async ({ page }) => {
+  await buildThreeLevels(page);
+
+  await expect(page.getByRole('tree')).toBeVisible();
+  await expect(page.getByRole('treeitem')).toHaveCount(3);
+
+  const branch = page.getByRole('treeitem', { name: 'Branch' });
+  await expect(branch).toHaveAttribute('aria-level', '2');
+  await expect(branch).toHaveAttribute('aria-expanded', 'true');
+
+  // Collapsing flips aria-expanded; the hidden leaf drops out of the tree.
+  await branch.locator('button[aria-label="Collapse subtree"]').click();
+  await expect(page.getByRole('treeitem')).toHaveCount(2);
+  await expect(branch).toHaveAttribute('aria-expanded', 'false');
+});
+
 test('search rings the matching node', async ({ page }) => {
   await resetApp(page);
 
