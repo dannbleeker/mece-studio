@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-02T10:01:02.124Z",
-  "commit": "623c723",
+  "generatedAt": "2026-07-02T10:11:09.919Z",
+  "commit": "e0561b1",
   "headline": {
-    "linesTsJs": 15345,
-    "tests": 392,
-    "lineCoveragePct": 89.89,
-    "commits": 208,
+    "linesTsJs": 15538,
+    "tests": 393,
+    "lineCoveragePct": 88.92,
+    "commits": 210,
     "ageDays": 21,
-    "trackedFiles": 237,
+    "trackedFiles": 239,
     "featureManualPct": 100,
     "featureBookPct": 100,
     "featureExamplePct": 23.1
@@ -15,13 +15,13 @@
   "code": [
     {
       "category": "App code (src, excl. tests)",
-      "files": 84,
-      "lines": 8718
+      "files": 85,
+      "lines": 8886
     },
     {
       "category": "Unit tests",
-      "files": 60,
-      "lines": 4552
+      "files": 61,
+      "lines": 4577
     },
     {
       "category": "E2E tests (Playwright)",
@@ -41,39 +41,39 @@
     {
       "category": "Docs (Markdown)",
       "files": 24,
-      "lines": 2495
+      "lines": 2497
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 89.89,
-      "covered": 1939,
-      "total": 2157
+      "pct": 88.92,
+      "covered": 1952,
+      "total": 2195
     },
     "statements": {
-      "pct": 88.01,
-      "covered": 2306,
-      "total": 2620
+      "pct": 87.14,
+      "covered": 2325,
+      "total": 2668
     },
     "functions": {
-      "pct": 86.18,
-      "covered": 680,
-      "total": 789
+      "pct": 84.72,
+      "covered": 688,
+      "total": 812
     },
     "branches": {
-      "pct": 78.24,
-      "covered": 1219,
-      "total": 1558
+      "pct": 77.41,
+      "covered": 1224,
+      "total": 1581
     }
   },
   "tests": {
-    "unit": 355,
+    "unit": 356,
     "e2e": 37
   },
   "domain": {
     "features": 78,
     "areas": 14,
-    "domainModules": 28,
+    "domainModules": 29,
     "components": 45,
     "exporters": 8
   },
@@ -87,7 +87,7 @@
       },
       {
         "name": "store/index.ts",
-        "lines": 496
+        "lines": 524
       },
       {
         "name": "domain/tree.ts",
@@ -103,7 +103,7 @@
       },
       {
         "name": "Workspace.tsx",
-        "lines": 336
+        "lines": 350
       }
     ]
   },
@@ -126,18 +126,18 @@
         "pct": 63.63
       },
       {
-        "file": "src/components/review/ReviewPanel.tsx",
-        "pct": 68.96
+        "file": "src/components/start/StartPage.tsx",
+        "pct": 66.66
       },
       {
-        "file": "src/components/start/StartPage.tsx",
-        "pct": 69.69
+        "file": "src/components/review/ReviewPanel.tsx",
+        "pct": 68.96
       }
     ],
     "churnHotspots": [
       {
         "file": "src/store/index.ts",
-        "commits": 30
+        "commits": 31
       },
       {
         "file": "src/components/canvas/Canvas.tsx",
@@ -173,8 +173,8 @@
       },
       {
         "file": "src/components/start/StartPage.tsx",
-        "commits": 6,
-        "pct": 69.69
+        "commits": 7,
+        "pct": 66.66
       }
     ]
   },
@@ -189,8 +189,8 @@
     "nonNull": 0
   },
   "bundle": {
-    "eagerJsGzipKb": 103.1,
-    "totalJsGzipKb": 535,
+    "eagerJsGzipKb": 103.7,
+    "totalJsGzipKb": 535.7,
     "cssGzipKb": 8.9,
     "budgetKb": 115,
     "withinBudget": true
@@ -198,8 +198,8 @@
   "docs": {
     "bookWords": 23521,
     "chapters": 16,
-    "appLoc": 8718,
-    "docToCodeRatio": 0.29
+    "appLoc": 8886,
+    "docToCodeRatio": 0.28
   },
   "featureCoverage": {
     "total": 78,
@@ -289,16 +289,16 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 21,
-    "commits": 208,
-    "commits7d": 41,
+    "commits": 210,
+    "commits7d": 43,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 121
+        "count": 122
       },
       {
         "name": "github-actions[bot]",
-        "count": 76
+        "count": 77
       },
       {
         "name": "Claude",
@@ -306,9 +306,9 @@
       }
     ],
     "churn30d": {
-      "added": 32760,
-      "removed": 6632
+      "added": 33010,
+      "removed": 6684
     },
-    "changelogEntries": 74
+    "changelogEntries": 76
   }
 }
