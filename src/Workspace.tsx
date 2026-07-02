@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AboutDialog } from '@/components/about/AboutDialog';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Canvas } from '@/components/canvas/Canvas';
 import { QuickCaptureDialog } from '@/components/capture/QuickCaptureDialog';
 import { HeaderMenu, type MenuEntry } from '@/components/header/HeaderMenu';
@@ -74,6 +75,7 @@ export function Workspace() {
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
   const removeNode = useStore((s) => s.removeNode);
+  const setPriority = useStore((s) => s.setPriority);
   const selectedId = useStore((s) => s.selectedId);
   const canUndo = useStore((s) => s.canUndo());
   const canRedo = useStore((s) => s.canRedo());
@@ -87,6 +89,7 @@ export function Workspace() {
   const [showPrint, setShowPrint] = useState(false);
   const [showPresentation, setShowPresentation] = useState(false);
   const [showQuickCapture, setShowQuickCapture] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const onCopyMarkdown = () => void copyToClipboard(toMarkdown(doc));
 
@@ -117,11 +120,9 @@ export function Workspace() {
     if (handle) await setFileHandle(doc.id, handle);
   };
 
-  const onDelete = () => {
-    if (window.confirm('Delete this tree? This cannot be undone.')) {
-      void clearFileHandle(activeId);
-      deleteDoc(activeId);
-    }
+  const doDelete = () => {
+    void clearFileHandle(activeId);
+    deleteDoc(activeId);
   };
 
   // Keyboard shortcuts: undo / redo, and Delete to remove the selected node.
@@ -141,6 +142,15 @@ export function Workspace() {
       } else if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId) {
         e.preventDefault();
         removeNode(selectedId);
+      } else if (key === 'p' && !mod && selectedId) {
+        // Bump the selected node's priority: none → low → medium → high → none
+        // (both axes together — a quick keyboard flag for "this matters").
+        e.preventDefault();
+        const seq = [undefined, 'low', 'medium', 'high'] as const;
+        const cur = useStore.getState().doc.nodes[selectedId]?.priority;
+        const idx = cur ? seq.indexOf(cur.impact) : 0;
+        const next = seq[(idx + 1) % seq.length];
+        setPriority(selectedId, next ? { impact: next, ease: next } : undefined);
       } else if (e.key === '?') {
         e.preventDefault();
         setShowShortcuts((v) => !v);
@@ -148,7 +158,7 @@ export function Workspace() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [undo, redo, removeNode, selectedId]);
+  }, [undo, redo, removeNode, setPriority, selectedId]);
 
   // The tree's title + a type badge derived from how the root is decomposed.
   const rootLabel = doc.nodes[doc.rootId]?.label ?? 'Untitled tree';
@@ -181,7 +191,13 @@ export function Workspace() {
     { key: 'about', label: 'About', onClick: () => setShowAbout(true) },
     { key: 'sep3', divider: true },
     { key: 'new', label: 'New tree', onClick: () => newDoc() },
-    { key: 'delete', label: 'Delete tree', onClick: onDelete },
+    { key: 'sep4', divider: true },
+    {
+      key: 'delete',
+      label: 'Delete tree',
+      destructive: true,
+      onClick: () => setShowDeleteConfirm(true),
+    },
   ];
 
   return (
@@ -282,6 +298,16 @@ export function Workspace() {
           {showPrint && <PrintPreview onClose={() => setShowPrint(false)} />}
           {showPresentation && <PresentationView onClose={() => setShowPresentation(false)} />}
           {showQuickCapture && <QuickCaptureDialog onClose={() => setShowQuickCapture(false)} />}
+          {showDeleteConfirm && (
+            <ConfirmDialog
+              label="Delete tree"
+              message={`Delete "${rootLabel}"? This cannot be undone.`}
+              confirmLabel="Delete tree"
+              destructive
+              onConfirm={doDelete}
+              onClose={() => setShowDeleteConfirm(false)}
+            />
+          )}
         </main>
         {reviewOpen ? <ReviewPanel /> : <Inspector />}
       </div>

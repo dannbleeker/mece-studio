@@ -427,6 +427,7 @@ an overlay in the app.
 | <kbd>Enter</kbd> (while editing) | Commit the label |
 | <kbd>Escape</kbd> (while editing) | Cancel the edit |
 | <kbd>Delete</kbd> or <kbd>Backspace</kbd> | Remove the selected node and its subtree |
+| <kbd>P</kbd> | Bump the selected node's priority (none → low → medium → high) |
 | <kbd>Ctrl/⌘+Z</kbd> | Undo |
 | <kbd>Ctrl/⌘+Y</kbd> or <kbd>Ctrl/⌘+Shift+Z</kbd> | Redo |
 | <kbd>Enter</kbd> (in the Find box) | Zoom to the matching nodes |

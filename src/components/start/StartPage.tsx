@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { PromptDialog } from '@/components/PromptDialog';
 import type { ExampleTree } from '@/domain/examples';
 import { buildFrameworkTree, type FrameworkTemplate } from '@/domain/frameworks';
 import { meceSummary } from '@/domain/meceStatus';
@@ -114,6 +116,8 @@ export function StartPage() {
 
   const [section, setSection] = useState<Section>('start');
   const [query, setQuery] = useState('');
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   // ⌘K / Ctrl+K jumps to the searchable tree list and focuses the box.
@@ -143,19 +147,11 @@ export function StartPage() {
     setView('workspace');
   };
   const manage: ManageHandlers = {
-    onRename: (id) => {
-      const current = docs.find((d) => d.entry.id === id)?.entry.name ?? '';
-      const next = window.prompt('Rename this tree', current);
-      if (next !== null) renameDoc(id, next);
-    },
+    onRename: (id) => setRenamingId(id),
     onDuplicate: (id) => duplicateDoc(id),
-    onDelete: (id) => {
-      if (window.confirm('Delete this tree? This cannot be undone.')) {
-        deleteDoc(id);
-        setView('start'); // stay on Start even if the deleted tree was the active one
-      }
-    },
+    onDelete: (id) => setDeletingId(id),
   };
+  const nameOf = (id: string) => docs.find((d) => d.entry.id === id)?.entry.name ?? '';
 
   return (
     <div className="flex h-full bg-[#faf9f5] text-neutral-800">
@@ -233,6 +229,29 @@ export function StartPage() {
           {section === 'learn' && <LearnMece />}
         </main>
       </div>
+
+      {renamingId && (
+        <PromptDialog
+          label="Rename tree"
+          initialValue={nameOf(renamingId)}
+          submitLabel="Rename"
+          onSubmit={(name) => renameDoc(renamingId, name)}
+          onClose={() => setRenamingId(null)}
+        />
+      )}
+      {deletingId && (
+        <ConfirmDialog
+          label="Delete tree"
+          message={`Delete "${nameOf(deletingId) || 'this tree'}"? This cannot be undone.`}
+          confirmLabel="Delete tree"
+          destructive
+          onConfirm={() => {
+            deleteDoc(deletingId);
+            setView('start'); // stay on Start even if the deleted tree was the active one
+          }}
+          onClose={() => setDeletingId(null)}
+        />
+      )}
     </div>
   );
 }

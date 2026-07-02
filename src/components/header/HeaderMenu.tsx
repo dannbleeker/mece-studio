@@ -3,7 +3,14 @@ import { type ReactNode, useEffect, useRef, useState } from 'react';
 /** One entry in a header dropdown: an action button, or a visual divider. */
 export type MenuEntry =
   | { key: string; divider: true }
-  | { key: string; label: ReactNode; onClick: () => void; disabled?: boolean };
+  | {
+      key: string;
+      label: ReactNode;
+      onClick: () => void;
+      disabled?: boolean;
+      /** Render in a danger style (e.g. "Delete tree") to mark it as destructive. */
+      destructive?: boolean;
+    };
 
 /**
  * A lightweight header dropdown: a trigger button that toggles a popover of
@@ -72,7 +79,11 @@ export function HeaderMenu({
                   it.onClick();
                   setOpen(false);
                 }}
-                className="flex w-full items-center px-3 py-1.5 text-left text-[13px] text-neutral-700 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:text-neutral-300"
+                className={`flex w-full items-center px-3 py-1.5 text-left text-[13px] disabled:cursor-not-allowed disabled:text-neutral-300 ${
+                  it.destructive
+                    ? 'text-[#bd4a3a] hover:bg-[#f6e9e7]'
+                    : 'text-neutral-700 hover:bg-neutral-100'
+                }`}
               >
                 {it.label}
               </button>

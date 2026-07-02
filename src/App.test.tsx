@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { childrenOf } from '@/domain/tree';
 import type { NodeId } from '@/domain/types';
@@ -148,13 +148,12 @@ describe('Workspace', () => {
 
   it('deletes the active tree after confirmation', () => {
     s().newDoc();
-    vi.stubGlobal(
-      'confirm',
-      vi.fn(() => true)
-    );
     render(<Workspace />);
     openOverflow();
-    fireEvent.click(screen.getByRole('button', { name: 'Delete tree' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete tree' })); // overflow → opens confirm
+    fireEvent.click(
+      within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete tree' })
+    );
     expect(s().library).toHaveLength(1);
   });
 

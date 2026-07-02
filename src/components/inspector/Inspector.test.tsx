@@ -58,11 +58,11 @@ describe('Inspector', () => {
     expect(s().doc.nodes[rootId]?.value?.amount).toBe(42);
   });
 
-  it('sets and clears priority', () => {
+  it('sets and clears priority via the impact × ease matrix', () => {
     const rootId = selectRoot();
     render(<Inspector />);
-    fireEvent.click(screen.getAllByRole('button', { name: 'high' })[0]); // impact → high
-    expect(s().doc.nodes[rootId]?.priority?.impact).toBe('high');
+    fireEvent.click(screen.getByRole('button', { name: 'Impact high, ease medium' }));
+    expect(s().doc.nodes[rootId]?.priority).toEqual({ impact: 'high', ease: 'medium' });
     fireEvent.click(screen.getByRole('button', { name: 'Clear priority' }));
     expect(s().doc.nodes[rootId]?.priority).toBeUndefined();
   });
@@ -77,8 +77,22 @@ describe('Inspector', () => {
     fireEvent.click(screen.getByRole('button', { name: '+ Supports' }));
     expect(s().doc.nodes[rootId]?.evidence).toHaveLength(1);
     expect(s().doc.nodes[rootId]?.evidence[0]?.summary).toBe('It works');
-    fireEvent.click(screen.getByRole('button', { name: '×' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Remove evidence' }));
     expect(s().doc.nodes[rootId]?.evidence).toHaveLength(0);
+  });
+
+  it('picks draft strength up front and flips an evidence item stance', () => {
+    const rootId = selectRoot();
+    render(<Inspector />);
+    goTab('Evidence');
+    fireEvent.click(screen.getByRole('button', { name: 'strong' })); // draft strength selector
+    fireEvent.change(screen.getByPlaceholderText('Add evidence…'), { target: { value: 'Data' } });
+    fireEvent.click(screen.getByRole('button', { name: '+ Contradicts' }));
+    const ev = s().doc.nodes[rootId]?.evidence[0];
+    expect(ev?.strength).toBe('strong');
+    expect(ev?.supports).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: /flip stance/ }));
+    expect(s().doc.nodes[rootId]?.evidence[0]?.supports).toBe(true);
   });
 
   it('decomposes a leaf into a split', () => {

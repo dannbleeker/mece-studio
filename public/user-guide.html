@@ -179,22 +179,35 @@ removed (you can undo).</p>
 <em>split</em> (a parent and its children), not of a single node. The engine
 re-evaluates every split on every change and shows the result two ways:</p>
 <ul>
-<li><strong>ME / CE dots on the node</strong> — at a glance, is this split mutually exclusive
-and collectively exhaustive?</li>
+<li><strong>ME / CE indicators on the node</strong> — at a glance, is this split mutually
+exclusive and collectively exhaustive? Each carries a <strong>glyph</strong> (✓ pass · !
+needs review · – not checked) as well as colour, so the state reads in
+greyscale, for colour-blind users, and to screen readers. The status border
+(supported / refuted / parked) shows a matching glyph.</li>
 <li><strong>Explained warnings in the inspector</strong> — <em>why</em> a split isn&#39;t MECE, in words,
 with what to do about it.</li>
 </ul>
 <p>How each split type is judged:</p>
 <ul>
 <li><strong>Binary (A / not-A)</strong> — provably MECE by construction (exactly two branches).</li>
-<li><strong>Formula</strong> — checked for <strong>reconciliation</strong>: do the children actually combine
-into the parent&#39;s value within tolerance?</li>
+<li><strong>Formula</strong> — checked for <strong>reconciliation</strong> (do the children combine into the
+parent&#39;s value within tolerance?) <em>and</em> for <strong>double-counting</strong>: a summed term
+named like a running &quot;total&quot;, or two terms with the same label, is flagged.
+Product / difference terms are exclusive by construction.</li>
 <li><strong>Segments</strong> — collectively exhaustive only when you include an explicit
 <strong>&quot;Other&quot;</strong> bucket; otherwise you&#39;re warned there may be a gap.</li>
-<li><strong>Other types</strong> — a <strong>sibling-overlap heuristic</strong> flags when two siblings share
-a content word (a sign they may not be mutually exclusive). Generic and
-placeholder words are ignored so fresh scaffolds don&#39;t flag themselves.</li>
+<li><strong>Process</strong> and <strong>framework</strong> — can&#39;t be <em>proven</em> exhaustive, so instead of a
+silent grey dot you get a plain-language prompt (does the process run end to
+end? does the framework leave anything important outside?).</li>
+<li><strong>Other types</strong> — a <strong>sibling-overlap heuristic</strong> flags when siblings share a
+content word (a sign they may not be mutually exclusive) and <strong>names the pair</strong>.
+A word that <em>every</em> sibling shares (with three or more branches) is treated as
+the split&#39;s dimension, not an overlap; generic and placeholder words are ignored.</li>
 </ul>
+<p><strong>Name the dimension.</strong> In the <strong>Logic</strong> tab you can name the single axis a split
+is cut on (e.g. <em>by geography</em>), with one-click common axes. One consistent
+dimension per level is the backbone of a MECE tree — the named axis shows on the
+node, in the synthesis, and in the AI-critique prompt.</p>
 <p>The goal isn&#39;t a perfect score — it&#39;s to make gaps and overlaps <em>visible</em> so you
 decide deliberately.</p>
 <h2>Editing nodes</h2>
@@ -419,6 +432,10 @@ an overlay in the app.</p>
 <tr>
 <td><kbd>Delete</kbd> or <kbd>Backspace</kbd></td>
 <td>Remove the selected node and its subtree</td>
+</tr>
+<tr>
+<td><kbd>P</kbd></td>
+<td>Bump the selected node&#39;s priority (none → low → medium → high)</td>
 </tr>
 <tr>
 <td><kbd>Ctrl/⌘+Z</kbd></td>

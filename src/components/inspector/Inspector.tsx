@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { CHECK_STATE_COLOR, CHECK_STATE_GLYPH, CHECK_STATE_LABEL } from '@/components/checkColors';
 import { decomposePrompt } from '@/domain/aiPrompts';
 import { DECOMPOSITION_HINTS, DECOMPOSITION_LABELS } from '@/domain/constants';
+import { priorityBand } from '@/domain/priority';
 import { rollUpValue } from '@/domain/rollup';
 import { sensitivity } from '@/domain/sensitivity';
 import { splitOf } from '@/domain/tree';
@@ -33,11 +34,8 @@ const DECOMPOSITION_ORDER: DecompositionType[] = [
 /** Common axes offered as one-click dimension fills — the usual MECE cuts. */
 const COMMON_AXES = ['customer', 'geography', 'product', 'time', 'stage'];
 
-const STRENGTH_CYCLE: EvidenceStrength[] = ['anecdote', 'indicative', 'strong'];
-function nextStrength(s: EvidenceStrength): EvidenceStrength {
-  const i = STRENGTH_CYCLE.indexOf(s);
-  return STRENGTH_CYCLE[(i + 1) % STRENGTH_CYCLE.length] ?? 'indicative';
-}
+/** Evidence strengths, weakest → strongest — used by the draft + per-item pickers. */
+const STRENGTHS: EvidenceStrength[] = ['anecdote', 'indicative', 'strong'];
 
 const STATUS_ACTIVE: Record<NodeStatus, string> = {
   open: 'bg-[#3f6fb0] text-white',
@@ -90,6 +88,7 @@ export function Inspector() {
   const duplicateNode = useStore((s) => s.duplicateNode);
   const moveSibling = useStore((s) => s.moveSibling);
   const [evidenceDraft, setEvidenceDraft] = useState('');
+  const [draftStrength, setDraftStrength] = useState<EvidenceStrength>('indicative');
 
   const node = selectedId ? doc.nodes[selectedId] : undefined;
   const split = selectedId ? splitOf(doc, selectedId) : undefined;
@@ -220,43 +219,67 @@ export function Inspector() {
               </div>
             </section>
 
-            <section className="flex flex-col gap-1.5 border-neutral-100 border-t pt-3">
-              <span className={LABEL_CLS}>Priority</span>
-              {(['impact', 'ease'] as const).map((axis) => (
-                <div key={axis} className="flex items-center gap-2">
-                  <span className="w-12 text-[11px] text-neutral-500 capitalize">{axis}</span>
-                  <div className="flex gap-1">
-                    {(['low', 'medium', 'high'] as Level[]).map((lvl) => (
-                      <button
-                        key={lvl}
-                        type="button"
-                        className={`rounded px-2 py-0.5 text-[11px] capitalize ${
-                          node.priority?.[axis] === lvl
-                            ? 'bg-[#3f6fb0] text-white'
-                            : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                        }`}
-                        onClick={() =>
-                          setPriority(selectedId, {
-                            impact: axis === 'impact' ? lvl : (node.priority?.impact ?? 'medium'),
-                            ease: axis === 'ease' ? lvl : (node.priority?.ease ?? 'medium'),
-                          })
-                        }
-                      >
-                        {lvl}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              {node.priority && (
-                <button
-                  type="button"
-                  className="self-start text-[11px] text-neutral-400 hover:text-neutral-700 hover:underline"
-                  onClick={() => setPriority(selectedId, undefined)}
-                >
-                  Clear priority
-                </button>
-              )}
+            <section className="flex flex-col gap-2 border-neutral-100 border-t pt-3">
+              <div className="flex items-center justify-between">
+                <span className={LABEL_CLS}>Priority</span>
+                {node.priority && (
+                  <span className="rounded bg-[#eef2f9] px-1.5 py-0.5 font-medium text-[#3f6fb0] text-[10px] capitalize">
+                    {priorityBand(node.priority)}
+                  </span>
+                )}
+              </div>
+              {/* impact (rows, high→low) × ease (cols, low→high) — one click sets both axes. */}
+              <div className="grid grid-cols-[2.5rem_repeat(3,1fr)] items-center gap-0.5">
+                <span />
+                {(['low', 'medium', 'high'] as Level[]).map((ea) => (
+                  <span key={ea} className="text-center text-[9px] text-neutral-400 capitalize">
+                    {ea}
+                  </span>
+                ))}
+                {(['high', 'medium', 'low'] as Level[]).map((imp) => (
+                  <Fragment key={imp}>
+                    <span className="pr-1 text-right text-[9px] text-neutral-400 capitalize">
+                      {imp}
+                    </span>
+                    {(['low', 'medium', 'high'] as Level[]).map((ea) => {
+                      const active = node.priority?.impact === imp && node.priority?.ease === ea;
+                      const band = priorityBand({ impact: imp, ease: ea });
+                      const tone =
+                        band === 'high'
+                          ? 'bg-[#dbe7f5]'
+                          : band === 'medium'
+                            ? 'bg-[#f5ecd8]'
+                            : 'bg-[#efeee9]';
+                      return (
+                        <button
+                          key={ea}
+                          type="button"
+                          aria-label={`Impact ${imp}, ease ${ea}`}
+                          title={`Impact ${imp} · ease ${ea} → ${band} priority`}
+                          onClick={() => setPriority(selectedId, { impact: imp, ease: ea })}
+                          className={`grid h-6 place-items-center rounded ${tone} ${
+                            active ? 'ring-2 ring-[#3f6fb0]' : 'hover:brightness-95'
+                          }`}
+                        >
+                          {active && <span className="text-[#3f6fb0] text-[11px]">●</span>}
+                        </button>
+                      );
+                    })}
+                  </Fragment>
+                ))}
+              </div>
+              <div className="flex items-center justify-between text-[9px] text-neutral-400">
+                <span>impact ↓ · ease →</span>
+                {node.priority && (
+                  <button
+                    type="button"
+                    className="text-neutral-400 hover:text-neutral-700 hover:underline"
+                    onClick={() => setPriority(selectedId, undefined)}
+                  >
+                    Clear priority
+                  </button>
+                )}
+              </div>
             </section>
           </>
         )}
@@ -399,30 +422,42 @@ export function Inspector() {
           <section className="flex flex-col gap-2">
             <span className={LABEL_CLS}>Evidence</span>
             {node.evidence.length > 0 && (
-              <ul className="flex flex-col gap-1">
+              <ul className="flex flex-col gap-1.5">
                 {node.evidence.map((e) => (
                   <li key={e.id} className="flex items-start gap-1.5 text-[12px]">
-                    <span
-                      className="mt-0.5 font-semibold"
-                      style={{ color: e.supports ? '#3f7d54' : '#bd4a3a' }}
-                      title={e.supports ? 'Supports' : 'Contradicts'}
-                    >
-                      {e.supports ? '✓' : '✗'}
-                    </span>
-                    <span className="flex-1 text-neutral-700 leading-snug">{e.summary}</span>
                     <button
                       type="button"
-                      title="Cycle strength"
-                      className="rounded bg-neutral-100 px-1 text-[10px] text-neutral-500 capitalize hover:bg-neutral-200"
-                      onClick={() =>
-                        updateEvidence(selectedId, e.id, { strength: nextStrength(e.strength) })
-                      }
+                      className="mt-0.5 font-semibold"
+                      style={{ color: e.supports ? '#3f7d54' : '#bd4a3a' }}
+                      title={`${e.supports ? 'Supports' : 'Contradicts'} — click to flip`}
+                      aria-label={`${e.supports ? 'Supports' : 'Contradicts'} — flip stance`}
+                      onClick={() => updateEvidence(selectedId, e.id, { supports: !e.supports })}
                     >
-                      {e.strength}
+                      {e.supports ? '✓' : '✗'}
                     </button>
+                    <span className="flex-1 text-neutral-700 leading-snug">{e.summary}</span>
+                    <span className="flex shrink-0 gap-0.5">
+                      {STRENGTHS.map((st) => (
+                        <button
+                          key={st}
+                          type="button"
+                          title={st}
+                          aria-label={`Set strength ${st}`}
+                          className={`rounded px-1 text-[10px] uppercase ${
+                            e.strength === st
+                              ? 'bg-[#3f6fb0] text-white'
+                              : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'
+                          }`}
+                          onClick={() => updateEvidence(selectedId, e.id, { strength: st })}
+                        >
+                          {st[0]}
+                        </button>
+                      ))}
+                    </span>
                     <button
                       type="button"
                       title="Remove"
+                      aria-label="Remove evidence"
                       className="text-neutral-300 hover:text-neutral-600"
                       onClick={() => removeEvidence(selectedId, e.id)}
                     >
@@ -438,13 +473,32 @@ export function Inspector() {
               className="rounded-md border border-neutral-300 px-2 py-1.5 text-[12px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
               onChange={(e) => setEvidenceDraft(e.target.value)}
             />
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] text-neutral-400 uppercase tracking-wider">
+                Strength
+              </span>
+              {STRENGTHS.map((st) => (
+                <button
+                  key={st}
+                  type="button"
+                  className={`rounded px-1.5 py-0.5 text-[10px] capitalize ${
+                    draftStrength === st
+                      ? 'bg-[#3f6fb0] text-white'
+                      : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'
+                  }`}
+                  onClick={() => setDraftStrength(st)}
+                >
+                  {st}
+                </button>
+              ))}
+            </div>
             <div className="flex gap-1.5">
               <button
                 type="button"
                 disabled={!evidenceDraft.trim()}
                 className="flex-1 rounded-md bg-[#eaf2ea] px-2 py-1 text-[12px] text-[#2f6a44] hover:bg-[#dcebdc] disabled:opacity-50"
                 onClick={() => {
-                  addEvidence(selectedId, evidenceDraft.trim(), true);
+                  addEvidence(selectedId, evidenceDraft.trim(), true, draftStrength);
                   setEvidenceDraft('');
                 }}
               >
@@ -455,7 +509,7 @@ export function Inspector() {
                 disabled={!evidenceDraft.trim()}
                 className="flex-1 rounded-md bg-[#f6e9e7] px-2 py-1 text-[12px] text-[#a23b2c] hover:bg-[#f0ddda] disabled:opacity-50"
                 onClick={() => {
-                  addEvidence(selectedId, evidenceDraft.trim(), false);
+                  addEvidence(selectedId, evidenceDraft.trim(), false, draftStrength);
                   setEvidenceDraft('');
                 }}
               >

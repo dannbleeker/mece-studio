@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DECOMPOSITION_LABELS } from '@/domain/constants';
 import { splitOf } from '@/domain/tree';
@@ -63,13 +63,14 @@ describe('StartPage', () => {
   });
 
   it('renames a tree from its card', () => {
-    vi.stubGlobal(
-      'prompt',
-      vi.fn(() => 'Renamed from card')
-    );
     render(<StartPage />);
     fireEvent.click(screen.getByRole('button', { name: /All trees/ }));
     fireEvent.click(screen.getByRole('button', { name: /^Rename/ }));
+    const dialog = screen.getByRole('dialog');
+    fireEvent.change(within(dialog).getByRole('textbox', { name: 'Rename tree' }), {
+      target: { value: 'Renamed from card' },
+    });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Rename' }));
     expect(s().doc.nodes[s().doc.rootId]?.label).toBe('Renamed from card');
   });
 
@@ -90,27 +91,25 @@ describe('StartPage', () => {
 
   it('deletes a tree from its card and stays on Start', () => {
     s().newDoc(); // two trees in the library
-    vi.stubGlobal(
-      'confirm',
-      vi.fn(() => true)
-    );
     render(<StartPage />);
     const before = s().library.length;
     fireEvent.click(screen.getByRole('button', { name: /All trees/ }));
-    fireEvent.click(screen.getAllByRole('button', { name: /^Delete/ })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: /^Delete/ })[0]); // card → opens confirm
+    fireEvent.click(
+      within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete tree' })
+    );
     expect(s().library).toHaveLength(before - 1);
     expect(s().view).toBe('start');
   });
 
   it('deleting the last tree empties the gallery (no reseeded duplicate)', () => {
-    vi.stubGlobal(
-      'confirm',
-      vi.fn(() => true)
-    );
     render(<StartPage />);
     expect(s().library).toHaveLength(1);
     fireEvent.click(screen.getByRole('button', { name: /All trees/ }));
-    fireEvent.click(screen.getByRole('button', { name: /^Delete/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Delete/ })); // card → opens confirm
+    fireEvent.click(
+      within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete tree' })
+    );
     expect(s().library).toHaveLength(0);
     expect(screen.getByText('No trees yet.')).toBeTruthy();
   });

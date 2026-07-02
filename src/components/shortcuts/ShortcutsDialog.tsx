@@ -7,6 +7,7 @@ const SHORTCUTS: { keys: string[]; action: string }[] = [
   { keys: ['Double-click'], action: "Edit a node's label inline" },
   { keys: ['Escape'], action: 'Cancel an edit · close a dialog' },
   { keys: ['Delete', 'Backspace'], action: 'Remove the selected node and its subtree' },
+  { keys: ['P'], action: "Bump the selected node's priority (none → low → medium → high)" },
   { keys: ['Ctrl / ⌘ + Z'], action: 'Undo' },
   { keys: ['Ctrl / ⌘ + Y', 'Ctrl / ⌘ + Shift + Z'], action: 'Redo' },
   { keys: ['Enter'], action: 'Zoom to matches (in the Find box)' },
