@@ -8,6 +8,8 @@ interface DialogProps {
   heading?: string;
   /** Optional sub-heading line under the title. */
   subtitle?: ReactNode;
+  /** Widen the card (e.g. a grid of choices) — defaults to the compact width. */
+  wide?: boolean;
   onClose: () => void;
   children: ReactNode;
 }
@@ -18,7 +20,7 @@ interface DialogProps {
  * Tab/Shift+Tab cycle inside, Escape closes, focus restored on unmount). Each
  * dialog supplies its own body as children.
  */
-export function Dialog({ label, heading, subtitle, onClose, children }: DialogProps) {
+export function Dialog({ label, heading, subtitle, wide = false, onClose, children }: DialogProps) {
   const ref = useModalFocus<HTMLDivElement>(onClose);
 
   return (
@@ -32,7 +34,9 @@ export function Dialog({ label, heading, subtitle, onClose, children }: DialogPr
       <div
         ref={ref}
         tabIndex={-1}
-        className="relative w-full max-w-md rounded-xl border border-neutral-200 bg-white p-6 shadow-xl outline-none"
+        className={`relative max-h-[90vh] w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white p-6 shadow-xl outline-none ${
+          wide ? 'max-w-2xl' : 'max-w-md'
+        }`}
         role="dialog"
         aria-modal="true"
         aria-label={label}

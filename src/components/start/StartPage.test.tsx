@@ -38,14 +38,18 @@ describe('StartPage', () => {
     expect(screen.getByText(/Mutually Exclusive, Collectively Exhaustive/)).toBeTruthy();
   });
 
-  it('builds a tree from the hero and enters the workspace', () => {
+  it('builds a tree from the hero, choosing a split, and enters the workspace', () => {
     render(<StartPage />);
     fireEvent.change(screen.getByLabelText('Key question'), {
       target: { value: 'Why are sales down?' },
     });
     fireEvent.click(screen.getByRole('button', { name: /Build an issue tree/ }));
+    // The chooser opens — pick a decomposition to scaffold the first split.
+    const chooser = screen.getByRole('dialog', { name: /How do you want to split/ });
+    fireEvent.click(within(chooser).getByRole('button', { name: /Binary \(A \/ not-A\)/ }));
     expect(s().view).toBe('workspace');
     expect(s().doc.nodes[s().doc.rootId]?.label).toBe('Why are sales down?');
+    expect(splitOf(s().doc, s().doc.rootId)?.decomposition).toBe('binary');
   });
 
   it('creating from a framework opens a scaffolded tree in the workspace', () => {

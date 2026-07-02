@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { Dialog } from '@/components/Dialog';
 import { PromptDialog } from '@/components/PromptDialog';
 import type { ExampleTree } from '@/domain/examples';
 import { buildFrameworkTree, type FrameworkTemplate } from '@/domain/frameworks';
@@ -118,6 +119,7 @@ export function StartPage() {
   const [query, setQuery] = useState('');
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [buildQuestion, setBuildQuestion] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   // ⌘K / Ctrl+K jumps to the searchable tree list and focuses the box.
@@ -133,10 +135,21 @@ export function StartPage() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  const onBuild = (question: string) => newDoc(question);
+  // The hero CTA (and the "Try" chips) open a chooser so you land on a scaffolded
+  // first split, not a lone root — the hero promises "scaffolds the first split".
+  const onBuild = (question: string) => setBuildQuestion(question);
   const onPickFramework = (type: DecompositionType) => {
     newDoc();
     decompose(useStore.getState().doc.rootId, type);
+  };
+  const buildWithSplit = (type: DecompositionType) => {
+    newDoc(buildQuestion ?? undefined);
+    decompose(useStore.getState().doc.rootId, type);
+    setBuildQuestion(null);
+  };
+  const buildBlank = () => {
+    newDoc(buildQuestion ?? undefined);
+    setBuildQuestion(null);
   };
   const onPickExample = (ex: ExampleTree) => openDoc(ex.build());
   const onPickFrameworkTemplate = (t: FrameworkTemplate) => openDoc(buildFrameworkTree(t));
@@ -229,6 +242,30 @@ export function StartPage() {
           {section === 'learn' && <LearnMece />}
         </main>
       </div>
+
+      {buildQuestion !== null && (
+        <Dialog
+          label="How do you want to split it?"
+          subtitle={
+            buildQuestion.trim()
+              ? `“${buildQuestion.trim()}” — pick a decomposition to scaffold the first split, or start blank.`
+              : 'Pick a decomposition to scaffold the first split, or start blank.'
+          }
+          wide
+          onClose={() => setBuildQuestion(null)}
+        >
+          <div className="mt-4">
+            <FrameworksGroup onPick={buildWithSplit} />
+            <button
+              type="button"
+              onClick={buildBlank}
+              className="mt-4 text-[13px] text-neutral-500 hover:text-neutral-800 hover:underline"
+            >
+              Start blank instead →
+            </button>
+          </div>
+        </Dialog>
+      )}
 
       {renamingId && (
         <PromptDialog
