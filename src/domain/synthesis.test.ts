@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { createDoc, createEvidence } from './factory';
 import { recomputeMece } from './mece';
-import { synthesise } from './synthesis';
+import { synthesise, verdict } from './synthesis';
 import {
   addChild,
   addEvidence,
+  setAnswer,
   setDecomposition,
   setDimension,
+  setNodeValue,
+  setOperator,
   setPriority,
   setStatus,
 } from './tree';
@@ -68,6 +71,43 @@ describe('synthesise', () => {
     const out = synthesise(broken);
     expect(out).toContain(`# ${doc.title}`);
     expect(out).toContain('No branches yet');
+  });
+
+  it('surfaces values, roll-up, and the top sensitivity driver on a formula split', () => {
+    let doc = createDoc('Profit', 0);
+    doc = setNodeValue(doc, doc.rootId, { amount: 100, unit: 'M' });
+    const a = addChild(doc, doc.rootId, 'Revenue');
+    doc = a.doc;
+    const b = addChild(doc, doc.rootId, 'Cost');
+    doc = b.doc;
+    doc = setNodeValue(doc, a.childId, { amount: 160 });
+    doc = setNodeValue(doc, b.childId, { amount: 60 });
+    doc = setDecomposition(doc, doc.rootId, 'formula');
+    doc = setOperator(doc, doc.rootId, 'difference');
+    const out = synthesise(doc);
+    expect(out).toContain('value: 100 M');
+    expect(out).toContain('rolls up to 100');
+    expect(out).toMatch(/most sensitive to:/);
+  });
+
+  it('leads with the governing answer and a verdict from branch status', () => {
+    let doc = createDoc('Should we enter?', 0);
+    doc = setAnswer(doc, 'Yes — enter via partnership');
+    const a = addChild(doc, doc.rootId, 'Market attractive');
+    doc = a.doc;
+    const b = addChild(doc, doc.rootId, 'We can win');
+    doc = b.doc;
+    doc = setStatus(doc, a.childId, 'supported');
+    doc = setStatus(doc, b.childId, 'refuted');
+    const out = synthesise(doc);
+    expect(out).toContain('**Answer:** Yes — enter via partnership');
+    expect(out).toMatch(/Verdict: 1 of 2 top branches supported, 1 refuted/);
+  });
+
+  it('has no verdict until at least one branch is tested', () => {
+    let doc = createDoc('Q', 0);
+    doc = addChild(doc, doc.rootId, 'A').doc;
+    expect(verdict(doc)).toBeNull();
   });
 
   it('notes the split dimension when one is named', () => {

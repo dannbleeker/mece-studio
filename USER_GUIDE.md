@@ -47,7 +47,7 @@ you move into the **workspace**, where you build it:
 - **The header** (top) is grouped into clusters: the **MECE Studio** wordmark and
   **← Start** return to the library; a **MECE health** chip opens the tree-wide
   review (below); then **Undo / Redo**, **Synthesis**, a filled **Export ▾** menu
-  (PNG / SVG / PDF / PowerPoint / JSON), **⚙ Settings**, **?** shortcuts, and an **⋯ overflow**
+  (PNG / SVG / PDF / PowerPoint / JSON / a one-page Answer memo), **⚙ Settings**, **?** shortcuts, and an **⋯ overflow**
   menu (Copy Markdown, Open file, Save / Save As, About, New / Delete tree).
 
 Click a node to select it. Rename the root question to your real problem to
@@ -291,16 +291,23 @@ the leaves.
 
 ## Synthesis — reading the answer
 
-Open the **Synthesis** panel (header) to read the tree back **answer-first**, the
-way a good consultant would present it:
+State your **day-1 answer** in the **Answer** banner above the canvas — the
+hypothesis the whole tree argues for. Open the **Synthesis** panel (header) to
+read the tree back **answer-first**, the way a good consultant would present it:
 
-- It leads with the **highest-priority branch**.
-- It lists branches in **priority order**.
-- It surfaces each node's **evidence** and **hypothesis status**.
+- It leads with your **answer** and a rolled-up **verdict** from the top branches'
+  status (e.g. *"3 of 5 top branches supported, 1 refuted — the answer partially
+  holds"*).
+- It leads into the **highest-priority branch** and lists branches in **priority
+  order**.
+- It surfaces each node's **evidence**, **hypothesis status**, and — for
+  value-driver trees — its **value**, **rolled-up total**, and **most-sensitive
+  driver**.
 - It flags any **MECE gaps and overlaps**.
 
-**Copy Markdown** copies the whole synthesis (or use **Copy Markdown** in the
-header for the tree outline) so you can paste it into a doc, an email, or a deck.
+**Copy** copies the whole synthesis as Markdown; **Export ▾ → Answer (1-page)**
+saves a clean, self-contained **HTML memo** (thesis, verdict, then the branches)
+you can hand over as-is — the deliverable, not a canvas screenshot.
 
 ## AI assist
 

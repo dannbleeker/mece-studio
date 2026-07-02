@@ -131,6 +131,16 @@ export function setDimension(doc: IssueTreeDoc, parentId: NodeId, dimension: str
   return { ...doc, splits: { ...doc.splits, [split.id]: next } };
 }
 
+/** Set or clear the governing answer / hypothesis on the doc. No-op when unchanged. */
+export function setAnswer(doc: IssueTreeDoc, answer: string): IssueTreeDoc {
+  const trimmed = answer.trim();
+  if (trimmed === (doc.answer ?? '')) return doc;
+  const next = { ...doc };
+  if (trimmed === '') delete next.answer;
+  else next.answer = trimmed;
+  return next;
+}
+
 /**
  * Apply `fn` to the node at `nodeId`, returning the doc with that node replaced.
  * Returns the doc UNCHANGED (same reference) when the node is missing or `fn`

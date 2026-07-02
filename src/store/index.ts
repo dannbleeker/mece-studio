@@ -16,6 +16,7 @@ import {
   removeNode as removeNodeOp,
   renameNode as renameNodeOp,
   setAllCollapsed as setAllCollapsedOp,
+  setAnswer as setAnswerOp,
   setDecomposition as setDecompositionOp,
   setDetail as setDetailOp,
   setDimension as setDimensionOp,
@@ -192,6 +193,8 @@ interface AppState {
   duplicateDoc: (id: string) => void;
   openDoc: (doc: IssueTreeDoc) => void;
   setRootQuestion: (label: string) => void;
+  /** Set or clear the governing answer / hypothesis the tree argues for. */
+  setAnswer: (answer: string) => void;
   addChild: (parentId: NodeId, label?: string) => void;
   /** Add several children under `parentId` in one undoable step (quick capture). */
   addChildren: (parentId: NodeId, labels: string[]) => void;
@@ -399,6 +402,7 @@ export const useStore = create<AppState>((set, get) => {
       }),
 
     setRootQuestion: (label) => apply((doc) => renameNodeOp(doc, doc.rootId, label)),
+    setAnswer: (answer) => apply((doc) => setAnswerOp(doc, answer)),
     addChild: (parentId, label) =>
       apply((doc) => addChildOp(doc, parentId, label ?? 'New issue').doc),
     addChildren: (parentId, labels) => apply((doc) => addChildrenOp(doc, parentId, labels)),

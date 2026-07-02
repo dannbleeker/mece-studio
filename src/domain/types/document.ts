@@ -15,6 +15,8 @@ export interface IssueTreeDoc {
   rootId: NodeId;
   nodes: Record<NodeId, IssueNode>;
   splits: Record<SplitId, Split>;
+  /** The governing hypothesis / day-1 answer the tree argues for (optional). */
+  answer?: string;
   /** 'LR' (left-to-right) is the classic McKinsey look. */
   layout: { direction: LayoutDirection };
   createdAt: number;

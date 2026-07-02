@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { AnswerBanner } from '@/components/AnswerBanner';
 import { AboutDialog } from '@/components/about/AboutDialog';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Canvas } from '@/components/canvas/Canvas';
@@ -16,6 +17,7 @@ import { ShortcutsDialog } from '@/components/shortcuts/ShortcutsDialog';
 import { TabStrip } from '@/components/tabs/TabStrip';
 import { TREE_KIND_LABELS } from '@/domain/constants';
 import { toMarkdown } from '@/domain/export';
+import { answerPageHtml } from '@/domain/synthesisFormat';
 import { splitOf } from '@/domain/tree';
 import { copyToClipboard, downloadText } from '@/services/download';
 import { treeToJson } from '@/services/exporters';
@@ -168,12 +170,14 @@ export function Workspace() {
   // PNG/PDF/PPTX render the canvas, so they route through the store to the
   // canvas; JSON only needs the document, so it downloads straight from here.
   const onExportJson = () => downloadText('mece-tree.json', treeToJson(doc), 'application/json');
+  const onExportAnswer = () => downloadText('mece-answer.html', answerPageHtml(doc), 'text/html');
   const exportItems: MenuEntry[] = [
     { key: 'png', label: 'PNG', onClick: () => requestExport('png') },
     { key: 'svg', label: 'SVG', onClick: () => requestExport('svg') },
     { key: 'pdf', label: 'PDF', onClick: () => requestExport('pdf') },
     { key: 'pptx', label: 'PPTX', onClick: () => requestExport('pptx') },
     { key: 'json', label: 'JSON', onClick: onExportJson },
+    { key: 'answer', label: 'Answer (1-page)', onClick: onExportAnswer },
   ];
   // Secondary actions, tucked into an overflow menu to keep the header clustered.
   const overflowItems: MenuEntry[] = [
@@ -286,6 +290,7 @@ export function Workspace() {
       </header>
 
       <TabStrip />
+      <AnswerBanner />
 
       <div className="flex min-h-0 flex-1">
         <main className="relative min-w-0 flex-1">

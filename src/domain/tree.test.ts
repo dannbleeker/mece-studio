@@ -12,6 +12,7 @@ import {
   removeNode,
   renameNode,
   setAllCollapsed,
+  setAnswer,
   setDecomposition,
   setDetail,
   setDimension,
@@ -70,6 +71,14 @@ describe('tree ops', () => {
     const formula = setDecomposition(d1, doc0.rootId, 'formula');
     const product = setOperator(formula, doc0.rootId, 'product');
     expect(splitOf(product, doc0.rootId)?.operator).toBe('product');
+  });
+
+  it('setAnswer sets (trimmed), no-ops when unchanged, and clears on blank', () => {
+    const doc0 = seed();
+    const set = setAnswer(doc0, '  Costs rose faster than revenue  ');
+    expect(set.answer).toBe('Costs rose faster than revenue');
+    expect(setAnswer(set, 'Costs rose faster than revenue')).toBe(set); // unchanged → same ref
+    expect(setAnswer(set, '').answer).toBeUndefined();
   });
 
   it('setDimension sets (trimmed), no-ops when unchanged, and clears on blank', () => {

@@ -1,9 +1,44 @@
 import { priorityBand, priorityScore } from './priority';
+import { rollUpValue } from './rollup';
+import { sensitivity } from './sensitivity';
 import { childrenOf, splitOf } from './tree';
 import type { IssueNode, IssueTreeDoc, NodeId, Split } from './types';
 
 function scoreOf(node: IssueNode | undefined): number {
   return node?.priority ? priorityScore(node.priority) : 0;
+}
+
+/**
+ * A rolled-up verdict on the governing answer, from the top branches' hypothesis
+ * status — "3 of 5 top branches supported, 1 refuted — the answer partially
+ * holds." Null until at least one top branch has been tested (so we never imply
+ * a verdict from an untouched tree). Pure.
+ */
+export function verdict(doc: IssueTreeDoc): string | null {
+  const branches = childrenOf(doc, doc.rootId);
+  const n = branches.length;
+  if (n === 0) return null;
+  let supported = 0;
+  let refuted = 0;
+  let parked = 0;
+  for (const b of branches) {
+    if (b.status === 'supported') supported++;
+    else if (b.status === 'refuted') refuted++;
+    else if (b.status === 'parked') parked++;
+  }
+  if (supported + refuted + parked === 0) return null; // nothing tested yet
+  const parts = [`${supported} of ${n} top branches supported`];
+  if (refuted > 0) parts.push(`${refuted} refuted`);
+  if (parked > 0) parts.push(`${parked} parked`);
+  const stance =
+    refuted === 0 && supported === n
+      ? 'the answer holds'
+      : supported > refuted
+        ? 'the answer partially holds'
+        : refuted > 0
+          ? 'the answer is in doubt'
+          : 'still open';
+  return `Verdict: ${parts.join(', ')} — ${stance}.`;
 }
 
 function meceFlags(split: Split | undefined): string {
@@ -16,6 +51,26 @@ function meceFlags(split: Split | undefined): string {
 
 function dimensionNote(split: Split | undefined): string {
   return split?.dimension ? ` _[by ${split.dimension}]_` : '';
+}
+
+/** Value / roll-up / sensitivity lines for a node (the numbers behind the answer). */
+function valueMeta(doc: IssueTreeDoc, id: NodeId, indent: string): string[] {
+  const out: string[] = [];
+  const node = doc.nodes[id];
+  if (node?.value) {
+    const unit = node.value.unit ? ` ${node.value.unit}` : '';
+    out.push(`${indent}value: ${node.value.amount}${unit}`);
+  }
+  if (splitOf(doc, id)?.decomposition === 'formula') {
+    const rolled = rollUpValue(doc, id);
+    if (rolled !== undefined) out.push(`${indent}rolls up to ${rolled}`);
+    const drivers = sensitivity(doc, id);
+    const top = drivers[0];
+    if (drivers.length >= 2 && top) {
+      out.push(`${indent}most sensitive to: ${top.label || 'Untitled'}`);
+    }
+  }
+  return out;
 }
 
 function render(doc: IssueTreeDoc, id: NodeId, depth: number, lines: string[]): void {
@@ -33,6 +88,7 @@ function render(doc: IssueTreeDoc, id: NodeId, depth: number, lines: string[]): 
           ? '⊘ '
           : '';
   lines.push(`${indent}- ${mark}${node.label}${band}${dimensionNote(split)}${meceFlags(split)}`);
+  lines.push(...valueMeta(doc, id, `${indent}  `));
   if (node.evidence.length > 0) {
     const ev = node.evidence.map((e) => `${e.supports ? '✓' : '✗'} ${e.summary}`).join('; ');
     lines.push(`${indent}  evidence: ${ev}`);
@@ -56,7 +112,14 @@ export function synthesise(doc: IssueTreeDoc): string {
       ? `Start with **${top.label}** — highest impact × ease.`
       : 'Tip: set impact × ease on the branches to rank where to start.';
 
-  const lines: string[] = [`# ${root?.label ?? doc.title}`, '', lead, ''];
+  const lines: string[] = [`# ${root?.label ?? doc.title}`, ''];
+  if (doc.answer) lines.push(`**Answer:** ${doc.answer}`, '');
+  const v = verdict(doc);
+  if (v) lines.push(`_${v}_`, '');
+  lines.push(lead, '');
+  // The root often IS the value-driver formula parent — surface its numbers up top.
+  const rootMeta = valueMeta(doc, doc.rootId, '');
+  if (rootMeta.length > 0) lines.push(...rootMeta, '');
   if (branches.length === 0) {
     lines.push('_(No branches yet — decompose the question to begin.)_');
   }

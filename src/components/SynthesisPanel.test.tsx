@@ -34,7 +34,8 @@ describe('SynthesisPanel', () => {
     seedWithBranch();
     const { container } = render(<SynthesisPanel onClose={vi.fn()} />);
     expect(container.textContent).toContain('Why are sales down?');
-    expect(container.textContent).toContain('Start with **Fewer customers**');
+    // The panel renders formatted lines (Markdown emphasis stripped for display).
+    expect(container.textContent).toContain('Start with Fewer customers');
   });
 
   it('copies the synthesis and an AI critique prompt, and closes', () => {
