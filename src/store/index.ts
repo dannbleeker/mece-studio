@@ -186,6 +186,8 @@ interface AppState {
   select: (id: NodeId | null) => void;
   /** Add or remove a node from the multi-selection (⌘/Ctrl/Shift-click). */
   toggleSelect: (id: NodeId) => void;
+  /** Replace the whole selection — the canvas syncs React Flow box/click selection here. */
+  setSelectedIds: (ids: NodeId[]) => void;
   setView: (view: AppView) => void;
   setReviewOpen: (open: boolean) => void;
   /** Select a node and ask the canvas to centre it (used by the review dock). */
@@ -297,6 +299,8 @@ export const useStore = create<AppState>((set, get) => {
     exportRequest: null,
 
     select: (id) => set({ selectedId: id, selectedIds: id ? [id] : [] }),
+    setSelectedIds: (ids) =>
+      set({ selectedIds: [...ids], selectedId: ids[ids.length - 1] ?? null }),
     toggleSelect: (id) =>
       set((s) => {
         const has = s.selectedIds.includes(id);

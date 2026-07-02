@@ -39,6 +39,8 @@ export function SelectionBar() {
           <button
             key={st}
             type="button"
+            title={`Set ${st} for the selection`}
+            aria-label={`Set status ${st}`}
             onClick={() => setStatusMany(selectedIds, st)}
             className={`rounded px-1.5 py-0.5 text-[11px] capitalize ${STATUS_TONE[st]}`}
           >

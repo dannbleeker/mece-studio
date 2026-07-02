@@ -114,6 +114,21 @@ describe('store', () => {
     expect(s().selectedIds).toEqual([b.id]);
   });
 
+  it('setSelectedIds replaces the selection and tracks the primary', () => {
+    s().addChild(s().doc.rootId, 'A');
+    s().addChild(s().doc.rootId, 'B');
+    const kids = childrenOf(s().doc, s().doc.rootId);
+    const a = kids[0];
+    const b = kids[1];
+    if (!a || !b) throw new Error('missing children');
+    s().setSelectedIds([a.id, b.id]);
+    expect(s().selectedIds).toEqual([a.id, b.id]);
+    expect(s().selectedId).toBe(b.id); // primary = last in the set
+    s().setSelectedIds([]);
+    expect(s().selectedIds).toEqual([]);
+    expect(s().selectedId).toBeNull();
+  });
+
   it('removeNodes deletes the whole selection in one undo step', () => {
     s().addChild(s().doc.rootId, 'A');
     s().addChild(s().doc.rootId, 'B');

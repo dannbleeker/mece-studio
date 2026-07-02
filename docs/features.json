@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 84,
+  "reviewedThroughChangelogEntries": 85,
   "features": [
     {
       "id": "issue-tree",
@@ -1013,6 +1013,15 @@
       "id": "pptx-native",
       "name": "Native editable PowerPoint export",
       "area": "Export",
+      "since": 10,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "box-select",
+      "name": "Rubber-band (box) select",
+      "area": "Canvas",
       "since": 10,
       "manual": true,
       "book": false,

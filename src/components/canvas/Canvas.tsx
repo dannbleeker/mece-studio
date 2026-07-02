@@ -58,13 +58,18 @@ function exportHeader(doc: IssueTreeDoc): ExportHeader {
 const FIT_VIEW_OPTIONS = { padding: 0.3, maxZoom: 1.2 };
 // Ring applied to the node a drag would re-parent onto (valid targets only).
 const DROP_TARGET_CLASS = 'rounded-lg ring-2 ring-[#3f7d54] ring-offset-2 ring-offset-[#faf9f5]';
+// Shift+drag box-select and click/Shift-click are owned by React Flow; the result
+// is mirrored into the store via onSelectionChange. This guards the round-trip
+// (store → projection `selected` → setNodes → onSelectionChange) from looping.
+const sameSet = (a: readonly string[], b: readonly string[]): boolean =>
+  a.length === b.length && a.every((x) => b.includes(x));
 
 function Flow() {
   const doc = useStore((s) => s.doc);
   const selectedId = useStore((s) => s.selectedId);
   const selectedIds = useStore((s) => s.selectedIds);
   const select = useStore((s) => s.select);
-  const toggleSelect = useStore((s) => s.toggleSelect);
+  const setSelectedIds = useStore((s) => s.setSelectedIds);
   const moveNode = useStore((s) => s.moveNode);
   const renameNode = useStore((s) => s.renameNode);
   const addChild = useStore((s) => s.addChild);
@@ -345,11 +350,18 @@ function Flow() {
           edges={displayEdges}
           nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
-          onNodeClick={(evt, node) =>
-            evt.shiftKey || evt.metaKey || evt.ctrlKey
-              ? toggleSelect(node.id as NodeId)
-              : select(node.id as NodeId)
-          }
+          // React Flow owns pointer selection — click, ⌘/Ctrl/Shift-click (additive),
+          // and Shift+drag (box). We mirror it into the store here; plain drag pans.
+          onSelectionChange={({ nodes: sel }) => {
+            const ids = sel.map((n) => n.id as NodeId);
+            // Never clear via this sync — deselect is owned by onPaneClick — so React
+            // Flow's transient empty reports (e.g. on mount) can't wipe a store
+            // selection set from the keyboard, the review dock, or `locate`.
+            if (ids.length === 0) return;
+            if (!sameSet(ids, useStore.getState().selectedIds)) setSelectedIds(ids);
+          }}
+          selectionKeyCode={['Shift']}
+          multiSelectionKeyCode={['Shift', 'Meta', 'Control']}
           onNodeDrag={onNodeDrag}
           onNodeDragStop={onNodeDragStop}
           onPaneClick={() => select(null)}
