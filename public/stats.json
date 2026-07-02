@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-07-02T10:18:50.889Z",
-  "commit": "8309fe4",
+  "generatedAt": "2026-07-02T10:21:19.647Z",
+  "commit": "60d7790",
   "headline": {
     "linesTsJs": 15560,
     "tests": 393,
     "lineCoveragePct": 88.97,
-    "commits": 214,
+    "commits": 216,
     "ageDays": 21,
     "trackedFiles": 239,
     "featureManualPct": 87.7,
@@ -41,7 +41,7 @@
     {
       "category": "Docs (Markdown)",
       "files": 24,
-      "lines": 2500
+      "lines": 2517
     }
   ],
   "coverage": {
@@ -496,16 +496,16 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 21,
-    "commits": 214,
-    "commits7d": 47,
+    "commits": 216,
+    "commits7d": 49,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 124
+        "count": 125
       },
       {
         "name": "github-actions[bot]",
-        "count": 79
+        "count": 80
       },
       {
         "name": "Claude",
@@ -513,8 +513,8 @@
       }
     ],
     "churn30d": {
-      "added": 34076,
-      "removed": 6864
+      "added": 34341,
+      "removed": 6905
     },
     "changelogEntries": 77
   }
