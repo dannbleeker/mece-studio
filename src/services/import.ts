@@ -12,9 +12,10 @@
 
 import { markdownToDoc } from '@/domain/markdownImport';
 import type { IssueTreeDoc } from '@/domain/types';
+import { opmlToDoc } from '@/services/opmlImport';
 import { parseDoc } from '@/services/storage';
 
-type ImportFormat = 'json' | 'markdown';
+type ImportFormat = 'json' | 'markdown' | 'opml';
 
 export interface ImportedTree {
   doc: IssueTreeDoc;
@@ -33,6 +34,13 @@ export function importText(text: string, now: number): ImportedTree | null {
   if (trimmed.startsWith('{')) {
     const doc = parseDoc(trimmed);
     return doc ? { doc, format: 'json' } : null;
+  }
+
+  // OPML / XML (outliners, mind-mappers): try structured parse; fall through if it
+  // isn't valid OPML (so a stray '<' in prose still parses as a Markdown outline).
+  if (trimmed.startsWith('<')) {
+    const doc = opmlToDoc(trimmed, now);
+    if (doc) return { doc, format: 'opml' };
   }
 
   const doc = markdownToDoc(trimmed, now);

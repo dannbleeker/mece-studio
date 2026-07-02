@@ -78,6 +78,7 @@ export function Inspector() {
   const setOperator = useStore((s) => s.setOperator);
   const setDimension = useStore((s) => s.setDimension);
   const decompose = useStore((s) => s.decompose);
+  const captureChildren = useStore((s) => s.captureChildren);
   const setPriority = useStore((s) => s.setPriority);
   const setStatus = useStore((s) => s.setStatus);
   const addEvidence = useStore((s) => s.addEvidence);
@@ -89,6 +90,7 @@ export function Inspector() {
   const moveSibling = useStore((s) => s.moveSibling);
   const [evidenceDraft, setEvidenceDraft] = useState('');
   const [draftStrength, setDraftStrength] = useState<EvidenceStrength>('indicative');
+  const [aiPaste, setAiPaste] = useState('');
 
   const node = selectedId ? doc.nodes[selectedId] : undefined;
   const split = selectedId ? splitOf(doc, selectedId) : undefined;
@@ -415,6 +417,29 @@ export function Inspector() {
               >
                 Copy an AI prompt to suggest a split →
               </button>
+              <details className="mt-1">
+                <summary className="cursor-pointer text-[11px] text-neutral-400 hover:text-neutral-600">
+                  …then paste the AI's split back →
+                </summary>
+                <textarea
+                  value={aiPaste}
+                  onChange={(e) => setAiPaste(e.target.value)}
+                  rows={4}
+                  placeholder={"Paste the AI's Markdown outline…\n- Sub-issue\n  - nested"}
+                  className="mt-1.5 w-full resize-y rounded-md border border-neutral-300 p-2 font-mono text-[11px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none"
+                />
+                <button
+                  type="button"
+                  disabled={!aiPaste.trim()}
+                  className="mt-1.5 rounded-md bg-[#3f6fb0] px-2 py-1 font-medium text-[11px] text-white hover:bg-[#365f98] disabled:opacity-50"
+                  onClick={() => {
+                    captureChildren(selectedId, aiPaste);
+                    setAiPaste('');
+                  }}
+                >
+                  Add these sub-issues
+                </button>
+              </details>
             </section>
           ))}
 

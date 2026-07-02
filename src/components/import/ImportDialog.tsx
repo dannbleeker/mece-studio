@@ -18,7 +18,7 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
   const onImport = () => {
     const result = importText(text, Date.now());
     if (!result) {
-      setError("Couldn't read that as a Markdown outline or a tree's JSON.");
+      setError("Couldn't read that as a Markdown outline, OPML, or a tree's JSON.");
       return;
     }
     openDoc(result.doc);
@@ -28,7 +28,7 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
   return (
     <Dialog
       label="Import a tree"
-      subtitle="Paste a Markdown outline (headings or bullets) or a tree's JSON. The first heading or line becomes the root question; everything else nests beneath it."
+      subtitle="Paste a Markdown outline (headings or bullets), an OPML export from an outliner / mind-mapper, or a tree's JSON. The first heading or line becomes the root question; everything else nests beneath it."
       onClose={onClose}
     >
       <textarea
