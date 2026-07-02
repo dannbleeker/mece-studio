@@ -4,6 +4,9 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 
 ## [Unreleased]
 
+### Fixed
+- **Dense trees no longer overlap.** A value-driver node showing a value, evidence, and ME/CE dots renders taller than a bare box; the layout now feeds each node's real (content-derived) height to dagre, so a tall node no longer overruns the gap into its siblings. Simple trees lay out exactly as before.
+
 ### Added
 - **Save any tree as a reusable template.** **⋯ → Save as template…** banks the current tree's *structure* — labels, splits, dimensions — with values / evidence / status stripped, as a **custom template**. It appears under **Your templates** on the Templates page, ready to open as a clean starting point for the next engagement (how consultants actually reuse a diligence checklist or a standard tree).
 - **Search across every tree.** The library search now matches **node labels and notes across all your trees**, not just their titles — so "which tree has the pricing-floor logic?" finds it, with a "matches …" hint on the card.
