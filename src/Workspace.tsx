@@ -20,7 +20,7 @@ import { toMarkdown } from '@/domain/export';
 import { answerPageHtml } from '@/domain/synthesisFormat';
 import { splitOf } from '@/domain/tree';
 import { copyToClipboard, downloadText } from '@/services/download';
-import { treeToJson } from '@/services/exporters';
+import { treeToCsv, treeToJson } from '@/services/exporters';
 import { clearFileHandle, getFileHandle, setFileHandle } from '@/services/fileHandles';
 import {
   InvalidTreeFileError,
@@ -170,14 +170,28 @@ export function Workspace() {
   // PNG/PDF/PPTX render the canvas, so they route through the store to the
   // canvas; JSON only needs the document, so it downloads straight from here.
   const onExportJson = () => downloadText('mece-tree.json', treeToJson(doc), 'application/json');
+  const onExportCsv = () => downloadText('mece-tree.csv', treeToCsv(doc), 'text/csv');
   const onExportAnswer = () => downloadText('mece-answer.html', answerPageHtml(doc), 'text/html');
+  // A backend-free, read-anywhere share link: the tree's JSON, base64'd into the URL
+  // hash. Opening the link imports the tree as a new library entry (see App).
+  const onCopyShareLink = () => {
+    const bytes = new TextEncoder().encode(treeToJson(doc));
+    let bin = '';
+    for (const b of bytes) bin += String.fromCharCode(b);
+    const url = `${window.location.origin}${window.location.pathname}#doc=${encodeURIComponent(btoa(bin))}`;
+    void copyToClipboard(url);
+  };
   const exportItems: MenuEntry[] = [
     { key: 'png', label: 'PNG', onClick: () => requestExport('png') },
     { key: 'svg', label: 'SVG', onClick: () => requestExport('svg') },
     { key: 'pdf', label: 'PDF', onClick: () => requestExport('pdf') },
     { key: 'pptx', label: 'PPTX', onClick: () => requestExport('pptx') },
+    { key: 'copyImg', label: 'Copy image', onClick: () => requestExport('copy') },
+    { key: 'sep-e', divider: true },
     { key: 'json', label: 'JSON', onClick: onExportJson },
+    { key: 'csv', label: 'CSV (value model)', onClick: onExportCsv },
     { key: 'answer', label: 'Answer (1-page)', onClick: onExportAnswer },
+    { key: 'share', label: 'Copy share link', onClick: onCopyShareLink },
   ];
   // Secondary actions, tucked into an overflow menu to keep the header clustered.
   const overflowItems: MenuEntry[] = [

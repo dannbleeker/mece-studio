@@ -15,9 +15,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NODE_HEIGHT, NODE_WIDTH } from '@/domain/constants';
 import { flaggedSplits } from '@/domain/meceStatus';
 import { childrenOf, descendantIds, parentOf } from '@/domain/tree';
-import type { NodeId } from '@/domain/types';
-import { downloadDataUrl, downloadText } from '@/services/download';
-import { renderCanvasPng, renderCanvasSvg, saveTreePdf, saveTreePptx } from '@/services/exporters';
+import type { IssueTreeDoc, NodeId } from '@/domain/types';
+import { copyImageToClipboard, downloadDataUrl, downloadText } from '@/services/download';
+import {
+  type ExportHeader,
+  renderCanvasPng,
+  renderCanvasSvg,
+  saveTreePdf,
+  saveTreePptx,
+} from '@/services/exporters';
 import { useStore } from '@/store';
 import { CanvasCoach } from './CanvasCoach';
 import { type NodeEditing, NodeEditingContext } from './nodeEditing';
@@ -26,6 +32,17 @@ import { toFlow } from './projection';
 import { boundsWithinViewport, nodesBounds } from './viewport';
 
 const nodeTypes: NodeTypes = { issue: IssueNode };
+
+/** Title band for a PDF / PPTX export: the key question + today's date. */
+function exportHeader(doc: IssueTreeDoc): ExportHeader {
+  const title = doc.nodes[doc.rootId]?.label ?? 'Issue tree';
+  const date = new Date().toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+  return { title, subtitle: date };
+}
 const FIT_VIEW_OPTIONS = { padding: 0.3, maxZoom: 1.2 };
 // Ring applied to the node a drag would re-parent onto (valid targets only).
 const DROP_TARGET_CLASS = 'rounded-lg ring-2 ring-[#3f7d54] ring-offset-2 ring-offset-[#faf9f5]';
@@ -243,8 +260,13 @@ function Flow() {
       const image = await renderCanvasPng(getNodes());
       if (!image) return;
       if (exportRequest === 'png') downloadDataUrl('mece-tree.png', image.dataUrl);
-      else if (exportRequest === 'pdf') await saveTreePdf(image, 'mece-tree.pdf');
-      else await saveTreePptx(image, 'mece-tree.pptx');
+      else if (exportRequest === 'copy') {
+        // Copy the image to the clipboard; fall back to a download where unsupported.
+        const copied = await copyImageToClipboard(image.dataUrl);
+        if (!copied) downloadDataUrl('mece-tree.png', image.dataUrl);
+      } else if (exportRequest === 'pdf') {
+        await saveTreePdf(image, 'mece-tree.pdf', exportHeader(useStore.getState().doc));
+      } else await saveTreePptx(image, 'mece-tree.pptx', exportHeader(useStore.getState().doc));
     };
     void run();
     requestExport(null);

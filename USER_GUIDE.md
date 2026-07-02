@@ -47,7 +47,7 @@ you move into the **workspace**, where you build it:
 - **The header** (top) is grouped into clusters: the **MECE Studio** wordmark and
   **← Start** return to the library; a **MECE health** chip opens the tree-wide
   review (below); then **Undo / Redo**, **Synthesis**, a filled **Export ▾** menu
-  (PNG / SVG / PDF / PowerPoint / JSON / a one-page Answer memo), **⚙ Settings**, **?** shortcuts, and an **⋯ overflow**
+  (PNG / SVG / PDF / PowerPoint / Copy image / JSON / CSV / a one-page Answer memo / Copy share link), **⚙ Settings**, **?** shortcuts, and an **⋯ overflow**
   menu (Copy Markdown, Open file, Save / Save As, About, New / Delete tree).
 
 Click a node to select it. Rename the root question to your real problem to

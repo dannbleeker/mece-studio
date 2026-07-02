@@ -27,12 +27,18 @@ vi.mock('jspdf', () => ({
   jsPDF: class {
     addImage = pdfAddImage;
     save = pdfSave;
+    // Title-header helpers (U12) — no-ops for the test.
+    setFillColor = () => {};
+    setTextColor = () => {};
+    setFontSize = () => {};
+    text = () => {};
+    rect = () => {};
   },
 }));
 vi.mock('pptxgenjs', () => ({
   default: class {
     addSlide() {
-      return { addImage: pptxAddImage };
+      return { addImage: pptxAddImage, addText: () => {} };
     }
     writeFile = pptxWrite;
   },
@@ -41,6 +47,7 @@ vi.mock('@/services/download', () => ({
   downloadDataUrl: vi.fn(),
   downloadText: vi.fn(),
   copyToClipboard: vi.fn(),
+  copyImageToClipboard: vi.fn(async () => true),
 }));
 
 // React Flow needs ResizeObserver, which happy-dom doesn't provide.

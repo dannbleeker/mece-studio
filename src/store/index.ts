@@ -60,7 +60,7 @@ type AppView = 'start' | 'workspace';
 
 /** A canvas export format. The header requests one; the canvas (which owns the
  * React Flow viewport needed to rasterise) fulfils it, then clears the request. */
-type ExportKind = 'png' | 'svg' | 'pdf' | 'pptx';
+type ExportKind = 'png' | 'svg' | 'pdf' | 'pptx' | 'copy';
 
 function freshDoc(options: MeceOptions, question: string = STARTER_QUESTION): IssueTreeDoc {
   return recomputeMece(createDoc(question.trim() || STARTER_QUESTION, Date.now()), options);

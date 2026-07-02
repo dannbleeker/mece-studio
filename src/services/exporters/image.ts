@@ -21,6 +21,12 @@ export interface RenderedImage {
   height: number;
 }
 
+/** An optional title band stamped above the image on PDF / PPTX exports. */
+export interface ExportHeader {
+  title: string;
+  subtitle?: string;
+}
+
 /** A rendered, already-sanitised SVG document plus its pixel dimensions. */
 export interface RenderedSvg {
   svg: string;

@@ -9,6 +9,8 @@
  * `components/canvas/export-safety.test.ts` for the XSS-safety rationale.
  */
 
+export { treeToCsv } from './csv';
+export type { ExportHeader } from './image';
 export { renderCanvasPng, renderCanvasSvg } from './image';
 export { treeToJson } from './json';
 export { saveTreePdf } from './pdf';
