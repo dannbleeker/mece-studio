@@ -13,3 +13,17 @@ test('quick add issues adds several children at once', async ({ page }) => {
     await expect(page.locator('.react-flow__node', { hasText: label })).toBeVisible();
   }
 });
+
+test('quick add nests indented lines into a subtree', async ({ page }) => {
+  await resetApp(page);
+
+  await page.getByRole('button', { name: 'More actions' }).click();
+  await page.getByRole('button', { name: 'Quick add issues…' }).click();
+  await page.getByLabel('Issues to add, one per line').fill('Pricing\n  Cost floor\n  Value ceiling\nDemand');
+  await page.getByRole('button', { name: 'Add issues' }).click();
+
+  // All four land on the canvas; the indented pair nested under Pricing.
+  for (const label of ['Pricing', 'Cost floor', 'Value ceiling', 'Demand']) {
+    await expect(page.locator('.react-flow__node', { hasText: label })).toBeVisible();
+  }
+});

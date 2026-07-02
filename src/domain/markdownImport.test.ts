@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { toMarkdown } from './export';
-import { markdownToDoc } from './markdownImport';
+import { createDoc } from './factory';
+import { graftCaptureOutline, markdownToDoc } from './markdownImport';
 import { childrenOf } from './tree';
 
 /** Labels of a node's children, in order. */
@@ -54,5 +55,32 @@ describe('markdownToDoc', () => {
     const claim = childrenOf(doc as never, doc?.rootId as never)[0];
     expect(claim?.label).toBe('Claim');
     expect(childLabels(doc, claim?.id ?? '')).toEqual([]); // evidence line skipped
+  });
+});
+
+describe('graftCaptureOutline', () => {
+  it('adds a flat list as direct children of the parent', () => {
+    const doc = createDoc('Root', 1);
+    const next = graftCaptureOutline(doc, doc.rootId, 'Pricing\nDemand\nDistribution');
+    expect(childLabels(next, doc.rootId)).toEqual(['Pricing', 'Demand', 'Distribution']);
+  });
+
+  it('nests indented lines under the preceding line', () => {
+    const doc = createDoc('Root', 1);
+    const next = graftCaptureOutline(
+      doc,
+      doc.rootId,
+      'Pricing\n  Cost floor\n  Value ceiling\nDemand'
+    );
+    const kids = childrenOf(next, doc.rootId);
+    expect(kids.map((n) => n.label)).toEqual(['Pricing', 'Demand']);
+    expect(childLabels(next, kids[0]?.id ?? '')).toEqual(['Cost floor', 'Value ceiling']);
+  });
+
+  it('strips bullet markers and is a no-op on empty text', () => {
+    const doc = createDoc('Root', 1);
+    expect(graftCaptureOutline(doc, doc.rootId, '   \n')).toBe(doc);
+    const next = graftCaptureOutline(doc, doc.rootId, '- Pricing\n- Demand');
+    expect(childLabels(next, doc.rootId)).toEqual(['Pricing', 'Demand']);
   });
 });

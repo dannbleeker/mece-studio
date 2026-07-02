@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 import { createDoc, createEvidence } from '@/domain/factory';
+import { graftCaptureOutline } from '@/domain/markdownImport';
 import { type MeceOptions, recomputeMece } from '@/domain/mece';
 import { meceOptions, type Settings } from '@/domain/settings';
 import {
@@ -194,6 +195,8 @@ interface AppState {
   addChild: (parentId: NodeId, label?: string) => void;
   /** Add several children under `parentId` in one undoable step (quick capture). */
   addChildren: (parentId: NodeId, labels: string[]) => void;
+  /** Graft an indented outline as a nested subtree under `parentId`, one undo step. */
+  captureChildren: (parentId: NodeId, text: string) => void;
   renameNode: (id: NodeId, label: string) => void;
   setDetail: (id: NodeId, detail: string) => void;
   setAmount: (id: NodeId, amount: number | undefined) => void;
@@ -399,6 +402,7 @@ export const useStore = create<AppState>((set, get) => {
     addChild: (parentId, label) =>
       apply((doc) => addChildOp(doc, parentId, label ?? 'New issue').doc),
     addChildren: (parentId, labels) => apply((doc) => addChildrenOp(doc, parentId, labels)),
+    captureChildren: (parentId, text) => apply((doc) => graftCaptureOutline(doc, parentId, text)),
     renameNode: (id, label) => apply((doc) => renameNodeOp(doc, id, label)),
     setDetail: (id, detail) => apply((doc) => setDetailOp(doc, id, detail)),
     setAmount: (id, amount) =>

@@ -206,8 +206,9 @@ touching the mouse.
 
 **Quick add.** To dump a whole decomposition at once, use **⋯ → Quick add
 issues…**: type one issue per line and they're all added as children of the
-selected node (or the root) in a single, undoable step. <kbd>⌘/Ctrl</kbd> +
-<kbd>Enter</kbd> adds.
+selected node (or the root) in a single, undoable step. **Indent** a line (Tab /
+spaces, or a bullet) to nest it as a sub-issue, so a whole multi-level outline
+drops in at once. <kbd>⌘/Ctrl</kbd> + <kbd>Enter</kbd> adds.
 
 **Detail and notes.** The inspector has a label, an optional longer **detail**
 field, and a **notes** field for rationale, assumptions, or data sources. A node

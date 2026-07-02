@@ -16,6 +16,7 @@ export function QuickCaptureDialog({ onClose }: { onClose: () => void }) {
   const doc = useStore((s) => s.doc);
   const selectedId = useStore((s) => s.selectedId);
   const addChildren = useStore((s) => s.addChildren);
+  const captureChildren = useStore((s) => s.captureChildren);
   const select = useStore((s) => s.select);
 
   const parentId = selectedId ?? doc.rootId;
@@ -28,10 +29,20 @@ export function QuickCaptureDialog({ onClose }: { onClose: () => void }) {
   useEffect(() => textareaRef.current?.focus(), []);
 
   const onAdd = () => {
-    const labels = text.split('\n').filter((l) => l.trim() !== '');
-    if (labels.length === 0) return;
+    if (text.trim() === '') return;
     const before = childrenOf(doc, parentId).length;
-    addChildren(parentId, labels);
+    // Indented / bulleted paste → nest it as a subtree; a flat list stays flat.
+    const nested = text
+      .split('\n')
+      .some((l) => /^[ \t]+\S/.test(l) || /^\s*(?:[-*+]|\d+[.)])\s/.test(l));
+    if (nested) {
+      captureChildren(parentId, text);
+    } else {
+      addChildren(
+        parentId,
+        text.split('\n').filter((l) => l.trim() !== '')
+      );
+    }
     // Select the first newly-added child so the canvas centres the new branch.
     const kids = childrenOf(useStore.getState().doc, parentId);
     const firstNew = kids[before]?.id;
@@ -53,7 +64,8 @@ export function QuickCaptureDialog({ onClose }: { onClose: () => void }) {
       subtitle={
         <>
           One issue per line — each becomes a child of{' '}
-          <span className="font-medium text-neutral-700">“{parentLabel}”</span>.
+          <span className="font-medium text-neutral-700">“{parentLabel}”</span>.{' '}
+          <span className="text-neutral-400">Indent (Tab / spaces) to nest sub-issues.</span>
         </>
       }
       onClose={onClose}
@@ -65,7 +77,7 @@ export function QuickCaptureDialog({ onClose }: { onClose: () => void }) {
         onChange={(e) => setText(e.target.value)}
         onKeyDown={onKeyDown}
         rows={6}
-        placeholder={'Pricing\nDemand\nDistribution'}
+        placeholder={'Pricing\n  Cost floor\n  Value ceiling\nDemand\nDistribution'}
         className="mt-4 w-full resize-y rounded-lg border border-neutral-200 bg-white p-3 text-[14px] text-neutral-800 outline-none focus-visible:ring-2 focus-visible:ring-[#3f6fb0]/40"
       />
       <div className="mt-4 flex items-center justify-between gap-2">

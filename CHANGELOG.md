@@ -5,6 +5,9 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 ## [Unreleased]
 
 ### Added
+- **Pick your first split when you build.** Building a tree from the hero question (or a **Try** chip) now opens a **“how do you want to split it?”** chooser — pick segment / binary / formula / … and you land on a scaffolded, already-checkable first split instead of a lone root box. **Start blank** keeps the old behaviour. (The hero always promised "scaffolds the first split"; now it does.)
+- **A first-run canvas coach.** While a tree is still just its root, a dismissible tip on the canvas points at the two moves that start a MECE tree — press **Tab** to add a branch, then choose how it splits in the **Logic** panel to turn on the checks. Remembered per device once dismissed.
+- **Quick add nests.** The **Quick add issues** box now builds levels: indent a line (Tab / spaces, or a bullet) and it becomes a sub-issue, so a whole multi-level decomposition drops in as one undoable step. A flat list still adds flat children.
 - **Impact × ease priority matrix.** Set a branch's priority in one click on a 3×3 impact-by-ease grid — with its High / Medium / Low band shown live — instead of two separate rows. Press **P** on a selected node to bump its priority (none → low → medium → high).
 - **Faster evidence entry.** Choose an evidence item's **strength** (anecdote / indicative / strong) *before* you add it, switch an item's strength with a direct picker (no more blind cycling), and **flip an item between supporting and contradicting** in place.
 - **Richer print / PDF outline.** The print view now carries each node's **status, priority band, and evidence** — matching the Markdown export — so a printed or PDF'd tree no longer silently drops the analysis.

@@ -74,6 +74,52 @@ function parseOutline(text: string): OutlineItem[] {
   return items;
 }
 
+/**
+ * Parse capture text where EVERY non-blank line is an item (unlike parseOutline,
+ * which keeps only headings/bullets and drops loose prose). Depth comes from the
+ * leading indent (tabs or 2-space steps), with an optional bullet marker
+ * stripped — so a flat paste stays flat and an indented paste nests.
+ */
+function captureLines(text: string): OutlineItem[] {
+  const items: OutlineItem[] = [];
+  for (const rawLine of text.split(/\r?\n/)) {
+    const line = rawLine.replace(/\t/g, ' '.repeat(INDENT_WIDTH));
+    if (!line.trim()) continue;
+    const indent = line.length - line.trimStart().length;
+    const label = cleanLabel(line.trimStart().replace(/^(?:[-*+]|\d+[.)])\s+/, ''));
+    if (label) items.push({ depth: Math.floor(indent / INDENT_WIDTH), label });
+  }
+  return items;
+}
+
+/**
+ * Graft an indented capture outline as a nested subtree under `parentId`, in one
+ * pass — the incremental "quick capture" path. Unlike markdownToDoc (which mints
+ * a new root document) this adds beneath an existing node. Depth is relative to
+ * the shallowest pasted line, so a flat list becomes direct children. Pure.
+ */
+export function graftCaptureOutline(
+  doc: IssueTreeDoc,
+  parentId: NodeId,
+  text: string
+): IssueTreeDoc {
+  const items = captureLines(text).slice(0, MAX_NODES);
+  if (items.length === 0) return doc;
+  const base = Math.min(...items.map((i) => i.depth));
+  let next = doc;
+  const stack: { depth: number; id: NodeId }[] = [{ depth: -1, id: parentId }];
+  for (const item of items) {
+    const depth = item.depth - base;
+    while (stack.length > 1 && (stack[stack.length - 1]?.depth ?? -1) >= depth) stack.pop();
+    const parent = stack[stack.length - 1];
+    if (!parent) break;
+    const added = addChild(next, parent.id, item.label);
+    next = added.doc;
+    stack.push({ depth, id: added.childId });
+  }
+  return next;
+}
+
 /** Parse a Markdown / indented outline into a fresh issue tree, or null if empty. */
 export function markdownToDoc(text: string, now: number): IssueTreeDoc | null {
   const items = parseOutline(text).slice(0, MAX_NODES);
