@@ -91,10 +91,10 @@
   },
   {
     "date": "2026-07-02",
-    "linesTsJs": 14815,
-    "coveragePct": 92.23,
-    "tests": 388,
-    "bundleKb": 102.9,
+    "linesTsJs": 15171,
+    "coveragePct": 91.19,
+    "tests": 392,
+    "bundleKb": 103,
     "featureManualPct": 100,
     "featureBookPct": 100,
     "featureExamplePct": 23.1
