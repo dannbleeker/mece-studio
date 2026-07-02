@@ -119,6 +119,18 @@ export function setOperator(
   return { ...doc, splits: { ...doc.splits, [split.id]: { ...split, operator } } };
 }
 
+/** Set or clear the axis a split is cut on (e.g. "geography"). No-op when unchanged. */
+export function setDimension(doc: IssueTreeDoc, parentId: NodeId, dimension: string): IssueTreeDoc {
+  const split = splitOf(doc, parentId);
+  if (!split) return doc;
+  const trimmed = dimension.trim();
+  if (trimmed === (split.dimension ?? '')) return doc;
+  const next = { ...split };
+  if (trimmed === '') delete next.dimension;
+  else next.dimension = trimmed;
+  return { ...doc, splits: { ...doc.splits, [split.id]: next } };
+}
+
 /**
  * Apply `fn` to the node at `nodeId`, returning the doc with that node replaced.
  * Returns the doc UNCHANGED (same reference) when the node is missing or `fn`

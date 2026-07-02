@@ -161,21 +161,35 @@ MECE = **Mutually Exclusive, Collectively Exhaustive**. It's a property of each
 *split* (a parent and its children), not of a single node. The engine
 re-evaluates every split on every change and shows the result two ways:
 
-- **ME / CE dots on the node** — at a glance, is this split mutually exclusive
-  and collectively exhaustive?
+- **ME / CE indicators on the node** — at a glance, is this split mutually
+  exclusive and collectively exhaustive? Each carries a **glyph** (✓ pass · !
+  needs review · – not checked) as well as colour, so the state reads in
+  greyscale, for colour-blind users, and to screen readers. The status border
+  (supported / refuted / parked) shows a matching glyph.
 - **Explained warnings in the inspector** — *why* a split isn't MECE, in words,
   with what to do about it.
 
 How each split type is judged:
 
 - **Binary (A / not-A)** — provably MECE by construction (exactly two branches).
-- **Formula** — checked for **reconciliation**: do the children actually combine
-  into the parent's value within tolerance?
+- **Formula** — checked for **reconciliation** (do the children combine into the
+  parent's value within tolerance?) *and* for **double-counting**: a summed term
+  named like a running "total", or two terms with the same label, is flagged.
+  Product / difference terms are exclusive by construction.
 - **Segments** — collectively exhaustive only when you include an explicit
   **"Other"** bucket; otherwise you're warned there may be a gap.
-- **Other types** — a **sibling-overlap heuristic** flags when two siblings share
-  a content word (a sign they may not be mutually exclusive). Generic and
-  placeholder words are ignored so fresh scaffolds don't flag themselves.
+- **Process** and **framework** — can't be *proven* exhaustive, so instead of a
+  silent grey dot you get a plain-language prompt (does the process run end to
+  end? does the framework leave anything important outside?).
+- **Other types** — a **sibling-overlap heuristic** flags when siblings share a
+  content word (a sign they may not be mutually exclusive) and **names the pair**.
+  A word that *every* sibling shares (with three or more branches) is treated as
+  the split's dimension, not an overlap; generic and placeholder words are ignored.
+
+**Name the dimension.** In the **Logic** tab you can name the single axis a split
+is cut on (e.g. *by geography*), with one-click common axes. One consistent
+dimension per level is the backbone of a MECE tree — the named axis shows on the
+node, in the synthesis, and in the AI-critique prompt.
 
 The goal isn't a perfect score — it's to make gaps and overlaps *visible* so you
 decide deliberately.

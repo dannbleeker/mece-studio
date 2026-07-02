@@ -5,6 +5,11 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 ## [Unreleased]
 
 ### Added
+- **Deeper MECE checks.** The engine now coaches the split types it can't *prove* exhaustive instead of showing a silent grey dot: a **process** split asks whether the stages run end to end (nothing before the first or after the last), and a **framework** split reminds you it organises thinking but isn't a provable partition — confirm nothing important sits outside. The **sibling-overlap** heuristic is sharper too: a word *every* sibling shares (with 3+ branches) is treated as the split's dimension, not an overlap, and a real overlap now **names the colliding pair** (and counts any others). And **formula** splits are checked for **double-counting** — a summed term named like a running total, or two terms with the same label, is flagged (product / difference terms stay clean by construction).
+- **Name the dimension a split is cut on.** Each decomposition can carry the single **axis** it splits by (e.g. _by geography_) — set it in the inspector's **Logic** tab, with one-click common axes (customer / geography / product / time / stage). The named dimension shows on the node, in the answer-first synthesis, and in the AI-critique prompt. Naming it is how you keep a level MECE: one dimension per split.
+- **MECE state is legible without colour.** The ME / CE indicators and the hypothesis-status border now carry a **glyph** (✓ / ! / – for pass / warn / unknown; ✓ / ✗ / ⊘ for supported / refuted / parked) plus a `title` and screen-reader label — so the product's core signal survives greyscale, colour-blindness, and assistive tech, not colour alone.
+
+### Added
 - **SVG export.** The **Export ▾** menu gains **SVG** — a true vector export of the canvas, alongside PNG / PDF / PPTX / JSON. Because an `.svg` is a document a browser executes when opened, the export is **sanitised at the sink**: the serialised markup is run through a new `sanitizeSvg` that strips any `<script>`, inline event handler (`on*`), and script-bearing URL (`javascript:` / `data:text/html`) before the file is written — and fails closed on anything unparseable. The export-safety guard was updated deliberately from “no SVG path” to “any SVG export must go through the sanitiser”, backed by unit tests proving scripts/handlers/URLs are removed.
 
 ### Fixed

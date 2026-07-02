@@ -39,6 +39,8 @@ export interface Split {
   decomposition: DecompositionType;
   /** Only meaningful for `formula` decompositions. */
   operator?: FormulaOperator;
+  /** The single axis this split is cut on (e.g. "geography"). Optional; coaches "one dimension per level". */
+  dimension?: string;
   mece: MeceStatus;
 }
 

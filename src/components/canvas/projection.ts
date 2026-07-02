@@ -11,6 +11,8 @@ interface IssueNodeData extends Record<string, unknown> {
   status: IssueNode['status'];
   /** MECE status of THIS node's decomposition, or null if it's a leaf. */
   mece: MeceStatus | null;
+  /** The axis this node's split is cut on (e.g. "geography"), or null. */
+  dimension: string | null;
   hasChildren: boolean;
   value: IssueNode['value'];
   priority: PriorityBand | null;
@@ -69,6 +71,7 @@ export function toFlow(
           label: n.label,
           status: n.status,
           mece: split ? split.mece : null,
+          dimension: split?.dimension ?? null,
           hasChildren: split !== undefined,
           value: n.value,
           priority: n.priority ? priorityBand(n.priority) : null,

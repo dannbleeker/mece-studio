@@ -14,6 +14,10 @@ function meceFlags(split: Split | undefined): string {
   return issues.length > 0 ? `  ⚠ ${issues.join(' + ')}` : '';
 }
 
+function dimensionNote(split: Split | undefined): string {
+  return split?.dimension ? ` _[by ${split.dimension}]_` : '';
+}
+
 function render(doc: IssueTreeDoc, id: NodeId, depth: number, lines: string[]): void {
   const node = doc.nodes[id];
   if (!node) return;
@@ -28,7 +32,7 @@ function render(doc: IssueTreeDoc, id: NodeId, depth: number, lines: string[]): 
         : node.status === 'parked'
           ? '⊘ '
           : '';
-  lines.push(`${indent}- ${mark}${node.label}${band}${meceFlags(split)}`);
+  lines.push(`${indent}- ${mark}${node.label}${band}${dimensionNote(split)}${meceFlags(split)}`);
   if (node.evidence.length > 0) {
     const ev = node.evidence.map((e) => `${e.supports ? '✓' : '✗'} ${e.summary}`).join('; ');
     lines.push(`${indent}  evidence: ${ev}`);

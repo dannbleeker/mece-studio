@@ -2,7 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { createDoc, createEvidence } from './factory';
 import { recomputeMece } from './mece';
 import { synthesise } from './synthesis';
-import { addChild, addEvidence, setDecomposition, setPriority, setStatus } from './tree';
+import {
+  addChild,
+  addEvidence,
+  setDecomposition,
+  setDimension,
+  setPriority,
+  setStatus,
+} from './tree';
 
 describe('synthesise', () => {
   it('prompts to decompose when there are no branches yet', () => {
@@ -61,6 +68,17 @@ describe('synthesise', () => {
     const out = synthesise(broken);
     expect(out).toContain(`# ${doc.title}`);
     expect(out).toContain('No branches yet');
+  });
+
+  it('notes the split dimension when one is named', () => {
+    let doc = createDoc('Q', 0);
+    const causes = addChild(doc, doc.rootId, 'Causes');
+    doc = causes.doc;
+    doc = addChild(doc, causes.childId, 'North').doc;
+    doc = addChild(doc, causes.childId, 'South').doc;
+    doc = setDecomposition(doc, causes.childId, 'segment');
+    doc = setDimension(doc, causes.childId, 'geography');
+    expect(synthesise(doc)).toContain('by geography');
   });
 
   it('flags MECE overlaps and gaps on a branch', () => {

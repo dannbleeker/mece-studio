@@ -1,7 +1,7 @@
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import { useEffect, useRef } from 'react';
-import { CHECK_STATE_COLOR } from '@/components/checkColors';
-import type { NodeId, NodeStatus } from '@/domain/types';
+import { CHECK_STATE_COLOR, CHECK_STATE_GLYPH, CHECK_STATE_LABEL } from '@/components/checkColors';
+import type { CheckResult, NodeId, NodeStatus } from '@/domain/types';
 import { useStore } from '@/store';
 import { useNodeEditing } from '../nodeEditing';
 import type { IssueFlowNode } from '../projection';
@@ -19,10 +19,40 @@ const STATUS_BORDER: Record<NodeStatus, string> = {
   parked: '#9a958a',
 };
 
+/** A status glyph so the colour-coded left border is legible without colour. */
+const STATUS_GLYPH: Record<NodeStatus, string> = {
+  open: '',
+  supported: '✓',
+  refuted: '✗',
+  parked: '⊘',
+};
+
+/**
+ * One MECE axis (ME / CE) shown as a state-carrying glyph + short label. The
+ * glyph shape (✓ / ! / –) makes state readable in greyscale and to colour-blind
+ * users; the title/aria-label carries it to screen readers.
+ */
+function MeceDot({ label, short, result }: { label: string; short: string; result: CheckResult }) {
+  const caption = `${label}: ${CHECK_STATE_LABEL[result.state]}`;
+  return (
+    <span className="flex items-center gap-1" role="img" title={caption} aria-label={caption}>
+      <span
+        aria-hidden="true"
+        className="font-bold text-[11px] leading-none"
+        style={{ color: CHECK_STATE_COLOR[result.state] }}
+      >
+        {CHECK_STATE_GLYPH[result.state]}
+      </span>
+      {short}
+    </span>
+  );
+}
+
 export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
   const {
     label,
     mece,
+    dimension,
     hasChildren,
     value,
     priority,
@@ -77,6 +107,18 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
           style={{ background: BAND[priority].bg, color: BAND[priority].fg }}
         >
           {priority}
+        </span>
+      )}
+
+      {showStatus && (
+        <span
+          className="absolute top-1 left-1 font-bold text-[10px] leading-none"
+          style={{ color: STATUS_BORDER[status] }}
+          role="img"
+          title={`Status: ${status}`}
+          aria-label={`Status: ${status}`}
+        >
+          {STATUS_GLYPH[status]}
         </span>
       )}
 
@@ -140,22 +182,19 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
         </div>
       )}
 
+      {hasChildren && dimension && (
+        <div
+          className="mt-0.5 truncate text-[9px] text-neutral-400 italic"
+          title={`Split by ${dimension}`}
+        >
+          by {dimension}
+        </div>
+      )}
+
       {hasChildren && mece && (
         <div className="mt-1 flex items-center gap-3 text-[10px] text-neutral-500">
-          <span className="flex items-center gap-1">
-            <span
-              className="inline-block h-2 w-2 rounded-full"
-              style={{ background: CHECK_STATE_COLOR[mece.exclusive.state] }}
-            />
-            ME
-          </span>
-          <span className="flex items-center gap-1">
-            <span
-              className="inline-block h-2 w-2 rounded-full"
-              style={{ background: CHECK_STATE_COLOR[mece.exhaustive.state] }}
-            />
-            CE
-          </span>
+          <MeceDot label="Mutually exclusive" short="ME" result={mece.exclusive} />
+          <MeceDot label="Collectively exhaustive" short="CE" result={mece.exhaustive} />
         </div>
       )}
 

@@ -11,7 +11,8 @@ const STATUS_MARK: Partial<Record<NodeStatus, string>> = {
 function meceNote(doc: IssueTreeDoc, id: NodeId): string {
   const split = splitOf(doc, id);
   if (!split) return '';
-  return `  _[${split.decomposition} · ME:${split.mece.exclusive.state} · CE:${split.mece.exhaustive.state}]_`;
+  const dim = split.dimension ? ` by ${split.dimension}` : '';
+  return `  _[${split.decomposition}${dim} · ME:${split.mece.exclusive.state} · CE:${split.mece.exhaustive.state}]_`;
 }
 
 function valueSuffix(amount: number, unit: string | undefined): string {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CHECK_STATE_COLOR } from '@/components/checkColors';
+import { CHECK_STATE_COLOR, CHECK_STATE_GLYPH, CHECK_STATE_LABEL } from '@/components/checkColors';
 import { decomposePrompt } from '@/domain/aiPrompts';
 import { DECOMPOSITION_HINTS, DECOMPOSITION_LABELS } from '@/domain/constants';
 import { rollUpValue } from '@/domain/rollup';
@@ -30,6 +30,9 @@ const DECOMPOSITION_ORDER: DecompositionType[] = [
   'framework',
 ];
 
+/** Common axes offered as one-click dimension fills — the usual MECE cuts. */
+const COMMON_AXES = ['customer', 'geography', 'product', 'time', 'stage'];
+
 const STRENGTH_CYCLE: EvidenceStrength[] = ['anecdote', 'indicative', 'strong'];
 function nextStrength(s: EvidenceStrength): EvidenceStrength {
   const i = STRENGTH_CYCLE.indexOf(s);
@@ -50,9 +53,13 @@ function MeceRow({ label, result }: { label: string; result: CheckResult }) {
   return (
     <div className="flex gap-2 py-1">
       <span
-        className="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full"
-        style={{ background: CHECK_STATE_COLOR[result.state] }}
-      />
+        aria-hidden="true"
+        className="mt-px shrink-0 font-bold text-[13px] leading-none"
+        style={{ color: CHECK_STATE_COLOR[result.state] }}
+        title={`${label}: ${CHECK_STATE_LABEL[result.state]}`}
+      >
+        {CHECK_STATE_GLYPH[result.state]}
+      </span>
       <span className="text-[12px] text-neutral-600 leading-snug">
         <span className="font-medium text-neutral-800">{label}.</span>{' '}
         {result.message ?? (result.state === 'unknown' ? 'Not yet checked.' : '')}
@@ -71,6 +78,7 @@ export function Inspector() {
   const setUnit = useStore((s) => s.setUnit);
   const setDecomposition = useStore((s) => s.setDecomposition);
   const setOperator = useStore((s) => s.setOperator);
+  const setDimension = useStore((s) => s.setDimension);
   const decompose = useStore((s) => s.decompose);
   const setPriority = useStore((s) => s.setPriority);
   const setStatus = useStore((s) => s.setStatus);
@@ -273,6 +281,34 @@ export function Inspector() {
                 </select>
                 <span className="text-[11px] text-neutral-400 leading-snug">
                   {DECOMPOSITION_HINTS[split.decomposition]}
+                </span>
+              </label>
+
+              <label className="flex flex-col gap-1">
+                <span className={LABEL_CLS}>Split dimension</span>
+                <input
+                  key={`${selectedId}-dim-${split.dimension ?? ''}`}
+                  type="text"
+                  defaultValue={split.dimension ?? ''}
+                  placeholder="the one axis — e.g. customer, geography, product…"
+                  className={INPUT_CLS}
+                  onBlur={(e) => setDimension(selectedId, e.target.value)}
+                />
+                <div className="flex flex-wrap gap-1">
+                  {COMMON_AXES.map((axis) => (
+                    <button
+                      key={axis}
+                      type="button"
+                      className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] text-neutral-500 capitalize hover:bg-neutral-200"
+                      onClick={() => setDimension(selectedId, axis)}
+                    >
+                      {axis}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-[11px] text-neutral-400 leading-snug">
+                  Name the one axis you're splitting on — keeps the level MECE (one dimension per
+                  split).
                 </span>
               </label>
 

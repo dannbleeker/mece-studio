@@ -14,6 +14,7 @@ import {
   setAllCollapsed,
   setDecomposition,
   setDetail,
+  setDimension,
   setNodeValue,
   setOperator,
   splitOf,
@@ -69,6 +70,16 @@ describe('tree ops', () => {
     const formula = setDecomposition(d1, doc0.rootId, 'formula');
     const product = setOperator(formula, doc0.rootId, 'product');
     expect(splitOf(product, doc0.rootId)?.operator).toBe('product');
+  });
+
+  it('setDimension sets (trimmed), no-ops when unchanged, and clears on blank', () => {
+    const doc0 = seed();
+    const { doc: d1 } = addChild(doc0, doc0.rootId, 'A');
+    const set = setDimension(d1, doc0.rootId, '  geography  ');
+    expect(splitOf(set, doc0.rootId)?.dimension).toBe('geography');
+    expect(setDimension(set, doc0.rootId, 'geography')).toBe(set); // unchanged → same ref
+    const cleared = setDimension(set, doc0.rootId, '');
+    expect(splitOf(cleared, doc0.rootId)?.dimension).toBeUndefined();
   });
 
   it('toggleCollapse collapses then expands a node', () => {

@@ -17,6 +17,7 @@ import {
   setAllCollapsed as setAllCollapsedOp,
   setDecomposition as setDecompositionOp,
   setDetail as setDetailOp,
+  setDimension as setDimensionOp,
   setNodeValue as setNodeValueOp,
   setOperator as setOperatorOp,
   setPriority as setPriorityOp,
@@ -212,6 +213,7 @@ interface AppState {
   updateEvidence: (nodeId: NodeId, evidenceId: string, patch: Partial<EvidenceItem>) => void;
   setDecomposition: (parentId: NodeId, decomposition: DecompositionType) => void;
   setOperator: (parentId: NodeId, operator: FormulaOperator) => void;
+  setDimension: (parentId: NodeId, dimension: string) => void;
   decompose: (parentId: NodeId, decomposition: DecompositionType) => void;
   moveNode: (id: NodeId, newParentId: NodeId) => void;
   moveSibling: (id: NodeId, direction: 'up' | 'down') => void;
@@ -429,6 +431,7 @@ export const useStore = create<AppState>((set, get) => {
     setDecomposition: (parentId, decomposition) =>
       apply((doc) => setDecompositionOp(doc, parentId, decomposition)),
     setOperator: (parentId, operator) => apply((doc) => setOperatorOp(doc, parentId, operator)),
+    setDimension: (parentId, dimension) => apply((doc) => setDimensionOp(doc, parentId, dimension)),
     decompose: (parentId, decomposition) =>
       apply((doc) => decomposeOp(doc, parentId, decomposition)),
     moveNode: (id, newParentId) => apply((doc) => moveNodeOp(doc, id, newParentId)),
