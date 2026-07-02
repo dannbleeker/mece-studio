@@ -1,6 +1,14 @@
 import { FORMULA_TOLERANCE, MIN_SPLIT_CHILDREN } from '../constants';
 import { combineValues } from '../rollup';
-import type { CheckResult, IssueNode, IssueTreeDoc, MeceStatus, Split, SplitId } from '../types';
+import type {
+  CheckResult,
+  DecompositionType,
+  IssueNode,
+  IssueTreeDoc,
+  MeceStatus,
+  Split,
+  SplitId,
+} from '../types';
 
 /** Tunable knobs for the MECE checks (surfaced in app Settings). */
 export interface MeceOptions {
@@ -72,25 +80,54 @@ function contentTokens(label: string, minLength: number): string[] {
     .filter((t) => t.length >= minLength && !OVERLAP_STOPWORDS.has(t));
 }
 
-/** ME heuristic for split types we can't prove exclusive: flag siblings that share a content word. */
+/**
+ * ME heuristic for split types we can't prove exclusive: flag siblings that
+ * share a content word. A word shared by *every* sibling (when there are ≥3) is
+ * the dimension they're split on — not an overlap — so it's ignored; the check
+ * then collects every overlapping pair and reports the first, naming the pair.
+ */
 function siblingOverlap(children: IssueNode[], strict: boolean): CheckResult {
   const minLength = strict ? 3 : 4;
-  const seen = new Map<string, string>();
-  for (const child of children) {
+  const n = children.length;
+  // token → indexes of the children whose label contains it.
+  const tokenChildren = new Map<string, number[]>();
+  children.forEach((child, i) => {
     for (const token of new Set(contentTokens(child.label, minLength))) {
-      const prev = seen.get(token);
-      if (prev !== undefined && prev !== child.label) {
-        return {
-          state: 'warn',
-          message: `"${prev}" and "${child.label}" may overlap (both mention "${token}").`,
-        };
+      const idxs = tokenChildren.get(token);
+      if (idxs) idxs.push(i);
+      else tokenChildren.set(token, [i]);
+    }
+  });
+
+  const pairs: { a: string; b: string; token: string }[] = [];
+  const seenPair = new Set<string>();
+  for (const [token, idxs] of tokenChildren) {
+    if (idxs.length < 2) continue;
+    // A word every sibling shares is the split's dimension, not an overlap.
+    if (n >= 3 && idxs.length === n) continue;
+    for (let i = 0; i < idxs.length; i++) {
+      for (let j = i + 1; j < idxs.length; j++) {
+        const key = `${idxs[i]}-${idxs[j]}`;
+        if (seenPair.has(key)) continue;
+        seenPair.add(key);
+        const a = children[idxs[i] as number];
+        const b = children[idxs[j] as number];
+        if (a && b) pairs.push({ a: a.label, b: b.label, token });
       }
-      if (prev === undefined) seen.set(token, child.label);
     }
   }
+
+  const first = pairs[0];
+  if (!first) {
+    return {
+      state: 'unknown',
+      message: "No obvious overlap — but exclusivity isn't auto-checked for this split type.",
+    };
+  }
+  const more = pairs.length > 1 ? ` (+${pairs.length - 1} more)` : '';
   return {
-    state: 'unknown',
-    message: "No obvious overlap — but exclusivity isn't auto-checked for this split type.",
+    state: 'warn',
+    message: `"${first.a}" and "${first.b}" may overlap (both mention "${first.token}")${more}.`,
   };
 }
 
@@ -130,6 +167,64 @@ function formulaExhaustive(
       };
 }
 
+// A term that reads like a running total — summing it double-counts the rest.
+const TOTAL_TERM = /\b(total|overall|aggregate|combined)\b/i;
+
+/**
+ * ME for a formula split. Product / difference terms are exclusive dimensions by
+ * construction. Additive (sum) terms *can* double-count, so flag the classic
+ * smells: a term named like a running total, or two terms with the same label.
+ * (Semantic double-counts with no lexical tell are the AI judge's job.)
+ */
+function formulaExclusive(split: Split, children: IssueNode[]): CheckResult {
+  const clean: CheckResult = { state: 'pass', message: 'Formula terms are mutually exclusive.' };
+  if (split.operator && split.operator !== 'sum') return clean;
+  const total = children.find((c) => TOTAL_TERM.test(c.label));
+  if (total) {
+    return {
+      state: 'warn',
+      message: `"${total.label}" reads like a running total — summing it double-counts the other terms.`,
+    };
+  }
+  const labels = children.map((c) => c.label.trim().toLowerCase());
+  const dupIndex = labels.findIndex((l, i) => l.length > 0 && labels.indexOf(l) !== i);
+  if (dupIndex !== -1) {
+    return {
+      state: 'warn',
+      message: `Two terms share the label "${children[dupIndex]?.label}" — a summed term looks double-counted.`,
+    };
+  }
+  return clean;
+}
+
+/**
+ * CE guidance for split types we can't prove exhaustive. The state stays
+ * `unknown` (so it never enters the review dock or count — only `warn` does),
+ * but a type-specific prompt in the inspector coaches the check the user makes.
+ */
+function exhaustiveHint(decomposition: DecompositionType): CheckResult {
+  switch (decomposition) {
+    case 'process':
+      return {
+        state: 'unknown',
+        message:
+          'Do the stages run end to end — nothing before the first or after the last, no steps skipped?',
+      };
+    case 'framework':
+      return {
+        state: 'unknown',
+        message:
+          "A framework organises thinking but isn't a provable partition — confirm nothing important sits outside these categories.",
+      };
+    default:
+      return {
+        state: 'unknown',
+        message:
+          "Freeform splits aren't auto-checked for gaps — confirm these branches cover the whole question.",
+      };
+  }
+}
+
 function exclusiveStatus(split: Split, children: IssueNode[], options: MeceOptions): CheckResult {
   switch (split.decomposition) {
     case 'binary':
@@ -140,7 +235,7 @@ function exclusiveStatus(split: Split, children: IssueNode[], options: MeceOptio
             message: 'A binary split should have exactly two branches (A / not-A).',
           };
     case 'formula':
-      return { state: 'pass', message: 'Formula terms are mutually exclusive.' };
+      return formulaExclusive(split, children);
     default:
       return siblingOverlap(children, options.strictOverlap);
   }
@@ -165,7 +260,7 @@ function exhaustiveStatus(
     case 'segment':
       return segmentExhaustive(children);
     default:
-      return { state: 'unknown' };
+      return exhaustiveHint(split.decomposition);
   }
 }
 
