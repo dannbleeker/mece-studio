@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-07-02T18:52:00.067Z",
-  "commit": "2c553a9",
+  "generatedAt": "2026-07-02T19:22:46.774Z",
+  "commit": "604c8ac",
   "headline": {
-    "linesTsJs": 16206,
-    "tests": 411,
-    "lineCoveragePct": 88.46,
-    "commits": 222,
+    "linesTsJs": 16674,
+    "tests": 417,
+    "lineCoveragePct": 88.08,
+    "commits": 224,
     "ageDays": 21,
-    "trackedFiles": 242,
-    "featureManualPct": 88.2,
-    "featureBookPct": 70.9,
-    "featureExamplePct": 16.4
+    "trackedFiles": 244,
+    "featureManualPct": 88.3,
+    "featureBookPct": 70.3,
+    "featureExamplePct": 16.2
   },
   "code": [
     {
       "category": "App code (src, excl. tests)",
-      "files": 87,
-      "lines": 9297
+      "files": 88,
+      "lines": 9648
     },
     {
       "category": "Unit tests",
-      "files": 62,
-      "lines": 4786
+      "files": 63,
+      "lines": 4903
     },
     {
       "category": "E2E tests (Playwright)",
@@ -41,41 +41,41 @@
     {
       "category": "Docs (Markdown)",
       "files": 24,
-      "lines": 2545
+      "lines": 2546
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 88.46,
-      "covered": 2041,
-      "total": 2307
+      "pct": 88.08,
+      "covered": 2121,
+      "total": 2408
     },
     "statements": {
-      "pct": 86.82,
-      "covered": 2444,
-      "total": 2815
+      "pct": 86.47,
+      "covered": 2532,
+      "total": 2928
     },
     "functions": {
-      "pct": 83.58,
-      "covered": 728,
-      "total": 871
+      "pct": 83.65,
+      "covered": 737,
+      "total": 881
     },
     "branches": {
-      "pct": 76.85,
-      "covered": 1285,
-      "total": 1672
+      "pct": 76.68,
+      "covered": 1332,
+      "total": 1737
     }
   },
   "tests": {
-    "unit": 371,
+    "unit": 377,
     "e2e": 40
   },
   "domain": {
-    "features": 110,
+    "features": 111,
     "areas": 14,
     "domainModules": 29,
     "components": 46,
-    "exporters": 13
+    "exporters": 14
   },
   "footprint": {
     "depsProd": 9,
@@ -95,7 +95,7 @@
       },
       {
         "name": "components/canvas/Canvas.tsx",
-        "lines": 413
+        "lines": 429
       },
       {
         "name": "domain/examples.ts",
@@ -110,6 +110,10 @@
   "quality": {
     "leastCovered": [
       {
+        "file": "src/services/exporters/pptx.ts",
+        "pct": 15
+      },
+      {
         "file": "src/components/canvas/SelectionBar.tsx",
         "pct": 52.94
       },
@@ -119,7 +123,7 @@
       },
       {
         "file": "src/components/canvas/Canvas.tsx",
-        "pct": 61.72
+        "pct": 62.13
       },
       {
         "file": "src/App.tsx",
@@ -128,10 +132,6 @@
       {
         "file": "src/components/canvas/CanvasCoach.tsx",
         "pct": 63.63
-      },
-      {
-        "file": "src/components/start/StartPage.tsx",
-        "pct": 66.66
       }
     ],
     "churnHotspots": [
@@ -141,7 +141,7 @@
       },
       {
         "file": "src/components/canvas/Canvas.tsx",
-        "commits": 23
+        "commits": 24
       },
       {
         "file": "src/components/inspector/Inspector.tsx",
@@ -163,8 +163,8 @@
     "risky": [
       {
         "file": "src/components/canvas/Canvas.tsx",
-        "commits": 23,
-        "pct": 61.72
+        "commits": 24,
+        "pct": 62.13
       },
       {
         "file": "src/App.tsx",
@@ -190,7 +190,7 @@
   },
   "bundle": {
     "eagerJsGzipKb": 104.2,
-    "totalJsGzipKb": 537.3,
+    "totalJsGzipKb": 538.5,
     "cssGzipKb": 9,
     "budgetKb": 115,
     "withinBudget": true
@@ -198,17 +198,17 @@
   "docs": {
     "bookWords": 23521,
     "chapters": 16,
-    "appLoc": 9297,
-    "docToCodeRatio": 0.27
+    "appLoc": 9648,
+    "docToCodeRatio": 0.26
   },
   "featureCoverage": {
-    "total": 110,
-    "manual": 97,
-    "manualPct": 88.2,
+    "total": 111,
+    "manual": 98,
+    "manualPct": 88.3,
     "book": 78,
-    "bookPct": 70.9,
+    "bookPct": 70.3,
     "bookExample": 18,
-    "bookExamplePct": 16.4,
+    "bookExamplePct": 16.2,
     "byArea": {
       "Tree": {
         "total": 7,
@@ -256,8 +256,8 @@
         "book": 9
       },
       "Export": {
-        "total": 13,
-        "manual": 12,
+        "total": 14,
+        "manual": 13,
         "book": 8
       },
       "Import": {
@@ -509,6 +509,11 @@
           "id": "canvas-tree-a11y",
           "name": "Canvas ARIA tree semantics",
           "since": 10
+        },
+        {
+          "id": "pptx-native",
+          "name": "Native editable PowerPoint export",
+          "since": 10
         }
       ]
     }
@@ -516,16 +521,16 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 21,
-    "commits": 222,
-    "commits7d": 55,
+    "commits": 224,
+    "commits7d": 57,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 128
+        "count": 129
       },
       {
         "name": "github-actions[bot]",
-        "count": 83
+        "count": 84
       },
       {
         "name": "Claude",
@@ -533,9 +538,9 @@
       }
     ],
     "churn30d": {
-      "added": 35349,
-      "removed": 7186
+      "added": 35939,
+      "removed": 7276
     },
-    "changelogEntries": 83
+    "changelogEntries": 84
   }
 }
