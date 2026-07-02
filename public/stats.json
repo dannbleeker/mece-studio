@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-07-02T08:56:17.243Z",
-  "commit": "5c84ba4",
+  "generatedAt": "2026-07-02T09:00:25.497Z",
+  "commit": "02e6004",
   "headline": {
-    "linesTsJs": 14239,
+    "linesTsJs": 14240,
     "tests": 378,
     "lineCoveragePct": 92.69,
-    "commits": 195,
+    "commits": 197,
     "ageDays": 21,
     "trackedFiles": 229,
     "featureManualPct": 100,
@@ -26,7 +26,7 @@
     {
       "category": "E2E tests (Playwright)",
       "files": 22,
-      "lines": 884
+      "lines": 885
     },
     {
       "category": "Build scripts",
@@ -273,16 +273,16 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 21,
-    "commits": 195,
-    "commits7d": 28,
+    "commits": 197,
+    "commits7d": 30,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 113
+        "count": 114
       },
       {
         "name": "github-actions[bot]",
-        "count": 71
+        "count": 72
       },
       {
         "name": "Claude",
@@ -290,8 +290,8 @@
       }
     ],
     "churn30d": {
-      "added": 31259,
-      "removed": 6275
+      "added": 31316,
+      "removed": 6337
     },
     "changelogEntries": 64
   }
