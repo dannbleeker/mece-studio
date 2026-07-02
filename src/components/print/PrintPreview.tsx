@@ -1,4 +1,5 @@
 import { TREE_KIND_LABELS } from '@/domain/constants';
+import { evidenceLines, metaTag } from '@/domain/export';
 import { meceSummary, splitWarnings } from '@/domain/meceStatus';
 import { childrenOf, splitOf } from '@/domain/tree';
 import type { IssueTreeDoc, NodeId } from '@/domain/types';
@@ -22,14 +23,24 @@ function PrintNode({ doc, id }: { doc: IssueTreeDoc; id: NodeId }) {
   const split = splitOf(doc, id);
   const warnings = split ? splitWarnings(split) : [];
   const kids = childrenOf(doc, id);
+  const meta = metaTag(node); // " — ✓ supported, High priority"
+  const evidence = evidenceLines(node.evidence, '').map((l) => l.replace(/^\s*-\s*/, ''));
 
   return (
     <li className="print-node mt-2">
       <div className="font-medium text-[14px] text-neutral-900">
         {node.label}
         <span className="text-neutral-500">{valueSuffix(doc, id)}</span>
+        {meta && <span className="font-normal text-[12px] text-neutral-500">{meta}</span>}
       </div>
       {node.detail && <div className="text-[12px] text-neutral-500 italic">{node.detail}</div>}
+      {evidence.length > 0 && (
+        <ul className="mt-0.5 text-[12px] text-neutral-600">
+          {evidence.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+      )}
       {warnings.length > 0 && (
         <div className="text-[12px] text-[#bd842c]">⚠ {warnings.join(' · ')}</div>
       )}

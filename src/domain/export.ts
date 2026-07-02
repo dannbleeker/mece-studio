@@ -20,7 +20,7 @@ function valueSuffix(amount: number, unit: string | undefined): string {
 }
 
 /** Status + priority annotations, e.g. " — ✓ supported, High priority". */
-function metaTag(node: IssueNode): string {
+export function metaTag(node: IssueNode): string {
   const parts: string[] = [];
   const status = STATUS_MARK[node.status];
   if (status) parts.push(status);
@@ -38,7 +38,7 @@ function detailNote(detail: string | undefined, indent: string): string {
 }
 
 /** Evidence as sub-bullets under a node, e.g. "  - ✓ (strong) summary". */
-function evidenceLines(evidence: EvidenceItem[], indent: string): string[] {
+export function evidenceLines(evidence: EvidenceItem[], indent: string): string[] {
   return evidence.map((e) => `${indent}  - ${e.supports ? '✓' : '✗'} (${e.strength}) ${e.summary}`);
 }
 
