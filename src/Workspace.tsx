@@ -16,6 +16,7 @@ import { SynthesisPanel } from '@/components/SynthesisPanel';
 import { SettingsDialog } from '@/components/settings/SettingsDialog';
 import { ShortcutsDialog } from '@/components/shortcuts/ShortcutsDialog';
 import { TabStrip } from '@/components/tabs/TabStrip';
+import { useMediaQuery } from '@/components/useMediaQuery';
 import { TREE_KIND_LABELS } from '@/domain/constants';
 import { toMarkdown } from '@/domain/export';
 import { answerPageHtml } from '@/domain/synthesisFormat';
@@ -81,6 +82,10 @@ export function Workspace() {
   const setPriority = useStore((s) => s.setPriority);
   const saveAsTemplate = useStore((s) => s.saveAsTemplate);
   const selectedId = useStore((s) => s.selectedId);
+  const select = useStore((s) => s.select);
+  const setReviewOpen = useStore((s) => s.setReviewOpen);
+  // Below ~640px the header collapses and the inspector becomes a bottom sheet.
+  const compact = useMediaQuery('(max-width: 639px)');
   const canUndo = useStore((s) => s.canUndo());
   const canRedo = useStore((s) => s.canRedo());
   const reviewOpen = useStore((s) => s.reviewOpen);
@@ -196,8 +201,20 @@ export function Workspace() {
     { key: 'answer', label: 'Answer (1-page)', onClick: onExportAnswer },
     { key: 'share', label: 'Copy share link', onClick: onCopyShareLink },
   ];
+  // On a compact (mobile) header the secondary actions collapse into the ⋯ menu.
+  const compactItems: MenuEntry[] = compact
+    ? [
+        { key: 'c-undo', label: 'Undo', onClick: undo, disabled: !canUndo },
+        { key: 'c-redo', label: 'Redo', onClick: redo, disabled: !canRedo },
+        { key: 'c-synthesis', label: 'Synthesis', onClick: () => setShowSynthesis((v) => !v) },
+        { key: 'c-settings', label: 'Settings', onClick: () => setShowSettings(true) },
+        { key: 'c-shortcuts', label: 'Keyboard shortcuts', onClick: () => setShowShortcuts(true) },
+        { key: 'c-sep', divider: true },
+      ]
+    : [];
   // Secondary actions, tucked into an overflow menu to keep the header clustered.
   const overflowItems: MenuEntry[] = [
+    ...compactItems,
     { key: 'quickAdd', label: 'Quick add issues…', onClick: () => setShowQuickCapture(true) },
     { key: 'sep0', divider: true },
     { key: 'copy', label: 'Copy Markdown', onClick: onCopyMarkdown },
@@ -234,47 +251,59 @@ export function Workspace() {
         >
           MECE Studio
         </button>
-        <Divider />
-        <button
-          type="button"
-          onClick={() => setView('start')}
-          className={GHOST_BTN}
-          title="All trees (Start)"
-        >
-          ← Start
-        </button>
-        <Divider />
-        <span className="flex min-w-0 items-center gap-2">
-          <span
-            className="max-w-[16rem] truncate font-medium text-[14px] text-neutral-800"
-            title={rootLabel}
-          >
-            {rootLabel}
-          </span>
-          <span className="shrink-0 rounded-md bg-[#eef2f9] px-1.5 py-0.5 font-medium text-[#3f6fb0] text-[10px]">
-            {kindLabel}
-          </span>
-        </span>
+        {!compact && (
+          <>
+            <Divider />
+            <button
+              type="button"
+              onClick={() => setView('start')}
+              className={GHOST_BTN}
+              title="All trees (Start)"
+            >
+              ← Start
+            </button>
+            <Divider />
+            <span className="flex min-w-0 items-center gap-2">
+              <span
+                className="max-w-[16rem] truncate font-medium text-[14px] text-neutral-800"
+                title={rootLabel}
+              >
+                {rootLabel}
+              </span>
+              <span className="shrink-0 rounded-md bg-[#eef2f9] px-1.5 py-0.5 font-medium text-[#3f6fb0] text-[10px]">
+                {kindLabel}
+              </span>
+            </span>
+          </>
+        )}
 
         {/* Right cluster — health, history, synthesis, export, utilities */}
         <div className="ml-auto flex items-center gap-1">
           <HealthChip />
-          <Divider />
-          <IconBtn label="Undo" title="Undo (Ctrl/⌘+Z)" disabled={!canUndo} onClick={undo}>
-            ↶
-          </IconBtn>
-          <IconBtn
-            label="Redo"
-            title="Redo (Ctrl/⌘+Y or Ctrl/⌘+Shift+Z)"
-            disabled={!canRedo}
-            onClick={redo}
-          >
-            ↷
-          </IconBtn>
-          <Divider />
-          <button type="button" onClick={() => setShowSynthesis((v) => !v)} className={GHOST_BTN}>
-            Synthesis
-          </button>
+          {!compact && (
+            <>
+              <Divider />
+              <IconBtn label="Undo" title="Undo (Ctrl/⌘+Z)" disabled={!canUndo} onClick={undo}>
+                ↶
+              </IconBtn>
+              <IconBtn
+                label="Redo"
+                title="Redo (Ctrl/⌘+Y or Ctrl/⌘+Shift+Z)"
+                disabled={!canRedo}
+                onClick={redo}
+              >
+                ↷
+              </IconBtn>
+              <Divider />
+              <button
+                type="button"
+                onClick={() => setShowSynthesis((v) => !v)}
+                className={GHOST_BTN}
+              >
+                Synthesis
+              </button>
+            </>
+          )}
           <HeaderMenu
             triggerLabel="Export"
             triggerContent={
@@ -288,16 +317,20 @@ export function Workspace() {
             triggerClassName="inline-flex items-center gap-1.5 rounded-md bg-[#3f6fb0] px-3 py-1.5 font-medium text-[13px] text-white shadow-sm transition hover:bg-[#365f98] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3f6fb0]/40"
             items={exportItems}
           />
-          <IconBtn label="Settings" title="Settings" onClick={() => setShowSettings(true)}>
-            ⚙
-          </IconBtn>
-          <IconBtn
-            label="Keyboard shortcuts"
-            title="Keyboard shortcuts (?)"
-            onClick={() => setShowShortcuts(true)}
-          >
-            ?
-          </IconBtn>
+          {!compact && (
+            <>
+              <IconBtn label="Settings" title="Settings" onClick={() => setShowSettings(true)}>
+                ⚙
+              </IconBtn>
+              <IconBtn
+                label="Keyboard shortcuts"
+                title="Keyboard shortcuts (?)"
+                onClick={() => setShowShortcuts(true)}
+              >
+                ?
+              </IconBtn>
+            </>
+          )}
           <HeaderMenu
             triggerLabel="More actions"
             triggerContent={<span aria-hidden="true">⋯</span>}
@@ -342,7 +375,30 @@ export function Workspace() {
             />
           )}
         </main>
-        {reviewOpen ? <ReviewPanel /> : <Inspector />}
+        {compact ? (
+          (reviewOpen || selectedId !== null) && (
+            <div className="fixed inset-x-0 bottom-0 z-30 flex max-h-[70vh] flex-col rounded-t-2xl border-neutral-200 border-t bg-white shadow-2xl">
+              <div className="flex shrink-0 items-center justify-center py-2">
+                <span aria-hidden="true" className="h-1 w-10 rounded-full bg-neutral-300" />
+                <button
+                  type="button"
+                  aria-label="Close panel"
+                  onClick={() => (reviewOpen ? setReviewOpen(false) : select(null))}
+                  className="absolute top-1.5 right-2 rounded px-2 text-neutral-500 text-sm hover:text-neutral-800"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                {reviewOpen ? <ReviewPanel /> : <Inspector />}
+              </div>
+            </div>
+          )
+        ) : reviewOpen ? (
+          <ReviewPanel />
+        ) : (
+          <Inspector />
+        )}
       </div>
     </div>
   );

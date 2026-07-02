@@ -337,7 +337,7 @@ function Flow() {
           nodeColor={(n) => minimapNodeColor(n as IssueFlowNode)}
           nodeStrokeWidth={2}
           maskColor="rgba(250,249,245,0.6)"
-          className="!bottom-2 !right-2 !border !border-[#e7e4dc] !bg-white/85"
+          className="!bottom-2 !right-2 !border !border-[#e7e4dc] !bg-white/85 hidden sm:block"
         />
         <Panel position="top-center">
           <CanvasCoach show={Object.keys(doc.splits).length === 0} />

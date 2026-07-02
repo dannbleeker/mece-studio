@@ -11,9 +11,6 @@ clean follow-ups (everything else from the review landed):
 - **Multi-select for bulk canvas actions (F13).** A `selectedIds` model + React Flow
   rubber-band/shift-select + a selection action bar (bulk delete / status / priority /
   re-parent in one undo step). The batch-op precedent is `addChildren`/`captureChildren`.
-- **Responsive / mobile layout (U8).** The editing header wraps but there's no small-screen
-  treatment: collapse secondary header clusters under ⋯ below ~640px and make the inspector
-  a bottom sheet / slide-over so the canvas keeps full width.
 - **Editable native PPTX (F9).** Render the tree as native pptx text boxes + connector lines
   from the dagre positions (instead of one embedded raster), keeping the raster path as a
   fallback for very large trees.

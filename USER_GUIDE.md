@@ -400,6 +400,11 @@ installed it runs in its own window and **works offline** — the whole app is
 cached, so you can build trees on a plane. The first time it caches, you'll see a
 brief **"Ready to use offline"** notice.
 
+**On a phone.** On a small screen the header collapses (Undo / Redo / Synthesis /
+Settings / shortcuts move into the **⋯** menu) and the **inspector and review dock
+become a bottom sheet** — it rises when you select a node or open the review, and
+drops away when you deselect, so the canvas keeps the full width.
+
 **Staying up to date.** When a new version is deployed, a **"A new version is
 available — Refresh now"** notice appears; click it to load the update. It never
 reloads on its own, so you won't lose unsaved work — dismiss it and the next

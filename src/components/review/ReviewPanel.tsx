@@ -116,7 +116,7 @@ export function ReviewPanel() {
 
   return (
     <aside
-      className="flex w-80 shrink-0 flex-col border-neutral-200 border-l bg-white"
+      className="flex h-full w-full flex-col border-neutral-200 bg-white sm:w-80 sm:shrink-0 sm:border-l"
       aria-label="MECE review"
     >
       <div className="flex items-center gap-2 border-neutral-100 border-b px-4 py-3">

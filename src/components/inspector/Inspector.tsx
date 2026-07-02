@@ -112,7 +112,7 @@ export function Inspector() {
 
   if (!selectedId || !node) {
     return (
-      <aside className="w-80 shrink-0 border-neutral-200 border-l bg-white p-5">
+      <aside className="h-full w-full border-neutral-200 bg-white p-5 sm:w-80 sm:shrink-0 sm:border-l">
         <p className="text-[13px] text-neutral-500 leading-relaxed">
           Select a node to edit it. Use <span className="font-medium">Add sub-issue</span> to
           decompose it — the dots show whether each split is mutually exclusive (ME) and
@@ -135,7 +135,7 @@ export function Inspector() {
   ];
 
   return (
-    <aside className="flex w-80 shrink-0 flex-col border-neutral-200 border-l bg-white">
+    <aside className="flex h-full w-full flex-col border-neutral-200 bg-white sm:w-80 sm:shrink-0 sm:border-l">
       <div className="flex items-center gap-2 px-5 pt-4 pb-2">
         <span className="truncate font-semibold text-[14px] text-neutral-800">
           {node.label || 'Untitled'}
