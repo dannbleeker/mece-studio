@@ -358,9 +358,13 @@ formats:</p>
 <li><strong>PNG / SVG / PDF / PowerPoint / JSON</strong> — from the header&#39;s <strong>Export ▾</strong> menu,
 export the canvas as a raster image (<strong>PNG</strong>), a true vector (<strong>SVG</strong>), a
 <strong>PDF</strong>, or a <strong>PowerPoint</strong> slide, or download the raw tree as <strong>JSON</strong> (which
-round-trips with <strong>Open file…</strong>). The SVG is <strong>sanitised</strong> as it&#39;s written —
-any script, inline handler, or script-bearing URL is stripped — so an exported
-file can never carry executable code.</li>
+round-trips with <strong>Open file…</strong>). The <strong>PowerPoint</strong> deck is <strong>native and
+editable</strong> — each node is a real text box (with its status colour, value,
+priority and ME/CE) and each branch a connector line, so you can rearrange and
+restyle it in PowerPoint; a very large tree (over ~150 nodes) falls back to an
+embedded image. The SVG is <strong>sanitised</strong> as it&#39;s written — any script, inline
+handler, or script-bearing URL is stripped — so an exported file can never
+carry executable code.</li>
 <li><strong>Markdown</strong> — <strong>⋯ → Copy Markdown</strong> copies the tree as a structured outline:
 each node&#39;s value, hypothesis status, priority, MECE state, notes, and evidence,
 so a pasted outline holds the whole analysis.</li>

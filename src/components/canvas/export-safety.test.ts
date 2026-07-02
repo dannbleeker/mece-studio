@@ -12,9 +12,12 @@ import { describe, expect, it } from 'vitest';
  * exported file was opened. MECE Studio defends against this on two fronts this
  * test locks in:
  *
- *  1. Diagram exports never carry script. PNG / PDF / PPTX are RASTER (a
- *     `toPng` bitmap embedded via `addImage`), which flattens any markup to
- *     pixels. SVG export IS offered, but is **sanitised at the sink**:
+ *  1. Diagram exports never carry script. PNG / PDF are RASTER (a `toPng`
+ *     bitmap embedded via `addImage`), which flattens any markup to pixels.
+ *     PPTX renders NATIVE shapes + text boxes for normal trees (falling back to
+ *     the raster deck for very large ones), but every node string is handed to
+ *     pptxgenjs `addText`, which escapes it into inert Office Open XML — data,
+ *     never live markup. SVG export IS offered, but is **sanitised at the sink**:
  *     `renderCanvasSvg` runs the serialised markup through `sanitizeSvg`, which
  *     strips `<script>`, inline event handlers, and script-bearing URLs before
  *     the file is written. So every file the app emits is inert. (Guard: any
@@ -55,7 +58,15 @@ describe('export XSS safety', () => {
     const svgExporters = files.filter((rel) => /\btoSvg\b/.test(read(rel)));
     expect(svgExporters.length).toBeGreaterThan(0); // the SVG path exists…
     for (const rel of svgExporters) expect(read(rel)).toMatch(/\bsanitizeSvg\b/); // …and is sanitised
-    // Sanity: the raster path is still present (PNG underpins PDF/PPTX too).
+    // Sanity: the raster path is still present (PNG underpins PDF + the PPTX fallback).
     expect(files.some((rel) => /\btoPng\b/.test(read(rel)))).toBe(true);
+  });
+
+  it('renders native PPTX through addText only — no live markup', () => {
+    // The native deck draws user text via pptxgenjs `addText` (escaped into inert
+    // OOXML), never as HTML or an unsanitised SVG.
+    const code = read('services/exporters/pptx-native.ts');
+    expect(code).toMatch(/\.addText\(/);
+    expect(code).not.toMatch(/dangerouslySetInnerHTML|\.innerHTML\s*=|\btoSvg\b/);
   });
 });

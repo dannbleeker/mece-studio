@@ -9,7 +9,16 @@ import { Canvas } from './Canvas';
 // Export uses dynamic import() of these heavy libs. Mock them so a toolbar click
 // drives the real export plumbing (bounds → render → save) without the actual
 // rasteriser / encoders, which don't run under happy-dom.
-const { toPngMock, toSvgMock, pdfSave, pdfAddImage, pptxWrite, pptxAddImage } = vi.hoisted(() => ({
+const {
+  toPngMock,
+  toSvgMock,
+  pdfSave,
+  pdfAddImage,
+  pptxWrite,
+  pptxAddImage,
+  pptxAddText,
+  pptxAddShape,
+} = vi.hoisted(() => ({
   toPngMock: vi.fn(async () => 'data:image/png;base64,AAAA'),
   toSvgMock: vi.fn(
     async () =>
@@ -19,6 +28,8 @@ const { toPngMock, toSvgMock, pdfSave, pdfAddImage, pptxWrite, pptxAddImage } = 
   pdfAddImage: vi.fn(),
   pptxWrite: vi.fn(async () => undefined),
   pptxAddImage: vi.fn(),
+  pptxAddText: vi.fn(),
+  pptxAddShape: vi.fn(),
 }));
 vi.mock('html-to-image', () => ({ toPng: toPngMock, toSvg: toSvgMock }));
 // Real classes (not vi.fn) — a mock fn used with `new` doesn't reliably return
@@ -37,8 +48,9 @@ vi.mock('jspdf', () => ({
 }));
 vi.mock('pptxgenjs', () => ({
   default: class {
+    ShapeType = { line: 'line', rect: 'rect', roundRect: 'roundRect' };
     addSlide() {
-      return { addImage: pptxAddImage, addText: () => {} };
+      return { addImage: pptxAddImage, addText: pptxAddText, addShape: pptxAddShape };
     }
     writeFile = pptxWrite;
   },
@@ -142,7 +154,10 @@ describe('Canvas', () => {
       s().requestExport('pptx');
     });
     await waitFor(() => expect(pptxWrite).toHaveBeenCalledWith({ fileName: 'mece-tree.pptx' }));
-    expect(pptxAddImage).toHaveBeenCalledTimes(1);
+    // Native deck: nodes are drawn as shapes + text boxes, not one embedded raster.
+    expect(pptxAddShape).toHaveBeenCalled();
+    expect(pptxAddText).toHaveBeenCalled();
+    expect(pptxAddImage).not.toHaveBeenCalled();
   });
 
   it('zooms to matches when Enter is pressed in the search box', () => {

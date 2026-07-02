@@ -20,10 +20,12 @@ import type { IssueTreeDoc, NodeId } from '@/domain/types';
 import { copyImageToClipboard, downloadDataUrl, downloadText } from '@/services/download';
 import {
   type ExportHeader,
+  nativePptxViable,
   renderCanvasPng,
   renderCanvasSvg,
   saveTreePdf,
   saveTreePptx,
+  saveTreePptxNative,
 } from '@/services/exporters';
 import { useStore } from '@/store';
 import { CanvasCoach } from './CanvasCoach';
@@ -73,7 +75,7 @@ function Flow() {
   const locateNonce = useStore((s) => s.locateNonce);
   const exportRequest = useStore((s) => s.exportRequest);
   const requestExport = useStore((s) => s.requestExport);
-  const { fitView, getNodes, getIntersectingNodes, getViewport } = useReactFlow();
+  const { fitView, getNodes, getEdges, getIntersectingNodes, getViewport } = useReactFlow();
 
   // Inline label editing: double-click a node to edit its label in place.
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -300,6 +302,20 @@ function Flow() {
         if (rendered) downloadText('mece-tree.svg', rendered.svg, 'image/svg+xml');
         return;
       }
+      // PPTX renders native (editable) shapes for normal trees — no raster step —
+      // and falls back to the embedded-image deck once the tree is too big to read
+      // on one slide.
+      if (exportRequest === 'pptx') {
+        const header = exportHeader(useStore.getState().doc);
+        const rfNodes = getNodes() as IssueFlowNode[];
+        if (nativePptxViable(rfNodes.length)) {
+          await saveTreePptxNative(rfNodes, getEdges(), 'mece-tree.pptx', header);
+        } else {
+          const image = await renderCanvasPng(rfNodes);
+          if (image) await saveTreePptx(image, 'mece-tree.pptx', header);
+        }
+        return;
+      }
       const image = await renderCanvasPng(getNodes());
       if (!image) return;
       if (exportRequest === 'png') downloadDataUrl('mece-tree.png', image.dataUrl);
@@ -309,11 +325,11 @@ function Flow() {
         if (!copied) downloadDataUrl('mece-tree.png', image.dataUrl);
       } else if (exportRequest === 'pdf') {
         await saveTreePdf(image, 'mece-tree.pdf', exportHeader(useStore.getState().doc));
-      } else await saveTreePptx(image, 'mece-tree.pptx', exportHeader(useStore.getState().doc));
+      }
     };
     void run();
     requestExport(null);
-  }, [exportRequest, getNodes, requestExport]);
+  }, [exportRequest, getNodes, getEdges, requestExport]);
 
   return (
     <NodeEditingContext.Provider value={editing}>

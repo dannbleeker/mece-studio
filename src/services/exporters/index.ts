@@ -15,3 +15,4 @@ export { renderCanvasPng, renderCanvasSvg } from './image';
 export { treeToJson } from './json';
 export { saveTreePdf } from './pdf';
 export { saveTreePptx } from './pptx';
+export { nativePptxViable, saveTreePptxNative } from './pptx-native';

@@ -12,10 +12,6 @@ clean follow-ups (everything else from the review landed):
   bulk action bar shipped; box/rubber-band select still to add — it needs switching to
   React-Flow-owned selection + `onSelectionChange` sync (a larger change to the canvas
   interaction model). Bulk multi-node re-parent is also out (drag re-parents one node).
-- **Editable native PPTX (F9).** Render the tree as native pptx text boxes + connector lines
-  from the dagre positions (instead of one embedded raster), keeping the raster path as a
-  fallback for very large trees.
-
 The four "partials to round out" all shipped (evidence-text inline edit, on-node add-sub-issue,
 mixed-axis warning, canvas ARIA tree semantics). Snapshots/versioning (F12) stays out of scope by
 design.

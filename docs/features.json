@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 83,
+  "reviewedThroughChangelogEntries": 84,
   "features": [
     {
       "id": "issue-tree",
@@ -1004,6 +1004,15 @@
       "id": "canvas-tree-a11y",
       "name": "Canvas ARIA tree semantics",
       "area": "Editing",
+      "since": 10,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "pptx-native",
+      "name": "Native editable PowerPoint export",
+      "area": "Export",
       "since": 10,
       "manual": true,
       "book": false,
