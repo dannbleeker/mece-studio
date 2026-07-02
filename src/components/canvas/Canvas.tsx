@@ -19,6 +19,7 @@ import type { NodeId } from '@/domain/types';
 import { downloadDataUrl, downloadText } from '@/services/download';
 import { renderCanvasPng, renderCanvasSvg, saveTreePdf, saveTreePptx } from '@/services/exporters';
 import { useStore } from '@/store';
+import { CanvasCoach } from './CanvasCoach';
 import { type NodeEditing, NodeEditingContext } from './nodeEditing';
 import { IssueNode } from './nodes/IssueNode';
 import { toFlow } from './projection';
@@ -268,6 +269,9 @@ function Flow() {
       >
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e2dfd6" />
         <Controls showInteractive={false} />
+        <Panel position="top-center">
+          <CanvasCoach show={Object.keys(doc.splits).length === 0} />
+        </Panel>
         <Panel position="top-left">
           <div className="flex flex-col gap-1">
             <input
