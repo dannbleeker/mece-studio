@@ -41,7 +41,7 @@ test('deleting the active tree falls back to another', async ({ page }) => {
   await pickFromMenu(page, 'New tree');
   expect(await libraryCount(page)).toBe(2);
 
-  page.once('dialog', (d) => d.accept());
-  await pickFromMenu(page, 'Delete tree');
+  await pickFromMenu(page, 'Delete tree'); // opens the in-app confirm dialog
+  await page.getByRole('dialog').getByRole('button', { name: 'Delete tree' }).click();
   expect(await libraryCount(page)).toBe(1);
 });
