@@ -2,6 +2,7 @@ import {
   Background,
   BackgroundVariant,
   Controls,
+  MiniMap,
   type Node,
   type NodeTypes,
   Panel,
@@ -28,10 +29,18 @@ import { useStore } from '@/store';
 import { CanvasCoach } from './CanvasCoach';
 import { type NodeEditing, NodeEditingContext } from './nodeEditing';
 import { IssueNode } from './nodes/IssueNode';
-import { toFlow } from './projection';
+import { type IssueFlowNode, toFlow } from './projection';
 import { boundsWithinViewport, nodesBounds } from './viewport';
 
 const nodeTypes: NodeTypes = { issue: IssueNode };
+
+/** Colour a minimap dot by MECE health (flagged) then priority — a health overview. */
+function minimapNodeColor(node: IssueFlowNode): string {
+  const m = node.data.mece;
+  if (m && (m.exclusive.state === 'warn' || m.exhaustive.state === 'warn')) return '#bd842c';
+  if (node.data.priority === 'high') return '#3f6fb0';
+  return '#cfccc3';
+}
 
 /** Title band for a PDF / PPTX export: the key question + today's date. */
 function exportHeader(doc: IssueTreeDoc): ExportHeader {
@@ -79,25 +88,56 @@ function Flow() {
     [editingId, renameNode]
   );
 
-  // Keyboard on the selected node: Enter / F2 edits its label; Tab adds a child
-  // and edits it straight away (fast tree-building). Double-click also edits
-  // (handled in the node). Ignored while already typing in a field.
+  // Keyboard on the selected node — an outliner loop, ignored while typing:
+  //  Enter / F2 edit · Tab add child · Shift+Enter add sibling · arrows navigate
+  //  (↑/↓ between siblings, ← to parent, → to first child). All edit-and-select
+  //  the way you'd expect, so a tree can be built and walked without the mouse.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
       if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable) return;
       if (editingId || !selectedId) return;
-      if (e.key === 'Enter' || e.key === 'F2') {
-        e.preventDefault();
-        setEditingId(selectedId);
-      } else if (e.key === 'Tab') {
-        e.preventDefault();
-        addChild(selectedId);
-        const kids = childrenOf(useStore.getState().doc, selectedId);
+      const doc = useStore.getState().doc;
+      const addAndEdit = (parentId: NodeId) => {
+        addChild(parentId);
+        const kids = childrenOf(useStore.getState().doc, parentId);
         const newId = kids[kids.length - 1]?.id;
         if (newId) {
           select(newId);
           setEditingId(newId);
+        }
+      };
+      if (e.key === 'Enter' && e.shiftKey) {
+        // Add a sibling: a child of this node's parent (root has no parent).
+        e.preventDefault();
+        const parent = parentOf(doc, selectedId as NodeId);
+        if (parent) addAndEdit(parent);
+      } else if (e.key === 'Enter' || e.key === 'F2') {
+        e.preventDefault();
+        setEditingId(selectedId);
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        addAndEdit(selectedId as NodeId);
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        const parent = parentOf(doc, selectedId as NodeId);
+        const sibs = parent ? childrenOf(doc, parent) : [];
+        const idx = sibs.findIndex((n) => n.id === selectedId);
+        const next = e.key === 'ArrowDown' ? sibs[idx + 1] : sibs[idx - 1];
+        if (idx !== -1 && next) {
+          e.preventDefault();
+          select(next.id);
+        }
+      } else if (e.key === 'ArrowLeft') {
+        const parent = parentOf(doc, selectedId as NodeId);
+        if (parent) {
+          e.preventDefault();
+          select(parent);
+        }
+      } else if (e.key === 'ArrowRight') {
+        const first = childrenOf(doc, selectedId as NodeId)[0];
+        if (first) {
+          e.preventDefault();
+          select(first.id);
         }
       }
     };
@@ -291,6 +331,14 @@ function Flow() {
       >
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e2dfd6" />
         <Controls showInteractive={false} />
+        <MiniMap
+          pannable
+          zoomable
+          nodeColor={(n) => minimapNodeColor(n as IssueFlowNode)}
+          nodeStrokeWidth={2}
+          maskColor="rgba(250,249,245,0.6)"
+          className="!bottom-2 !right-2 !border !border-[#e7e4dc] !bg-white/85"
+        />
         <Panel position="top-center">
           <CanvasCoach show={Object.keys(doc.splits).length === 0} />
         </Panel>

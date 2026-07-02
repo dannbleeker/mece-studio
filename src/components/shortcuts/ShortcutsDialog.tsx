@@ -3,6 +3,9 @@ import { Dialog } from '@/components/Dialog';
 // Mirrors the "Keyboard reference" table in USER_GUIDE.md — keep the two in sync.
 const SHORTCUTS: { keys: string[]; action: string }[] = [
   { keys: ['Tab'], action: 'Add a child to the selected node and edit it' },
+  { keys: ['Shift + Enter'], action: 'Add a sibling to the selected node and edit it' },
+  { keys: ['↑ / ↓'], action: 'Move selection between siblings' },
+  { keys: ['← / →'], action: 'Move selection to the parent / first child' },
   { keys: ['Enter', 'F2'], action: "Edit the selected node's label" },
   { keys: ['Double-click'], action: "Edit a node's label inline" },
   { keys: ['Escape'], action: 'Cancel an edit · close a dialog' },

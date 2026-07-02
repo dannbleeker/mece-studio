@@ -430,6 +430,9 @@ an overlay in the app.
 | Keys | Action |
 | --- | --- |
 | <kbd>Tab</kbd> | Add a child to the selected node and edit it |
+| <kbd>Shift</kbd>+<kbd>Enter</kbd> | Add a sibling to the selected node and edit it |
+| <kbd>↑</kbd> / <kbd>↓</kbd> | Move selection between siblings |
+| <kbd>←</kbd> / <kbd>→</kbd> | Move selection to the parent / first child |
 | <kbd>Enter</kbd> or <kbd>F2</kbd> | Edit the selected node's label |
 | Double-click | Edit a node's label inline |
 | <kbd>Enter</kbd> (while editing) | Commit the label |

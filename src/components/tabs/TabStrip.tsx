@@ -1,3 +1,6 @@
+import { useMemo } from 'react';
+import { type MeceSummary, meceSummary } from '@/domain/meceStatus';
+import { loadDocById } from '@/services/storage';
 import { useStore } from '@/store';
 
 // TODO(studio-kit): swap this local strip for the shared TabBar once MECE
@@ -9,6 +12,13 @@ function tabName(library: { id: string; name: string }[], id: string): string {
   return library.find((e) => e.id === id)?.name || 'Untitled tree';
 }
 
+/** Per-tab MECE health dot — clean (green) / to-review (amber) / empty (grey). */
+const HEALTH_TONE: Record<MeceSummary['kind'], string> = {
+  clean: '#3f7d54',
+  review: '#bd842c',
+  empty: '#cfccc3',
+};
+
 /**
  * A strip of the trees open in tabs, above the canvas. Click a tab to switch,
  * the × to close it, and + to start a new tree. Hidden when only one tree is
@@ -18,9 +28,20 @@ export function TabStrip() {
   const openTabs = useStore((s) => s.openTabs);
   const activeId = useStore((s) => s.activeId);
   const library = useStore((s) => s.library);
+  const doc = useStore((s) => s.doc);
   const switchDoc = useStore((s) => s.switchDoc);
   const closeTab = useStore((s) => s.closeTab);
   const newDoc = useStore((s) => s.newDoc);
+
+  // MECE health per open tab: the active doc from the store, others from storage.
+  const health = useMemo(() => {
+    const map: Record<string, MeceSummary> = {};
+    for (const id of openTabs) {
+      const d = id === activeId ? doc : loadDocById(id);
+      if (d) map[id] = meceSummary(d);
+    }
+    return map;
+  }, [openTabs, activeId, doc]);
 
   if (openTabs.length <= 1) return null;
 
@@ -31,6 +52,7 @@ export function TabStrip() {
     >
       {openTabs.map((id) => {
         const active = id === activeId;
+        const summary = health[id];
         return (
           <div
             key={id}
@@ -40,6 +62,20 @@ export function TabStrip() {
                 : 'text-neutral-500 hover:bg-white/60'
             }`}
           >
+            {summary && (
+              <span
+                aria-hidden="true"
+                className="h-2 w-2 shrink-0 rounded-full"
+                style={{ background: HEALTH_TONE[summary.kind] }}
+                title={
+                  summary.kind === 'review'
+                    ? `${summary.warns} to review`
+                    : summary.kind === 'clean'
+                      ? 'MECE clean'
+                      : 'Not decomposed yet'
+                }
+              />
+            )}
             <button
               type="button"
               onClick={() => switchDoc(id)}

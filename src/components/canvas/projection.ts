@@ -88,6 +88,10 @@ export function toFlow(
   const edges: Edge[] = [];
   for (const split of Object.values(doc.splits)) {
     if (hidden.has(split.parentId)) continue;
+    // A subtle always-on tint on edges out of a flagged split — so problem
+    // decompositions are visible without opening the review dock (which adds the
+    // stronger amber dash on top).
+    const flagged = split.mece.exclusive.state === 'warn' || split.mece.exhaustive.state === 'warn';
     for (const childId of split.childIds) {
       if (doc.nodes[childId] && !hidden.has(childId)) {
         edges.push({
@@ -95,6 +99,7 @@ export function toFlow(
           source: split.parentId,
           target: childId,
           type: 'smoothstep',
+          ...(flagged ? { style: { stroke: '#e0b877' } } : {}),
         });
       }
     }

@@ -24,7 +24,7 @@ test('MECE review dock: flag a split, locate it, then remedy it', async ({ page 
 
   const dock = page.getByRole('complementary', { name: 'MECE review' });
   await expect(dock).toBeVisible();
-  await expect(dock).toContainText('Collectively exhaustive'); // the engine's CE reason
+  await expect(dock).toContainText(/not collectively exhaustive/i); // the "Gaps" group header
 
   // Locate re-centres the canvas on the flagged node (the viewport transform changes).
   const viewport = page.locator('.react-flow__viewport');
