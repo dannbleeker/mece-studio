@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-07-02T20:07:05.797Z",
-  "commit": "4a04bd7",
+  "generatedAt": "2026-07-03T05:11:00.774Z",
+  "commit": "7804d97",
   "headline": {
-    "linesTsJs": 16781,
+    "linesTsJs": 16785,
     "tests": 420,
     "lineCoveragePct": 88.06,
-    "commits": 228,
-    "ageDays": 21,
+    "commits": 234,
+    "ageDays": 22,
     "trackedFiles": 245,
-    "featureManualPct": 88.4,
-    "featureBookPct": 69.6,
-    "featureExamplePct": 16.1
+    "featureManualPct": 100,
+    "featureBookPct": 99.1,
+    "featureExamplePct": 18.3
   },
   "code": [
     {
       "category": "App code (src, excl. tests)",
       "files": 88,
-      "lines": 9666
+      "lines": 9669
     },
     {
       "category": "Unit tests",
       "files": 63,
-      "lines": 4918
+      "lines": 4919
     },
     {
       "category": "E2E tests (Playwright)",
@@ -41,7 +41,7 @@
     {
       "category": "Docs (Markdown)",
       "files": 24,
-      "lines": 2540
+      "lines": 2730
     }
   ],
   "coverage": {
@@ -71,7 +71,7 @@
     "e2e": 42
   },
   "domain": {
-    "features": 112,
+    "features": 115,
     "areas": 14,
     "domainModules": 29,
     "components": 46,
@@ -196,34 +196,34 @@
     "withinBudget": true
   },
   "docs": {
-    "bookWords": 23521,
+    "bookWords": 25499,
     "chapters": 16,
-    "appLoc": 9666,
-    "docToCodeRatio": 0.26
+    "appLoc": 9669,
+    "docToCodeRatio": 0.28
   },
   "featureCoverage": {
-    "total": 112,
-    "manual": 99,
-    "manualPct": 88.4,
-    "book": 78,
-    "bookPct": 69.6,
-    "bookExample": 18,
-    "bookExamplePct": 16.1,
+    "total": 115,
+    "manual": 115,
+    "manualPct": 100,
+    "book": 114,
+    "bookPct": 99.1,
+    "bookExample": 21,
+    "bookExamplePct": 18.3,
     "byArea": {
       "Tree": {
         "total": 7,
-        "manual": 6,
-        "book": 6
+        "manual": 7,
+        "book": 7
       },
       "MECE": {
         "total": 18,
-        "manual": 17,
-        "book": 11
+        "manual": 18,
+        "book": 18
       },
       "Prioritisation": {
         "total": 3,
         "manual": 3,
-        "book": 2
+        "book": 3
       },
       "Hypotheses": {
         "total": 2,
@@ -232,8 +232,8 @@
       },
       "Evidence": {
         "total": 5,
-        "manual": 4,
-        "book": 3
+        "manual": 5,
+        "book": 5
       },
       "Value": {
         "total": 6,
@@ -243,309 +243,78 @@
       "Synthesis": {
         "total": 5,
         "manual": 5,
-        "book": 2
+        "book": 5
       },
       "Canvas": {
         "total": 13,
-        "manual": 10,
-        "book": 9
+        "manual": 13,
+        "book": 12
       },
       "Editing": {
-        "total": 13,
-        "manual": 13,
-        "book": 9
+        "total": 14,
+        "manual": 14,
+        "book": 14
       },
       "Export": {
         "total": 14,
-        "manual": 13,
-        "book": 8
+        "manual": 14,
+        "book": 14
       },
       "Import": {
         "total": 3,
-        "manual": 2,
-        "book": 2
+        "manual": 3,
+        "book": 3
       },
       "Documents": {
         "total": 8,
-        "manual": 6,
-        "book": 6
+        "manual": 8,
+        "book": 8
       },
       "AI": {
         "total": 3,
-        "manual": 2,
-        "book": 2
+        "manual": 3,
+        "book": 3
       },
       "App": {
-        "total": 12,
-        "manual": 10,
-        "book": 10
+        "total": 14,
+        "manual": 14,
+        "book": 14
       }
     },
     "gaps": {
-      "noManual": [
-        {
-          "id": "evidence-fast-entry",
-          "name": "Evidence: strength up front, stance toggle",
-          "since": 9
-        },
-        {
-          "id": "print-parity",
-          "name": "Print / PDF carries status, priority, evidence",
-          "since": 9
-        },
-        {
-          "id": "import-opml",
-          "name": "OPML import (outliners / mind-mappers)",
-          "since": 9
-        },
-        {
-          "id": "dialogs-native-free",
-          "name": "In-app confirm / rename dialogs",
-          "since": 9
-        },
-        {
-          "id": "ai-paste-back",
-          "name": "Keyless-AI split paste-back",
-          "since": 9
-        },
-        {
-          "id": "first-split-chooser",
-          "name": "Scaffold the first split from the Build CTA",
-          "since": 9
-        },
-        {
-          "id": "canvas-coach",
-          "name": "First-run canvas coach",
-          "since": 9
-        },
-        {
-          "id": "canvas-minimap",
-          "name": "Minimap + always-on flagged-edge cue",
-          "since": 9
-        },
-        {
-          "id": "review-dock-triage",
-          "name": "Review dock: grouped by axis, ranked by priority",
-          "since": 9
-        },
-        {
-          "id": "dense-node-layout",
-          "name": "Content-derived node height (no sibling overlap)",
-          "since": 9
-        },
-        {
-          "id": "custom-templates",
-          "name": "Save any tree as a reusable custom template",
-          "since": 9
-        },
-        {
-          "id": "cross-tree-search",
-          "name": "Cross-tree content search across the library",
-          "since": 9
-        },
-        {
-          "id": "per-tab-health",
-          "name": "Per-tab MECE health dot",
-          "since": 9
-        }
-      ],
+      "noManual": [],
       "noBook": [
         {
-          "id": "mece-colour-independent",
-          "name": "MECE state legible without colour (glyphs + aria)",
-          "since": 9
-        },
-        {
-          "id": "mece-ce-guidance",
-          "name": "CE guidance for process / framework splits",
-          "since": 9
-        },
-        {
-          "id": "mece-overlap-quality",
-          "name": "Dimension-aware sibling-overlap heuristic (names the pair)",
-          "since": 9
-        },
-        {
-          "id": "mece-formula-doublecount",
-          "name": "Formula double-count check",
-          "since": 9
-        },
-        {
-          "id": "split-dimension",
-          "name": "Name the dimension a split is cut on",
-          "since": 9
-        },
-        {
-          "id": "priority-matrix",
-          "name": "Impact x ease priority matrix + P shortcut",
-          "since": 9
-        },
-        {
-          "id": "evidence-fast-entry",
-          "name": "Evidence: strength up front, stance toggle",
-          "since": 9
-        },
-        {
-          "id": "governing-answer",
-          "name": "Governing answer banner + rolled-up verdict",
-          "since": 9
-        },
-        {
-          "id": "synthesis-numbers",
-          "name": "Values / roll-up / sensitivity in the synthesis",
-          "since": 9
-        },
-        {
-          "id": "answer-one-pager",
-          "name": "One-page answer HTML deliverable export",
-          "since": 9
-        },
-        {
-          "id": "export-csv",
-          "name": "CSV value-model export",
-          "since": 9
-        },
-        {
-          "id": "export-copy-image",
-          "name": "Copy tree image to clipboard",
-          "since": 9
-        },
-        {
-          "id": "export-share-link",
-          "name": "Backend-free share link",
-          "since": 9
-        },
-        {
-          "id": "export-branded",
-          "name": "Titled (dated) PDF / PPTX exports",
-          "since": 9
-        },
-        {
-          "id": "print-parity",
-          "name": "Print / PDF carries status, priority, evidence",
-          "since": 9
-        },
-        {
-          "id": "import-opml",
-          "name": "OPML import (outliners / mind-mappers)",
-          "since": 9
-        },
-        {
-          "id": "capture-nested",
-          "name": "Nested quick capture (indented outline)",
-          "since": 9
-        },
-        {
-          "id": "keyboard-outliner",
-          "name": "Keyboard navigation + add-sibling",
-          "since": 9
-        },
-        {
-          "id": "dialogs-native-free",
-          "name": "In-app confirm / rename dialogs",
-          "since": 9
-        },
-        {
-          "id": "ai-paste-back",
-          "name": "Keyless-AI split paste-back",
-          "since": 9
-        },
-        {
-          "id": "first-split-chooser",
-          "name": "Scaffold the first split from the Build CTA",
-          "since": 9
-        },
-        {
-          "id": "canvas-coach",
-          "name": "First-run canvas coach",
-          "since": 9
-        },
-        {
-          "id": "canvas-minimap",
-          "name": "Minimap + always-on flagged-edge cue",
-          "since": 9
-        },
-        {
-          "id": "review-dock-triage",
-          "name": "Review dock: grouped by axis, ranked by priority",
-          "since": 9
-        },
-        {
           "id": "dense-node-layout",
           "name": "Content-derived node height (no sibling overlap)",
           "since": 9
-        },
-        {
-          "id": "custom-templates",
-          "name": "Save any tree as a reusable custom template",
-          "since": 9
-        },
-        {
-          "id": "cross-tree-search",
-          "name": "Cross-tree content search across the library",
-          "since": 9
-        },
-        {
-          "id": "per-tab-health",
-          "name": "Per-tab MECE health dot",
-          "since": 9
-        },
-        {
-          "id": "evidence-edit-text",
-          "name": "Inline-edit evidence text",
-          "since": 10
-        },
-        {
-          "id": "on-node-add-child",
-          "name": "On-node add-sub-issue affordance",
-          "since": 10
-        },
-        {
-          "id": "mece-mixed-axis",
-          "name": "Mixed-axis overlap warning",
-          "since": 10
-        },
-        {
-          "id": "canvas-tree-a11y",
-          "name": "Canvas ARIA tree semantics",
-          "since": 10
-        },
-        {
-          "id": "pptx-native",
-          "name": "Native editable PowerPoint export",
-          "since": 10
-        },
-        {
-          "id": "box-select",
-          "name": "Rubber-band (box) select",
-          "since": 10
         }
       ]
     }
   },
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
-    "ageDays": 21,
-    "commits": 228,
-    "commits7d": 61,
+    "ageDays": 22,
+    "commits": 234,
+    "commits7d": 67,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 131
+        "count": 132
       },
       {
         "name": "github-actions[bot]",
-        "count": 86
+        "count": 87
       },
       {
         "name": "Claude",
-        "count": 11
+        "count": 15
       }
     ],
     "churn30d": {
-      "added": 36217,
-      "removed": 7433
+      "added": 36716,
+      "removed": 7620
     },
-    "changelogEntries": 85
+    "changelogEntries": 87
   }
 }
