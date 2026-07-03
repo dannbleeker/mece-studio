@@ -14,6 +14,9 @@ const SHORTCUTS: { keys: string[]; action: string }[] = [
   { keys: ['Ctrl / ⌘ + Z'], action: 'Undo' },
   { keys: ['Ctrl / ⌘ + Y', 'Ctrl / ⌘ + Shift + Z'], action: 'Redo' },
   { keys: ['Enter'], action: 'Zoom to matches (in the Find box)' },
+  { keys: ['Ctrl / ⌘ + K'], action: 'Search the library (on the Start page)' },
+  { keys: ['Ctrl / ⌘ + Enter'], action: 'Add the typed issues (in Quick add)' },
+  { keys: ['→ / Space', '←'], action: 'Next / previous step (in Present mode)' },
   { keys: ['?'], action: 'Show this shortcuts list' },
 ];
 
@@ -24,7 +27,7 @@ export function ShortcutsDialog({ onClose }: { onClose: () => void }) {
   return (
     <Dialog
       label="Keyboard shortcuts"
-      subtitle="These work on the canvas — they're ignored while you're typing in a field."
+      subtitle="These work on the canvas (ignored while you're typing in a field); the last few live where they're marked."
       onClose={onClose}
     >
       <table className="mt-5 w-full">
