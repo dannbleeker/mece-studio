@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 85,
+  "reviewedThroughChangelogEntries": 87,
   "features": [
     {
       "id": "issue-tree",
@@ -569,6 +569,15 @@
       "bookExample": false
     },
     {
+      "id": "learn-mece",
+      "name": "Learn MECE primer page",
+      "area": "App",
+      "since": 6,
+      "manual": true,
+      "book": true,
+      "bookExample": false
+    },
+    {
       "id": "templates-gallery",
       "name": "Templates page (decomposition styles + named frameworks + example trees as cards)",
       "area": "App",
@@ -616,6 +625,15 @@
     {
       "id": "self-update",
       "name": "Self-update prompt + Check for updates",
+      "area": "App",
+      "since": 6,
+      "manual": true,
+      "book": true,
+      "bookExample": false
+    },
+    {
+      "id": "about-dialog",
+      "name": "About dialog (user guide / book / notices / source + updates)",
       "area": "App",
       "since": 6,
       "manual": true,
@@ -727,7 +745,7 @@
       "area": "MECE",
       "since": 9,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -736,7 +754,7 @@
       "area": "MECE",
       "since": 9,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -745,7 +763,7 @@
       "area": "MECE",
       "since": 9,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -754,7 +772,7 @@
       "area": "MECE",
       "since": 9,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -763,7 +781,7 @@
       "area": "MECE",
       "since": 9,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -772,7 +790,7 @@
       "area": "Prioritisation",
       "since": 9,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -780,8 +798,8 @@
       "name": "Evidence: strength up front, stance toggle",
       "area": "Evidence",
       "since": 9,
-      "manual": false,
-      "book": false,
+      "manual": true,
+      "book": true,
       "bookExample": false
     },
     {
@@ -790,8 +808,8 @@
       "area": "Synthesis",
       "since": 9,
       "manual": true,
-      "book": false,
-      "bookExample": false
+      "book": true,
+      "bookExample": true
     },
     {
       "id": "synthesis-numbers",
@@ -799,8 +817,8 @@
       "area": "Synthesis",
       "since": 9,
       "manual": true,
-      "book": false,
-      "bookExample": false
+      "book": true,
+      "bookExample": true
     },
     {
       "id": "answer-one-pager",
@@ -808,8 +826,8 @@
       "area": "Synthesis",
       "since": 9,
       "manual": true,
-      "book": false,
-      "bookExample": false
+      "book": true,
+      "bookExample": true
     },
     {
       "id": "export-csv",
@@ -817,7 +835,7 @@
       "area": "Export",
       "since": 9,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -826,7 +844,7 @@
       "area": "Export",
       "since": 9,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -835,7 +853,7 @@
       "area": "Export",
       "since": 9,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -844,7 +862,7 @@
       "area": "Export",
       "since": 9,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -852,8 +870,8 @@
       "name": "Print / PDF carries status, priority, evidence",
       "area": "Export",
       "since": 9,
-      "manual": false,
-      "book": false,
+      "manual": true,
+      "book": true,
       "bookExample": false
     },
     {
@@ -861,8 +879,8 @@
       "name": "OPML import (outliners / mind-mappers)",
       "area": "Import",
       "since": 9,
-      "manual": false,
-      "book": false,
+      "manual": true,
+      "book": true,
       "bookExample": false
     },
     {
@@ -871,7 +889,7 @@
       "area": "Editing",
       "since": 9,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -880,7 +898,7 @@
       "area": "Editing",
       "since": 9,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -888,8 +906,8 @@
       "name": "In-app confirm / rename dialogs",
       "area": "App",
       "since": 9,
-      "manual": false,
-      "book": false,
+      "manual": true,
+      "book": true,
       "bookExample": false
     },
     {
@@ -897,8 +915,8 @@
       "name": "Keyless-AI split paste-back",
       "area": "AI",
       "since": 9,
-      "manual": false,
-      "book": false,
+      "manual": true,
+      "book": true,
       "bookExample": false
     },
     {
@@ -906,8 +924,8 @@
       "name": "Scaffold the first split from the Build CTA",
       "area": "Tree",
       "since": 9,
-      "manual": false,
-      "book": false,
+      "manual": true,
+      "book": true,
       "bookExample": false
     },
     {
@@ -915,8 +933,8 @@
       "name": "First-run canvas coach",
       "area": "Canvas",
       "since": 9,
-      "manual": false,
-      "book": false,
+      "manual": true,
+      "book": true,
       "bookExample": false
     },
     {
@@ -924,8 +942,8 @@
       "name": "Minimap + always-on flagged-edge cue",
       "area": "Canvas",
       "since": 9,
-      "manual": false,
-      "book": false,
+      "manual": true,
+      "book": true,
       "bookExample": false
     },
     {
@@ -933,8 +951,8 @@
       "name": "Review dock: grouped by axis, ranked by priority",
       "area": "MECE",
       "since": 9,
-      "manual": false,
-      "book": false,
+      "manual": true,
+      "book": true,
       "bookExample": false
     },
     {
@@ -942,7 +960,7 @@
       "name": "Content-derived node height (no sibling overlap)",
       "area": "Canvas",
       "since": 9,
-      "manual": false,
+      "manual": true,
       "book": false,
       "bookExample": false
     },
@@ -951,8 +969,8 @@
       "name": "Save any tree as a reusable custom template",
       "area": "Documents",
       "since": 9,
-      "manual": false,
-      "book": false,
+      "manual": true,
+      "book": true,
       "bookExample": false
     },
     {
@@ -960,8 +978,8 @@
       "name": "Cross-tree content search across the library",
       "area": "Documents",
       "since": 9,
-      "manual": false,
-      "book": false,
+      "manual": true,
+      "book": true,
       "bookExample": false
     },
     {
@@ -969,8 +987,8 @@
       "name": "Per-tab MECE health dot",
       "area": "App",
       "since": 9,
-      "manual": false,
-      "book": false,
+      "manual": true,
+      "book": true,
       "bookExample": false
     },
     {
@@ -979,7 +997,7 @@
       "area": "Evidence",
       "since": 10,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -988,7 +1006,7 @@
       "area": "Editing",
       "since": 10,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -997,7 +1015,7 @@
       "area": "MECE",
       "since": 10,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -1006,7 +1024,7 @@
       "area": "Editing",
       "since": 10,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -1015,7 +1033,16 @@
       "area": "Export",
       "since": 10,
       "manual": true,
-      "book": false,
+      "book": true,
+      "bookExample": false
+    },
+    {
+      "id": "selection-bulk-actions",
+      "name": "Multi-select bulk actions (status / priority / delete)",
+      "area": "Editing",
+      "since": 9,
+      "manual": true,
+      "book": true,
       "bookExample": false
     },
     {
@@ -1024,7 +1051,7 @@
       "area": "Canvas",
       "since": 10,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     }
   ]
