@@ -38,7 +38,7 @@ This is legitimate and important. You are not supposed to arrive at the problem 
 
 For the profits question, a day-one hypothesis might be: "Gross margin per unit is being squeezed by rising input costs, while pricing has stayed flat." That's specific enough to test. It points at input-cost data and pricing history. It ignores headcount and fixed overhead for now — not because those don't matter, but because your initial read says they're not the driver.
 
-You write this down and make it explicit. One sentence on the whiteboard. Then you build the tree to test it.
+You write this down and make it explicit. One sentence on the whiteboard. In MECE Studio, that sentence has a dedicated home: the **Answer** banner above the canvas holds the governing answer the whole tree argues for. State the day-one hypothesis there, and the synthesis (see *Answer-first*) will later open with it and a verdict on how well it held up. Then you build the tree to test it.
 
 ## Turning sub-issues into testable claims
 

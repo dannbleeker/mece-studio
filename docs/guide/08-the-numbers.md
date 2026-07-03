@@ -101,7 +101,7 @@ Common causes of reconciliation failure:
 - Wrong operator (summing something that should be a product)
 - Stale data (a leaf value that belongs to a different time period)
 
-Each of these is structurally informative. The reconciliation check is not an error message — it is a MECE check applied to numbers.
+Each of these is structurally informative. The reconciliation check is not an error message — it is a MECE check applied to numbers. MECE Studio also catches the most common double-count patterns on its own: a summed term named like a running "total", or two terms with the same label, is flagged before it silently inflates the parent.
 
 ## Sensitivity analysis: finding the number that matters
 

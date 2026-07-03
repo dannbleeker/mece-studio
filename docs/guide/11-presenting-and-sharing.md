@@ -1,8 +1,9 @@
 # Presenting and sharing
 
-The previous chapter was about *what* to say — leading answer-first, with the
-fewest MECE arguments that prove your point. This one is about getting the tree
-out of the tool and in front of the people who need it. A good issue tree is
+The chapter on **Answer-first** was about *what* to say — leading with the
+conclusion, with the fewest MECE arguments that prove your point — and the
+worked example showed a full analysis reaching that point. This chapter is
+about getting the tree out of the tool and in front of the people who need it. A good issue tree is
 already most of a communication; MECE Studio gives you a few ways to deliver it,
 and the right one depends on your audience and the moment.
 
@@ -16,8 +17,8 @@ audience sees the structure build the way you reasoned it.
 **Present** (from the **⋯** menu) does exactly this. It opens a full-screen,
 distraction-free view and steps through the tree depth-first: each step shows one
 question, the branches you split it into, and that split's MECE status. You move
-with the arrow keys — <kbd>→</kbd> forward, <kbd>←</kbd> back — and leave with
-<kbd>Escape</kbd>.
+with the arrow keys — <kbd>→</kbd> (or <kbd>Space</kbd>) forward, <kbd>←</kbd>
+back — and leave with <kbd>Escape</kbd>.
 
 Because it walks the tree top-down, presentation mode naturally enforces the same
 discipline as answer-first communication: the key question first, then its
@@ -32,8 +33,10 @@ Sometimes the deliverable is paper, or a PDF appendix to a deck — something a
 reader can hold and annotate. **Print…** (from the **⋯** menu) opens a print
 preview that lays the whole tree out as a clean nested outline: the root
 question, its type, the MECE summary, and every branch indented beneath its
-parent. The app's own chrome is hidden, so what prints is just the tree. From the
-browser's print dialog you can send it to a printer or **Save as PDF**.
+parent — each carrying its hypothesis status, priority band, value, and
+evidence, so the printed page holds the analysis, not just the labels. The
+app's own chrome is hidden, so what prints is just the tree. From the browser's
+print dialog you can send it to a printer or **Save as PDF**.
 
 A printed outline is dense and skimmable in a way a sprawling diagram is not — it
 is often the better artifact to leave behind after a meeting.
@@ -46,16 +49,21 @@ document — into a file. Pick the format by where it is going:
 | Format | Best for |
 | --- | --- |
 | **PNG** | Dropping the diagram straight into a slide or document — a raster image that pastes anywhere. |
+| **Copy image** | The same rendered tree, straight onto your clipboard — for Slack, a doc, or a slide, no file involved. |
 | **SVG** | Vector graphics that stay crisp at any size — large-format print, or a slide you will zoom into. The exported file is *sanitised* as it is written, so it can never carry executable content. |
-| **PDF** | A single-page, shareable snapshot of the canvas. |
-| **PPTX** | A starter PowerPoint slide with the diagram placed on it, ready to build around. |
+| **PDF** | A single-page, shareable snapshot of the canvas, headed with the tree's title and the date so it reads as a deliverable. |
+| **PPTX** | A **native, editable** PowerPoint slide: every node is a real text box (carrying its status colour, value, priority, and ME/CE state) and every branch a connector line, so you can rearrange and restyle it in PowerPoint. Titled and dated like the PDF; a very large tree (over ~150 nodes) falls back to an embedded image. |
+| **Answer (1-page)** | A self-contained **HTML memo** — your governing answer, the verdict, then the branches in priority order. The handoff document itself; see *Answer-first*. |
 | **Markdown** | The whole analysis as an indented outline — each node with its value, hypothesis status, priority, MECE state, notes, and evidence. Paste it into a doc, a wiki, or an email and the structure travels with it. |
+| **CSV (value model)** | One row per node — path, label, decomposition type, ME/CE, priority, status, amount, unit, operator — so a value-driver tree opens straight in Excel. |
 | **JSON** | The raw document, round-tripping with **Open file…** — the format to hand a colleague when you want them to keep *working* on the tree, not just read it. |
+| **Copy share link** | The whole tree packed into a backend-free `#doc=` URL. Whoever opens it gets the tree as a **new** tree in their own library — nothing is uploaded; the document travels inside the link. |
 
 The image and document exporters all render the same canvas, so a PNG, an SVG,
-and a PDF of the same tree show the same thing in different media. Markdown and
-JSON go the other way — they carry the *content*, not a picture of it, which is
-what you want when the tree needs to keep living after the meeting.
+and a PDF of the same tree show the same thing in different media. Markdown,
+CSV, JSON, and the share link go the other way — they carry the *content*, not
+a picture of it, which is what you want when the tree needs to keep living
+after the meeting.
 
 ## One tree, many audiences
 
@@ -64,5 +72,6 @@ reasoned out — MECE at every split, hypotheses where you have them, evidence a
 numbers attached — is the single source. Presentation mode, the printed outline,
 the diagram exports, and the data exports are just different windows onto it.
 Choose the window for the audience: walk it live with a working group, hand a
-printed outline to a busy executive, drop a PNG into the board deck, and pass the
-JSON to the analyst who will take it further.
+printed outline or the one-page answer memo to a busy executive, drop a PNG into
+the board deck, send a colleague the share link, and pass the JSON to the
+analyst who will take it further.

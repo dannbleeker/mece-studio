@@ -70,7 +70,7 @@ This is one of the underappreciated uses of an issue tree: it lets you close bra
 
 Issue trees change as understanding develops. You'll add branches you didn't anticipate. You'll collapse branches that turned out to be dead ends. You'll occasionally restructure — realise that what you thought was a first-level issue is actually a driver of something else and move it down a level. That's not a sign of failure; it's a sign the analysis is working.
 
-In MECE Studio you can drag nodes to reparent them, rename any node inline, and undo any change. The tree is meant to be edited iteratively, not built once and frozen. Save snapshots when you've reached a clean milestone, but don't treat any version of the tree as permanent until the analysis is actually done.
+In MECE Studio you can drag nodes to reparent them, rename any node inline, and undo any change. The tree is meant to be edited iteratively, not built once and frozen. Keep a copy at a clean milestone if you want one (duplicate the tree, or save it to a file), but don't treat any version of the tree as permanent until the analysis is actually done.
 
 Collapsing branches you've already investigated can help too — once you know that the costs side is fully explained by input costs and you've documented the finding, collapsing the costs branch lets you focus visual attention on the open revenue questions. The canvas is a working surface, not a final product.
 

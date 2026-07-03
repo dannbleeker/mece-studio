@@ -10,7 +10,9 @@ When you already know the branches — in your head, or on a whiteboard — you 
 need to add them one node at a time. **Quick add issues…** (from the **⋯** menu)
 opens a box where you type one issue per line; on confirm, every line becomes a
 child of the selected node (or of the root, if nothing is selected), all in a
-single undoable step. <kbd>Ctrl/⌘ + Enter</kbd> adds them without the mouse.
+single undoable step. It builds levels too: **indent a line** (Tab, spaces, or a
+bullet) and it nests as a sub-issue, so a whole multi-level outline drops in at
+once. <kbd>Ctrl/⌘ + Enter</kbd> adds them without the mouse.
 
 ## Starting from material you already have
 
@@ -22,8 +24,13 @@ tree:
   indentation. The first heading or line becomes the root question, and
   everything else nests beneath it. It is a structural import — you get the
   hierarchy and labels, ready to refine.
+- **An OPML outline.** The export format of most outliners and mind-mappers
+  (MindManager, OmniOutliner, Workflowy, Dynalist, …) — nested `<outline>`s
+  become the tree.
 - **A tree's JSON.** Paste the JSON a colleague exported and it opens as a fully
   restored tree (the same format **Export ▾ → JSON** produces).
+
+The format is auto-detected — you just paste.
 
 Either way, the import opens as a **new** entry in your library, so it never
 disturbs the tree you are already working on.
@@ -46,13 +53,26 @@ changes, so the structure stays readable as it grows. What you control is the
 - **Find.** The search box rings every node whose label matches as you type and
   shows a match count; press <kbd>Enter</kbd> to zoom to the matches — invaluable
   in a big tree.
+- **Minimap.** A minimap keeps you oriented in a big tree: one dot per node,
+  coloured by state — amber for a flagged split, blue for a high-priority
+  branch.
+- **Select several nodes at once.** <kbd>⌘/Ctrl</kbd>- or <kbd>Shift</kbd>-click
+  nodes, or <kbd>Shift</kbd>-drag a box on empty canvas, and a floating action
+  bar sets their status or priority — or deletes them — in one undoable step.
 
 The canvas also *shows* the analysis at a glance, without opening the inspector:
-each decomposed node carries **ME / CE status dots** (is this split mutually
-exclusive? collectively exhaustive?), a **coloured status edge** for its
+each decomposed node carries **ME / CE status indicators** (is this split
+mutually exclusive? collectively exhaustive?), a **coloured status edge** for its
 hypothesis state, and **evidence-count badges** for supporting and contradicting
-items. When the review dock is open, the canvas dims the clean splits and
-amber-dashes the flagged edges, so the splits that need attention stand out.
+items. Edges out of a flagged split carry a subtle always-on amber tint; when
+the review dock is open, the canvas goes further and dims the clean splits
+entirely, so the splits that need attention stand out. (To assistive tech the
+canvas is a real *tree* — every node announces its depth, expanded state, and
+selection to a screen reader.)
+
+The first time you face a bare root node, a dismissible **coach tip** on the
+canvas points at the two moves that start a tree: <kbd>Tab</kbd> to add a
+branch, then the **Logic** tab to choose how it splits.
 
 ## Editing nodes
 
@@ -61,7 +81,8 @@ Most editing happens on the canvas or in the inspector on the right:
 | Action | How |
 | --- | --- |
 | Rename a node | Double-click it, or select it and press <kbd>Enter</kbd> / <kbd>F2</kbd> |
-| Add a child | <kbd>Tab</kbd> on the selected node (see Appendix B) |
+| Add a child | <kbd>Tab</kbd> on the selected node, or click the **＋** on its child edge (see Appendix B) |
+| Add a sibling | <kbd>Shift + Enter</kbd> on the selected node |
 | Delete a node and its subtree | Select it and press <kbd>Delete</kbd> / <kbd>Backspace</kbd> |
 | Duplicate a subtree | From the inspector — copies the node and its whole subtree (fresh ids) as a sibling |
 | Reorder siblings | Move a node up or down among its siblings, from the inspector |
@@ -81,21 +102,34 @@ MECE checking is the point of the tool, and it surfaces in three places:
   *why* — siblings that may overlap (ME), or children that may not cover the
   parent (CE).
 - **The review dock.** A **MECE health** chip in the header reads *✓ MECE clean*
-  or *⚠ N to review* and opens a dock listing every flagged split with its
-  reason, a one-click **Locate** that centres the node on the canvas, and a
-  concrete remedy (add an "Other" bucket, or a sub-issue).
+  or *⚠ N to review* and opens a triage dock: flags grouped into **Overlaps**
+  and **Gaps**, ranked by branch priority, each row with its plain-language
+  reason, a one-click **Locate** that centres the node on the canvas, a
+  **Review logic →** jump to the inspector, and — for gaps — a concrete remedy
+  (add an "Other" bucket, or a sub-issue).
 - **Needs review.** The Start page's **Needs review** section triages your whole
   library down to the trees that have at least one flagged split.
 
 ## The library and the Start page
 
 MECE Studio opens on the **Start page** — a workspace shell with a sidebar
-(**Start, All trees, Recent, Templates, Needs review, Learn MECE**). From here you
-**start a new tree** from a key-question box, or open an existing one. Every saved
-tree appears as a **card** showing a mini preview and a live MECE pill that reads
+(**Start, All trees, Recent, Templates, Needs review**, and **Learn MECE**, a
+short in-app primer with links to the user guide and this book). From here you
+**start a new tree** from a key-question box — picking how the first split
+should cut, or starting blank — or open an existing one. Every saved tree
+appears as a **card** showing a mini preview and a live MECE pill that reads
 the same status the canvas does; from a card you can **rename, duplicate, or
-delete** the tree. The **Templates** page surfaces every decomposition style,
-named framework, and example tree as a one-click card.
+delete** the tree. The library **search** (<kbd>⌘K</kbd> / <kbd>Ctrl+K</kbd>)
+matches node labels and notes across every tree, not just titles — so it finds
+the tree that *contains* the thought you're looking for. The **Templates** page
+surfaces every decomposition style, named framework, and example tree as a
+one-click card — plus **your own templates**: **⋯ → Save as template…** banks
+any tree's structure (labels, splits, dimensions; values, evidence, and status
+stripped) as a clean, reusable starting point.
+
+Open several trees at once and each gets a **tab** above the canvas — with a
+per-tab **MECE health dot** (green clean / amber to-review / grey undecomposed),
+so you can see which open trees still need work. The open set survives a reload.
 
 If you used an earlier, single-tree version of MECE Studio, your tree is folded
 into the library automatically the first time you open the new version — nothing
@@ -123,10 +157,16 @@ defaulting to today's behaviour:
 - **Self-updating.** When a new version is deployed, a running tab shows a
   non-intrusive *"A new version is available — Refresh now"* prompt rather than
   reloading under you; **About → Check for updates** forces a check on demand.
+  The **About** dialog also links the user guide, this book (PDF and EPUB),
+  third-party notices, and the source code.
 - The **editor header** is grouped into labelled clusters — brand and title, the
   MECE health chip, undo/redo, Synthesis, the **Export ▾** menu, Settings,
   shortcuts, and an **⋯ overflow** menu — so the actions stay findable as the app
-  grows.
+  grows. Confirmations and renames use the app's own dialogs, never a browser
+  popup.
+- **On a phone**, the workspace adapts: the header collapses into the **⋯**
+  menu and the inspector and review dock become a **bottom sheet** that rises
+  when you select a node, so the canvas keeps the full width.
 
 ## AI assist, without an API key
 
@@ -135,6 +175,9 @@ LLM. Two actions copy a ready-made prompt with your tree embedded, to paste into
 Claude or ChatGPT:
 
 - **Critique this tree's MECE** — from the Synthesis panel.
-- **Suggest a MECE split for this node** — from the inspector.
+- **Suggest a MECE split for this node** — from the inspector. The prompt asks
+  the LLM for a paste-ready Markdown outline, and a **"paste the AI's split
+  back"** box beneath it grafts those sub-issues straight under the node —
+  closing the loop with no key and no backend.
 
 You stay in control of what you send and where; the tool just writes the prompt.
