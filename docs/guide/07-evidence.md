@@ -33,7 +33,7 @@ The practical categories are roughly:
 
 You don't need a precise formula. What you need is an honest read: is this the kind of evidence that would hold up if someone challenged it in front of a sceptical audience?
 
-In MECE Studio, when you attach evidence to a node you set both its direction (supporting or contradicting) and a strength rating that you can cycle through. The node displays a count badge showing how many supporting and contradicting items you've gathered. This makes the state of evidence visible at a glance — a node with five strong supporting items and zero contradicting items is in a different position from a node with two weak supporting items and one moderate contradicting item.
+In MECE Studio, when you attach evidence to a node you choose its **strength up front** — anecdote, indicative, or strong — along with its direction (supporting or contradicting). As the picture sharpens you can switch an item's strength with a direct picker, **flip it between supporting and contradicting** in place, or click its text to edit it. The node displays a count badge showing how many supporting and contradicting items you've gathered. This makes the state of evidence visible at a glance — a node with five strong supporting items and zero contradicting items is in a different position from a node with two weak supporting items and one moderate contradicting item.
 
 ## The special value of disconfirming evidence
 
@@ -89,5 +89,7 @@ Once nodes start moving from open to supported or refuted, the synthesis (see *A
 Evidence is what makes that synthesis credible rather than merely plausible. When you present a conclusion and someone asks "how do you know?", the answer should be: this branch is supported by these three items of evidence at these strength levels; this alternative was refuted by this contradicting data; the finding holds up across these independent sources.
 
 That is the difference between a structured hypothesis and a structured answer. The tree gives you the structure. Evidence gives you the substance.
+
+One kind of evidence deserves a chapter of its own: when the question is quantitative, the numbers themselves carry the argument. That is where the next chapter, *Doing the numbers*, picks up.
 
 In MECE Studio, when you run the answer-first synthesis, the evidence attached to supported and refuted nodes is available to pull into the narrative — the ✓ and ✗ counts are a reminder of what's behind each claim. The goal is not to produce an evidence dump, but to make sure every claim in the synthesis has something behind it, and that you know what that something is before you walk into the room.

@@ -69,17 +69,20 @@ None of this requires you to rebuild the communication from scratch. The structu
 
 The synthesis panel reads your tree and renders it answer-first automatically.
 
-It leads with the **highest-priority branch** — the one with the best impact × ease score or, in a value-driver tree, the one with the largest sensitivity swing. Then it lists the remaining branches in priority order, descending.
+It opens with your **governing answer** — the day-one hypothesis you stated in the **Answer** banner above the canvas — paired with a rolled-up **verdict** computed from the top branches' status: *"3 of 5 top branches supported, 1 refuted — the answer partially holds."* That one line is the pyramid's apex, with the tree's own bookkeeping standing behind it.
 
-For each branch it surfaces:
+Then come the branches, led by the **highest-priority** one and continuing in priority order, descending. For each branch it surfaces:
 
 - The **hypothesis status** (✓ supported, ✗ refuted, ⊘ parked; open branches carry no mark) so your audience can see what is settled and what is still uncertain
 - The **evidence** you attached to that branch — sources, data, observations
+- In a value-driver tree, the **numbers**: each node's value and unit, the rolled-up total on a formula parent, and the **most-sensitive driver** — so the answer includes its maths
 - Any **MECE flags** — gaps or overlaps the live checker found
 
 The result is a structured narrative you can read top to bottom. It does not write prose for you, but it gives you the skeleton: the right argument, in the right order, with its support visible.
 
 From the panel you can **copy as Markdown** and paste directly into a document, email, or presentation notes. The structure survives the paste — you get headings, bullet points, and evidence inline, ready to edit into prose.
+
+When the deliverable is the answer itself, skip the paste altogether: **Export ▾ → Answer (1-page)** writes a clean, self-contained **HTML memo** — thesis on top, verdict, then the branches in priority order — ready to hand over as-is. It is the actual handoff document, not a canvas screenshot.
 
 ## Communicating with different formats
 
@@ -142,3 +145,5 @@ By the time you reach synthesis, you have:
 What the synthesis does is **make all of that communicable**. The structure that has been invisible to your audience — the tree, the MECE logic, the prioritisation — becomes the backbone of a clear, defensible argument.
 
 Answer-first is not a presentation trick. It is the natural consequence of building the analysis the right way. If the tree is well built, the synthesis is already there. You are reading it out loud.
+
+You have now seen every move in isolation. The next chapter runs them in sequence — one real problem, from a vague worry to a board-ready answer.

@@ -12,6 +12,10 @@ sub-question and its own sub-issues.
 **Collectively exhaustive (CE).** A set of parts that, taken together, cover the
 whole — nothing is left out. The "CE" in MECE.
 
+**Dimension.** The single axis a split cuts on — by geography, by customer type,
+by stage. One consistent dimension per level is the backbone of a mutually
+exclusive split; in MECE Studio you can name it on a split's Logic tab.
+
 **Driver.** A quantitative input that moves a number you care about. In a
 value-driver tree, the leaves are drivers (price, volume, cost per unit) and the
 root is the outcome (profit, revenue).
@@ -21,6 +25,10 @@ hypothesis. In MECE Studio, evidence is attached to a node with a direction
 (supporting / contradicting) and a strength.
 
 **Exhaustiveness.** See *collectively exhaustive*.
+
+**Governing answer.** The one-sentence answer the whole tree argues for — stated
+on day one, tested by the branches, and delivered first in an answer-first
+synthesis. In MECE Studio it lives in the Answer banner above the canvas.
 
 **Hypothesis.** A candidate answer you intend to test. Hypothesis-driven problem
 solving starts from a best guess and uses the tree to confirm or kill it, rather

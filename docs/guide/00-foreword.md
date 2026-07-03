@@ -66,7 +66,7 @@ The book follows the shape of a real analysis. You start by pinning down the rig
 
 At the end, you synthesise: distill everything you've learned into a clear, answer-first communication. The chapter on **Answer-first** covers how to do this without losing the rigour underneath.
 
-The final chapter walks through a complete worked example from blank canvas to finished synthesis, so you can see all the pieces fit together.
+A full worked example then walks one problem from blank canvas to finished synthesis, so you can see all the pieces fit together. A closing chapter covers getting the tree in front of an audience — presenting it live, printing it, and exporting it in whatever form the room needs.
 
 There is a running example threaded through the whole book — a business whose profits are falling, decomposed into a revenue branch and a costs branch, each with its own drivers. It's simple enough to hold in your head, complex enough to illustrate the interesting cases. You'll recognise it quickly once it appears, and you'll see the same tree grow and evolve as each new concept is introduced.
 

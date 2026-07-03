@@ -28,7 +28,7 @@ The 80/20 instinct means looking at your tree at the start of each day and askin
 
 You don't need a complex model. A simple 1–3 rating on impact and a 1–3 rating on ease gives you nine cells. The top-right corner (high impact, high ease) is your immediate priority. The bottom-left corner (low impact, hard to test) can often be dropped entirely.
 
-In MECE Studio, you set an impact score and an ease score on any node. The tool combines them into a **High / Medium / Low priority band** shown on the node itself, so when you look at the canvas you can see at a glance which branches are tier-one work and which are background. When you export or generate the synthesis, MECE Studio orders the findings by priority — the high-impact nodes come first in the narrative, which is usually also the right structure for the answer.
+In MECE Studio, you set a branch's priority in one click on a **3×3 impact-by-ease matrix** in the inspector — the nine cells of exactly this scoring model — with the resulting **High / Medium / Low priority band** shown live as you pick, and as a chip on the node itself, so when you look at the canvas you can see at a glance which branches are tier-one work and which are background. (On the canvas, pressing <kbd>P</kbd> on a selected node cycles its priority without opening the inspector.) When you export or generate the synthesis, MECE Studio orders the findings by priority — the high-impact nodes come first in the narrative, which is usually also the right structure for the answer.
 
 Scoring doesn't have to be precise. A rough calibration across the team ("we all agree gross-margin compression is high impact; we all agree the admin overhead branch is low impact") is good enough to direct effort. The value is the shared prioritisation decision, not the score itself.
 
@@ -73,3 +73,5 @@ If you take one thing from this chapter: bias heavily toward the branches most l
 A complete tree with twenty-five evenly-worked branches and a vague conclusion is not rigorous. A tree where twelve branches are parked or refuted and three are deeply evidenced, pointing clearly to a finding, is what rigour actually looks like.
 
 The 80/20 principle won't be precisely 80/20 in your specific problem. But the underlying truth holds: a few branches carry most of the answer. Find them fast, work them hard, and let the rest wait.
+
+Priorities decide *where* the hours go. The next chapter — *Evidence* — is about what those hours actually produce: the facts that move a branch from a bet to a finding.

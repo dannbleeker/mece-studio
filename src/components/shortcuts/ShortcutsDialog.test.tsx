@@ -11,6 +11,7 @@ describe('ShortcutsDialog', () => {
     expect(screen.getByRole('dialog', { name: 'Keyboard shortcuts' })).toBeTruthy();
     expect(screen.getByText('Add a child to the selected node and edit it')).toBeTruthy();
     expect(screen.getByText('Remove the selected node and its subtree')).toBeTruthy();
+    expect(screen.getByText('Search the library (on the Start page)')).toBeTruthy();
     expect(screen.getAllByText('Tab').length).toBeGreaterThan(0);
   });
 

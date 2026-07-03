@@ -129,6 +129,8 @@ A scaffold is a prompt, not an answer. The labels are generic; your job is to re
 
 You can ignore the scaffold and type your own children directly. The decomposition type still governs the MECE check, so a segments node without an Other child will still flag the CE warning. The scaffold just makes it easier to start right.
 
+The same idea applies from the very first move: when you build a tree from the Start page's key-question box, MECE Studio asks **"how do you want to split it?"** — pick a type and you land on a scaffolded, already-checkable first split instead of a lone root box (or start blank and decide later). Choosing the cut is the first analytical decision, and the tool puts it where it belongs: up front.
+
 ## Named frameworks in MECE Studio
 
 Beyond the generic scaffolds, the **Templates** page carries a small library of **named frameworks** — the established lenses from the Framework section above, ready to drop onto a blank tree with their canonical branches already filled in. Pick one and you get a starter tree to rename to your situation:
@@ -155,4 +157,4 @@ Six decomposition types, each with a different MECE relationship:
 
 Choose based on how the thing naturally divides. Prefer binary when stuck. Use formula whenever the question is quantitative, and read *Doing the numbers* to take it further. Use scaffolds as a starting point in MECE Studio — rename freely, but notice what the structure is telling you.
 
-The next decision is which branches to work first. That is the job of *Prioritise*.
+With the structure standing, the next move is to commit to a working answer and let the tree test it. That is the job of *Working hypotheses* — and *Prioritise* then decides which branches to work first.

@@ -58,6 +58,8 @@ Before you look at a single number, you write down what you already believe. Thi
 
 Your instinct, sitting in the founder seat: churn has been rising since a major release eight months ago. The release added three new features but broke the onboarding flow for trial users. You suspect a segment of new users never reaches activation, churns before the first renewal, and that is dragging active customers down.
 
+That is your day-one answer, and you give it its official home: in the **Answer** banner above the canvas you type *"Profits are falling because new-user activation broke after the August release."* The whole tree now exists to support or break that sentence — and the synthesis will later open with it, plus a verdict on how it held up.
+
 In MECE Studio you set the **Active customers** node to hypothesis status **Open** and type the hypothesis text: *"Churn has increased since the August release; new-user activation is broken."*
 
 You also have a vaguer suspicion about costs — hosting costs felt higher on the last two invoices. You set **Hosting & infrastructure** to **Open** with a note: *"Infra costs may have crept up with the new feature set."*
@@ -163,7 +165,7 @@ You also look at hosting costs: even eliminating the £800/month infra creep ent
 
 ## Answer-first synthesis
 
-The tree is done. You open the synthesis panel in MECE Studio, read through the auto-generated summary, and tighten the language. You then copy it out as Markdown — ready to paste directly into the board deck.
+The tree is done. You open the synthesis panel in MECE Studio. It opens with the answer from the banner and a rolled-up **verdict** from the branch statuses — activation supported, pricing refuted — and carries the values and the most-sensitive driver into each branch, so the maths travels with the story. You read through the auto-generated summary and tighten the language. Then you take it out in the form the audience needs: **copy as Markdown** to paste into the board deck, or **Export ▾ → Answer (1-page)** for a self-contained one-page memo — thesis, verdict, branches — that attaches to the board pack as-is.
 
 Here is what lands on the page:
 
@@ -216,3 +218,5 @@ And because the whole analysis lives in a single tree, anyone can audit it. Your
 **The answer was earned, not guessed. And anyone can check the working.**
 
 That is what structured problem solving is for.
+
+One step remains: getting the tree out of the tool and in front of the room — walking it live, printing it, exporting it. That is the final chapter.

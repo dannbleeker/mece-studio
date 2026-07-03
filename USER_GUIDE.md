@@ -45,13 +45,25 @@ you move into the **workspace**, where you build it:
   you edit one facet of the selected node at a time; the **Logic** tab opens
   automatically when a node's split needs a MECE review.
 - **The header** (top) is grouped into clusters: the **MECE Studio** wordmark and
-  **← Start** return to the library; a **MECE health** chip opens the tree-wide
-  review (below); then **Undo / Redo**, **Synthesis**, a filled **Export ▾** menu
+  **← Start** return to the library; the tree's **title** and a **type badge**
+  (*Value-driver / Segmentation / … tree*) name what you're looking at; a
+  **MECE health** chip opens the tree-wide review (below); then **Undo / Redo**,
+  **Synthesis**, a filled **Export ▾** menu
   (PNG / SVG / PDF / PowerPoint / Copy image / JSON / CSV / a one-page Answer memo / Copy share link), **⚙ Settings**, **?** shortcuts, and an **⋯ overflow**
-  menu (Copy Markdown, Open file, Save / Save As, About, New / Delete tree).
+  menu (Quick add issues, Copy Markdown, Open file / Import outline, Save / Save
+  As / Save as template, Present / Print, About, New / Delete tree).
 
 Click a node to select it. Rename the root question to your real problem to
 begin — double-click it, or select it and press <kbd>Enter</kbd>.
+
+**First-run coach.** While a tree is still just its root, a dismissible tip on
+the canvas points at the two moves that start a MECE tree: press <kbd>Tab</kbd>
+to add a branch, then choose how it splits in the **Logic** tab to turn on the
+checks. Once dismissed it stays away on this device.
+
+**About.** **⋯ → About** carries the version and license summary and links to
+this user guide, the companion book (*Issue Trees with MECE Studio*, PDF and
+EPUB), third-party notices, and the source code — plus **Check for updates**.
 
 **Start from an example.** New to issue trees? On the Start page, open the
 **Templates** section (or the example cards on the Start view) to load a ready-made
@@ -66,15 +78,20 @@ untouched.
 
 The header's **MECE health** chip is the tree-level view of the differentiator: it
 reads **✓ MECE clean** when every split passes, or **⚠ N to review** when some
-don't. Click it to open the **review dock** (it replaces the inspector while open),
-which lists every flagged split with the engine's plain-language reason on each
-axis. For each one you can:
+don't. Click it to open the **review dock** (it replaces the inspector while open) —
+a triage tool over every flagged split:
 
-- **Locate** it — centres the node on the canvas, which **dims the clean splits and
+- Flags are **grouped by axis** — *Overlaps* (not mutually exclusive) and *Gaps*
+  (not collectively exhaustive) — and **ranked by branch priority**, so the 80/20
+  splits surface first; each row shows the engine's plain-language reason and the
+  branch's priority band.
+- **Locate** centres the node on the canvas, which **dims the clean splits and
   amber-dashes the flagged edges** so the issues stand out.
-- **Remedy** a gap in one click — *Add an "Other" bucket* for a segmentation, or
-  *Add a sub-issue* otherwise. There's no "resolve" button: warnings are computed
-  live from the tree, so they clear themselves the moment the split is actually MECE.
+- **Review logic →** jumps straight to that node's **Logic** tab in the inspector.
+- **Remedy** closes a gap in one click — *Add an "Other" bucket* for a
+  segmentation, or *Add a sub-issue* otherwise. There's no "resolve" button:
+  warnings are computed live from the tree, so they clear themselves the moment
+  the split is actually MECE.
 
 ## The Start page
 
@@ -86,8 +103,11 @@ header brings you back.
 The sidebar switches the main view:
 
 - **Start** — the key-question hero: type a question and **Build an issue tree**, or
-  pick one of the example questions. Below it sit the framework and example strips and
-  a "pick up where you left off" gallery of your recent trees.
+  pick one of the example questions. Building opens a **"how do you want to split
+  it?" chooser** — pick segment / binary / formula / … and you land on a scaffolded,
+  already-checkable first split instead of a lone root box (**Start blank** skips
+  the scaffold). Below the hero sit the framework and example strips and a "pick
+  up where you left off" gallery of your recent trees.
 - **All trees** — every tree in your library, as cards.
 - **Recent** — the same trees as a compact, most-recently-edited-first list.
 - **Templates** — start from a pattern (below).
@@ -95,8 +115,13 @@ The sidebar switches the main view:
   can see at a glance what still needs attention.
 - **Learn MECE** — a short primer, with links to this guide and the book.
 
-**Templates.** The Templates page offers three ways to begin:
+**Templates.** The Templates page offers four ways to begin:
 
+- **Your templates** — any tree you've banked with **⋯ → Save as template…**.
+  Saving keeps the tree's *structure* — labels, splits, dimensions — and strips
+  values, evidence, and status, so a diligence checklist or a standard tree opens
+  clean for the next engagement. Each of your templates can be deleted from its
+  card.
 - **Decomposition frameworks** — one tile per split type (formula, segments, process,
   binary, framework, freeform) with its hint and the starter branches it scaffolds;
   binary and formula are tagged **provably MECE**. Click one to create a new tree
@@ -122,8 +147,11 @@ decomposed yet. The pill reads the *same* MECE result the canvas and inspector s
 it never disagrees with them. Hover (or keyboard-focus) a card for **Rename**,
 **Duplicate**, and **Delete** actions.
 
-**Search.** Press <kbd>⌘K</kbd> / <kbd>Ctrl+K</kbd> (or click the search box) to filter
-your trees by name.
+**Search.** Press <kbd>⌘K</kbd> / <kbd>Ctrl+K</kbd> (or click the search box) to
+search your whole library. Matching goes beyond tree names: **node labels and
+notes across every tree** are searched too, and a card matched through its
+content shows a *matches "…"* hint — so "which tree has the pricing-floor
+logic?" finds it.
 
 ## Building the tree
 
@@ -242,9 +270,16 @@ inspector, to arrange branches in the order that reads best.
 
 **Auto-layout.** The tree is laid out automatically with dagre, left-to-right.
 You don't place nodes by hand — structure drives position, so the tree always
-reads cleanly.
+reads cleanly. Each node's slot is sized to its real content, so a dense node
+(value, evidence badges, ME/CE dots) never overlaps its siblings.
 
 **Auto-fit.** The view re-fits when the tree changes so new nodes stay on screen.
+
+**Minimap.** A minimap (bottom corner) keeps you oriented in a big tree: each
+node is a dot coloured by its state — **amber** for a flagged split, **blue**
+for a high-priority branch. Edges out of a flagged split also carry a subtle
+always-on amber tint on the canvas itself, so problem decompositions show even
+with the review dock closed.
 
 **Drag to re-parent.** Drag any node onto another node to move it (and its whole
 subtree) under that node. While you drag, the **valid drop target is
@@ -267,10 +302,12 @@ whether it's selected — so the structure keyboard navigation walks is spoken t
 
 ## Prioritising branches
 
-Not every branch is worth chasing. In the inspector, mark each issue's **impact**
-and **ease** (each on a small scale). MECE Studio combines them into a **priority
-band** — **High / Medium / Low** — shown as a chip on the node, so the 80/20
-branches stand out. The synthesis reads branches in priority order.
+Not every branch is worth chasing. In the inspector, set each issue's priority
+in one click on a **3×3 impact-by-ease matrix** — its **High / Medium / Low**
+band shows live as you pick, and as a chip on the node, so the 80/20 branches
+stand out. With a node selected on the canvas, press <kbd>P</kbd> to bump its
+priority (none → low → medium → high). The synthesis reads branches in priority
+order.
 
 ## Hypotheses and status
 
@@ -287,11 +324,14 @@ the whole tree, and the synthesis flags ✓ supported, ✗ refuted, ⊘ parked.
 
 ## Evidence
 
-Attach **evidence** to any node from the inspector — each item is **supporting**
-or **contradicting**, with a **strength** you can cycle. **Click an item's text to
-edit it in place** (it commits on blur / Enter). Nodes show ✓/✗ count badges so you
-can see where the case is strong or thin. Evidence feeds the synthesis and your
-hypothesis decisions.
+Attach **evidence** to any node from the inspector's **Evidence** tab — each
+item is **supporting** or **contradicting**, with a **strength** (anecdote /
+indicative / strong). Entry is built for speed: choose the strength **before**
+you add the item, switch an existing item's strength with a direct picker, and
+**flip an item between supporting and contradicting** in place. **Click an
+item's text to edit it in place** (it commits on blur / Enter). Nodes show ✓/✗
+count badges so you can see where the case is strong or thin. Evidence feeds the
+synthesis and your hypothesis decisions.
 
 ## Value-driver trees
 
@@ -339,10 +379,16 @@ key and no backend:
 - **AI critique** (from the Synthesis panel) — copies a prompt asking an LLM to
   critique your tree's MECE structure.
 - **Suggest a split** (from the inspector, on a selected node) — copies a prompt
-  asking an LLM to propose a MECE decomposition for that node.
+  asking an LLM to propose a MECE decomposition for that node, returned as a
+  paste-ready Markdown outline.
 
 Paste either into Claude, ChatGPT, or any assistant. Your data never leaves your
 machine unless *you* paste it.
+
+**Paste the split back.** Under the same inspector section, a **"paste the AI's
+split back"** box closes the loop: paste the outline the LLM returned and its
+sub-issues are grafted straight under the selected node — still no API key, no
+backend.
 
 ## Working with multiple trees
 
@@ -353,11 +399,15 @@ MECE Studio keeps a **library** of trees.
 - **Tabs** — every tree you open or create gets a **tab** in a strip above the
   canvas (shown once more than one is open). Click a tab to switch, **×** to
   close it (the tree stays in your library; closing the last tab returns to
-  Start), and **+** to start a new one. Your open tabs are remembered across
+  Start), and **+** to start a new one. Each tab carries a **MECE health dot**
+  (green clean / amber to-review / grey not yet decomposed) so you can see at a
+  glance which open trees still need work. Your open tabs are remembered across
   reloads.
 - **⋯ → New tree** (the header overflow menu) starts a fresh tree and adds it to
   the library; your current tree stays saved.
-- **⋯ → Delete tree** removes the current tree (with confirmation), then opens
+- **⋯ → Delete tree** removes the current tree (after the app's own confirm
+  dialog — renames use an in-app prompt too, so you never get a jarring browser
+  popup), then opens
   the next tree in your library. Deleting your last tree leaves the library
   empty and returns you to the Start page, where **+ New tree** (or the
   key-question box) starts a fresh one.
@@ -377,9 +427,19 @@ formats:
   editable** — each node is a real text box (with its status colour, value,
   priority and ME/CE) and each branch a connector line, so you can rearrange and
   restyle it in PowerPoint; a very large tree (over ~150 nodes) falls back to an
-  embedded image. The SVG is **sanitised** as it's written — any script, inline
-  handler, or script-bearing URL is stripped — so an exported file can never
-  carry executable code.
+  embedded image. **PDF and PowerPoint exports carry a title + date header**, so
+  they read as a deliverable rather than a screenshot. The SVG is **sanitised**
+  as it's written — any script, inline handler, or script-bearing URL is
+  stripped — so an exported file can never carry executable code.
+- **CSV (value model)** — one row per node (path, label, decomposition type,
+  ME/CE state, priority, status, amount, unit, operator), so a value-driver tree
+  opens straight in Excel or any data tool.
+- **Copy image** — renders the tree and puts it on your clipboard, ready to
+  paste into Slack, a doc, or a slide without saving a file first.
+- **Copy share link** — packs the whole tree into a backend-free `#doc=` URL on
+  your clipboard. Anyone opening the link gets the tree imported as a **new**
+  tree in *their* library — nothing is uploaded anywhere; the document travels
+  inside the link itself.
 - **Markdown** — **⋯ → Copy Markdown** copies the tree as a structured outline:
   each node's value, hypothesis status, priority, MECE state, notes, and evidence,
   so a pasted outline holds the whole analysis.
@@ -393,8 +453,11 @@ formats:
 - **Import an outline** — **⋯ → Import outline…** turns a pasted **Markdown
   outline** (headings or `-`/`*`/numbered bullets, nested by indentation) into a
   fresh tree: the first heading or line becomes the root question, everything
-  else nests beneath it. It also accepts a tree's **JSON** (auto-detected).
-  Imports open as a **new** library entry, so your current tree is untouched.
+  else nests beneath it. It also accepts **OPML** (the outline format MindManager,
+  OmniOutliner, Workflowy, Dynalist and most mind-mappers export — nested
+  `<outline>`s become the tree) and a tree's **JSON** — the format is
+  auto-detected. Imports open as a **new** library entry, so your current tree
+  is untouched.
 
 The PNG / PDF / PowerPoint exporters are loaded on demand, so they don't slow
 down the app's first load.
@@ -406,9 +469,11 @@ down the app's first load.
   shows a question, its branches, and that split's MECE status. Use **← / →**
   (or **Space**) to move between steps and **Esc** to exit.
 - **Print** — **⋯ → Print…** opens a print preview that lays the whole tree out
-  as a clean nested outline. Click **Print** to print it (or save as PDF from
-  your browser's print dialog); the app chrome is hidden so only the tree
-  prints.
+  as a clean nested outline, carrying each node's **hypothesis status, priority
+  band, value, and evidence** — the same analysis the Markdown export holds, so
+  nothing is silently dropped on paper. Click **Print** to print it (or save as
+  PDF from your browser's print dialog); the app chrome is hidden so only the
+  tree prints.
 
 ## Undo, redo, and autosave
 
@@ -473,6 +538,15 @@ an overlay in the app.
 | <kbd>Ctrl/⌘+Y</kbd> or <kbd>Ctrl/⌘+Shift+Z</kbd> | Redo |
 | <kbd>Enter</kbd> (in the Find box) | Zoom to the matching nodes |
 | <kbd>?</kbd> | Open the keyboard-shortcuts overlay |
+
+A few shortcuts live outside the canvas:
+
+| Keys | Where | Action |
+| --- | --- | --- |
+| <kbd>⌘K</kbd> / <kbd>Ctrl+K</kbd> | Start page | Jump to All trees and focus the library search |
+| <kbd>⌘/Ctrl</kbd>+<kbd>Enter</kbd> | Quick add issues | Add the typed issues |
+| <kbd>→</kbd> / <kbd>Space</kbd>, <kbd>←</kbd> | Presentation | Next / previous step |
+| <kbd>Escape</kbd> | Dialogs, presentation | Close / exit |
 
 ## Tips
 
