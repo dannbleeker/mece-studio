@@ -39,7 +39,10 @@ disturbs the tree you are already working on.
 
 The tree lays itself out. You never drag nodes into position; MECE Studio runs an
 **auto-layout** (a left-to-right tree) and **re-fits the view** whenever the tree
-changes, so the structure stays readable as it grows. What you control is the
+changes, so the structure stays readable as it grows. Each node is also sized to
+its own content, so a richer node — one showing a value, evidence badges, and
+ME / CE dots — is laid out taller than a bare label and never overruns its
+neighbours; simple trees lay out exactly as before. What you control is the
 *structure*, and the canvas gives you a few ways to manage a large one:
 
 - **Re-parent by dragging.** Drag any node onto another to move it — and its whole
@@ -109,6 +112,42 @@ MECE checking is the point of the tool, and it surfaces in three places:
   (add an "Other" bucket, or a sub-issue).
 - **Needs review.** The Start page's **Needs review** section triages your whole
   library down to the trees that have at least one flagged split.
+
+## The Logic tab and coaching
+
+Everything about *how a node splits* lives on the inspector's **Logic** tab, in
+one place:
+
+- The **decomposition type** (binary / segments / process / formula / framework /
+  freeform) and its scaffold.
+- The **dimension** the split cuts on — its single axis, with one-click common
+  ones (customer / geography / product / time / stage).
+- **Inductive or deductive.** Mark a split a deductive argument chain and the
+  MECE overlap-check steps aside — an argument builds on itself rather than
+  partitioning (see *MECE: no overlaps, no gaps*). Inductive is the default.
+- The **ordering principle** — *importance* / *time* / *structure* — which fixes
+  how this split's branches are ordered, overriding the global priority sort (see
+  *Prioritise the 80/20*).
+- The **so-what (insight)** — the one-line action title the branches add up to,
+  which the synthesis leads the branch with (see *Answer-first*).
+
+Below the strict ME / CE explanation, the Logic tab also carries a **Coaching**
+callout — lighter, `info`-level nudges from the problem-structuring canon (a bare
+one-word branch, a laundry list of more than ~7 branches, an altitude outlier, a
+hypothesis still phrased as a question, key-question quality, and why/how
+consistency). Coaching is deliberately kept **out** of the MECE health chip, so
+the chip keeps meaning mutual-exclusivity and collective-exhaustiveness alone.
+
+## Framing: the Answer banner and Problem brief
+
+Above the canvas sits the **Answer banner** — the one-line governing answer the
+whole tree argues for. State your day-one hypothesis there and the synthesis opens
+with it and a rolled-up verdict. Its **Problem brief** button opens the **Problem
+Identity Card** — *Situation · Complication · Owner · Decision-makers · Success
+criteria · In scope · Out of scope · Desired outcome* — the fuller framing behind
+the key question (see *Start with the question*). The brief is also where you tag
+the tree a **why** (diagnostic) or **how** (prescriptive) tree; a badge in the
+header then shows which, and the coaching keeps the tree pointed one way.
 
 ## The library and the Start page
 

@@ -32,6 +32,18 @@ In MECE Studio, you set a branch's priority in one click on a **3×3 impact-by-e
 
 Scoring doesn't have to be precise. A rough calibration across the team ("we all agree gross-margin compression is high impact; we all agree the admin overhead branch is low impact") is good enough to direct effort. The value is the shared prioritisation decision, not the score itself.
 
+## The order branches sit in
+
+Priority decides which branches you *work* first. By default it also decides the order they are *read* in — on the canvas and in the synthesis, heaviest branch leading. But importance is not the only order that makes sense for a set of siblings. Barbara Minto identifies three ways to order a group of ideas, and a good tree uses whichever one fits the split:
+
+- **By importance** — most significant first. The default, and the right choice for a diagnostic split where you want the 80/20 branch to lead.
+- **By time** — the order in which things happen. A process split — Lead → Qualify → Propose → Close — reads as nonsense sorted by priority; its meaning *is* the sequence.
+- **By structure** — a fixed partition that mirrors something in the world: geography (North / South / East / West), an org chart, a product hierarchy. Re-sorting it by priority just makes a branch harder to find.
+
+Getting this right is a small thing that makes a tree much easier to read: the eye expects a sequence to run in sequence and a ranking to run by rank.
+
+MECE Studio lets you set it per split. The global **Sort siblings by priority** setting orders every split by importance; but on the inspector's **Logic** tab a split can declare its own **ordering principle** — *importance*, *time*, or *structure* — which overrides the global setting for that split alone. Mark a process split *time* and its stages stay in sequence even when the rest of the tree is sorted by priority; mark a fixed partition *structure* and it keeps the order you authored. It is the one place a split gets to say "don't re-sort me" — so a funnel or a regional breakdown reads the way it should, while your diagnostic splits still lead with their heaviest branch.
+
 ## The branches you should kill early
 
 Some branches in a tree are there because MECE discipline required them — they complete the exhaustive coverage of the space — not because you expect them to carry the answer.

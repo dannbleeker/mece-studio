@@ -74,11 +74,21 @@ Alternatively, if you know that the revenue side is already well-understood — 
 
 Neither choice is universally right. The point is that the key question is a design decision, not a given. You are choosing what kind of analysis to run, what decision it needs to support, and what constraints on time and data it has to respect. That design decision is most productively made explicitly, at the start, before the tree is built — not implicitly, mid-analysis, when it's expensive to change.
 
+## Why trees and how trees
+
+The diagnostic / prescriptive split in the last section is worth making explicit, because it decides the *shape* of everything below the root. A **why tree** is diagnostic: it breaks a problem into its possible causes ("Why have profits fallen?" → revenue causes, cost causes). A **how tree** is prescriptive: it lays out and compares the ways to act ("How do we restore margin?" → raise price, cut input costs, shift the mix). The two are not interchangeable, and a single tree should ask *one* of them, not both. Mixing "why is this happening?" with "what should we do about it?" at the same level produces branches that don't belong together — the same root failure as bundling multiple questions.
+
+Arnaud Chevallier, who has written extensively on structured problem solving, states the rule plainly: a tree runs in one direction. Keep the diagnosis and the prescription in separate trees (or separate phases of the work), and each stays MECE and answerable on its own terms. Often the how tree only makes sense *after* the why tree has found the cause — you diagnose first, then decide.
+
+In MECE Studio you can tag a tree **why** or **how** from the Problem brief (below), and a badge in the header shows which. Once a tree is tagged, the app's coaching keeps it honest: it flags a branch that opens with the opposite question word, and a step-by-step *process* split inside a *how* tree — because a how tree is meant to weigh alternatives, not lay out a sequence of steps. It is a nudge, never a hard error; the direction of the tree is yours to set.
+
 ## Putting it into practice
 
 In MECE Studio, the root node holds your key question. It's the first thing you see when you open a new document, and it sits at the left edge of the canvas, with every branch growing rightward from it. Renaming the root node to your sharpened key question is naturally the first move you make — and it should feel like a commitment. You're not just labelling a box; you're declaring what the whole tree is for.
 
 If you find yourself frequently rewriting the root question mid-session, that's useful feedback: the question wasn't settled yet. Pause, apply the SCQ frame, and re-anchor before adding more branches. A tree built on a shifting question grows in all directions and satisfies none of them.
+
+MECE Studio gives that framing a permanent home. The **Problem brief** button in the Answer banner opens a one-page **Problem Identity Card** — *Situation*, *Complication*, *Owner*, *Decision-makers*, *Success criteria*, *In scope*, *Out of scope*, and *Desired outcome*. It is the SCQ frame widened into the whole framing of the engagement: not just the situation and complication, but who owns the decision, who has to be convinced, what "solved" actually looks like, and what you are deliberately choosing *not* to tackle. Every field is optional and saves as you type. The Situation and Complication then lead the answer-first synthesis (see *Answer-first*) as a Situation → Complication → Resolution intro, so the framing you do here is reused when you communicate the answer. The card also nudges you when the key question isn't sharp — when it isn't phrased as a question, bundles two questions, or runs too long, the exact failure modes from earlier in this chapter.
 
 When you're ready, take a real problem you're working on — something with genuine stakes, not a toy example — and write out the SCQ for it before you open the app. Write the situation in two sentences. Write the complication in one. Then write the question. Make it specific, decision-relevant, and answerable. Make it a real question.
 
