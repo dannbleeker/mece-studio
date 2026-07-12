@@ -28,6 +28,7 @@ import {
   splitOf,
   toggleCollapse,
 } from '@/domain/tree';
+import type { IssueTreeDoc, NodeId } from '@/domain/types';
 
 const seed = () => createDoc('Why is profit down?', 1000);
 
@@ -288,5 +289,35 @@ describe('tree ops', () => {
     expect(clone?.logic).toBe('deductive');
     expect(clone?.order).toBe('time');
     expect(clone?.summary).toBe('so-what');
+  });
+
+  it('tree walkers terminate on a cyclic (malformed) document', () => {
+    const mece = {
+      exclusive: { state: 'unknown' as const },
+      exhaustive: { state: 'unknown' as const },
+    };
+    const cyclic = {
+      schemaVersion: 1,
+      id: 'd',
+      title: 't',
+      rootId: 'A',
+      nodes: {
+        A: { id: 'A', label: 'A', status: 'open', evidence: [] },
+        B: { id: 'B', label: 'B', status: 'open', evidence: [] },
+      },
+      splits: {
+        S1: { id: 'S1', parentId: 'A', childIds: ['B'], decomposition: 'freeform', mece },
+        S2: { id: 'S2', parentId: 'B', childIds: ['A'], decomposition: 'freeform', mece },
+      },
+      layout: { direction: 'LR' },
+      createdAt: 0,
+      updatedAt: 0,
+    } as unknown as IssueTreeDoc;
+
+    // Without the visited guards these would infinite-loop; reaching the
+    // assertions proves termination, and each node is visited exactly once.
+    expect([...descendantIds(cyclic, 'A' as NodeId)].sort()).toEqual(['A', 'B']);
+    expect(Object.keys(nodeDepths(cyclic)).sort()).toEqual(['A', 'B']);
+    expect(hiddenNodeIds(cyclic).size).toBe(0);
   });
 });
