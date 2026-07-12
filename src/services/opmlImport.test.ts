@@ -27,4 +27,15 @@ describe('opmlToDoc', () => {
     expect(opmlToDoc('<opml><body></body></opml>', 1)).toBeNull();
     expect(opmlToDoc('not xml at all', 1)).toBeNull();
   });
+
+  it('caps a pathologically large OPML at the node limit', () => {
+    const children = Array.from({ length: 600 }, (_, i) => `<outline text="n${i}"/>`).join('');
+    const big = `<opml version="2.0"><body><outline text="Root">${children}</outline></body></opml>`;
+    const doc = opmlToDoc(big, 1);
+    expect(doc).not.toBeNull();
+    if (!doc) return;
+    const count = Object.keys(doc.nodes).length;
+    expect(count).toBeLessThanOrEqual(500); // capped
+    expect(count).toBeGreaterThan(400); // but did import the bulk
+  });
 });

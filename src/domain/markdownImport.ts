@@ -13,7 +13,8 @@ import type { IssueTreeDoc, NodeId } from './types';
  */
 
 /** A guard against pathological pastes turning into enormous trees. */
-const MAX_NODES = 500;
+/** Cap on nodes an outline/OPML paste can create — shared by every importer. */
+export const MAX_NODES = 500;
 /** Indent (in spaces) that counts as one nesting level. */
 const INDENT_WIDTH = 2;
 

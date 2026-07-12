@@ -41,13 +41,19 @@ function storage(): Storage | null {
 function isDoc(value: unknown): value is IssueTreeDoc {
   if (typeof value !== 'object' || value === null) return false;
   const d = value as Record<string, unknown>;
-  return (
-    typeof d.rootId === 'string' &&
-    typeof d.nodes === 'object' &&
-    d.nodes !== null &&
-    typeof d.splits === 'object' &&
-    d.splits !== null
-  );
+  if (
+    typeof d.rootId !== 'string' ||
+    typeof d.nodes !== 'object' ||
+    d.nodes === null ||
+    typeof d.splits !== 'object' ||
+    d.splits === null
+  ) {
+    return false;
+  }
+  // The root must be a real node — a doc whose `rootId` isn't a key in `nodes` is
+  // a dead tree (empty canvas, every root-keyed op a no-op), so reject it.
+  const rootNode = (d.nodes as Record<string, unknown>)[d.rootId];
+  return typeof rootNode === 'object' && rootNode !== null;
 }
 
 function isLibrary(value: unknown): value is Library {
@@ -171,8 +177,18 @@ export function loadWorkspace(): { library: Library; doc: IssueTreeDoc | null } 
     ? library.activeId
     : (library.docs[0]?.id ?? '');
   const doc = loadDocById(activeId);
-  if (!doc) return null;
-  return { library: { ...library, activeId }, doc };
+  if (doc) return { library: { ...library, activeId }, doc };
+
+  // The active blob is unreadable (e.g. a swallowed quota-save left it missing).
+  // Returning null here would make the caller reseed and OVERWRITE the library,
+  // orphaning every other saved tree — so fall back to any doc that still loads.
+  for (const entry of library.docs) {
+    const other = loadDocById(entry.id);
+    if (other) return { library: { ...library, activeId: entry.id }, doc: other };
+  }
+  // Nothing loads: keep the library index (don't reseed over it); the caller seeds
+  // a scratch doc while the entries survive for a later successful read.
+  return { library: { ...library, activeId: '' }, doc: null };
 }
 
 /** Load global app settings, merged over defaults so unknown/absent keys degrade gracefully. */
