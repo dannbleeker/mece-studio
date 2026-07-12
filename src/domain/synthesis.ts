@@ -88,6 +88,8 @@ function render(doc: IssueTreeDoc, id: NodeId, depth: number, lines: string[]): 
           ? '⊘ '
           : '';
   lines.push(`${indent}- ${mark}${node.label}${band}${dimensionNote(split)}${meceFlags(split)}`);
+  // The split's "so-what" — the action title its children add up to (Minto).
+  if (split?.summary) lines.push(`${indent}  » ${split.summary}`);
   lines.push(...valueMeta(doc, id, `${indent}  `));
   if (node.evidence.length > 0) {
     const ev = node.evidence.map((e) => `${e.supports ? '✓' : '✗'} ${e.summary}`).join('; ');
@@ -113,10 +115,17 @@ export function synthesise(doc: IssueTreeDoc): string {
       : 'Tip: set impact × ease on the branches to rank where to start.';
 
   const lines: string[] = [`# ${root?.label ?? doc.title}`, ''];
+  // Situation → Complication → Answer: the SCR/SCQA storyline the brief seeds.
+  const brief = doc.problemBrief;
+  if (brief?.situation) lines.push(`**Situation:** ${brief.situation}`, '');
+  if (brief?.complication) lines.push(`**Complication:** ${brief.complication}`, '');
   if (doc.answer) lines.push(`**Answer:** ${doc.answer}`, '');
   const v = verdict(doc);
   if (v) lines.push(`_${v}_`, '');
   lines.push(lead, '');
+  // The root split's "so-what" is the governing thought the top branches support.
+  const rootSplit = splitOf(doc, doc.rootId);
+  if (rootSplit?.summary) lines.push(`» ${rootSplit.summary}`, '');
   // The root often IS the value-driver formula parent — surface its numbers up top.
   const rootMeta = valueMeta(doc, doc.rootId, '');
   if (rootMeta.length > 0) lines.push(...rootMeta, '');

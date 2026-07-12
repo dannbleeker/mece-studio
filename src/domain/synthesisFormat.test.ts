@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createDoc } from './factory';
 import { synthesise } from './synthesis';
 import { answerPageHtml, formatSynthesis } from './synthesisFormat';
-import { addChild, setAnswer, setStatus } from './tree';
+import { addChild, setAnswer, setProblemBrief, setSplitSummary, setStatus } from './tree';
 
 describe('formatSynthesis', () => {
   it('classifies the answer, verdict, lead, and branch lines and strips emphasis', () => {
@@ -21,6 +21,24 @@ describe('formatSynthesis', () => {
 
     expect(lines.find((l) => l.kind === 'answer')?.text).toBe('Yes, via partnership'); // ** stripped
     expect(lines.find((l) => l.kind === 'branch')?.text).not.toContain('**');
+  });
+});
+
+describe('formatSynthesis — brief intro & so-what', () => {
+  it('classifies the SCR intro and the so-what insight lines', () => {
+    let doc = createDoc('How can we restore profit?', 0);
+    doc = setProblemBrief(doc, { situation: 'Stable co', complication: 'Margin fell' });
+    doc = addChild(doc, doc.rootId, 'Revenue').doc;
+    doc = addChild(doc, doc.rootId, 'Costs').doc;
+    doc = setSplitSummary(doc, doc.rootId, 'Profit squeezed both sides');
+
+    const lines = formatSynthesis(synthesise(doc));
+    const kinds = new Set(lines.map((l) => l.kind));
+    expect(kinds.has('situation')).toBe(true);
+    expect(kinds.has('complication')).toBe(true);
+    expect(kinds.has('insight')).toBe(true);
+    expect(lines.find((l) => l.kind === 'situation')?.text).toBe('Stable co');
+    expect(lines.find((l) => l.kind === 'insight')?.text).toBe('Profit squeezed both sides');
   });
 });
 

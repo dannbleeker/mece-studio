@@ -2,7 +2,17 @@ import { synthesise } from './synthesis';
 import type { IssueTreeDoc } from './types';
 
 /** A typed line of the answer-first synthesis — for rich (non-`<pre>`) rendering. */
-type SynthLineKind = 'title' | 'answer' | 'verdict' | 'lead' | 'branch' | 'meta' | 'blank';
+type SynthLineKind =
+  | 'title'
+  | 'situation'
+  | 'complication'
+  | 'answer'
+  | 'verdict'
+  | 'lead'
+  | 'branch'
+  | 'insight'
+  | 'meta'
+  | 'blank';
 
 export interface SynthLine {
   kind: SynthLineKind;
@@ -39,10 +49,26 @@ export function formatSynthesis(md: string): SynthLine[] {
       out.push({ kind: 'answer', text: raw.replace('**Answer:**', '').trim(), depth: 0 });
       continue;
     }
+    if (raw.startsWith('**Situation:**')) {
+      out.push({ kind: 'situation', text: raw.replace('**Situation:**', '').trim(), depth: 0 });
+      continue;
+    }
+    if (raw.startsWith('**Complication:**')) {
+      out.push({
+        kind: 'complication',
+        text: raw.replace('**Complication:**', '').trim(),
+        depth: 0,
+      });
+      continue;
+    }
     const trimmed = raw.trimStart();
     const depth = Math.floor((raw.length - trimmed.length) / 2);
     if (/^_Verdict:/.test(trimmed)) {
       out.push({ kind: 'verdict', text: trimmed.replace(/^_/, '').replace(/_$/, ''), depth: 0 });
+      continue;
+    }
+    if (trimmed.startsWith('» ')) {
+      out.push({ kind: 'insight', text: stripEmphasis(trimmed.slice(2)), depth });
       continue;
     }
     if (trimmed.startsWith('- ')) {
@@ -74,6 +100,10 @@ export function answerPageHtml(doc: IssueTreeDoc): string {
       switch (l.kind) {
         case 'title':
           return `<h1>${escapeHtml(l.text)}</h1>`;
+        case 'situation':
+          return `<p class="brief"><strong>Situation.</strong> ${escapeHtml(l.text)}</p>`;
+        case 'complication':
+          return `<p class="brief"><strong>Complication.</strong> ${escapeHtml(l.text)}</p>`;
         case 'answer':
           return `<p class="answer">${escapeHtml(l.text)}</p>`;
         case 'verdict':
@@ -82,6 +112,8 @@ export function answerPageHtml(doc: IssueTreeDoc): string {
           return `<p class="lead">${escapeHtml(l.text)}</p>`;
         case 'branch':
           return `<div class="branch" style="margin-left:${indent}px">${escapeHtml(l.text)}</div>`;
+        case 'insight':
+          return `<div class="insight" style="margin-left:${indent}px">→ ${escapeHtml(l.text)}</div>`;
         case 'meta':
           return `<div class="meta" style="margin-left:${indent + 18}px">${escapeHtml(l.text)}</div>`;
         default:
@@ -105,9 +137,11 @@ export function answerPageHtml(doc: IssueTreeDoc): string {
     border: 1px solid #e7e4dc; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
   h1 { margin: 0 0 4px; font-size: 22px; color: #3f6fb0; letter-spacing: -.01em; }
   .answer { font-size: 18px; font-weight: 600; color: #1f2937; margin: 12px 0 4px; }
+  .brief { color: #4b5563; margin: 2px 0; }
   .verdict { color: #8a5a14; font-style: italic; margin: 0 0 12px; }
   .lead { color: #4b5563; margin: 0 0 16px; }
   .branch { padding: 3px 0; }
+  .insight { color: #3f6fb0; font-style: italic; padding: 1px 0; }
   .meta { color: #6b7280; font-size: 13px; padding: 1px 0; }
   footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #eee;
     color: #9ca3af; font-size: 12px; }

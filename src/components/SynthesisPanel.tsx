@@ -18,6 +18,24 @@ function Line({ line }: { line: SynthLine }) {
           {line.text}
         </p>
       );
+    case 'situation':
+      return (
+        <p className="text-[12px] text-neutral-600">
+          <span className="font-semibold text-neutral-800">Situation.</span> {line.text}
+        </p>
+      );
+    case 'complication':
+      return (
+        <p className="text-[12px] text-neutral-600">
+          <span className="font-semibold text-neutral-800">Complication.</span> {line.text}
+        </p>
+      );
+    case 'insight':
+      return (
+        <div className="text-[12px] text-[#3f6fb0] italic" style={indent}>
+          → {line.text}
+        </div>
+      );
     case 'verdict':
       return <p className="text-[12px] text-[#8a5a14] italic">{line.text}</p>;
     case 'lead':
