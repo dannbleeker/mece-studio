@@ -10,8 +10,10 @@ import type {
   NodeStatus,
   NumericValue,
   Priority,
+  ProblemBrief,
   Split,
   SplitId,
+  SplitLogic,
 } from './types';
 
 /** The split whose children belong to `nodeId` (i.e. how `nodeId` decomposes), if any. */
@@ -145,6 +147,40 @@ export function setDimension(doc: IssueTreeDoc, parentId: NodeId, dimension: str
   return { ...doc, splits: { ...doc.splits, [split.id]: next } };
 }
 
+/**
+ * Set a split's logic mode. `inductive` (the default) clears the field; only
+ * `deductive` is stored. No-op (same reference) when unchanged.
+ */
+export function setSplitLogic(
+  doc: IssueTreeDoc,
+  parentId: NodeId,
+  logic: SplitLogic
+): IssueTreeDoc {
+  const split = splitOf(doc, parentId);
+  if (!split) return doc;
+  if (logic === (split.logic ?? 'inductive')) return doc;
+  const next = { ...split };
+  if (logic === 'inductive') delete next.logic;
+  else next.logic = logic;
+  return { ...doc, splits: { ...doc.splits, [split.id]: next } };
+}
+
+/** Set or clear a split's "so-what" summary (the insight its children support). No-op when unchanged. */
+export function setSplitSummary(
+  doc: IssueTreeDoc,
+  parentId: NodeId,
+  summary: string
+): IssueTreeDoc {
+  const split = splitOf(doc, parentId);
+  if (!split) return doc;
+  const trimmed = summary.trim();
+  if (trimmed === (split.summary ?? '')) return doc;
+  const next = { ...split };
+  if (trimmed === '') delete next.summary;
+  else next.summary = trimmed;
+  return { ...doc, splits: { ...doc.splits, [split.id]: next } };
+}
+
 /** Set or clear the governing answer / hypothesis on the doc. No-op when unchanged. */
 export function setAnswer(doc: IssueTreeDoc, answer: string): IssueTreeDoc {
   const trimmed = answer.trim();
@@ -152,6 +188,28 @@ export function setAnswer(doc: IssueTreeDoc, answer: string): IssueTreeDoc {
   const next = { ...doc };
   if (trimmed === '') delete next.answer;
   else next.answer = trimmed;
+  return next;
+}
+
+/**
+ * Merge a patch into the doc's problem brief: values are trimmed, fields that go
+ * blank are dropped, and the whole `problemBrief` is removed once every field
+ * clears. No-op (same reference) when the patch changes nothing.
+ */
+export function setProblemBrief(doc: IssueTreeDoc, patch: Partial<ProblemBrief>): IssueTreeDoc {
+  const merged: ProblemBrief = { ...doc.problemBrief };
+  let changed = false;
+  for (const [key, value] of Object.entries(patch) as [keyof ProblemBrief, string | undefined][]) {
+    const trimmed = (value ?? '').trim();
+    if (trimmed === (merged[key] ?? '')) continue;
+    changed = true;
+    if (trimmed === '') delete merged[key];
+    else merged[key] = trimmed;
+  }
+  if (!changed) return doc;
+  const next = { ...doc };
+  if (Object.keys(merged).length === 0) delete next.problemBrief;
+  else next.problemBrief = merged;
   return next;
 }
 

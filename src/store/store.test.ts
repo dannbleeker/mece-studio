@@ -417,3 +417,25 @@ describe('store', () => {
     });
   });
 });
+
+describe('store — problem brief & split logic/summary', () => {
+  it('sets split logic + so-what and merges the problem brief, undoably', () => {
+    const root = s().doc.rootId;
+    s().addChild(root, 'A');
+    s().addChild(root, 'B');
+
+    s().setSplitLogic(root, 'deductive');
+    expect(splitOf(s().doc, root)?.logic).toBe('deductive');
+
+    s().setSplitSummary(root, 'Profit squeezed both sides');
+    expect(splitOf(s().doc, root)?.summary).toBe('Profit squeezed both sides');
+
+    s().setProblemBrief({ situation: 'Stable co', complication: 'Margin fell' });
+    expect(s().doc.problemBrief).toEqual({ situation: 'Stable co', complication: 'Margin fell' });
+
+    s().undo(); // undo the brief edit
+    expect(s().doc.problemBrief).toBeUndefined();
+    s().redo();
+    expect(s().doc.problemBrief).toEqual({ situation: 'Stable co', complication: 'Margin fell' });
+  });
+});
