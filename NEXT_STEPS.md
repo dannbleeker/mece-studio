@@ -4,41 +4,65 @@ Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 
 ## Idea backlog — operationalising the problem-structuring canon
 
-Feature ideas from reviewing the classic problem-structuring literature (Minto's
-*Pyramid Principle*; McKinsey-style analytical problem solving) against the tool.
-The theme: the practitioner book (`docs/guide/`) already *teaches* these, but
-several have no home as a live feature — these give the taught concept a place in
-the app. Each is **L-effort** (schema field + migration + UI + engine/synthesis
-wiring + docs), so plan before building.
+Feature ideas from reviewing the classic problem-structuring literature against
+the tool: Barbara Minto's *Pyramid Principle*, Arnaud Chevallier's *Analytical
+Problem-Solving*, and the McKinsey-Way issue-tree / work-plan material. Recurring
+theme: the practitioner book (`docs/guide/`) already *teaches* these, but several
+have no home as a live feature. Ideas are in our own words; no source material
+lives in the repo. Most are **L-effort** (schema field + migration + UI +
+engine/synthesis wiring + docs) — plan before building.
 
-**Headline**
+### Framing & problem definition
+- **Problem brief / "Problem Identity Card".** A structured brief on the doc,
+  combining Minto's problem-definition sheet and Chevallier's identity card:
+  *Situation / key facts · Complication / need for change · Key question (→ root) ·
+  Answer (existing banner) · Owner · Decision-makers · Success criteria · In scope ·
+  Out of scope · Desired outcome*. Feeds the SCR-shaped synthesis/memo intro and a
+  "does the question follow from the complication?" nudge. **Strongest fit — build
+  first.** (Merges the earlier SCQ-panel + problem-worksheet ideas.)
+- **Key-question quality nudge.** Coach the root toward a good key question — a
+  "how"/"why" question, specific & measurable, solution-oriented, single (not
+  compound), ≤ ~2 sentences — flagging generic / vague / hypothesis-laden phrasings.
 
-- **SCQ(A) framing panel.** Give the doc a structured *Situation · Complication ·
-  Key Question* (→ root) *· Answer* (the existing banner) block. The guide (ch. 1)
-  teaches the SCQ frame but the app captures only the Q and the A. Feeds the
-  synthesis/memo intro (already SCR-shaped) and a "does the question follow from
-  the complication?" nudge. *Strongest fit — build first.*
-- **"So-what" test / action titles.** Optional one-line insight per split (the
-  takeaway its children collectively support) + a lint flagging hollow category
-  labels ("Issues", "Findings", "Factors", "Analysis"). Guide ch. 9 teaches
-  action titles; the synthesis and PPTX slide titles would use the insight.
-- **Deductive vs inductive grouping.** A per-split `logic` flag (Minto's
-  horizontal logic). Inductive → the plural-noun / dimension test; deductive →
-  suppress the overlap check (an argument chain isn't a partition) and check the
-  premise → premise → conclusion reading instead. Makes the MECE engine honest
-  about deliberate logical arguments rather than flagging them as overlaps.
+### Node & label discipline
+- **Whole-sentence / "it's an idea, not a title" lint.** Nudge bare 1–2-word noun
+  labels ("Revenue", "Advertising costs", "Issues") toward a full question, action
+  verb, or hypothesis ("How can we cut advertising costs 10% without losing share?").
+  Every source hammers this.
+- **"So-what" insight line per split.** An optional one-liner stating the takeaway
+  the children collectively support (Minto's synthesis / action title); the
+  synthesis and PPTX slide titles use it instead of a topic label.
+- **Hypothesis-quality nudge.** When a node carries a hypothesis, coach it toward a
+  specific, provable *statement* (not a question, not vague like "realign X"),
+  ideally with a number.
 
-**Smaller**
+### MECE-engine lints (deterministic, on-brand)
+- **Branch-count coaching.** Flag a split with **> 7** children (a "laundry list",
+  over-weighting CE) and coach the 3–5 sweet spot; optionally note a tree that is
+  *all* binary (over-weighting ME). Trivial and high-precision.
+- **Similar-altitude / no-outlier check.** Coach when siblings sit at different
+  conceptual levels / weights (Minto "same level of abstraction"; Chevallier "no
+  outlier in a column").
+- **Deductive vs inductive split logic.** A per-split `logic` flag (Minto's
+  horizontal logic). Inductive → the plural-noun / name-the-group test (= our
+  dimension); deductive → suppress the overlap check (an argument chain isn't a
+  partition) and check the premise → premise → conclusion reading. Stops the engine
+  flagging deliberate arguments as overlaps.
 
-- **Workplan fields.** Per leaf / hypothesis: *analysis needed · data source ·
-  owner · due*, plus a table view and CSV export (the CSV exporter already
-  exists). The tree tracks evidence (results) but not the plan to get it.
-- **Problem-definition worksheet.** *Decision-maker · success criteria · scope /
-  constraints · stakeholders* — best folded in as a second tab of the SCQ(A)
-  panel above.
-- **Ordering principle per split.** Minto's three orders (*time · structural ·
-  degree*) as an explicit rationale that drives the existing sibling auto-sort
-  (process → time, segment → size, …).
+### Tree shape & workflow
+- **Why-tree vs How-tree mode.** Tag a tree diagnostic ("why?", causes) or
+  prescriptive ("how?", alternative solutions) and keep it consistent — warning when
+  a "how" tree is really a sequential *process* (a distinct, existing split type).
+  Optionally surface Minto's logic / issue / hypothesis tree distinction.
+- **Work plan.** Per leaf / hypothesis: *analysis · data source · end product ·
+  owner · due · status (RAG / started–done)* — a table view + CSV export (the CSV
+  exporter already exists). Canonical columns triple-attested (the McKinsey work
+  plan, Minto's Issue Analysis Work Sheet, the Danish issue-tree template). The tree
+  tracks evidence (results) but not the plan to get them.
+- **Ordering principle per split.** Minto's three orders (*importance · time ·
+  structure*) as an explicit rationale that drives the existing sibling auto-sort.
+- **Richer prioritisation (stretch).** Add *lead time* and *depends-on* to the
+  impact × ease priority, so the synthesis / work plan can sequence by dependency.
 
 ## Out of scope by design (not building)
 - **Integrated live AI.** The keyless **AI-assist prompts** ship — copy a _critique_ or _suggest-a-split_ prompt (tree embedded) into your own LLM. Calling an LLM directly from the app needs a backend or a stored API key — a cost/security decision the owner has deferred; the keyless prompt bridge is the shipping alternative.
