@@ -14,7 +14,8 @@ export type AdvisoryCategory =
   | 'branch-count'
   | 'altitude'
   | 'hypothesis'
-  | 'key-question';
+  | 'key-question'
+  | 'tree-mode';
 
 export interface Advisory {
   /** Stable, unique id (per category + target) — good as a React key. */
@@ -162,6 +163,49 @@ function keyQuestionAdvisories(root: IssueNode): Advisory[] {
   return out;
 }
 
+/** Does this label open with the given question word ("why" / "how")? */
+function opensWith(label: string, word: 'why' | 'how'): boolean {
+  return (label.trim().toLowerCase().split(/\s+/)[0] ?? '') === word;
+}
+
+/**
+ * Why/How tree consistency (Chevallier: a tree asks *why* or *how*, not both).
+ * Only when `doc.mode` is set: a branch that opens with the opposite question
+ * word, and — in a "how" tree — a `process` split (steps, not alternatives).
+ */
+function treeModeAdvisories(doc: IssueTreeDoc): Advisory[] {
+  const mode = doc.mode;
+  if (!mode) return [];
+  const out: Advisory[] = [];
+  const opposite = mode === 'why' ? 'how' : 'why';
+
+  if (mode === 'how') {
+    for (const split of Object.values(doc.splits)) {
+      if (split.decomposition !== 'process') continue;
+      out.push({
+        id: `mode-process:${split.parentId}`,
+        target: { kind: 'split', id: split.parentId },
+        category: 'tree-mode',
+        message:
+          'A "how" tree shows alternative solutions, not a sequence — a process split reads as steps, not options.',
+      });
+    }
+  }
+
+  for (const node of Object.values(doc.nodes)) {
+    if (node.id === doc.rootId) continue;
+    if (opensWith(node.label, opposite)) {
+      out.push({
+        id: `mode-direction:${node.id}`,
+        target: { kind: 'node', id: node.id },
+        category: 'tree-mode',
+        message: `This branch asks "${opposite}", but the tree is a "${mode}" tree — keep one direction.`,
+      });
+    }
+  }
+  return out;
+}
+
 /**
  * Every coaching advisory for a document, in no particular order. Pure. The
  * inspector filters these by the selected node (`target.id`); nothing here feeds
@@ -172,6 +216,7 @@ export function advisories(doc: IssueTreeDoc): Advisory[] {
 
   const root = doc.nodes[doc.rootId];
   if (root) out.push(...keyQuestionAdvisories(root));
+  out.push(...treeModeAdvisories(doc));
 
   for (const split of Object.values(doc.splits)) {
     const count = branchCountAdvisory(split);

@@ -1,6 +1,6 @@
 import { Dialog } from '@/components/Dialog';
 import { advisoriesFor } from '@/domain/advisories';
-import type { ProblemBrief } from '@/domain/types';
+import type { ProblemBrief, TreeMode } from '@/domain/types';
 import { useStore } from '@/store';
 
 type BriefField = keyof ProblemBrief;
@@ -64,7 +64,9 @@ const FIELD_CLS =
 export function ProblemBriefDialog({ onClose }: { onClose: () => void }) {
   const doc = useStore((s) => s.doc);
   const setProblemBrief = useStore((s) => s.setProblemBrief);
+  const setTreeMode = useStore((s) => s.setTreeMode);
   const brief = doc.problemBrief;
+  const mode = doc.mode;
   const rootLabel = doc.nodes[doc.rootId]?.label ?? '';
   const keyQuestionNotes = advisoriesFor(doc, doc.rootId).filter(
     (a) => a.category === 'key-question'
@@ -91,6 +93,38 @@ export function ProblemBriefDialog({ onClose }: { onClose: () => void }) {
               💡 {a.message}
             </span>
           ))}
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
+            Tree type
+          </span>
+          <div className="flex gap-1">
+            {([undefined, 'why', 'how'] as (TreeMode | undefined)[]).map((m) => {
+              const active = mode === m;
+              const label =
+                m === 'why' ? 'Why (diagnostic)' : m === 'how' ? 'How (prescriptive)' : '—';
+              return (
+                <button
+                  key={m ?? 'none'}
+                  type="button"
+                  aria-pressed={active}
+                  aria-label={m ? `Tree type ${m}` : 'Tree type default'}
+                  className={`flex-1 rounded px-2 py-1 text-[11px] ${
+                    active
+                      ? 'bg-[#3f6fb0] text-white'
+                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  }`}
+                  onClick={() => setTreeMode(m)}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+          <span className="text-[11px] text-neutral-400 leading-snug">
+            A "why" tree breaks a problem into causes; a "how" tree lays out alternative solutions.
+          </span>
         </div>
 
         {FIELDS.map((f) => {

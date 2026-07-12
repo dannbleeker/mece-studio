@@ -175,6 +175,7 @@ export function Workspace() {
   const rootLabel = doc.nodes[doc.rootId]?.label ?? 'Untitled tree';
   const rootSplit = splitOf(doc, doc.rootId);
   const kindLabel = rootSplit ? TREE_KIND_LABELS[rootSplit.decomposition] : 'Issue tree';
+  const modeLabel = doc.mode === 'why' ? 'Why' : doc.mode === 'how' ? 'How' : null;
 
   // PNG/PDF/PPTX render the canvas, so they route through the store to the
   // canvas; JSON only needs the document, so it downloads straight from here.
@@ -274,6 +275,11 @@ export function Workspace() {
               <span className="shrink-0 rounded-md bg-[#eef2f9] px-1.5 py-0.5 font-medium text-[#3f6fb0] text-[10px]">
                 {kindLabel}
               </span>
+              {modeLabel && (
+                <span className="shrink-0 rounded-md border border-[#c9d9ef] px-1.5 py-0.5 font-medium text-[#3f6fb0] text-[10px]">
+                  {modeLabel} tree
+                </span>
+              )}
             </span>
           </>
         )}

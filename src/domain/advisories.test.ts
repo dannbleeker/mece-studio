@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { type Advisory, type AdvisoryCategory, advisories, advisoriesFor } from './advisories';
 import { createDoc } from './factory';
-import { addChild, setDecomposition, setStatus } from './tree';
+import { addChild, setDecomposition, setStatus, setTreeMode } from './tree';
 import type { NodeId } from './types';
 
 const cats = (as: Advisory[], c: AdvisoryCategory): Advisory[] =>
@@ -107,6 +107,42 @@ describe('key-question lint', () => {
   it('does not flag a single, well-formed question', () => {
     const doc = createDoc('How can we restore profitability within a year?', 0);
     expect(cats(advisories(doc), 'key-question')).toHaveLength(0);
+  });
+});
+
+describe('tree-mode lint', () => {
+  it('flags a branch that asks the opposite question word', () => {
+    let doc = createDoc('Why is profit down?', 0);
+    doc = setTreeMode(doc, 'why');
+    const r = addChild(doc, doc.rootId, 'How can we cut costs?'); // opposite direction
+    doc = addChild(r.doc, r.doc.rootId, 'Because volumes fell').doc;
+    expect(cats(advisories(doc), 'tree-mode').some((a) => a.id.startsWith('mode-direction'))).toBe(
+      true
+    );
+  });
+
+  it('flags a process split in a "how" tree', () => {
+    let doc = createDoc('How can we launch?', 0);
+    doc = setTreeMode(doc, 'how');
+    doc = addChild(doc, doc.rootId, 'Stage 1').doc;
+    doc = addChild(doc, doc.rootId, 'Stage 2').doc;
+    doc = setDecomposition(doc, doc.rootId, 'process');
+    expect(cats(advisories(doc), 'tree-mode').some((a) => a.id.startsWith('mode-process'))).toBe(
+      true
+    );
+  });
+
+  it('does not flag when the mode is unset or the tree is consistent', () => {
+    let unset = createDoc('Why is profit down?', 0);
+    unset = addChild(unset, unset.rootId, 'How can we cut costs?').doc; // opposite, but no mode
+    unset = addChild(unset, unset.rootId, 'Because volumes fell').doc;
+    expect(cats(advisories(unset), 'tree-mode')).toHaveLength(0);
+
+    let ok = createDoc('How can we grow?', 0);
+    ok = setTreeMode(ok, 'how');
+    ok = addChild(ok, ok.rootId, 'Enter new markets').doc;
+    ok = addChild(ok, ok.rootId, 'Raise prices').doc;
+    expect(cats(advisories(ok), 'tree-mode')).toHaveLength(0);
   });
 });
 

@@ -30,4 +30,10 @@ describe('ProblemBriefDialog', () => {
     render(<ProblemBriefDialog onClose={() => {}} />);
     expect(screen.getByText(/Frame the key question as a question/)).toBeTruthy();
   });
+
+  it('sets the tree mode through the store', () => {
+    render(<ProblemBriefDialog onClose={() => {}} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Tree type how' }));
+    expect(s().doc.mode).toBe('how');
+  });
 });
