@@ -6,10 +6,13 @@ MECE Studio is a local-first PWA for building McKinsey-style **issue trees** wit
 - React 19 · Vite 8 · TypeScript 6 · Tailwind 4 · Zustand 5 · vite-plugin-pwa. Canvas/layout (from M1): React Flow (`@xyflow/react`) + dagre. Tooling: Biome · Vitest · knip · pnpm. Node 22+ (dev on 24).
 - `src/domain/` — **framework-free, pure, unit-tested core**: types, `factory`, and the MECE rule engine. No React/DOM here.
 - `src/store/` — Zustand. `src/components/` — React / React Flow UI. `src/services/` — storage / PWA / export (added as needed).
-- **Key model decision:** MECE is a property of the **`Split`** (a node's decomposition), not the node. Strict tree → edges are derived from splits.
+- **Key model decisions:**
+  - MECE is a property of the **`Split`** (a node's decomposition), not the node. Strict tree → edges are derived from splits.
+  - **Coaching advisories** (`domain/advisories.ts`) are a separate `info`-only channel — they never enter the MECE engine's ME/CE result, `reviewCount` / `flaggedSplits`, or the health chip. New tree-quality nudges go here, not into the rule engine.
+  - **One sibling-order seam:** `orderSiblings(doc, byPriorityDefault)` (`domain/priority.ts`) is the only view-layer sibling reordering; a split's optional `order` (importance / time / structure) overrides the global "sort by priority" setting — don't add a second sort path.
 
 ## The ship loop — green before done
-- **`pnpm verify` is THE gate.** One command, fail-fast, in order: **typecheck → lint/format → dead-code → tests → build → size budget.** Nothing is "done" until `pnpm verify` is green AND CI is green.
+- **`pnpm verify` is THE gate.** One command, fail-fast, in order: **typecheck → lint/format → dead-code → feature-catalogue → tests → docs → build → size budget.** Nothing is "done" until `pnpm verify` is green AND CI is green.
 - After pushing, watch CI (`gh run watch`). If it goes red, goal-seek from the actual logs (not guesses) and re-push until green. Then say what landed.
 - Never report success over failing checks. Lead with evidence (run output / screenshot / passing test), not "should work."
 

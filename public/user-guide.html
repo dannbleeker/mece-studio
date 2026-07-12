@@ -200,6 +200,8 @@ gives terms. The &quot;Decompose by…&quot; buttons appear on leaf nodes.</p>
 <p><strong>Delete a node.</strong> Select it and click delete in the inspector, or press
 <kbd>Delete</kbd> / <kbd>Backspace</kbd>. The node and its whole subtree are
 removed (you can undo).</p>
+<h3>Problem brief</h3>
+<p>Before you decompose, it helps to frame the problem. The <strong>Problem brief</strong> button in the Answer banner opens a one-page <strong>Problem Identity Card</strong> (after Barbara Minto and Arnaud Chevallier): <strong>Situation</strong> (the stable, agreed context), <strong>Complication</strong> (what changed — why act now), <strong>Owner</strong>, <strong>Decision-makers</strong>, <strong>Success criteria</strong>, <strong>In scope</strong>, <strong>Out of scope</strong> (what you decide upfront <em>not</em> to tackle), and <strong>Desired outcome</strong>. Every field is optional and saves as you type. The Situation and Complication then lead the <a href="#synthesis--reading-the-answer">answer-first synthesis</a> as a Situation → Complication → Resolution intro, and the card nudges you when the key question isn&#39;t sharp — when it isn&#39;t phrased as a question, bundles two questions, or runs too long.</p>
 <h2>MECE checking</h2>
 <p>MECE = <strong>Mutually Exclusive, Collectively Exhaustive</strong>. It&#39;s a property of each
 <em>split</em> (a parent and its children), not of a single node. The engine
@@ -240,6 +242,20 @@ dimension per level is the backbone of a MECE tree — the named axis shows on t
 node, in the synthesis, and in the AI-critique prompt.</p>
 <p>The goal isn&#39;t a perfect score — it&#39;s to make gaps and overlaps <em>visible</em> so you
 decide deliberately.</p>
+<h3>Inductive vs deductive splits</h3>
+<p>Most splits are <strong>inductive</strong> — a grouping of the same kind of thing, which the MECE checks keep honest. Some are <strong>deductive</strong> — an argument chain (premise → premise → conclusion) where each step is <em>meant</em> to build on the last. Switch a split to <strong>Deductive</strong> on the inspector&#39;s <strong>Logic</strong> tab and MECE Studio stops overlap-checking it (an argument shouldn&#39;t be a partition) and instead prompts you to confirm the chain holds. Inductive is the default.</p>
+<h3>Coaching advisories</h3>
+<p>Alongside the strict ME / CE checks, the inspector shows a <strong>Coaching</strong> callout with lighter, high-precision nudges drawn from the problem-structuring canon:</p>
+<ul>
+<li>a <strong>bare one-word branch</strong> on a freeform split that reads as a topic, not a question / action / hypothesis;</li>
+<li>a split with <strong>more than seven branches</strong> — a &quot;laundry list&quot;; aim for three to five;</li>
+<li>one branch that sits at a <strong>different altitude</strong> (far more detailed) than its siblings;</li>
+<li>a <strong>hypothesis still phrased as a question</strong> once you&#39;ve judged it supported or refuted;</li>
+<li>a <strong>key question</strong> that isn&#39;t a question, bundles two, or runs too long.</li>
+</ul>
+<p>These are advice, not MECE findings — they never affect the MECE health chip or the review dock.</p>
+<h3>Why and How trees</h3>
+<p>Set a tree&#39;s type from the <strong>Problem brief</strong>: a <strong>why</strong> tree is diagnostic (it breaks a problem into its causes), a <strong>how</strong> tree is prescriptive (it lays out alternative solutions). A badge in the header shows which. When a type is set, the <strong>Coaching</strong> callout keeps it consistent (Chevallier&#39;s rule that a tree asks <em>one</em> direction) — it flags a branch that opens with the opposite question word, and a <em>process</em> split inside a &quot;how&quot; tree, since a &quot;how&quot; tree should show alternatives, not a sequence of steps.</p>
 <h2>Editing nodes</h2>
 <p><strong>Inline label editing.</strong> Double-click any node to edit its label right on the
 canvas. With a node selected, press <kbd>Enter</kbd> or <kbd>F2</kbd> to edit.
@@ -304,6 +320,8 @@ band shows live as you pick, and as a chip on the node, so the 80/20 branches
 stand out. With a node selected on the canvas, press <kbd>P</kbd> to bump its
 priority (none → low → medium → high). The synthesis reads branches in priority
 order.</p>
+<h3>Ordering the branches</h3>
+<p>Beyond the global &quot;sort siblings by priority&quot; setting, each split can declare <em>how</em> its branches are ordered (Minto&#39;s three orders), on the inspector&#39;s <strong>Logic</strong> tab: <strong>importance</strong> (sort by priority), <strong>time</strong> (a sequence), or <strong>structure</strong> (a fixed partition). <em>Time</em> and <em>structure</em> keep the order you authored on the canvas even when the global priority sort is on — so a process&#39;s stages or a fixed partition stay put — while <em>importance</em> sorts by priority even when the global setting is off.</p>
 <h2>Hypotheses and status</h2>
 <p>Issue trees are most powerful when you treat each branch as a <strong>hypothesis</strong> to
 test. Set a node&#39;s <strong>status</strong> in the inspector:</p>
@@ -358,6 +376,8 @@ driver</strong>.</li>
 <p><strong>Copy</strong> copies the whole synthesis as Markdown; <strong>Export ▾ → Answer (1-page)</strong>
 saves a clean, self-contained <strong>HTML memo</strong> (thesis, verdict, then the branches)
 you can hand over as-is — the deliverable, not a canvas screenshot.</p>
+<h3>The so-what line</h3>
+<p>Give any split a <strong>So-what (insight)</strong> on the inspector&#39;s <strong>Logic</strong> tab — the one-sentence conclusion its branches add up to (Minto&#39;s &quot;action title&quot;: a finding, not a topic). The synthesis then leads that branch with the so-what instead of a bare label, and the <strong>root</strong> split&#39;s so-what opens the synthesis as the governing thought the whole tree argues for.</p>
 <h2>AI assist</h2>
 <p>MECE Studio is a fully deterministic tool — but if you want a second opinion from
 an LLM, it gives you <strong>ready-made prompts with your tree embedded</strong>, with no API

@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 87,
+  "reviewedThroughChangelogEntries": 93,
   "features": [
     {
       "id": "issue-tree",
@@ -1052,6 +1052,60 @@
       "since": 10,
       "manual": true,
       "book": true,
+      "bookExample": false
+    },
+    {
+      "id": "problem-brief",
+      "name": "Problem brief (Problem Identity Card)",
+      "area": "Synthesis",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "split-logic",
+      "name": "Deductive vs inductive split logic",
+      "area": "MECE",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "coaching-advisories",
+      "name": "Coaching advisories",
+      "area": "MECE",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "split-so-what",
+      "name": "So-what action titles",
+      "area": "Synthesis",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "tree-mode",
+      "name": "Why/How tree mode",
+      "area": "MECE",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "split-order",
+      "name": "Sibling ordering principle",
+      "area": "Canvas",
+      "since": 11,
+      "manual": true,
+      "book": false,
       "bookExample": false
     }
   ]

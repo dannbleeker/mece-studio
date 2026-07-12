@@ -11,6 +11,8 @@ import {
   setNodeValue,
   setOperator,
   setPriority,
+  setProblemBrief,
+  setSplitSummary,
   setStatus,
 } from './tree';
 
@@ -119,6 +121,22 @@ describe('synthesise', () => {
     doc = setDecomposition(doc, causes.childId, 'segment');
     doc = setDimension(doc, causes.childId, 'geography');
     expect(synthesise(doc)).toContain('by geography');
+  });
+
+  it('opens with the brief situation → complication and shows a split so-what', () => {
+    let doc = createDoc('How can we restore profit?', 0);
+    doc = setProblemBrief(doc, { situation: 'Stable co', complication: 'Margin fell to 9%' });
+    doc = addChild(doc, doc.rootId, 'Revenue').doc;
+    doc = addChild(doc, doc.rootId, 'Costs').doc;
+    doc = setSplitSummary(doc, doc.rootId, 'Both sides are squeezing profit');
+
+    const out = synthesise(doc);
+    expect(out).toContain('**Situation:** Stable co');
+    expect(out).toContain('**Complication:** Margin fell to 9%');
+    expect(out).toContain('» Both sides are squeezing profit');
+    // SCR order: situation before complication before the branches.
+    expect(out.indexOf('Situation:')).toBeLessThan(out.indexOf('Complication:'));
+    expect(out.indexOf('Complication:')).toBeLessThan(out.indexOf('- Revenue'));
   });
 
   it('flags MECE overlaps and gaps on a branch', () => {

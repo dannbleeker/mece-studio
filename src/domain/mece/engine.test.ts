@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createDoc } from '@/domain/factory';
 import { evaluateSplit, recomputeMece } from '@/domain/mece';
-import { addChild, setDecomposition, setNodeValue, splitOf } from '@/domain/tree';
+import { addChild, setDecomposition, setNodeValue, setSplitLogic, splitOf } from '@/domain/tree';
 import type { IssueTreeDoc } from '@/domain/types';
 
 function must<T>(v: T | undefined, msg: string): T {
@@ -62,6 +62,21 @@ describe('MECE engine', () => {
     let doc = withChildren(['Price', 'Volume']);
     doc = setDecomposition(doc, doc.rootId, 'formula');
     expect(rootMece(doc).exhaustive.state).toBe('unknown');
+  });
+
+  it('does not overlap-check a deductive split, even when siblings share a word', () => {
+    let doc = withChildren(['Rising input costs', 'Rising labour costs']); // share "rising"/"costs"
+    expect(rootMece(doc).exclusive.state).toBe('warn'); // inductive default trips the heuristic
+
+    doc = setSplitLogic(doc, doc.rootId, 'deductive');
+    const mece = rootMece(doc);
+    expect(mece.exclusive.state).toBe('pass'); // an argument isn't a partition
+    expect(mece.exhaustive.state).toBe('unknown'); // a chain prompt, not a gap warn
+  });
+
+  it('inductive is the default — overlap-checking is unchanged', () => {
+    const doc = withChildren(['Revenue', 'Costs']); // no shared word
+    expect(rootMece(doc).exclusive.state).toBe('unknown'); // no overlap, not auto-provable
   });
 
   it('recomputeMece writes status onto every split', () => {

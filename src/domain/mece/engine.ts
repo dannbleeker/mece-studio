@@ -328,6 +328,25 @@ export function evaluateSplit(
     };
   }
 
+  // A deductive split is an argument chain (premise → premise → conclusion), not a
+  // partition — mutual exclusivity and collective exhaustiveness don't apply. So we
+  // don't overlap-check it (an argument SHOULD build on itself); we prompt about the
+  // chain instead. Marking a split deductive is the user's declared intent.
+  if (split.logic === 'deductive') {
+    return {
+      exclusive: {
+        state: 'pass',
+        message:
+          'Deductive argument — the steps build to the conclusion, not a partition to keep exclusive.',
+      },
+      exhaustive: {
+        state: 'unknown',
+        message:
+          'Deductive chain — check each step follows from the one before, and the premises lead to the conclusion.',
+      },
+    };
+  }
+
   return {
     exclusive: exclusiveStatus(split, children, options),
     exhaustive: exhaustiveStatus(split, children, doc, options),

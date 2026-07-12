@@ -25,8 +25,13 @@ import {
   setOperator as setOperatorOp,
   setPriorityMany as setPriorityManyOp,
   setPriority as setPriorityOp,
+  setProblemBrief as setProblemBriefOp,
+  setSplitLogic as setSplitLogicOp,
+  setSplitOrder as setSplitOrderOp,
+  setSplitSummary as setSplitSummaryOp,
   setStatusMany as setStatusManyOp,
   setStatus as setStatusOp,
+  setTreeMode as setTreeModeOp,
   toggleCollapse as toggleCollapseOp,
   updateEvidence as updateEvidenceOp,
 } from '@/domain/tree';
@@ -40,6 +45,10 @@ import type {
   NodeId,
   NodeStatus,
   Priority,
+  ProblemBrief,
+  SplitLogic,
+  SplitOrder,
+  TreeMode,
 } from '@/domain/types';
 import { templateFromDoc } from '@/domain/userTemplate';
 import {
@@ -214,6 +223,10 @@ interface AppState {
   setRootQuestion: (label: string) => void;
   /** Set or clear the governing answer / hypothesis the tree argues for. */
   setAnswer: (answer: string) => void;
+  /** Merge a patch into the doc-level problem brief (Situation / Complication / scope / …). */
+  setProblemBrief: (patch: Partial<ProblemBrief>) => void;
+  /** Set or clear the tree's why/how mode (diagnostic vs prescriptive). */
+  setTreeMode: (mode: TreeMode | undefined) => void;
   addChild: (parentId: NodeId, label?: string) => void;
   /** Add several children under `parentId` in one undoable step (quick capture). */
   addChildren: (parentId: NodeId, labels: string[]) => void;
@@ -239,6 +252,12 @@ interface AppState {
   setDecomposition: (parentId: NodeId, decomposition: DecompositionType) => void;
   setOperator: (parentId: NodeId, operator: FormulaOperator) => void;
   setDimension: (parentId: NodeId, dimension: string) => void;
+  /** Set a split's logic mode — inductive grouping vs deductive argument chain. */
+  setSplitLogic: (parentId: NodeId, logic: SplitLogic) => void;
+  /** Set a split's "so-what" one-line insight (the takeaway its children support). */
+  setSplitSummary: (parentId: NodeId, summary: string) => void;
+  /** Set or clear a split's ordering principle (importance / time / structure). */
+  setSplitOrder: (parentId: NodeId, order: SplitOrder | undefined) => void;
   decompose: (parentId: NodeId, decomposition: DecompositionType) => void;
   moveNode: (id: NodeId, newParentId: NodeId) => void;
   moveSibling: (id: NodeId, direction: 'up' | 'down') => void;
@@ -459,6 +478,8 @@ export const useStore = create<AppState>((set, get) => {
 
     setRootQuestion: (label) => apply((doc) => renameNodeOp(doc, doc.rootId, label)),
     setAnswer: (answer) => apply((doc) => setAnswerOp(doc, answer)),
+    setProblemBrief: (patch) => apply((doc) => setProblemBriefOp(doc, patch)),
+    setTreeMode: (mode) => apply((doc) => setTreeModeOp(doc, mode)),
     addChild: (parentId, label) =>
       apply((doc) => addChildOp(doc, parentId, label ?? 'New issue').doc),
     addChildren: (parentId, labels) => apply((doc) => addChildrenOp(doc, parentId, labels)),
@@ -496,6 +517,10 @@ export const useStore = create<AppState>((set, get) => {
       apply((doc) => setDecompositionOp(doc, parentId, decomposition)),
     setOperator: (parentId, operator) => apply((doc) => setOperatorOp(doc, parentId, operator)),
     setDimension: (parentId, dimension) => apply((doc) => setDimensionOp(doc, parentId, dimension)),
+    setSplitLogic: (parentId, logic) => apply((doc) => setSplitLogicOp(doc, parentId, logic)),
+    setSplitSummary: (parentId, summary) =>
+      apply((doc) => setSplitSummaryOp(doc, parentId, summary)),
+    setSplitOrder: (parentId, order) => apply((doc) => setSplitOrderOp(doc, parentId, order)),
     decompose: (parentId, decomposition) =>
       apply((doc) => decomposeOp(doc, parentId, decomposition)),
     moveNode: (id, newParentId) => apply((doc) => moveNodeOp(doc, id, newParentId)),

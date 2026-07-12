@@ -11,6 +11,12 @@ export const NODE_GAP = 24;
 /** A decomposition needs at least this many children to be a real split. */
 export const MIN_SPLIT_CHILDREN = 2;
 
+/** Beyond this many children a split reads as a "laundry list" (over-weighting CE). */
+export const MAX_SPLIT_CHILDREN = 7;
+
+/** The comfortable upper end to coach toward (Minto: 3–5 branches is usually best). */
+export const IDEAL_SPLIT_MAX = 5;
+
 /** Relative tolerance for formula reconciliation (children combined vs parent value). */
 export const FORMULA_TOLERANCE = 0.005;
 
