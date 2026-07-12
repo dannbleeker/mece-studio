@@ -457,3 +457,23 @@ describe('store — tree mode & split order', () => {
     expect(s().doc.mode).toBe('how'); // the mode edit still stands
   });
 });
+
+describe('store — history reconciles selection', () => {
+  it('undo of a creation does not leave a dangling selection', () => {
+    const root = s().doc.rootId;
+    s().addChild(root, 'A');
+    const child = childrenOf(s().doc, root)[0];
+    if (!child) throw new Error('no child');
+    s().select(child.id);
+    expect(s().selectedId).toBe(child.id);
+
+    s().undo(); // the child no longer exists in the restored doc
+    expect(s().selectedId).not.toBe(child.id);
+    const afterUndo = s().selectedId;
+    expect(afterUndo === null || s().doc.nodes[afterUndo] !== undefined).toBe(true);
+
+    s().redo(); // child restored; the selection stays valid
+    const afterRedo = s().selectedId;
+    expect(afterRedo === null || s().doc.nodes[afterRedo] !== undefined).toBe(true);
+  });
+});
