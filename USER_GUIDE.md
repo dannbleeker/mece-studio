@@ -183,6 +183,10 @@ gives terms. The "Decompose by…" buttons appear on leaf nodes.
 <kbd>Delete</kbd> / <kbd>Backspace</kbd>. The node and its whole subtree are
 removed (you can undo).
 
+### Problem brief
+
+Before you decompose, it helps to frame the problem. The **Problem brief** button in the Answer banner opens a one-page **Problem Identity Card** (after Barbara Minto and Arnaud Chevallier): **Situation** (the stable, agreed context), **Complication** (what changed — why act now), **Owner**, **Decision-makers**, **Success criteria**, **In scope**, **Out of scope** (what you decide upfront *not* to tackle), and **Desired outcome**. Every field is optional and saves as you type. The Situation and Complication then lead the [answer-first synthesis](#synthesis--reading-the-answer) as a Situation → Complication → Resolution intro, and the card nudges you when the key question isn't sharp — when it isn't phrased as a question, bundles two questions, or runs too long.
+
 ## MECE checking
 
 MECE = **Mutually Exclusive, Collectively Exhaustive**. It's a property of each
@@ -225,6 +229,22 @@ node, in the synthesis, and in the AI-critique prompt.
 
 The goal isn't a perfect score — it's to make gaps and overlaps *visible* so you
 decide deliberately.
+
+### Inductive vs deductive splits
+
+Most splits are **inductive** — a grouping of the same kind of thing, which the MECE checks keep honest. Some are **deductive** — an argument chain (premise → premise → conclusion) where each step is *meant* to build on the last. Switch a split to **Deductive** on the inspector's **Logic** tab and MECE Studio stops overlap-checking it (an argument shouldn't be a partition) and instead prompts you to confirm the chain holds. Inductive is the default.
+
+### Coaching advisories
+
+Alongside the strict ME / CE checks, the inspector shows a **Coaching** callout with lighter, high-precision nudges drawn from the problem-structuring canon:
+
+- a **bare one-word branch** on a freeform split that reads as a topic, not a question / action / hypothesis;
+- a split with **more than seven branches** — a "laundry list"; aim for three to five;
+- one branch that sits at a **different altitude** (far more detailed) than its siblings;
+- a **hypothesis still phrased as a question** once you've judged it supported or refuted;
+- a **key question** that isn't a question, bundles two, or runs too long.
+
+These are advice, not MECE findings — they never affect the MECE health chip or the review dock.
 
 ## Editing nodes
 
@@ -369,6 +389,10 @@ read the tree back **answer-first**, the way a good consultant would present it:
 **Copy** copies the whole synthesis as Markdown; **Export ▾ → Answer (1-page)**
 saves a clean, self-contained **HTML memo** (thesis, verdict, then the branches)
 you can hand over as-is — the deliverable, not a canvas screenshot.
+
+### The so-what line
+
+Give any split a **So-what (insight)** on the inspector's **Logic** tab — the one-sentence conclusion its branches add up to (Minto's "action title": a finding, not a topic). The synthesis then leads that branch with the so-what instead of a bare label, and the **root** split's so-what opens the synthesis as the governing thought the whole tree argues for.
 
 ## AI assist
 
