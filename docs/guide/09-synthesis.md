@@ -65,6 +65,14 @@ The MECE check ensures there are no logical gaps in the argument. If the synthes
 
 None of this requires you to rebuild the communication from scratch. The structure already exists. You are reading it back in the right order.
 
+## Action titles: say the so-what, not the topic
+
+There is a small discipline that separates a consulting deck from a school report: every heading states a **finding**, not a **topic**. "Volume declined 5% on Q3 account losses," not "Volume analysis." Barbara Minto calls this the **action title** — or the **so-what**: the one-sentence conclusion the section actually reached. A reader who skims only your headings should still come away with the whole argument.
+
+An issue tree is built to carry these. Each split has a so-what — the point its branches add up to — and once you write that point down, the tree stops being a set of topics and becomes a set of claims. The root's so-what is your governing thought; each first-level branch's so-what is a supporting argument; and the headings of your eventual deck write themselves.
+
+MECE Studio gives it a home. Any split carries an optional **so-what (insight)** on the inspector's **Logic** tab — a single line, phrased as a finding rather than a label. The synthesis then leads that branch with its so-what instead of the bare node title, and the **root** split's so-what opens the whole synthesis as the governing thought the tree argues for. Fill them in as your branches resolve, and the answer-first narrative the panel produces arrives already written in action titles.
+
 ## MECE Studio's synthesis panel
 
 The synthesis panel reads your tree and renders it answer-first automatically.
@@ -73,6 +81,7 @@ It opens with your **governing answer** — the day-one hypothesis you stated in
 
 Then come the branches, led by the **highest-priority** one and continuing in priority order, descending. For each branch it surfaces:
 
+- The branch's **so-what** action title, where you set one — its headline finding, stated as a conclusion rather than a topic label
 - The **hypothesis status** (✓ supported, ✗ refuted, ⊘ parked; open branches carry no mark) so your audience can see what is settled and what is still uncertain
 - The **evidence** you attached to that branch — sources, data, observations
 - In a value-driver tree, the **numbers**: each node's value and unit, the rolled-up total on a formula parent, and the **most-sensitive driver** — so the answer includes its maths

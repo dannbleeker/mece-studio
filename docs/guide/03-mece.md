@@ -66,6 +66,16 @@ MECE is a standard to aim at, not a gate you must pass before doing any work. Th
 
 **Document the compromise.** When you knowingly accept a non-MECE split, note why. That transparency prevents a colleague from spending a week investigating an "overlap" you already knew about and chose to live with.
 
+## When a split is an argument, not a partition
+
+Almost every split in this book is **inductive**: you take a whole and cut it into parts of the same kind — regions, cost lines, funnel stages — and MECE asks whether those parts overlap or leave a gap. That is what the ME and CE tests are for.
+
+But not every decomposition is a partition. Some are **deductive** — an argument chain, where each child is a step that builds on the one before it toward a conclusion: *the market is growing → we have a right to win in it → therefore we should enter*. The children of a deductive split are not siblings carving up a space; they are premises in a line of reasoning. (Barbara Minto makes exactly this distinction: a group of ideas can relate in one of two ways — as a grouping or as an argument.) Asking whether "the market is growing" and "we have a right to win" are *mutually exclusive* is a category error — they are meant to depend on each other; that is the point.
+
+So MECE simply does not apply to a deductive split. What you check instead is whether the chain *holds*: does each step follow from the one before, and does the conclusion follow from the steps together? A broken deductive chain is a hole in your logic, not an overlap in your buckets.
+
+In MECE Studio you mark a split **deductive** on the inspector's **Logic** tab (inductive is the default, and most splits stay that way). The tool then stops overlap-checking that split — it will not flag its premises as colliding — and instead prompts you to confirm the chain is sound. Use it for the argument-shaped parts of a tree, and leave the rest inductive, where the MECE checks do their work.
+
 ## How MECE Studio surfaces this live
 
 MECE Studio embeds the MECE check into the canvas so you see problems as they arise rather than discovering them in a review meeting.
@@ -103,6 +113,20 @@ Click the chip to open the **review dock** — a triage panel over every flagged
 - **Remedy** a gap — for a missing-bucket (CE) gap, one click adds the right fix: an *"Other"* bucket for a segmentation, or a fresh sub-issue otherwise.
 
 There is no "resolve" or "dismiss" button, by design: the warnings are computed live, so a split leaves the list the moment it is actually MECE — never because you silenced it. The dock is the fastest way to walk a finished tree and close its last gaps before you present it.
+
+## Coaching, kept separate from the health chip
+
+MECE Studio draws a deliberate line between two kinds of feedback. The **ME / CE checks** — the dots, the health chip, the review dock — answer exactly one question: is this split mutually exclusive and collectively exhaustive? Nothing else is allowed to move that needle.
+
+Everything else the tool notices about the *quality* of your thinking lives in a separate **Coaching** callout in the inspector, shown as light `info` nudges — never as MECE flags, and never counted in the health chip. These are drawn from the wider problem-structuring canon rather than from MECE itself:
+
+- a branch that is a bare one-word label where a full question, action, or hypothesis was meant;
+- a **laundry list** — a split with more than about seven branches, a sign the level wants regrouping into a cleaner cut;
+- an **altitude outlier** — one branch pitched at a very different level of abstraction from its siblings;
+- a hypothesis still phrased as a question rather than a claim;
+- a weak key question, and the why/how consistency check from *Start with the question*.
+
+The separation is the point. If these softer nudges counted toward the health chip, "⚠ 3 to review" would stop meaning "three genuine MECE problems" and start meaning "three things the tool has an opinion about" — and you would soon learn to ignore it. Coaching *advises*; the MECE chip *adjudicates*. Keeping them apart is exactly what lets the chip stay worth trusting.
 
 ## A worked example
 

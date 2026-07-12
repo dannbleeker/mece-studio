@@ -1,6 +1,6 @@
 {
   "$schema": "./features.schema.json",
-  "note": "Curated catalogue of MECE Studio's user-facing features — the denominator for documentation-coverage metrics. `since` is the milestone the capability shipped in (1-8). `manual` = covered in USER_GUIDE.md; `book` = covered in a docs/guide chapter; `bookExample` = that chapter has a worked example. Keep in sync with CHANGELOG.md and bump `reviewedThroughChangelogEntries` after reconciling.",
+  "note": "Curated catalogue of MECE Studio's user-facing features — the denominator for documentation-coverage metrics. `since` is the milestone the capability shipped in (1-11). `manual` = covered in USER_GUIDE.md; `book` = covered in a docs/guide chapter; `bookExample` = that chapter has a worked example. Keep in sync with CHANGELOG.md and bump `reviewedThroughChangelogEntries` after reconciling.",
   "areas": [
     "Tree",
     "MECE",
@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 93,
+  "reviewedThroughChangelogEntries": 99,
   "features": [
     {
       "id": "issue-tree",
@@ -961,7 +961,7 @@
       "area": "Canvas",
       "since": 9,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -1060,7 +1060,7 @@
       "area": "Synthesis",
       "since": 11,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -1069,7 +1069,7 @@
       "area": "MECE",
       "since": 11,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -1078,7 +1078,7 @@
       "area": "MECE",
       "since": 11,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -1087,7 +1087,7 @@
       "area": "Synthesis",
       "since": 11,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -1096,7 +1096,7 @@
       "area": "MECE",
       "since": 11,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     },
     {
@@ -1105,7 +1105,7 @@
       "area": "Canvas",
       "since": 11,
       "manual": true,
-      "book": false,
+      "book": true,
       "bookExample": false
     }
   ]
