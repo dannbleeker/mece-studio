@@ -123,6 +123,7 @@ export function setDecomposition(
 ): IssueTreeDoc {
   const split = splitOf(doc, parentId);
   if (!split) return doc;
+  if (decomposition === split.decomposition) return doc;
   return { ...doc, splits: { ...doc.splits, [split.id]: { ...split, decomposition } } };
 }
 
@@ -134,6 +135,7 @@ export function setOperator(
 ): IssueTreeDoc {
   const split = splitOf(doc, parentId);
   if (!split) return doc;
+  if (operator === split.operator) return doc;
   return { ...doc, splits: { ...doc.splits, [split.id]: { ...split, operator } } };
 }
 
@@ -397,11 +399,17 @@ export function duplicateNode(
   for (const split of Object.values(doc.splits)) {
     const newParent = idMap.get(split.parentId);
     if (newParent === undefined) continue;
+    // Spread the whole split so every field (operator, dimension, logic, order,
+    // summary, …) is preserved on the copy — then override only the identity
+    // fields (fresh id + parent + remapped children + fresh MECE cache).
+    const base = createSplit(newParent, split.decomposition);
     const cloned: Split = {
-      ...createSplit(newParent, split.decomposition),
+      ...split,
+      id: base.id,
+      parentId: newParent,
       childIds: split.childIds.map((c) => idMap.get(c)).filter((c): c is NodeId => c !== undefined),
+      mece: base.mece,
     };
-    if (split.operator !== undefined) cloned.operator = split.operator;
     splits[cloned.id] = cloned;
   }
 
@@ -440,6 +448,12 @@ export function setPriority(
   priority: Priority | undefined
 ): IssueTreeDoc {
   return patchNode(doc, nodeId, (node) => {
+    const cur = node.priority;
+    const unchanged =
+      cur === undefined
+        ? priority === undefined
+        : priority !== undefined && cur.impact === priority.impact && cur.ease === priority.ease;
+    if (unchanged) return null; // no-op edits don't churn undo history
     const next: IssueNode = { ...node };
     if (priority === undefined) delete next.priority;
     else next.priority = priority;

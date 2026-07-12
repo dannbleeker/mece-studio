@@ -21,6 +21,9 @@ import {
   setNodeValue,
   setOperator,
   setPriorityMany,
+  setSplitLogic,
+  setSplitOrder,
+  setSplitSummary,
   setStatusMany,
   splitOf,
   toggleCollapse,
@@ -264,5 +267,26 @@ describe('tree ops', () => {
     expect(childrenOf(doc4, doc0.rootId).map((n) => n.label)).toEqual(['Cost']);
 
     expect(removeNode(doc4, doc0.rootId)).toBe(doc4);
+  });
+
+  it('duplicateNode preserves all split metadata on the clone', () => {
+    let doc = createDoc('Root', 0);
+    const a = addChild(doc, doc.rootId, 'A');
+    doc = a.doc;
+    doc = addChild(doc, a.childId, 'A1').doc;
+    doc = addChild(doc, a.childId, 'A2').doc;
+    doc = setDecomposition(doc, a.childId, 'segment');
+    doc = setDimension(doc, a.childId, 'geography');
+    doc = setSplitLogic(doc, a.childId, 'deductive');
+    doc = setSplitOrder(doc, a.childId, 'time');
+    doc = setSplitSummary(doc, a.childId, 'so-what');
+
+    const { doc: dup, newId } = duplicateNode(doc, a.childId);
+    const clone = splitOf(dup, newId);
+    expect(clone?.decomposition).toBe('segment');
+    expect(clone?.dimension).toBe('geography');
+    expect(clone?.logic).toBe('deductive');
+    expect(clone?.order).toBe('time');
+    expect(clone?.summary).toBe('so-what');
   });
 });
