@@ -32,6 +32,9 @@ export interface ProblemBrief {
   desiredOutcome?: string;
 }
 
+/** Whether the tree asks "why?" (diagnostic — causes) or "how?" (prescriptive — alternatives). */
+export type TreeMode = 'why' | 'how';
+
 export interface IssueTreeDoc {
   schemaVersion: number;
   id: DocId;
@@ -44,6 +47,8 @@ export interface IssueTreeDoc {
   answer?: string;
   /** A structured problem brief framing the tree (Situation / Complication / scope / …). Optional. */
   problemBrief?: ProblemBrief;
+  /** Whether this is a "why?" (diagnostic) or "how?" (prescriptive) tree. Optional; unset = either. */
+  mode?: TreeMode;
   /** 'LR' (left-to-right) is the classic McKinsey look. */
   layout: { direction: LayoutDirection };
   createdAt: number;

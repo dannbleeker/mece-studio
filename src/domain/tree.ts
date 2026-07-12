@@ -14,6 +14,8 @@ import type {
   Split,
   SplitId,
   SplitLogic,
+  SplitOrder,
+  TreeMode,
 } from './types';
 
 /** The split whose children belong to `nodeId` (i.e. how `nodeId` decomposes), if any. */
@@ -165,6 +167,21 @@ export function setSplitLogic(
   return { ...doc, splits: { ...doc.splits, [split.id]: next } };
 }
 
+/** Set or clear a split's ordering principle (importance / time / structure). No-op when unchanged. */
+export function setSplitOrder(
+  doc: IssueTreeDoc,
+  parentId: NodeId,
+  order: SplitOrder | undefined
+): IssueTreeDoc {
+  const split = splitOf(doc, parentId);
+  if (!split) return doc;
+  if (order === split.order) return doc;
+  const next = { ...split };
+  if (order === undefined) delete next.order;
+  else next.order = order;
+  return { ...doc, splits: { ...doc.splits, [split.id]: next } };
+}
+
 /** Set or clear a split's "so-what" summary (the insight its children support). No-op when unchanged. */
 export function setSplitSummary(
   doc: IssueTreeDoc,
@@ -179,6 +196,15 @@ export function setSplitSummary(
   if (trimmed === '') delete next.summary;
   else next.summary = trimmed;
   return { ...doc, splits: { ...doc.splits, [split.id]: next } };
+}
+
+/** Set or clear the tree's why/how mode. No-op when unchanged. */
+export function setTreeMode(doc: IssueTreeDoc, mode: TreeMode | undefined): IssueTreeDoc {
+  if (mode === doc.mode) return doc;
+  const next = { ...doc };
+  if (mode === undefined) delete next.mode;
+  else next.mode = mode;
+  return next;
 }
 
 /** Set or clear the governing answer / hypothesis on the doc. No-op when unchanged. */

@@ -1,4 +1,4 @@
-export type { IssueTreeDoc, LayoutDirection, ProblemBrief } from './document';
+export type { IssueTreeDoc, LayoutDirection, ProblemBrief, TreeMode } from './document';
 export type { DocId, NodeId, SplitId } from './ids';
 export type {
   EvidenceItem,
@@ -17,4 +17,5 @@ export type {
   MeceStatus,
   Split,
   SplitLogic,
+  SplitOrder,
 } from './split';

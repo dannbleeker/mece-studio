@@ -5,8 +5,10 @@ import {
   setNodeValue,
   setProblemBrief,
   setSplitLogic,
+  setSplitOrder,
   setSplitSummary,
   setStatus,
+  setTreeMode,
 } from './tree';
 import { templateFromDoc } from './userTemplate';
 
@@ -34,12 +36,16 @@ describe('templateFromDoc', () => {
     const a = addChild(doc, doc.rootId, 'Fixed');
     doc = addChild(a.doc, a.doc.rootId, 'Variable').doc;
     doc = setSplitLogic(doc, doc.rootId, 'deductive');
+    doc = setSplitOrder(doc, doc.rootId, 'time');
     doc = setSplitSummary(doc, doc.rootId, 'Costs split fixed vs variable');
     doc = setProblemBrief(doc, { situation: 'Margins down' });
+    doc = setTreeMode(doc, 'how');
 
     const template = templateFromDoc(doc);
     const split = Object.values(template.splits)[0];
     expect(split?.logic).toBe('deductive'); // structural — kept
+    expect(split?.order).toBe('time'); // structural — kept
+    expect(template.mode).toBe('how'); // structural — kept
     expect(split?.summary).toBeUndefined(); // instance data — stripped
     expect(template.problemBrief).toBeUndefined();
   });

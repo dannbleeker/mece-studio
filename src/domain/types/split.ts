@@ -19,6 +19,13 @@ export type FormulaOperator = 'sum' | 'product' | 'difference';
  */
 export type SplitLogic = 'inductive' | 'deductive';
 
+/**
+ * The logical order siblings sit in (Minto's three orders). `importance` sorts by
+ * priority; `time` (a sequence) and `structure` (a fixed partition) keep the
+ * authored order, immune to the global priority sort.
+ */
+export type SplitOrder = 'importance' | 'time' | 'structure';
+
 export type CheckState = 'pass' | 'warn' | 'unknown';
 
 export interface CheckResult {
@@ -50,6 +57,8 @@ export interface Split {
   dimension?: string;
   /** Inductive grouping (a MECE partition, the default) vs a deductive argument chain. Undefined ⇒ inductive. */
   logic?: SplitLogic;
+  /** The logical order the siblings sit in (Minto: importance / time / structure). Optional. */
+  order?: SplitOrder;
   /** The "so-what": the one-line insight these children collectively support (Minto's synthesis / action title). */
   summary?: string;
   mece: MeceStatus;

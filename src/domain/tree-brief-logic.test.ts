@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { createDoc } from './factory';
-import { addChild, setProblemBrief, setSplitLogic, setSplitSummary, splitOf } from './tree';
+import {
+  addChild,
+  setProblemBrief,
+  setSplitLogic,
+  setSplitOrder,
+  setSplitSummary,
+  setTreeMode,
+  splitOf,
+} from './tree';
 
 /** A doc whose root has a real split (two children). */
 const withSplit = () => {
@@ -40,6 +48,38 @@ describe('setSplitSummary', () => {
     expect(setSplitSummary(doc, doc.rootId, '')).toBe(doc);
     const withSum = setSplitSummary(doc, doc.rootId, 'x');
     expect(setSplitSummary(withSum, doc.rootId, 'x')).toBe(withSum);
+  });
+});
+
+describe('setSplitOrder', () => {
+  it('sets and clears the ordering principle', () => {
+    const doc = withSplit();
+    const timed = setSplitOrder(doc, doc.rootId, 'time');
+    expect(splitOf(timed, doc.rootId)?.order).toBe('time');
+    const cleared = setSplitOrder(timed, doc.rootId, undefined);
+    expect(splitOf(cleared, doc.rootId)?.order).toBeUndefined();
+  });
+
+  it('no-ops when unchanged or when there is no split', () => {
+    const doc = withSplit();
+    expect(setSplitOrder(doc, doc.rootId, undefined)).toBe(doc);
+    const leaf = createDoc('Q', 0);
+    expect(setSplitOrder(leaf, leaf.rootId, 'time')).toBe(leaf);
+  });
+});
+
+describe('setTreeMode', () => {
+  it('sets and clears the why/how mode', () => {
+    const doc = createDoc('Q', 0);
+    expect(setTreeMode(doc, 'why').mode).toBe('why');
+    expect(setTreeMode(setTreeMode(doc, 'why'), undefined).mode).toBeUndefined();
+  });
+
+  it('no-ops when unchanged', () => {
+    const doc = createDoc('Q', 0);
+    expect(setTreeMode(doc, undefined)).toBe(doc);
+    const how = setTreeMode(doc, 'how');
+    expect(setTreeMode(how, 'how')).toBe(how);
   });
 });
 
