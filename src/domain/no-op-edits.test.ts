@@ -1,13 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { createDoc, createEvidence } from './factory';
 import {
+  addChild,
   addEvidence,
   removeEvidence,
   renameNode,
   setAllCollapsed,
+  setDecomposition,
   setDetail,
   setNodeValue,
+  setOperator,
+  setPriority,
   setStatus,
+  splitOf,
   toggleCollapse,
   updateEvidence,
 } from './tree';
@@ -66,5 +71,29 @@ describe('no-op edits return the same document', () => {
   it('setAllCollapsed with nothing to change returns the same document', () => {
     const doc = createDoc('Q', 0); // a lone root: nothing is collapsed, nothing to collapse
     expect(setAllCollapsed(doc, false)).toBe(doc);
+  });
+
+  it('setPriority to the identical priority is a no-op (protects the redo stack)', () => {
+    let doc = createDoc('Q', 0);
+    expect(setPriority(doc, doc.rootId, undefined)).toBe(doc); // none → none
+    doc = setPriority(doc, doc.rootId, { impact: 'high', ease: 'low' });
+    expect(setPriority(doc, doc.rootId, { impact: 'high', ease: 'low' })).toBe(doc);
+    expect(setPriority(doc, doc.rootId, { impact: 'high', ease: 'high' })).not.toBe(doc);
+    expect(setPriority(doc, doc.rootId, undefined)).not.toBe(doc); // clearing a set priority
+  });
+
+  it('setDecomposition / setOperator to the current value are no-ops', () => {
+    let doc = createDoc('Q', 0);
+    const a = addChild(doc, doc.rootId, 'A');
+    doc = addChild(a.doc, a.doc.rootId, 'B').doc; // root now has a split
+    const split = splitOf(doc, doc.rootId);
+    if (!split) throw new Error('no split');
+    expect(setDecomposition(doc, doc.rootId, split.decomposition)).toBe(doc);
+    const other = split.decomposition === 'segment' ? 'freeform' : 'segment';
+    expect(setDecomposition(doc, doc.rootId, other)).not.toBe(doc);
+
+    doc = setOperator(doc, doc.rootId, 'sum');
+    expect(setOperator(doc, doc.rootId, 'sum')).toBe(doc);
+    expect(setOperator(doc, doc.rootId, 'product')).not.toBe(doc);
   });
 });

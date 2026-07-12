@@ -6,6 +6,11 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 
 ### Fixed
 - **Dense trees no longer overlap.** A value-driver node showing a value, evidence, and ME/CE dots renders taller than a bare box; the layout now feeds each node's real (content-derived) height to dagre, so a tall node no longer overruns the gap into its siblings. Simple trees lay out exactly as before.
+- **Duplicating a node keeps its whole split.** Copying a decomposed node now carries its **dimension, logic (inductive/deductive), ordering principle, and so-what** across to the copy — previously only the operator survived, silently dropping the rest.
+- **Importing a malformed outline can't hang the app.** The tree walkers now guard against cyclic or self-referential documents (a hand-edited or corrupt file that points a node back at an ancestor), so a bad import fails cleanly instead of spinning forever; OPML/Markdown imports also share one node cap, so a pathologically large outline is bounded rather than unbounded.
+- **A single unreadable tree no longer wipes your library.** If the active tree's saved blob is missing or corrupt (e.g. a storage-quota hiccup), the workspace now falls back to another readable tree and keeps the library intact, instead of reseeding from scratch and losing every other tree.
+- **Undo/redo and drag keep the right selection and search.** Undoing or redoing past a delete no longer leaves the selection pointing at a node that no longer exists, and dragging a node while a search filter is active keeps the matching nodes highlighted instead of clearing the highlight.
+- **Clearer collapsed-subtree tooltip.** The collapse badge's hover text now reads **"Expand subtree"** rather than a misleading hidden-node count (the number shown is the direct-child count, not the full hidden descendant count).
 
 ### Added
 - **Why / How tree mode.** A tree can be tagged a **"why"** (diagnostic — break a problem into causes) or **"how"** (prescriptive — lay out alternative solutions) tree from the Problem brief; a badge shows it in the header. Chevallier's rule — a tree asks *one* direction, not both — is coached in the existing **Coaching** callout: a branch that opens with the opposite question word, and a `process` split inside a "how" tree (steps, not options). Coaching only, never the MECE health chip.

@@ -119,4 +119,31 @@ describe('storage', () => {
     expect(docName(createDoc('My question', 1))).toBe('My question');
     expect(docName(createDoc('   ', 1))).toBe('Untitled tree');
   });
+
+  it('keeps the library and falls back to a loadable doc when the active blob is missing', () => {
+    const a = createDoc('A', 1);
+    const b = createDoc('B', 1);
+    saveDocById(a);
+    saveDocById(b);
+    saveLibrary({
+      activeId: a.id,
+      docs: [
+        { id: a.id, name: 'A' },
+        { id: b.id, name: 'B' },
+      ],
+    });
+    removeDocById(a.id); // active blob gone (e.g. a swallowed quota-save)
+
+    const ws = loadWorkspace();
+    expect(ws).not.toBeNull();
+    expect(ws?.library.docs).toHaveLength(2); // library NOT wiped
+    expect(ws?.doc?.id).toBe(b.id); // fell back to the loadable doc
+    expect(ws?.library.activeId).toBe(b.id);
+  });
+
+  it('rejects a document whose root node is missing', () => {
+    const doc = createDoc('Q', 1);
+    const broken = JSON.stringify({ ...doc, nodes: {} }); // rootId no longer a node key
+    expect(parseDoc(broken)).toBeNull();
+  });
 });

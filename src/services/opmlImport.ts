@@ -1,4 +1,5 @@
 import { createDoc } from '@/domain/factory';
+import { MAX_NODES } from '@/domain/markdownImport';
 import { addChild } from '@/domain/tree';
 import type { IssueTreeDoc, NodeId } from '@/domain/types';
 
@@ -35,18 +36,26 @@ export function opmlToDoc(text: string, now: number): IssueTreeDoc | null {
 
   let doc = createDoc(outlineLabel(first) || 'Imported outline', now);
 
+  // Cap total nodes (like the Markdown importer) so a pathologically wide/deep
+  // third-party OPML can't hang or overflow the tab on import. Bounding the count
+  // also bounds recursion depth, so no depth-bomb.
+  let count = 1; // the root
   const graft = (el: Element, parentId: NodeId): void => {
     for (const child of childOutlines(el)) {
+      if (count >= MAX_NODES) return;
       const added = addChild(doc, parentId, outlineLabel(child) || 'Untitled');
       doc = added.doc;
+      count++;
       graft(child, added.childId);
     }
   };
   graft(first, doc.rootId);
   // Extra top-level outlines (a flat OPML) become further branches of the root.
   for (const sibling of tops.slice(1)) {
+    if (count >= MAX_NODES) break;
     const added = addChild(doc, doc.rootId, outlineLabel(sibling) || 'Untitled');
     doc = added.doc;
+    count++;
     graft(sibling, added.childId);
   }
   return doc;

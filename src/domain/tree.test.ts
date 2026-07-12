@@ -21,10 +21,14 @@ import {
   setNodeValue,
   setOperator,
   setPriorityMany,
+  setSplitLogic,
+  setSplitOrder,
+  setSplitSummary,
   setStatusMany,
   splitOf,
   toggleCollapse,
 } from '@/domain/tree';
+import type { IssueTreeDoc, NodeId } from '@/domain/types';
 
 const seed = () => createDoc('Why is profit down?', 1000);
 
@@ -264,5 +268,56 @@ describe('tree ops', () => {
     expect(childrenOf(doc4, doc0.rootId).map((n) => n.label)).toEqual(['Cost']);
 
     expect(removeNode(doc4, doc0.rootId)).toBe(doc4);
+  });
+
+  it('duplicateNode preserves all split metadata on the clone', () => {
+    let doc = createDoc('Root', 0);
+    const a = addChild(doc, doc.rootId, 'A');
+    doc = a.doc;
+    doc = addChild(doc, a.childId, 'A1').doc;
+    doc = addChild(doc, a.childId, 'A2').doc;
+    doc = setDecomposition(doc, a.childId, 'segment');
+    doc = setDimension(doc, a.childId, 'geography');
+    doc = setSplitLogic(doc, a.childId, 'deductive');
+    doc = setSplitOrder(doc, a.childId, 'time');
+    doc = setSplitSummary(doc, a.childId, 'so-what');
+
+    const { doc: dup, newId } = duplicateNode(doc, a.childId);
+    const clone = splitOf(dup, newId);
+    expect(clone?.decomposition).toBe('segment');
+    expect(clone?.dimension).toBe('geography');
+    expect(clone?.logic).toBe('deductive');
+    expect(clone?.order).toBe('time');
+    expect(clone?.summary).toBe('so-what');
+  });
+
+  it('tree walkers terminate on a cyclic (malformed) document', () => {
+    const mece = {
+      exclusive: { state: 'unknown' as const },
+      exhaustive: { state: 'unknown' as const },
+    };
+    const cyclic = {
+      schemaVersion: 1,
+      id: 'd',
+      title: 't',
+      rootId: 'A',
+      nodes: {
+        A: { id: 'A', label: 'A', status: 'open', evidence: [] },
+        B: { id: 'B', label: 'B', status: 'open', evidence: [] },
+      },
+      splits: {
+        S1: { id: 'S1', parentId: 'A', childIds: ['B'], decomposition: 'freeform', mece },
+        S2: { id: 'S2', parentId: 'B', childIds: ['A'], decomposition: 'freeform', mece },
+      },
+      layout: { direction: 'LR' },
+      createdAt: 0,
+      updatedAt: 0,
+    } as unknown as IssueTreeDoc;
+
+    // Without the visited guards these would infinite-loop; reaching the
+    // assertions proves termination, and each node is visited exactly once.
+    expect([...descendantIds(cyclic, 'A' as NodeId)].sort()).toEqual(['A', 'B']);
+    expect(Object.keys(nodeDepths(cyclic)).sort()).toEqual(['A', 'B']);
+    expect(hiddenNodeIds(cyclic).size).toBe(0);
   });
 });

@@ -35,13 +35,20 @@ export function childrenOf(doc: IssueTreeDoc, nodeId: NodeId): IssueNode[] {
   return split.childIds.map((id) => doc.nodes[id]).filter((n): n is IssueNode => n !== undefined);
 }
 
+// The walkers below carry a `seen` guard so a malformed (cyclic) document — e.g.
+// a hand-crafted / corrupt import — can't send them into an infinite loop. On a
+// well-formed strict tree every node is reached once, so behaviour is unchanged.
+
 /** All descendant node ids of `nodeId` (excludes `nodeId` itself). */
 export function descendantIds(doc: IssueTreeDoc, nodeId: NodeId): NodeId[] {
   const out: NodeId[] = [];
+  const seen = new Set<NodeId>();
   const stack: NodeId[] = [...(splitOf(doc, nodeId)?.childIds ?? [])];
   while (stack.length > 0) {
     const id = stack.pop();
     if (id === undefined) break;
+    if (seen.has(id)) continue;
+    seen.add(id);
     out.push(id);
     const split = splitOf(doc, id);
     if (split) stack.push(...split.childIds);
@@ -52,7 +59,10 @@ export function descendantIds(doc: IssueTreeDoc, nodeId: NodeId): NodeId[] {
 /** Nodes hidden because an ancestor is collapsed (a collapsed node stays visible). */
 export function hiddenNodeIds(doc: IssueTreeDoc): Set<NodeId> {
   const hidden = new Set<NodeId>();
+  const seen = new Set<NodeId>();
   const walk = (id: NodeId, hiddenHere: boolean): void => {
+    if (seen.has(id)) return;
+    seen.add(id);
     if (hiddenHere) hidden.add(id);
     const childrenHidden = hiddenHere || doc.nodes[id]?.collapsed === true;
     for (const child of childrenOf(doc, id)) walk(child.id, childrenHidden);
@@ -68,6 +78,7 @@ export function hiddenNodeIds(doc: IssueTreeDoc): Set<NodeId> {
 export function nodeDepths(doc: IssueTreeDoc): Record<NodeId, number> {
   const depths: Record<NodeId, number> = {};
   const walk = (id: NodeId, depth: number): void => {
+    if (id in depths) return;
     depths[id] = depth;
     for (const child of childrenOf(doc, id)) walk(child.id, depth + 1);
   };
@@ -123,6 +134,7 @@ export function setDecomposition(
 ): IssueTreeDoc {
   const split = splitOf(doc, parentId);
   if (!split) return doc;
+  if (decomposition === split.decomposition) return doc;
   return { ...doc, splits: { ...doc.splits, [split.id]: { ...split, decomposition } } };
 }
 
@@ -134,6 +146,7 @@ export function setOperator(
 ): IssueTreeDoc {
   const split = splitOf(doc, parentId);
   if (!split) return doc;
+  if (operator === split.operator) return doc;
   return { ...doc, splits: { ...doc.splits, [split.id]: { ...split, operator } } };
 }
 
@@ -397,11 +410,17 @@ export function duplicateNode(
   for (const split of Object.values(doc.splits)) {
     const newParent = idMap.get(split.parentId);
     if (newParent === undefined) continue;
+    // Spread the whole split so every field (operator, dimension, logic, order,
+    // summary, …) is preserved on the copy — then override only the identity
+    // fields (fresh id + parent + remapped children + fresh MECE cache).
+    const base = createSplit(newParent, split.decomposition);
     const cloned: Split = {
-      ...createSplit(newParent, split.decomposition),
+      ...split,
+      id: base.id,
+      parentId: newParent,
       childIds: split.childIds.map((c) => idMap.get(c)).filter((c): c is NodeId => c !== undefined),
+      mece: base.mece,
     };
-    if (split.operator !== undefined) cloned.operator = split.operator;
     splits[cloned.id] = cloned;
   }
 
@@ -440,6 +459,12 @@ export function setPriority(
   priority: Priority | undefined
 ): IssueTreeDoc {
   return patchNode(doc, nodeId, (node) => {
+    const cur = node.priority;
+    const unchanged =
+      cur === undefined
+        ? priority === undefined
+        : priority !== undefined && cur.impact === priority.impact && cur.ease === priority.ease;
+    if (unchanged) return null; // no-op edits don't churn undo history
     const next: IssueNode = { ...node };
     if (priority === undefined) delete next.priority;
     else next.priority = priority;

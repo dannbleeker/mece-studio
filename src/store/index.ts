@@ -573,11 +573,17 @@ export const useStore = create<AppState>((set, get) => {
         const prev = s.past[s.past.length - 1];
         if (!prev) return s;
         saveDocById(prev);
+        // Reconcile the selection against the restored doc — undoing a creation
+        // must not leave selectedId/selectedIds pointing at a now-gone node.
+        const selectedIds = s.selectedIds.filter((x) => prev.nodes[x]);
+        const primaryOk = s.selectedId != null && prev.nodes[s.selectedId] !== undefined;
         return {
           doc: prev,
           library: syncLibraryName(s.library, prev),
           past: s.past.slice(0, -1),
           future: [s.doc, ...s.future],
+          selectedIds,
+          selectedId: primaryOk ? s.selectedId : (selectedIds[selectedIds.length - 1] ?? null),
         };
       }),
     redo: () =>
@@ -585,11 +591,15 @@ export const useStore = create<AppState>((set, get) => {
         const next = s.future[0];
         if (!next) return s;
         saveDocById(next);
+        const selectedIds = s.selectedIds.filter((x) => next.nodes[x]);
+        const primaryOk = s.selectedId != null && next.nodes[s.selectedId] !== undefined;
         return {
           doc: next,
           library: syncLibraryName(s.library, next),
           past: [...s.past, s.doc],
           future: s.future.slice(1),
+          selectedIds,
+          selectedId: primaryOk ? s.selectedId : (selectedIds[selectedIds.length - 1] ?? null),
         };
       }),
     canUndo: () => get().past.length > 0,

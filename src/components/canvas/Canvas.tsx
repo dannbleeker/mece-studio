@@ -252,9 +252,11 @@ function Flow() {
       dropTargetRef.current = null;
       if (target) moveNode(dragged.id as NodeId, target.id as NodeId);
       const st = useStore.getState();
-      setNodes(toFlow(st.doc, st.selectedIds, '', st.settings.sortSiblingsByPriority).nodes);
+      // Keep the live search query — passing '' here silently wiped the match
+      // highlight/count on any drag (incl. a snap-back that changes nothing).
+      setNodes(toFlow(st.doc, st.selectedIds, query, st.settings.sortSiblingsByPriority).nodes);
     },
-    [findDropTarget, moveNode, setNodes]
+    [findDropTarget, moveNode, setNodes, query]
   );
 
   // Zoom to the nodes whose label matches the search query.
