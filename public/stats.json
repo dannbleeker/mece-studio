@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-07-12T15:03:22.883Z",
-  "commit": "b37b8bd",
+  "generatedAt": "2026-07-12T15:50:00.031Z",
+  "commit": "9022587",
   "headline": {
     "linesTsJs": 18372,
     "tests": 472,
     "lineCoveragePct": 88.57,
-    "commits": 262,
+    "commits": 266,
     "ageDays": 31,
     "trackedFiles": 251,
     "featureManualPct": 100,
-    "featureBookPct": 94.2,
+    "featureBookPct": 100,
     "featureExamplePct": 17.4
   },
   "code": [
@@ -41,7 +41,7 @@
     {
       "category": "Docs (Markdown)",
       "files": 24,
-      "lines": 2784
+      "lines": 2918
     }
   ],
   "coverage": {
@@ -196,17 +196,17 @@
     "withinBudget": true
   },
   "docs": {
-    "bookWords": 25499,
+    "bookWords": 27789,
     "chapters": 16,
     "appLoc": 10544,
-    "docToCodeRatio": 0.26
+    "docToCodeRatio": 0.28
   },
   "featureCoverage": {
     "total": 121,
     "manual": 121,
     "manualPct": 100,
-    "book": 114,
-    "bookPct": 94.2,
+    "book": 121,
+    "bookPct": 100,
     "bookExample": 21,
     "bookExamplePct": 17.4,
     "byArea": {
@@ -218,7 +218,7 @@
       "MECE": {
         "total": 21,
         "manual": 21,
-        "book": 18
+        "book": 21
       },
       "Prioritisation": {
         "total": 3,
@@ -243,12 +243,12 @@
       "Synthesis": {
         "total": 7,
         "manual": 7,
-        "book": 5
+        "book": 7
       },
       "Canvas": {
         "total": 14,
         "manual": 14,
-        "book": 12
+        "book": 14
       },
       "Editing": {
         "total": 14,
@@ -283,68 +283,32 @@
     },
     "gaps": {
       "noManual": [],
-      "noBook": [
-        {
-          "id": "dense-node-layout",
-          "name": "Content-derived node height (no sibling overlap)",
-          "since": 9
-        },
-        {
-          "id": "problem-brief",
-          "name": "Problem brief (Problem Identity Card)",
-          "since": 11
-        },
-        {
-          "id": "split-logic",
-          "name": "Deductive vs inductive split logic",
-          "since": 11
-        },
-        {
-          "id": "coaching-advisories",
-          "name": "Coaching advisories",
-          "since": 11
-        },
-        {
-          "id": "split-so-what",
-          "name": "So-what action titles",
-          "since": 11
-        },
-        {
-          "id": "tree-mode",
-          "name": "Why/How tree mode",
-          "since": 11
-        },
-        {
-          "id": "split-order",
-          "name": "Sibling ordering principle",
-          "since": 11
-        }
-      ]
+      "noBook": []
     }
   },
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 31,
-    "commits": 262,
-    "commits7d": 26,
+    "commits": 266,
+    "commits7d": 30,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 134
+        "count": 135
       },
       {
         "name": "github-actions[bot]",
-        "count": 91
+        "count": 92
       },
       {
         "name": "Claude",
-        "count": 37
+        "count": 39
       }
     ],
     "churn30d": {
-      "added": 24176,
-      "removed": 7142
+      "added": 22143,
+      "removed": 6982
     },
-    "changelogEntries": 98
+    "changelogEntries": 99
   }
 }
