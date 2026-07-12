@@ -18,11 +18,14 @@ export function priorityBand(p: Priority): PriorityBand {
 }
 
 /**
- * Return a copy of `doc` with each split's children ordered by priority score
- * (highest first; unprioritised last, stable). View-only — lays siblings out by
- * priority without mutating the document's stored order.
+ * Return a copy of `doc` with each split's children laid out in reading order — a
+ * **view-only** transform that never mutates the stored order. `byPriorityDefault`
+ * is the global "sort siblings by priority" setting: when off, the authored order
+ * is kept as-is (same reference). Per-split `order` overrides this default (added
+ * with the ordering-principle feature).
  */
-export function sortSiblingsByPriority(doc: IssueTreeDoc): IssueTreeDoc {
+export function orderSiblings(doc: IssueTreeDoc, byPriorityDefault: boolean): IssueTreeDoc {
+  if (!byPriorityDefault) return doc;
   const score = (id: NodeId): number => {
     const p = doc.nodes[id]?.priority;
     return p ? priorityScore(p) : -1;

@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { createDoc } from './factory';
-import { sortSiblingsByPriority } from './priority';
+import { orderSiblings } from './priority';
 import { addChild, setPriority, splitOf } from './tree';
 
-describe('sortSiblingsByPriority', () => {
-  it('orders children highest-priority first, unprioritised last, without mutating the input', () => {
+describe('orderSiblings', () => {
+  it('orders children highest-priority first when the global default is on; off is a no-op', () => {
     let doc = createDoc('Q', 0);
     const low = addChild(doc, doc.rootId, 'low');
     doc = low.doc;
@@ -19,7 +19,10 @@ describe('sortSiblingsByPriority', () => {
     const original = splitOf(doc, doc.rootId)?.childIds;
     expect(original).toEqual([low.childId, none.childId, high.childId]);
 
-    const sorted = sortSiblingsByPriority(doc);
+    // Global default off → authored order, same reference.
+    expect(orderSiblings(doc, false)).toBe(doc);
+
+    const sorted = orderSiblings(doc, true);
     expect(splitOf(sorted, doc.rootId)?.childIds).toEqual([
       high.childId,
       low.childId,
