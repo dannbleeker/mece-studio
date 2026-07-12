@@ -25,15 +25,25 @@ export function priorityBand(p: Priority): PriorityBand {
  * with the ordering-principle feature).
  */
 export function orderSiblings(doc: IssueTreeDoc, byPriorityDefault: boolean): IssueTreeDoc {
-  if (!byPriorityDefault) return doc;
   const score = (id: NodeId): number => {
     const p = doc.nodes[id]?.priority;
     return p ? priorityScore(p) : -1;
   };
+  let changed = false;
   const splits: Record<SplitId, Split> = {};
   for (const [id, split] of Object.entries(doc.splits)) {
-    const childIds = [...split.childIds].sort((a, b) => score(b) - score(a));
-    splits[id as SplitId] = { ...split, childIds };
+    // `importance` always sorts; `time`/`structure` always keep the authored
+    // order; unset follows the global default. So a sequence or a fixed partition
+    // stays put even with the global priority-sort on.
+    const byPriority =
+      split.order === 'importance' || (split.order === undefined && byPriorityDefault);
+    if (byPriority) {
+      const childIds = [...split.childIds].sort((a, b) => score(b) - score(a));
+      splits[id as SplitId] = { ...split, childIds };
+      changed = true;
+    } else {
+      splits[id as SplitId] = split;
+    }
   }
-  return { ...doc, splits };
+  return changed ? { ...doc, splits } : doc;
 }

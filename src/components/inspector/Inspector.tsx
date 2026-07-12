@@ -15,6 +15,7 @@ import type {
   Level,
   NodeStatus,
   SplitLogic,
+  SplitOrder,
 } from '@/domain/types';
 import { copyToClipboard } from '@/services/download';
 import { useStore } from '@/store';
@@ -82,6 +83,7 @@ export function Inspector() {
   const setDimension = useStore((s) => s.setDimension);
   const setSplitLogic = useStore((s) => s.setSplitLogic);
   const setSplitSummary = useStore((s) => s.setSplitSummary);
+  const setSplitOrder = useStore((s) => s.setSplitOrder);
   const decompose = useStore((s) => s.decompose);
   const captureChildren = useStore((s) => s.captureChildren);
   const setPriority = useStore((s) => s.setPriority);
@@ -412,6 +414,37 @@ export function Inspector() {
                   The conclusion these children add up to — leads the branch in the synthesis.
                 </span>
               </label>
+
+              <section className="flex flex-col gap-1.5">
+                <span className={LABEL_CLS}>Order</span>
+                <div className="flex gap-1">
+                  {(
+                    [undefined, 'importance', 'time', 'structure'] as (SplitOrder | undefined)[]
+                  ).map((ord) => {
+                    const active = split.order === ord;
+                    return (
+                      <button
+                        key={ord ?? 'none'}
+                        type="button"
+                        aria-pressed={active}
+                        aria-label={ord ? `Order ${ord}` : 'Order default'}
+                        className={`flex-1 rounded px-1.5 py-1 text-[11px] capitalize ${
+                          active
+                            ? 'bg-[#3f6fb0] text-white'
+                            : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                        }`}
+                        onClick={() => setSplitOrder(selectedId, ord)}
+                      >
+                        {ord ?? '—'}
+                      </button>
+                    );
+                  })}
+                </div>
+                <span className="text-[11px] text-neutral-400 leading-snug">
+                  How the branches are ordered (Minto). Time and structure keep your order;
+                  importance sorts by priority.
+                </span>
+              </section>
 
               {split.decomposition === 'formula' && (
                 <label className="flex flex-col gap-1">

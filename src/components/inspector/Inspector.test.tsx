@@ -209,6 +209,16 @@ describe('Inspector', () => {
     expect(splitOf(s().doc, rootId)?.summary).toBe('Profit squeezed both sides');
   });
 
+  it('sets a split ordering principle through the store', () => {
+    s().addChild(s().doc.rootId, 'A');
+    s().addChild(s().doc.rootId, 'B');
+    const rootId = selectRoot();
+    render(<Inspector />);
+    goTab('Logic');
+    fireEvent.click(screen.getByRole('button', { name: 'Order time' }));
+    expect(splitOf(s().doc, rootId)?.order).toBe('time');
+  });
+
   it('surfaces a coaching advisory for a bare-topic branch', () => {
     s().addChild(s().doc.rootId, 'Revenue');
     s().addChild(s().doc.rootId, 'How can we cut costs?');
