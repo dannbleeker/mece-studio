@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 91,
+  "reviewedThroughChangelogEntries": 93,
   "features": [
     {
       "id": "issue-tree",
@@ -1085,6 +1085,24 @@
       "id": "split-so-what",
       "name": "So-what action titles",
       "area": "Synthesis",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "tree-mode",
+      "name": "Why/How tree mode",
+      "area": "MECE",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "split-order",
+      "name": "Sibling ordering principle",
+      "area": "Canvas",
       "since": 11,
       "manual": true,
       "book": false,

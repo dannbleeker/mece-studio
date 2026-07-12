@@ -246,6 +246,10 @@ Alongside the strict ME / CE checks, the inspector shows a **Coaching** callout 
 
 These are advice, not MECE findings — they never affect the MECE health chip or the review dock.
 
+### Why and How trees
+
+Set a tree's type from the **Problem brief**: a **why** tree is diagnostic (it breaks a problem into its causes), a **how** tree is prescriptive (it lays out alternative solutions). A badge in the header shows which. When a type is set, the **Coaching** callout keeps it consistent (Chevallier's rule that a tree asks *one* direction) — it flags a branch that opens with the opposite question word, and a *process* split inside a "how" tree, since a "how" tree should show alternatives, not a sequence of steps.
+
 ## Editing nodes
 
 **Inline label editing.** Double-click any node to edit its label right on the
@@ -328,6 +332,10 @@ band shows live as you pick, and as a chip on the node, so the 80/20 branches
 stand out. With a node selected on the canvas, press <kbd>P</kbd> to bump its
 priority (none → low → medium → high). The synthesis reads branches in priority
 order.
+
+### Ordering the branches
+
+Beyond the global "sort siblings by priority" setting, each split can declare *how* its branches are ordered (Minto's three orders), on the inspector's **Logic** tab: **importance** (sort by priority), **time** (a sequence), or **structure** (a fixed partition). *Time* and *structure* keep the order you authored on the canvas even when the global priority sort is on — so a process's stages or a fixed partition stay put — while *importance* sorts by priority even when the global setting is off.
 
 ## Hypotheses and status
 

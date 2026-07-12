@@ -1,7 +1,7 @@
 import { expect, type Page, test } from '@playwright/test';
 import { activeDoc, resetApp } from './helpers';
 
-type RawSplit = { parentId: string; logic?: string; summary?: string };
+type RawSplit = { parentId: string; logic?: string; summary?: string; order?: string };
 
 async function freshRootSelected(page: Page) {
   await resetApp(page);
@@ -48,4 +48,32 @@ test('split logic toggle and so-what land in the doc and the synthesis', async (
   // The so-what leads the branch in the answer-first synthesis.
   await page.getByRole('button', { name: 'Synthesis' }).click();
   await expect(page.getByText('Profit is squeezed on both sides')).toBeVisible();
+});
+
+test('the problem brief sets the tree mode, shown as a header badge', async ({ page }) => {
+  await freshRootSelected(page);
+
+  await page.getByRole('button', { name: /Problem brief/ }).click();
+  await page.getByRole('button', { name: 'Tree type how' }).click();
+  await page.keyboard.press('Escape'); // close the dialog
+
+  const doc = await activeDoc(page);
+  expect(doc.mode).toBe('how');
+  await expect(page.getByText('How tree')).toBeVisible(); // header badge
+});
+
+test('a split ordering principle lands in the doc', async ({ page }) => {
+  await freshRootSelected(page);
+
+  await page.getByRole('button', { name: '+ Add sub-issue' }).click();
+  await page.getByRole('button', { name: '+ Add sub-issue' }).click();
+
+  await page.getByRole('button', { name: 'Logic' }).click();
+  await page.getByRole('button', { name: 'Order time' }).click();
+
+  const doc = await activeDoc(page);
+  const rootSplit = (Object.values(doc.splits) as RawSplit[]).find(
+    (sp) => sp.parentId === doc.rootId
+  );
+  expect(rootSplit?.order).toBe('time');
 });
