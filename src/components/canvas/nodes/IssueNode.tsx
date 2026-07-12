@@ -215,7 +215,7 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
       {hasChildren && (
         <button
           type="button"
-          title={collapsed ? `Expand ${childCount} hidden` : 'Collapse subtree'}
+          title={collapsed ? 'Expand subtree' : 'Collapse subtree'}
           aria-label={collapsed ? 'Expand subtree' : 'Collapse subtree'}
           className="nodrag absolute -bottom-2.5 left-1/2 -translate-x-1/2 rounded-full border border-neutral-300 bg-white px-1.5 py-px font-medium text-[9px] text-neutral-500 leading-none shadow-sm hover:border-[#3f6fb0] hover:text-[#3f6fb0]"
           onClick={(e) => {
