@@ -1,5 +1,6 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { CHECK_STATE_COLOR, CHECK_STATE_GLYPH, CHECK_STATE_LABEL } from '@/components/checkColors';
+import { advisoriesFor } from '@/domain/advisories';
 import { decomposePrompt } from '@/domain/aiPrompts';
 import { DECOMPOSITION_HINTS, DECOMPOSITION_LABELS } from '@/domain/constants';
 import { priorityBand } from '@/domain/priority';
@@ -13,6 +14,7 @@ import type {
   FormulaOperator,
   Level,
   NodeStatus,
+  SplitLogic,
 } from '@/domain/types';
 import { copyToClipboard } from '@/services/download';
 import { useStore } from '@/store';
@@ -78,6 +80,8 @@ export function Inspector() {
   const setDecomposition = useStore((s) => s.setDecomposition);
   const setOperator = useStore((s) => s.setOperator);
   const setDimension = useStore((s) => s.setDimension);
+  const setSplitLogic = useStore((s) => s.setSplitLogic);
+  const setSplitSummary = useStore((s) => s.setSplitSummary);
   const decompose = useStore((s) => s.decompose);
   const captureChildren = useStore((s) => s.captureChildren);
   const setPriority = useStore((s) => s.setPriority);
@@ -92,6 +96,12 @@ export function Inspector() {
   const [evidenceDraft, setEvidenceDraft] = useState('');
   const [draftStrength, setDraftStrength] = useState<EvidenceStrength>('indicative');
   const [aiPaste, setAiPaste] = useState('');
+
+  // Coaching advisories for the selected node (never MECE findings — see advisories.ts).
+  const nodeAdvisories = useMemo(
+    () => (selectedId ? advisoriesFor(doc, selectedId) : []),
+    [doc, selectedId]
+  );
 
   const node = selectedId ? doc.nodes[selectedId] : undefined;
   const split = selectedId ? splitOf(doc, selectedId) : undefined;
@@ -180,6 +190,22 @@ export function Inspector() {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5">
+        {nodeAdvisories.length > 0 && (
+          <section className="flex flex-col gap-1 rounded-md border border-[#e8dcc0] bg-[#fbf6ea] px-3 py-2">
+            <span className="font-medium text-[#8a5a14] text-[11px] uppercase tracking-wider">
+              Coaching
+            </span>
+            <ul className="flex flex-col gap-1">
+              {nodeAdvisories.map((a) => (
+                <li key={a.id} className="flex gap-1.5 text-[12px] text-[#7a5a1e] leading-snug">
+                  <span aria-hidden="true">💡</span>
+                  <span>{a.message}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {tab === 'issue' && (
           <>
             <label className="flex flex-col gap-1">
@@ -340,6 +366,50 @@ export function Inspector() {
                 <span className="text-[11px] text-neutral-400 leading-snug">
                   Name the one axis you're splitting on — keeps the level MECE (one dimension per
                   split).
+                </span>
+              </label>
+
+              <section className="flex flex-col gap-1.5">
+                <span className={LABEL_CLS}>Logic</span>
+                <div className="flex gap-1">
+                  {(['inductive', 'deductive'] as SplitLogic[]).map((lg) => {
+                    const active = (split.logic ?? 'inductive') === lg;
+                    return (
+                      <button
+                        key={lg}
+                        type="button"
+                        aria-pressed={active}
+                        className={`flex-1 rounded px-2 py-1 text-[11px] capitalize ${
+                          active
+                            ? 'bg-[#3f6fb0] text-white'
+                            : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                        }`}
+                        onClick={() => setSplitLogic(selectedId, lg)}
+                      >
+                        {lg}
+                      </button>
+                    );
+                  })}
+                </div>
+                <span className="text-[11px] text-neutral-400 leading-snug">
+                  {(split.logic ?? 'inductive') === 'deductive'
+                    ? 'An argument chain (premise → premise → conclusion) — not overlap-checked.'
+                    : 'A grouping of same-kind branches — kept MECE.'}
+                </span>
+              </section>
+
+              <label className="flex flex-col gap-1">
+                <span className={LABEL_CLS}>So-what (insight)</span>
+                <input
+                  key={`${selectedId}-sum-${split.summary ?? ''}`}
+                  type="text"
+                  defaultValue={split.summary ?? ''}
+                  placeholder="the one takeaway these branches support…"
+                  className={INPUT_CLS}
+                  onBlur={(e) => setSplitSummary(selectedId, e.target.value)}
+                />
+                <span className="text-[11px] text-neutral-400 leading-snug">
+                  The conclusion these children add up to — leads the branch in the synthesis.
                 </span>
               </label>
 
