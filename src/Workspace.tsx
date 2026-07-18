@@ -248,7 +248,7 @@ export function Workspace() {
         <button
           type="button"
           onClick={() => setView('start')}
-          className="rounded-md px-1 font-semibold text-[#3f6fb0] text-lg tracking-tight hover:opacity-80"
+          className="shrink-0 whitespace-nowrap rounded-md px-1 font-semibold text-[#3f6fb0] text-lg tracking-tight hover:opacity-80"
           title="Back to Start"
         >
           MECE Studio

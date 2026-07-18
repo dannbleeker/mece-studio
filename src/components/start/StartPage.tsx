@@ -160,6 +160,7 @@ export function StartPage() {
   );
 
   const [section, setSection] = useState<Section>('start');
+  const [navOpen, setNavOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -218,11 +219,21 @@ export function StartPage() {
         onNew={() => newDoc()}
         treeCount={docs.length}
         reviewCount={reviewDocs.length}
+        open={navOpen}
+        onClose={() => setNavOpen(false)}
       />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex shrink-0 items-center gap-3 border-[#e7e4dc] border-b bg-white px-6 py-3">
+        <header className="flex shrink-0 items-center gap-3 border-[#e7e4dc] border-b bg-white px-4 py-3 sm:px-6">
+          <button
+            type="button"
+            onClick={() => setNavOpen(true)}
+            aria-label="Open navigation"
+            className="-ml-1 grid h-9 w-9 shrink-0 place-items-center rounded-md text-[18px] text-neutral-600 hover:bg-neutral-100 sm:hidden"
+          >
+            ☰
+          </button>
           <span className="font-medium text-[13px] text-neutral-500">{SECTION_TITLE[section]}</span>
-          <div className="relative ml-auto">
+          <div className="relative ml-auto min-w-0 flex-1 sm:flex-none">
             <input
               ref={searchRef}
               value={query}
@@ -235,9 +246,9 @@ export function StartPage() {
               }}
               placeholder="Search trees…"
               aria-label="Search trees"
-              className="w-64 rounded-lg border border-[#e7e4dc] bg-[#faf9f5] py-1.5 pr-12 pl-3 text-[13px] focus:border-[#3f6fb0] focus:bg-white focus:outline-none"
+              className="w-full rounded-lg border border-[#e7e4dc] bg-[#faf9f5] py-1.5 pr-12 pl-3 text-[13px] focus:border-[#3f6fb0] focus:bg-white focus:outline-none sm:w-64"
             />
-            <kbd className="-translate-y-1/2 absolute top-1/2 right-2 rounded border border-[#e7e4dc] bg-white px-1.5 text-[11px] text-neutral-400">
+            <kbd className="-translate-y-1/2 absolute top-1/2 right-2 hidden rounded border border-[#e7e4dc] bg-white px-1.5 text-[11px] text-neutral-400 sm:block">
               ⌘K
             </kbd>
           </div>

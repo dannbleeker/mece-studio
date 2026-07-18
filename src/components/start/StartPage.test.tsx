@@ -90,7 +90,8 @@ describe('StartPage', () => {
     render(<StartPage />);
     expect(screen.getByRole('button', { name: 'Start' }).getAttribute('aria-current')).toBe('page');
     fireEvent.click(screen.getByRole('button', { name: /All trees/ }));
-    expect(screen.getByRole('button', { name: /^Open / })).toBeTruthy();
+    // A tree card's open button (not the mobile nav toggle, which is "Open navigation").
+    expect(screen.getByRole('button', { name: /^Open (?!navigation)/ })).toBeTruthy();
   });
 
   it('deletes a tree from its card and stays on Start', () => {
