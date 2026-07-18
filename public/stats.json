@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-13T09:48:13.388Z",
-  "commit": "417070a",
+  "generatedAt": "2026-07-18T05:15:13.348Z",
+  "commit": "d4c4643",
   "headline": {
-    "linesTsJs": 18372,
+    "linesTsJs": 18419,
     "tests": 472,
-    "lineCoveragePct": 88.57,
-    "commits": 268,
-    "ageDays": 32,
+    "lineCoveragePct": 88.49,
+    "commits": 271,
+    "ageDays": 37,
     "trackedFiles": 251,
     "featureManualPct": 100,
     "featureBookPct": 100,
@@ -16,12 +16,12 @@
     {
       "category": "App code (src, excl. tests)",
       "files": 90,
-      "lines": 10544
+      "lines": 10590
     },
     {
       "category": "Unit tests",
       "files": 66,
-      "lines": 5551
+      "lines": 5552
     },
     {
       "category": "E2E tests (Playwright)",
@@ -41,29 +41,29 @@
     {
       "category": "Docs (Markdown)",
       "files": 24,
-      "lines": 2918
+      "lines": 2919
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 88.57,
-      "covered": 2333,
-      "total": 2634
+      "pct": 88.49,
+      "covered": 2338,
+      "total": 2642
     },
     "statements": {
-      "pct": 87.09,
-      "covered": 2808,
-      "total": 3224
+      "pct": 87.03,
+      "covered": 2813,
+      "total": 3232
     },
     "functions": {
-      "pct": 84.07,
-      "covered": 792,
-      "total": 942
+      "pct": 83.93,
+      "covered": 794,
+      "total": 946
     },
     "branches": {
-      "pct": 78.17,
-      "covered": 1540,
-      "total": 1970
+      "pct": 78.11,
+      "covered": 1542,
+      "total": 1974
     }
   },
   "tests": {
@@ -156,7 +156,7 @@
         "commits": 17
       },
       {
-        "file": "src/components/canvas/projection.ts",
+        "file": "src/Workspace.tsx",
         "commits": 15
       }
     ],
@@ -173,7 +173,7 @@
       },
       {
         "file": "src/components/start/StartPage.tsx",
-        "commits": 7,
+        "commits": 8,
         "pct": 66.66
       }
     ]
@@ -189,16 +189,16 @@
     "nonNull": 0
   },
   "bundle": {
-    "eagerJsGzipKb": 104.7,
-    "totalJsGzipKb": 542.4,
-    "cssGzipKb": 9.1,
+    "eagerJsGzipKb": 105,
+    "totalJsGzipKb": 542.7,
+    "cssGzipKb": 9.2,
     "budgetKb": 115,
     "withinBudget": true
   },
   "docs": {
     "bookWords": 27789,
     "chapters": 16,
-    "appLoc": 10544,
+    "appLoc": 10590,
     "docToCodeRatio": 0.28
   },
   "featureCoverage": {
@@ -288,27 +288,27 @@
   },
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
-    "ageDays": 32,
-    "commits": 268,
-    "commits7d": 32,
+    "ageDays": 37,
+    "commits": 271,
+    "commits7d": 34,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 135
+        "count": 136
       },
       {
         "name": "github-actions[bot]",
-        "count": 94
+        "count": 95
       },
       {
         "name": "Claude",
-        "count": 39
+        "count": 40
       }
     ],
     "churn30d": {
-      "added": 17792,
-      "removed": 5875
+      "added": 12437,
+      "removed": 3944
     },
-    "changelogEntries": 99
+    "changelogEntries": 100
   }
 }
