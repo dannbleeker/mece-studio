@@ -1,15 +1,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createDoc } from '../domain/factory';
+import { CURRENT_SCHEMA_VERSION } from '../domain/migrations';
 import {
   docName,
   loadDocById,
   loadSettings,
+  loadUserTemplates,
   loadWorkspace,
   parseDoc,
   removeDocById,
   saveDocById,
   saveLibrary,
   saveSettings,
+  saveUserTemplates,
 } from './storage';
 
 // In-memory localStorage so the persistence paths run in the node test env.
@@ -150,5 +153,41 @@ describe('storage', () => {
     const doc = createDoc('Q', 1);
     const broken = JSON.stringify({ ...doc, nodes: {} }); // rootId no longer a node key
     expect(parseDoc(broken)).toBeNull();
+  });
+
+  describe('user templates', () => {
+    it('round-trips saved templates', () => {
+      const doc = createDoc('Template root', 1);
+      saveUserTemplates([{ id: 't1', name: 'Mine', doc }]);
+      const loaded = loadUserTemplates();
+      expect(loaded).toHaveLength(1);
+      expect(loaded[0]?.name).toBe('Mine');
+      expect(loaded[0]?.doc.rootId).toBe(doc.rootId);
+    });
+
+    it('migrates a template document, like any other stored doc', () => {
+      // A template saved before schema versioning existed. It must come back
+      // stamped at the current version — templates are as old as the trees
+      // beside them, so they take the same migration seam.
+      const { schemaVersion: _omitted, ...unversioned } = createDoc('Old', 1);
+      localStorage.setItem(
+        'mece-studio:userTemplates:v1',
+        JSON.stringify([{ id: 't1', name: 'Legacy', doc: unversioned }])
+      );
+      expect(loadUserTemplates()[0]?.doc.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
+    });
+
+    it('drops a template whose document is unloadable, keeping the rest', () => {
+      const good = createDoc('Good', 1);
+      localStorage.setItem(
+        'mece-studio:userTemplates:v1',
+        JSON.stringify([
+          { id: 'bad', name: 'Broken', doc: { rootId: 'r', nodes: {}, splits: {} } },
+          { id: 'ok', name: 'Good', doc: good },
+        ])
+      );
+      const loaded = loadUserTemplates();
+      expect(loaded.map((t) => t.id)).toEqual(['ok']);
+    });
   });
 });

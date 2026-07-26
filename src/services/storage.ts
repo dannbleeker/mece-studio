@@ -156,8 +156,7 @@ export function saveLibrary(library: Library): void {
  * the store then seeds a fresh starter tree). A library the user emptied by
  * deleting every tree is a real, loadable state: it returns with `doc: null` so
  * the store keeps an empty library instead of reseeding a starter.
- */
-/**
+ *
  * `untitledFallback` names a library entry migrated from the pre-library save
  * format when its root question is blank. Passed in rather than hardcoded — it
  * is a word, and this service stays language-free.
@@ -244,23 +243,36 @@ export function saveOpenTabs(ids: string[]): void {
   writeJson(OPEN_TABS_KEY, ids);
 }
 
-function isUserTemplateList(v: unknown): v is UserTemplate[] {
+function isTemplateShape(v: unknown): v is { id: string; name: string; doc: unknown } {
   return (
-    Array.isArray(v) &&
-    v.every(
-      (t) =>
-        typeof t === 'object' &&
-        t !== null &&
-        typeof (t as UserTemplate).id === 'string' &&
-        typeof (t as UserTemplate).name === 'string' &&
-        isDoc((t as UserTemplate).doc)
-    )
+    typeof v === 'object' &&
+    v !== null &&
+    typeof (v as UserTemplate).id === 'string' &&
+    typeof (v as UserTemplate).name === 'string'
   );
 }
 
-/** The user's saved custom templates (empty on first run). */
+/**
+ * The user's saved custom templates (empty on first run).
+ *
+ * Each template's document goes through `coerceDoc`, exactly like a document
+ * read from its own key or imported from a file — templates are persisted
+ * `IssueTreeDoc`s and are just as old as the trees beside them, so they need the
+ * same migration. Skipping it was harmless only while the migration registry was
+ * empty; the first real `SCHEMA_VERSION` bump would have loaded every saved
+ * template at the old schema and treated it as current. A template that can't be
+ * coerced is dropped rather than surfaced as a broken tile.
+ */
 export function loadUserTemplates(): UserTemplate[] {
-  return readJson(USER_TEMPLATES_KEY, isUserTemplateList) ?? [];
+  const raw = readJson<unknown[]>(USER_TEMPLATES_KEY, Array.isArray);
+  if (!raw) return [];
+  const out: UserTemplate[] = [];
+  for (const entry of raw) {
+    if (!isTemplateShape(entry)) continue;
+    const doc = coerceDoc(entry.doc);
+    if (doc) out.push({ id: entry.id, name: entry.name, doc });
+  }
+  return out;
 }
 
 export function saveUserTemplates(list: UserTemplate[]): void {

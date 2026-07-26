@@ -614,8 +614,13 @@ export const useStore = create<AppState>((set, get) => {
 
     undo: () =>
       set((s) => {
-        const prev = s.past[s.past.length - 1];
-        if (!prev) return s;
+        const snapshot = s.past[s.past.length - 1];
+        if (!snapshot) return s;
+        // Re-evaluate under the CURRENT options. A history entry carries the MECE
+        // status computed when it was taken, so after a tolerance / strict-overlap
+        // change the restored doc would otherwise show badges the settings no
+        // longer justify — until the next edit silently corrected them.
+        const prev = recomputeMece(snapshot, meceOptions(s.settings));
         saveDocById(prev);
         // Reconcile the selection against the restored doc — undoing a creation
         // must not leave selectedId/selectedIds pointing at a now-gone node.
@@ -632,8 +637,10 @@ export const useStore = create<AppState>((set, get) => {
       }),
     redo: () =>
       set((s) => {
-        const next = s.future[0];
-        if (!next) return s;
+        const snapshot = s.future[0];
+        if (!snapshot) return s;
+        // Same reasoning as undo: the snapshot predates the current settings.
+        const next = recomputeMece(snapshot, meceOptions(s.settings));
         saveDocById(next);
         const selectedIds = s.selectedIds.filter((x) => next.nodes[x]);
         const primaryOk = s.selectedId != null && next.nodes[s.selectedId] !== undefined;
