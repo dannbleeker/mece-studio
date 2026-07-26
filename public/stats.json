@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-26T11:10:52.242Z",
-  "commit": "0522b18",
+  "generatedAt": "2026-07-26T12:50:54.986Z",
+  "commit": "4665e1b",
   "headline": {
-    "linesTsJs": 22208,
-    "tests": 515,
-    "lineCoveragePct": 88.52,
-    "commits": 283,
+    "linesTsJs": 22561,
+    "tests": 525,
+    "lineCoveragePct": 88.76,
+    "commits": 292,
     "ageDays": 45,
-    "trackedFiles": 291,
+    "trackedFiles": 292,
     "featureManualPct": 100,
     "featureBookPct": 99.2,
     "featureExamplePct": 17.2
@@ -16,12 +16,12 @@
     {
       "category": "App code (src, excl. tests)",
       "files": 124,
-      "lines": 13289
+      "lines": 13406
     },
     {
       "category": "Unit tests",
-      "files": 71,
-      "lines": 6186
+      "files": 72,
+      "lines": 6371
     },
     {
       "category": "E2E tests (Playwright)",
@@ -31,7 +31,7 @@
     {
       "category": "Build scripts",
       "files": 15,
-      "lines": 1632
+      "lines": 1683
     },
     {
       "category": "Styles (CSS)",
@@ -41,33 +41,33 @@
     {
       "category": "Docs (Markdown)",
       "files": 24,
-      "lines": 3003
+      "lines": 3050
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 88.52,
-      "covered": 2600,
-      "total": 2937
+      "pct": 88.76,
+      "covered": 2640,
+      "total": 2974
     },
     "statements": {
-      "pct": 87.18,
-      "covered": 3088,
-      "total": 3542
+      "pct": 87.36,
+      "covered": 3132,
+      "total": 3585
     },
     "functions": {
-      "pct": 83.33,
-      "covered": 905,
-      "total": 1086
+      "pct": 83.54,
+      "covered": 909,
+      "total": 1088
     },
     "branches": {
-      "pct": 78.8,
-      "covered": 1591,
-      "total": 2019
+      "pct": 79.4,
+      "covered": 1615,
+      "total": 2034
     }
   },
   "tests": {
-    "unit": 469,
+    "unit": 479,
     "e2e": 46
   },
   "domain": {
@@ -87,11 +87,11 @@
       },
       {
         "name": "store/index.ts",
-        "lines": 653
+        "lines": 660
       },
       {
         "name": "domain/tree.ts",
-        "lines": 579
+        "lines": 609
       },
       {
         "name": "components/canvas/Canvas.tsx",
@@ -102,8 +102,8 @@
         "lines": 438
       },
       {
-        "name": "domain/examples.ts",
-        "lines": 357
+        "name": "domain/mece/engine.ts",
+        "lines": 378
       }
     ]
   },
@@ -126,37 +126,37 @@
         "pct": 33.33
       },
       {
-        "file": "src/i18n/registry.ts",
-        "pct": 50
+        "file": "src/i18n/locales/en/mece.ts",
+        "pct": 44.44
       },
       {
-        "file": "src/i18n/locales/en/mece.ts",
+        "file": "src/i18n/registry.ts",
         "pct": 50
       }
     ],
     "churnHotspots": [
       {
         "file": "src/store/index.ts",
-        "commits": 38
+        "commits": 39
       },
       {
         "file": "src/components/canvas/Canvas.tsx",
         "commits": 28
       },
       {
-        "file": "src/components/inspector/Inspector.tsx",
+        "file": "src/domain/tree.ts",
         "commits": 26
       },
       {
-        "file": "src/domain/tree.ts",
-        "commits": 25
+        "file": "src/components/inspector/Inspector.tsx",
+        "commits": 26
       },
       {
         "file": "src/Workspace.tsx",
         "commits": 18
       },
       {
-        "file": "src/App.tsx",
+        "file": "src/components/canvas/projection.ts",
         "commits": 17
       }
     ],
@@ -164,7 +164,7 @@
       {
         "file": "src/components/canvas/Canvas.tsx",
         "commits": 28,
-        "pct": 63.42
+        "pct": 63.63
       },
       {
         "file": "src/App.tsx",
@@ -189,16 +189,16 @@
     "nonNull": 0
   },
   "bundle": {
-    "eagerJsGzipKb": 109.8,
-    "totalJsGzipKb": 550.8,
+    "eagerJsGzipKb": 110.1,
+    "totalJsGzipKb": 552.1,
     "cssGzipKb": 9.3,
     "budgetKb": 113,
     "withinBudget": true
   },
   "docs": {
-    "bookWords": 27789,
+    "bookWords": 27875,
     "chapters": 16,
-    "appLoc": 13289,
+    "appLoc": 13406,
     "docToCodeRatio": 0.23
   },
   "featureCoverage": {
@@ -295,26 +295,26 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 45,
-    "commits": 283,
-    "commits7d": 11,
+    "commits": 292,
+    "commits7d": 20,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 138
+        "count": 139
       },
       {
         "name": "github-actions[bot]",
-        "count": 99
+        "count": 100
       },
       {
         "name": "Claude",
-        "count": 46
+        "count": 53
       }
     ],
     "churn30d": {
-      "added": 18098,
-      "removed": 5320
+      "added": 19570,
+      "removed": 6247
     },
-    "changelogEntries": 102
+    "changelogEntries": 106
   }
 }
