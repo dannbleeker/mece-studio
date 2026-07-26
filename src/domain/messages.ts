@@ -63,6 +63,8 @@ export interface MeceParams {
   'mece.exhaustive.formulaReconciles': { combined: number };
   /** Children don't reconcile. `relative` is a raw ratio (0.023), not a percentage string. */
   'mece.exhaustive.formulaOff': { combined: number; parent: number; relative: number };
+  /** Additive terms carry different units, so their total means nothing. */
+  'mece.exhaustive.formulaMixedUnits': { units: string[] };
   /** A binary split has the wrong branch count (either axis). */
   'mece.exhaustive.binaryNeedsTwo': undefined;
   /** A / not-A covers every case. */

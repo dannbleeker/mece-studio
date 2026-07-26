@@ -353,7 +353,11 @@ the leaves.</p>
 <li><strong>Roll-up.</strong> One click rolls the children&#39;s numbers up into the parent&#39;s value
 using the chosen operator.</li>
 <li><strong>Reconciliation.</strong> A check confirms the children actually add up to the parent
-within tolerance — if they don&#39;t, you&#39;re told.</li>
+within tolerance — if they don&#39;t, you&#39;re told. Units count: added or subtracted
+terms in different units (60 M DKK + 40 k DKK) don&#39;t reconcile at all, and the
+check says that rather than quoting a meaningless total. A product is exempt —
+multiplying dimensions is meant to change the unit. A blank unit means &quot;same as
+the others&quot;.</li>
 <li><strong>Sensitivity analysis.</strong> On a formula split, a ranked readout shows how much
 the parent value swings when each leaf driver moves <strong>±10%</strong>, one at a time — so
 the driver that matters most is obvious.</li>

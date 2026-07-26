@@ -92,6 +92,8 @@ This matters because you will sometimes inherit a parent value from an external 
 
 A tolerance exists because real data is messy. If the mismatch is small (within tolerance), the check passes. If it is large, the check flags it: the children do not reconcile with the parent.
 
+Units are part of the check, not decoration. If terms that get **added or subtracted** carry different units — 60 M DKK plus 40 k DKK — their total means nothing, so the check says so instead of quoting a number. A **product** is exempt: multiplying dimensions is supposed to change the unit, which is exactly what Price (k DKK) × Volume (k units) = Revenue (M DKK) does. Leaving a unit blank means "same as the others", so you only have to type it once.
+
 > A failing reconciliation is not always a mistake. It is sometimes a discovery — that your mental model of how the parts relate to the whole was wrong.
 
 Common causes of reconciliation failure:

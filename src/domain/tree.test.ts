@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { createDoc } from '@/domain/factory';
+import { createDoc, createSplit } from '@/domain/factory';
 import {
   addChild,
   childrenOf,
   descendantIds,
   duplicateNode,
   hiddenNodeIds,
+  isStrictTree,
   moveNode,
   moveSibling,
   nodeDepths,
@@ -319,5 +320,26 @@ describe('tree ops', () => {
     expect([...descendantIds(cyclic, 'A' as NodeId)].sort()).toEqual(['A', 'B']);
     expect(Object.keys(nodeDepths(cyclic)).sort()).toEqual(['A', 'B']);
     expect(hiddenNodeIds(cyclic).size).toBe(0);
+
+    // The walkers outside this file (exporters, print preview, sensitivity)
+    // recurse through `childrenOf` with no guard of their own, so a cyclic
+    // document must never get past the door in the first place.
+    expect(isStrictTree(cyclic)).toBe(false);
+  });
+
+  it('rejects a diamond — one node under two parents is not a tree either', () => {
+    let doc = createDoc('Root', 0);
+    const a = addChild(doc, doc.rootId, 'A');
+    doc = a.doc;
+    const b = addChild(doc, doc.rootId, 'B');
+    doc = b.doc;
+    const shared = addChild(doc, a.childId, 'Shared');
+    doc = shared.doc;
+    expect(isStrictTree(doc)).toBe(true);
+
+    // Hand-graft the same node under B as well — what a corrupt file looks like.
+    const bSplit = { ...createSplit(b.childId, 'freeform'), childIds: [shared.childId] };
+    const diamond = { ...doc, splits: { ...doc.splits, [bSplit.id]: bSplit } };
+    expect(isStrictTree(diamond)).toBe(false);
   });
 });

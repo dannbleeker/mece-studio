@@ -50,6 +50,13 @@ const ALLOWED_LITERALS = new Map([
   ['A', 'Binary-split placeholder branch, not prose.'],
   ['not-A', 'Binary-split placeholder branch, not prose.'],
   ['Segoe UI', 'CSS font-family name in the exported HTML stylesheet, not prose.'],
+  // These are worded in the catalogue (shortcut hints the user reads) AND
+  // compared against in code, where they are `KeyboardEvent.key` values — Web
+  // API constants that must never be translated.
+  ['Enter', 'KeyboardEvent.key value in a handler; the shortcut hint is worded separately.'],
+  ['Escape', 'KeyboardEvent.key value in a handler; the shortcut hint is worded separately.'],
+  ['Delete', 'KeyboardEvent.key value in a handler; the shortcut hint is worded separately.'],
+  ['Backspace', 'KeyboardEvent.key value in a handler; the shortcut hint is worded separately.'],
 ]);
 
 /** Characters that are symbols/punctuation rather than words. */
@@ -384,6 +391,50 @@ for (const file of filesUnder(CODE_ROOTS, (f) => /\.tsx?$/.test(f))) {
     const value = (match[1] ?? match[2] ?? '').trim();
     if (!READS_AS_PROSE.test(value) || NOT_PROSE.test(value)) continue;
     flagLiteral(file, value, 'string literal');
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 4. No literal that the catalogue already words.
+// ---------------------------------------------------------------------------
+// The prose heuristics above need two words to fire, so a one-word label
+// (`'Untitled'`, hardcoded in the OPML importer for an unnamed outline) slipped
+// past every scan. This rule needs no heuristic: if a literal is character-for-
+// character a string the English catalogue already words, it is translatable by
+// construction and someone wrote it twice. Zero guessing, so zero false
+// positives — the reason it can be strict where the prose scan must be lenient.
+/**
+ * A single-token string that reads as an identifier rather than as words: a
+ * bare lowercase word or anything dotted. Both are things the catalogue holds
+ * that code must legitimately spell the same way — the `enums` namespace words
+ * each member with the member's own spelling (`'open'`, `'high'`), and the
+ * rule-engine namespaces are *keyed* by dotted message codes, which this scan
+ * sees as literals too. Multi-word strings are exempt from the test, so real
+ * prose that merely ends in a period is unaffected.
+ */
+const CODE_SHAPED = (v) => !/\s/.test(v) && (/^[a-z]\w*$/.test(v) || v.includes('.'));
+
+const CATALOGUE_VALUES = new Set();
+for (const file of catalogueFiles()) {
+  for (const match of stripComments(readFileSync(file, 'utf8')).matchAll(STRING_LITERAL)) {
+    const value = (match[1] ?? match[2] ?? '').trim();
+    if (!HAS_WORD.test(value) || NOT_PROSE.test(value) || ALLOWED_LITERALS.has(value)) continue;
+    if (CODE_SHAPED(value)) continue;
+    CATALOGUE_VALUES.add(value);
+  }
+}
+
+for (const file of filesUnder([...UI_ROOTS, ...UI_FILES, ...CODE_ROOTS], (f) => /\.tsx?$/.test(f))) {
+  if (/\.test\.tsx?$/.test(file) || file.includes(`${CATALOGUE_DIR.replace(/\//g, sep)}${sep}`)) {
+    continue;
+  }
+  const src = stripComments(readFileSync(file, 'utf8'));
+  for (const match of src.matchAll(STRING_LITERAL)) {
+    const value = (match[1] ?? match[2] ?? '').trim();
+    if (!CATALOGUE_VALUES.has(value)) continue;
+    errors.push(
+      `${relative(ROOT, file)}: literal duplicates a catalogue string: ${JSON.stringify(value)}`
+    );
   }
 }
 

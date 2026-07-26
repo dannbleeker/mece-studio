@@ -4,3 +4,11 @@
 # lazy-loaded (off the eager bundle) and works fine without core-js's build.
 allowBuilds:
   core-js: false
+
+# CVE in brace-expansion (<=5.0.7, DoS via exponential-time expansion). Only
+# reachable at BUILD time — vite-plugin-pwa -> workbox-build ->
+# rollup-plugin-off-main-thread -> ejs — expanding globs this repo authors, so it
+# is not exploitable here. Pinned anyway because there is no upstream release to
+# wait for. Drop it once workbox-build's chain moves off the vulnerable range.
+overrides:
+  brace-expansion: ^5.0.8

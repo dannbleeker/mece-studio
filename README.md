@@ -14,7 +14,7 @@ Sibling to [TP Studio](https://tp-studio.struktureretsundfornuft.dk) (Theory of 
 - **Decomposition scaffolds.** "Decompose by …" seeds clean, type-appropriate starter sub-issues (binary → A / not-A, segments → two + Other, process → stages, formula → terms) that you rename.
 - **Prioritisation.** Mark each issue's **impact × ease**; nodes show a High / Medium / Low band so the 80/20 branches stand out, and the synthesis ranks by it.
 - **Hypotheses & evidence.** Set a node's status (open / supported / refuted / parked) and attach supporting or contradicting **evidence** with a strength.
-- **Value-driver trees.** Put numbers (with **units**) on a formula split's children and **roll them up** into the parent — combining by **sum, product, or difference** — with a reconciliation check, plus a **sensitivity** readout that ranks which driver moves the value most (±10%).
+- **Value-driver trees.** Put numbers (with **units**) on a formula split's children and **roll them up** into the parent — combining by **sum, product, or difference** — with a **unit-aware** reconciliation check, plus a **sensitivity** readout that ranks which driver moves the value most (±10%).
 - **Answer-first synthesis.** A Synthesis panel reads the tree back leading with the highest-priority branch, surfaces each node's evidence, and flags MECE gaps/overlaps — copyable as Markdown.
 - **Notes** per node for rationale, assumptions, and data sources.
 - **Multiple trees.** Keep a **library** of issue trees — a header picker switches between them, **+ New** starts another, **Delete** removes one. Each tree saves locally on its own; an older single saved tree migrates into the library automatically.
@@ -83,7 +83,8 @@ plain typed objects.
 ```bash
 pnpm install
 pnpm dev        # start the dev server
-pnpm verify     # typecheck → lint/format → dead-code → i18n → test → build → size budget
+pnpm verify     # typecheck → lint/format → dead-code → i18n → feature catalogue
+                # → test → docs → build → size budget
 ```
 
 `pnpm verify` is the single source of truth for "is it green", and CI runs the exact same gate. (Scripts invoke each tool in node form — `node ./node_modules/<tool>/…` — so they work under the local AppLocker policy.)

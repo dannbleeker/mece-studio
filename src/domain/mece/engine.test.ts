@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { createDoc } from '@/domain/factory';
 import { evaluateSplit, recomputeMece } from '@/domain/mece';
-import { addChild, setDecomposition, setNodeValue, setSplitLogic, splitOf } from '@/domain/tree';
+import {
+  addChild,
+  setDecomposition,
+  setNodeValue,
+  setOperator,
+  setSplitLogic,
+  splitOf,
+} from '@/domain/tree';
 import type { IssueTreeDoc } from '@/domain/types';
 
 function must<T>(v: T | undefined, msg: string): T {
@@ -56,6 +63,44 @@ describe('MECE engine', () => {
     doc = setNodeValue(doc, must(kids[0], 'k0'), { amount: 60 });
     doc = setNodeValue(doc, must(kids[1], 'k1'), { amount: 30 });
     expect(rootMece(doc).exhaustive.state).toBe('warn');
+  });
+
+  it('refuses to reconcile additive terms that carry different units', () => {
+    // Without the unit check these sum to 100 and read as a clean reconcile —
+    // a confidently wrong answer, which is the one thing the MECE brain must
+    // not give.
+    let doc = withChildren(['Nordics', 'Rest of world']);
+    doc = setDecomposition(doc, doc.rootId, 'formula');
+    doc = setNodeValue(doc, doc.rootId, { amount: 100, unit: 'M DKK' });
+    const kids = must(splitOf(doc, doc.rootId), 'split').childIds;
+    doc = setNodeValue(doc, must(kids[0], 'k0'), { amount: 60, unit: 'M DKK' });
+    doc = setNodeValue(doc, must(kids[1], 'k1'), { amount: 40, unit: 'k DKK' });
+
+    const check = rootMece(doc).exhaustive;
+    expect(check.state).toBe('warn');
+    expect(check.message?.code).toBe('mece.exhaustive.formulaMixedUnits');
+  });
+
+  it('lets a product change unit — multiplying dimensions is supposed to', () => {
+    // price (k DKK) × volume (k units) = revenue (M DKK): three units, correct.
+    let doc = withChildren(['Price', 'Volume']);
+    doc = setDecomposition(doc, doc.rootId, 'formula');
+    doc = setOperator(doc, doc.rootId, 'product');
+    doc = setNodeValue(doc, doc.rootId, { amount: 100, unit: 'M DKK' });
+    const kids = must(splitOf(doc, doc.rootId), 'split').childIds;
+    doc = setNodeValue(doc, must(kids[0], 'k0'), { amount: 0.5, unit: 'k DKK' });
+    doc = setNodeValue(doc, must(kids[1], 'k1'), { amount: 200, unit: 'k units' });
+    expect(rootMece(doc).exhaustive.state).toBe('pass');
+  });
+
+  it('treats a blank unit as "same as the others", not a second unit', () => {
+    let doc = withChildren(['Nordics', 'Rest of world']);
+    doc = setDecomposition(doc, doc.rootId, 'formula');
+    doc = setNodeValue(doc, doc.rootId, { amount: 100, unit: 'M DKK' });
+    const kids = must(splitOf(doc, doc.rootId), 'split').childIds;
+    doc = setNodeValue(doc, must(kids[0], 'k0'), { amount: 60 });
+    doc = setNodeValue(doc, must(kids[1], 'k1'), { amount: 40, unit: 'm dkk' });
+    expect(rootMece(doc).exhaustive.state).toBe('pass'); // case/space-insensitive
   });
 
   it('is unknown for a formula split missing values', () => {

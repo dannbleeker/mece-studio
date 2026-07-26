@@ -55,6 +55,36 @@ export function descendantIds(doc: IssueTreeDoc, nodeId: NodeId): NodeId[] {
   return out;
 }
 
+/**
+ * Is `doc` a strict tree — is every node reachable from the root reached
+ * exactly once?
+ *
+ * The walkers in this file carry their own `seen` guards, but the ones that
+ * matter most live elsewhere: the CSV, Markdown and presentation exporters, the
+ * print preview, and the sensitivity roll-up all recurse through `childrenOf`
+ * without one, and a cyclic document would spin or blow the stack in every one
+ * of them. Guarding each call site is five chances to forget on the sixth, so
+ * the invariant is enforced once, where documents enter — a cycle can only
+ * arrive from a hand-edited or corrupt file, never from an app edit
+ * (`moveNode` refuses to reparent a node under its own descendant).
+ *
+ * A revisit means either a cycle (A → B → A) or a diamond (one node under two
+ * parents). Neither is a tree, and both break the same walkers, so both fail.
+ */
+export function isStrictTree(doc: IssueTreeDoc): boolean {
+  const seen = new Set<NodeId>([doc.rootId]);
+  const stack: NodeId[] = [doc.rootId];
+  while (stack.length > 0) {
+    const id = stack.pop() as NodeId;
+    for (const childId of splitOf(doc, id)?.childIds ?? []) {
+      if (seen.has(childId)) return false;
+      seen.add(childId);
+      stack.push(childId);
+    }
+  }
+  return true;
+}
+
 /** Nodes hidden because an ancestor is collapsed (a collapsed node stays visible). */
 export function hiddenNodeIds(doc: IssueTreeDoc): Set<NodeId> {
   const hidden = new Set<NodeId>();

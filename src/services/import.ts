@@ -12,7 +12,7 @@
 
 import { markdownToDoc } from '@/domain/markdownImport';
 import type { IssueTreeDoc } from '@/domain/types';
-import { opmlToDoc } from '@/services/opmlImport';
+import { type ImportLabels, opmlToDoc } from '@/services/opmlImport';
 import { parseDoc } from '@/services/storage';
 
 type ImportFormat = 'json' | 'markdown' | 'opml';
@@ -30,8 +30,8 @@ export interface ImportedTree {
 export function importText(
   text: string,
   now: number,
-  /** Root label for an OPML import that names no top-level outline. */
-  fallbackLabel: string
+  /** Locale-supplied fallback labels for outlines the source leaves unnamed. */
+  labels: ImportLabels
 ): ImportedTree | null {
   const trimmed = text.trim();
   if (!trimmed) return null;
@@ -44,7 +44,7 @@ export function importText(
   // OPML / XML (outliners, mind-mappers): try structured parse; fall through if it
   // isn't valid OPML (so a stray '<' in prose still parses as a Markdown outline).
   if (trimmed.startsWith('<')) {
-    const doc = opmlToDoc(trimmed, now, fallbackLabel);
+    const doc = opmlToDoc(trimmed, now, labels);
     if (doc) return { doc, format: 'opml' };
   }
 
