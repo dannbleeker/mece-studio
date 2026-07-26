@@ -42,6 +42,14 @@ export const content = {
   starterQuestion: 'Why is this happening?',
   /** A new document's stored title. */
   untitledTree: 'Untitled tree',
+  /**
+   * Currency unit on the money-valued example trees. Seeded content: it is
+   * written onto the node and rendered beside the amount, so a locale picks its
+   * own (Danish would say 'mio. kr.').
+   */
+  moneyUnit: 'M DKK',
+  /** Root question for an imported outline that names no top-level item. */
+  importedOutlineLabel: 'Imported outline',
   /** Shown wherever a node or tree has no name yet. */
   untitled: 'Untitled',
   /** The name given to a duplicated tree — becomes that tree's stored name. */

@@ -128,10 +128,12 @@ class TreeBuilder {
  */
 function profitTree(m: CoreMessages): IssueTreeDoc {
   const n = m.content.examples.profit.nodes;
-  const b = new TreeBuilder(n.root, { value: { amount: 30, unit: 'M DKK' } });
+  const b = new TreeBuilder(n.root, { value: { amount: 30, unit: m.content.moneyUnit } });
 
-  const revenue = b.child(b.rootId, n.revenue, { value: { amount: 100, unit: 'M DKK' } });
-  const costs = b.child(b.rootId, n.costs, { value: { amount: 70, unit: 'M DKK' } });
+  const revenue = b.child(b.rootId, n.revenue, {
+    value: { amount: 100, unit: m.content.moneyUnit },
+  });
+  const costs = b.child(b.rootId, n.costs, { value: { amount: 70, unit: m.content.moneyUnit } });
   b.decompose(b.rootId, 'formula', 'difference');
 
   b.child(revenue, n.price, { value: { amount: 0.5, unit: 'k DKK' } });
@@ -142,8 +144,8 @@ function profitTree(m: CoreMessages): IssueTreeDoc {
   });
   b.decompose(revenue, 'formula', 'product');
 
-  b.child(costs, n.fixedCosts, { value: { amount: 30, unit: 'M DKK' } });
-  b.child(costs, n.variableCosts, { value: { amount: 40, unit: 'M DKK' } });
+  b.child(costs, n.fixedCosts, { value: { amount: 30, unit: m.content.moneyUnit } });
+  b.child(costs, n.variableCosts, { value: { amount: 40, unit: m.content.moneyUnit } });
   b.decompose(costs, 'formula', 'sum');
 
   return b.build();
@@ -278,7 +280,7 @@ function pricingTree(m: CoreMessages): IssueTreeDoc {
  */
 function marketSizingTree(m: CoreMessages): IssueTreeDoc {
   const n = m.content.examples['market-sizing'].nodes;
-  const b = new TreeBuilder(n.root, { value: { amount: 600, unit: 'M DKK' } });
+  const b = new TreeBuilder(n.root, { value: { amount: 600, unit: m.content.moneyUnit } });
 
   const drinkers = b.child(b.rootId, n.drinkers, { value: { amount: 300, unit: 'k people' } });
   b.child(b.rootId, n.spendEach, { value: { amount: 2, unit: 'k DKK' } });
@@ -314,7 +316,7 @@ function sourcingTree(m: CoreMessages): IssueTreeDoc {
  */
 function revenueDriverTree(m: CoreMessages): IssueTreeDoc {
   const n = m.content.examples['revenue-drivers'].nodes;
-  const b = new TreeBuilder(n.root, { value: { amount: 2400, unit: 'M DKK' } });
+  const b = new TreeBuilder(n.root, { value: { amount: 2400, unit: m.content.moneyUnit } });
 
   const customers = b.child(b.rootId, n.customers, { value: { amount: 120, unit: 'k' } });
   const perCustomer = b.child(b.rootId, n.perCustomer, {

@@ -104,6 +104,10 @@ export const app = {
   deleteTree: 'Delete tree',
   /** Fallback alert when a chosen file could not be read at all. */
   openFileFailed: 'Could not open that file.',
+  /** File-type row in the OS open/save dialog. */
+  treeFileTypeLabel: 'MECE Studio tree',
+  /** The chosen file parsed, but isn't a MECE Studio tree. */
+  invalidTreeFile: 'That file is not a valid MECE Studio tree (.json).',
 
   /** Deleting the open tree, and saving its structure as a reusable template. */
   deleteTreeConfirm: ({ name }: { name: string }) =>

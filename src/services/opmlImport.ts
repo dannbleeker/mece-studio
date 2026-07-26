@@ -20,7 +20,16 @@ function childOutlines(el: Element): Element[] {
  * `DOMParser`, so it lives in services (not the framework-free domain). Returns
  * null when the text isn't parseable OPML.
  */
-export function opmlToDoc(text: string, now: number): IssueTreeDoc | null {
+export function opmlToDoc(
+  text: string,
+  now: number,
+  /**
+   * Root label when the OPML names no top-level outline. Passed in because it
+   * is a word that becomes the tree's key question — seeded content, read from
+   * the active locale by the caller (`m.content.importedOutlineLabel`).
+   */
+  fallbackLabel: string
+): IssueTreeDoc | null {
   let dom: Document;
   try {
     dom = new DOMParser().parseFromString(text, 'application/xml');
@@ -34,7 +43,7 @@ export function opmlToDoc(text: string, now: number): IssueTreeDoc | null {
   const first = tops[0];
   if (!first) return null;
 
-  let doc = createDoc(outlineLabel(first) || 'Imported outline', now);
+  let doc = createDoc(outlineLabel(first) || fallbackLabel, now);
 
   // Cap total nodes (like the Markdown importer) so a pathologically wide/deep
   // third-party OPML can't hang or overflow the tab on import. Bounding the count

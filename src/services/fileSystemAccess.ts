@@ -20,10 +20,17 @@ import { docName, parseDoc } from '@/services/storage';
 const JSON_MIME = 'application/json';
 const FILE_EXTENSION = '.json';
 
-/** Thrown when a chosen file isn't a valid MECE Studio tree. */
+/**
+ * Thrown when a chosen file isn't a valid MECE Studio tree.
+ *
+ * Carries no prose. Like the rule engine's findings, an error is *what
+ * happened*, not a sentence — the caller words it from the active locale
+ * (`m.app.invalidTreeFile`). The `message` is a stable identifier for logs, and
+ * showing it to a user would be a bug.
+ */
 export class InvalidTreeFileError extends Error {
   constructor() {
-    super('That file is not a valid MECE Studio tree (.json).');
+    super('InvalidTreeFileError: the chosen file is not a MECE Studio tree');
     this.name = 'InvalidTreeFileError';
   }
 }
@@ -65,8 +72,12 @@ interface FsaWindow {
   showSaveFilePicker?(options?: SaveFilePickerOptions): Promise<TreeFileHandle>;
 }
 
-const PICKER_TYPES: FilePickerAcceptType[] = [
-  { description: 'MECE Studio tree', accept: { [JSON_MIME]: [FILE_EXTENSION] } },
+/**
+ * The file-type row the OS open/save dialog shows. Its description is prose the
+ * user reads, so the caller supplies it from the active locale.
+ */
+const pickerTypes = (description: string): FilePickerAcceptType[] => [
+  { description, accept: { [JSON_MIME]: [FILE_EXTENSION] } },
 ];
 
 /** True when the browser supports the File System Access open/save pickers. */
@@ -144,14 +155,14 @@ function pickFileViaInput(): Promise<File | null> {
  * Resolves to `null` when the user cancels the picker, and throws
  * {@link InvalidTreeFileError} when the chosen file isn't a valid tree.
  */
-export async function openTreeFile(): Promise<OpenedTree | null> {
+export async function openTreeFile(fileTypeLabel: string): Promise<OpenedTree | null> {
   if (supportsFileSystemAccess()) {
     const showOpenFilePicker = (window as unknown as FsaWindow).showOpenFilePicker as NonNullable<
       FsaWindow['showOpenFilePicker']
     >;
     let handles: TreeFileHandle[];
     try {
-      handles = await showOpenFilePicker({ types: PICKER_TYPES, multiple: false });
+      handles = await showOpenFilePicker({ types: pickerTypes(fileTypeLabel), multiple: false });
     } catch (error) {
       if (isAbort(error)) return null;
       throw error;
@@ -187,7 +198,10 @@ async function writeHandle(handle: TreeFileHandle, text: string): Promise<void> 
  * Returns the chosen handle (File System Access) or `null` (download fallback /
  * user cancelled).
  */
-export async function saveTreeFileAs(doc: IssueTreeDoc): Promise<TreeFileHandle | null> {
+export async function saveTreeFileAs(
+  doc: IssueTreeDoc,
+  fileTypeLabel: string
+): Promise<TreeFileHandle | null> {
   const text = serializeTree(doc);
   if (supportsFileSystemAccess()) {
     const w = window as unknown as FsaWindow;
@@ -195,7 +209,7 @@ export async function saveTreeFileAs(doc: IssueTreeDoc): Promise<TreeFileHandle 
     try {
       handle = await (w.showSaveFilePicker as NonNullable<FsaWindow['showSaveFilePicker']>)({
         suggestedName: suggestedFileName(doc),
-        types: PICKER_TYPES,
+        types: pickerTypes(fileTypeLabel),
       });
     } catch (error) {
       if (isAbort(error)) return null;
@@ -217,11 +231,12 @@ export async function saveTreeFileAs(doc: IssueTreeDoc): Promise<TreeFileHandle 
  */
 export async function saveTreeFile(
   doc: IssueTreeDoc,
-  handle: TreeFileHandle | null
+  handle: TreeFileHandle | null,
+  fileTypeLabel: string
 ): Promise<TreeFileHandle | null> {
   if (supportsFileSystemAccess() && handle && (await ensureWritable(handle))) {
     await writeHandle(handle, serializeTree(doc));
     return handle;
   }
-  return saveTreeFileAs(doc);
+  return saveTreeFileAs(doc, fileTypeLabel);
 }

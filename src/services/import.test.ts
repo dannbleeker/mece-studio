@@ -5,37 +5,37 @@ import { importText } from './import';
 
 describe('importText', () => {
   it('returns null for empty input', () => {
-    expect(importText('', 1)).toBeNull();
-    expect(importText('   ', 1)).toBeNull();
+    expect(importText('', 1, 'Imported outline')).toBeNull();
+    expect(importText('   ', 1, 'Imported outline')).toBeNull();
   });
 
   it('reads a JSON document and round-trips with the JSON export', () => {
     const doc = createDoc('Exported question', 1);
-    const result = importText(treeToJson(doc), 2);
+    const result = importText(treeToJson(doc), 2, 'Imported outline');
     expect(result?.format).toBe('json');
     expect(result?.doc.rootId).toBe(doc.rootId);
   });
 
   it('carries a document locale through an export → import round trip', () => {
     const doc = createDoc('Exported question', 1, { locale: 'en' });
-    expect(importText(treeToJson(doc), 2)?.doc.locale).toBe('en');
+    expect(importText(treeToJson(doc), 2, 'Imported outline')?.doc.locale).toBe('en');
   });
 
   it('accepts a document saved before the locale field existed', () => {
     const doc = createDoc('Legacy question', 1);
     const legacy = JSON.parse(treeToJson(doc)) as Record<string, unknown>;
     delete legacy.locale;
-    const result = importText(JSON.stringify(legacy), 2);
+    const result = importText(JSON.stringify(legacy), 2, 'Imported outline');
     expect(result?.doc.rootId).toBe(doc.rootId);
     expect(result?.doc.locale).toBeUndefined();
   });
 
   it('rejects JSON-looking text that is not a valid tree', () => {
-    expect(importText('{"not":"a tree"}', 1)).toBeNull();
+    expect(importText('{"not":"a tree"}', 1, 'Imported outline')).toBeNull();
   });
 
   it('parses a Markdown outline into a tree', () => {
-    const result = importText('# Root\n- A\n- B', 1);
+    const result = importText('# Root\n- A\n- B', 1, 'Imported outline');
     expect(result?.format).toBe('markdown');
     expect(result?.doc.nodes[result.doc.rootId]?.label).toBe('Root');
   });

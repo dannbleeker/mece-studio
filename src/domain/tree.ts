@@ -92,7 +92,7 @@ export function nodeDepths(doc: IssueTreeDoc): Record<NodeId, number> {
 export function addChild(
   doc: IssueTreeDoc,
   parentId: NodeId,
-  label = 'New issue',
+  label: string,
   decomposition: DecompositionType = 'freeform'
 ): { doc: IssueTreeDoc; childId: NodeId } {
   if (!doc.nodes[parentId]) return { doc, childId: parentId };

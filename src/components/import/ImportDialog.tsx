@@ -18,7 +18,7 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
   const [error, setError] = useState<string | null>(null);
 
   const onImport = () => {
-    const result = importText(text, Date.now());
+    const result = importText(text, Date.now(), m.content.importedOutlineLabel);
     if (!result) {
       setError(m.app.importError);
       return;

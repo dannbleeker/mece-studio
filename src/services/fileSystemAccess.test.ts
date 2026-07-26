@@ -82,7 +82,7 @@ describe('openTreeFile', () => {
       vi.fn(async () => [handle]),
       vi.fn()
     );
-    const opened = await openTreeFile();
+    const opened = await openTreeFile('MECE Studio tree');
     expect(opened?.doc.rootId).toBe(doc.rootId);
     expect(opened?.handle).toBe(handle);
   });
@@ -95,7 +95,7 @@ describe('openTreeFile', () => {
       }),
       vi.fn()
     );
-    expect(await openTreeFile()).toBeNull();
+    expect(await openTreeFile('MECE Studio tree')).toBeNull();
   });
 
   it('throws InvalidTreeFileError for a non-tree file', async () => {
@@ -104,7 +104,7 @@ describe('openTreeFile', () => {
       vi.fn(async () => [handle]),
       vi.fn()
     );
-    await expect(openTreeFile()).rejects.toBeInstanceOf(InvalidTreeFileError);
+    await expect(openTreeFile('MECE Studio tree')).rejects.toBeInstanceOf(InvalidTreeFileError);
   });
 
   it('falls back to a file input when FSA is unsupported', async () => {
@@ -132,7 +132,7 @@ describe('openTreeFile', () => {
       .mockImplementation((node) => node as never);
     setPickers(undefined, undefined);
 
-    const opened = await openTreeFile();
+    const opened = await openTreeFile('MECE Studio tree');
     createSpy.mockRestore();
     appendSpy.mockRestore();
 
@@ -149,7 +149,7 @@ describe('saveTreeFileAs', () => {
       vi.fn(),
       vi.fn(async () => handle)
     );
-    const result = await saveTreeFileAs(doc);
+    const result = await saveTreeFileAs(doc, 'MECE Studio tree');
     expect(result).toBe(handle);
     expect(handle.writes[0]).toContain(doc.rootId);
   });
@@ -162,13 +162,13 @@ describe('saveTreeFileAs', () => {
         throw abort;
       })
     );
-    expect(await saveTreeFileAs(doc())).toBeNull();
+    expect(await saveTreeFileAs(doc(), 'MECE Studio tree')).toBeNull();
   });
 
   it('falls back to a download when FSA is unsupported', async () => {
     const d = createDoc('Q', 1);
     setPickers(undefined, undefined);
-    const result = await saveTreeFileAs(d);
+    const result = await saveTreeFileAs(d, 'MECE Studio tree');
     expect(result).toBeNull();
     expect(downloadText).toHaveBeenCalledWith(
       suggestedFileName(d),
@@ -184,7 +184,7 @@ describe('saveTreeFile', () => {
     const handle = fakeHandle();
     const savePicker = vi.fn();
     setPickers(vi.fn(), savePicker);
-    const result = await saveTreeFile(d, handle);
+    const result = await saveTreeFile(d, handle, 'MECE Studio tree');
     expect(result).toBe(handle);
     expect(savePicker).not.toHaveBeenCalled();
     expect(handle.writes[0]).toContain(d.rootId);
@@ -195,7 +195,7 @@ describe('saveTreeFile', () => {
     const fresh = fakeHandle();
     const savePicker = vi.fn(async () => fresh);
     setPickers(vi.fn(), savePicker);
-    const result = await saveTreeFile(d, null);
+    const result = await saveTreeFile(d, null, 'MECE Studio tree');
     expect(savePicker).toHaveBeenCalled();
     expect(result).toBe(fresh);
   });
@@ -208,7 +208,7 @@ describe('saveTreeFile', () => {
     const fresh = fakeHandle();
     const savePicker = vi.fn(async () => fresh);
     setPickers(vi.fn(), savePicker);
-    const result = await saveTreeFile(d, denied);
+    const result = await saveTreeFile(d, denied, 'MECE Studio tree');
     expect(savePicker).toHaveBeenCalled();
     expect(result).toBe(fresh);
   });
