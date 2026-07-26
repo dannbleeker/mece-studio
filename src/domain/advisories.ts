@@ -6,6 +6,7 @@
 // and conservative by design — like the ME/CE heuristics, a false positive is
 // worse than a miss, so each lint fires only on a clear-cut case.
 import { IDEAL_SPLIT_MAX, MAX_SPLIT_CHILDREN } from './constants';
+import type { AdvisoryMessageRef } from './messages';
 import { childrenOf } from './tree';
 import type { IssueNode, IssueTreeDoc, NodeId, Split } from './types';
 
@@ -27,8 +28,8 @@ export interface Advisory {
    */
   target: { kind: 'node' | 'split'; id: NodeId };
   category: AdvisoryCategory;
-  /** One-line coaching message. */
-  message: string;
+  /** The coaching nudge, as a language-free `{ code, params }` reference. */
+  message: AdvisoryMessageRef;
 }
 
 const words = (label: string): number => label.trim().split(/\s+/).filter(Boolean).length;
@@ -78,7 +79,7 @@ function wholeSentenceAdvisory(node: IssueNode): Advisory | null {
     id: `whole-sentence:${node.id}`,
     target: { kind: 'node', id: node.id },
     category: 'whole-sentence',
-    message: `"${label}" is a topic, not an idea — phrase it as a question, action, or hypothesis.`,
+    message: { code: 'advisory.wholeSentence', params: { label } },
   };
 }
 
@@ -90,7 +91,7 @@ function branchCountAdvisory(split: Split): Advisory | null {
     id: `branch-count:${split.parentId}`,
     target: { kind: 'split', id: split.parentId },
     category: 'branch-count',
-    message: `${n} sub-issues reads as a laundry list — group toward ${IDEAL_SPLIT_MAX} or fewer.`,
+    message: { code: 'advisory.branchCount', params: { count: n, ideal: IDEAL_SPLIT_MAX } },
   };
 }
 
@@ -111,7 +112,9 @@ function altitudeAdvisory(doc: IssueTreeDoc, split: Split): Advisory | null {
     id: `altitude:${split.parentId}`,
     target: { kind: 'split', id: split.parentId },
     category: 'altitude',
-    message: `"${truncate(outlier.label)}" is far more specific than its siblings — level the branches to one altitude.`,
+    // Truncated here rather than at the edge so every locale gets the same
+    // bounded label without having to remember to clip it.
+    message: { code: 'advisory.altitude', params: { label: truncate(outlier.label) } },
   };
 }
 
@@ -123,7 +126,8 @@ function hypothesisAdvisory(node: IssueNode): Advisory | null {
     id: `hypothesis:${node.id}`,
     target: { kind: 'node', id: node.id },
     category: 'hypothesis',
-    message: `Marked ${node.status}, but phrased as a question — state the hypothesis as a claim to prove.`,
+    // The status stays a raw enum member so the edge can word it per locale.
+    message: { code: 'advisory.hypothesis', params: { status: node.status } },
   };
 }
 
@@ -138,7 +142,7 @@ function keyQuestionAdvisories(root: IssueNode): Advisory[] {
       id: `kq-question:${root.id}`,
       target: { kind: 'node', id: root.id },
       category: 'key-question',
-      message: 'Frame the key question as a question (how / why / what / should …).',
+      message: { code: 'advisory.keyQuestion.notQuestion' },
     });
   }
   const questionMarks = (label.match(/\?/g) ?? []).length;
@@ -147,8 +151,7 @@ function keyQuestionAdvisories(root: IssueNode): Advisory[] {
       id: `kq-compound:${root.id}`,
       target: { kind: 'node', id: root.id },
       category: 'key-question',
-      message:
-        'This bundles more than one question — narrow to a single key question (run a second tree for the other).',
+      message: { code: 'advisory.keyQuestion.compound' },
     });
   }
   const sentences = label.split(/[.!?]+/).filter((s) => s.trim() !== '').length;
@@ -157,7 +160,7 @@ function keyQuestionAdvisories(root: IssueNode): Advisory[] {
       id: `kq-length:${root.id}`,
       target: { kind: 'node', id: root.id },
       category: 'key-question',
-      message: 'Tighten the key question to a sentence or two so it stays memorable.',
+      message: { code: 'advisory.keyQuestion.length' },
     });
   }
   return out;
@@ -186,8 +189,7 @@ function treeModeAdvisories(doc: IssueTreeDoc): Advisory[] {
         id: `mode-process:${split.parentId}`,
         target: { kind: 'split', id: split.parentId },
         category: 'tree-mode',
-        message:
-          'A "how" tree shows alternative solutions, not a sequence — a process split reads as steps, not options.',
+        message: { code: 'advisory.treeMode.process' },
       });
     }
   }
@@ -199,7 +201,8 @@ function treeModeAdvisories(doc: IssueTreeDoc): Advisory[] {
         id: `mode-direction:${node.id}`,
         target: { kind: 'node', id: node.id },
         category: 'tree-mode',
-        message: `This branch asks "${opposite}", but the tree is a "${mode}" tree — keep one direction.`,
+        // Both stay raw TreeMode members so the edge renders the question words.
+        message: { code: 'advisory.treeMode.direction', params: { opposite, mode } },
       });
     }
   }

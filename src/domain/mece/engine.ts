@@ -119,15 +119,14 @@ function siblingOverlap(children: IssueNode[], strict: boolean): CheckResult {
 
   const first = pairs[0];
   if (!first) {
-    return {
-      state: 'unknown',
-      message: "No obvious overlap — but exclusivity isn't auto-checked for this split type.",
-    };
+    return { state: 'unknown', message: { code: 'mece.exclusive.noObviousOverlap' } };
   }
-  const more = pairs.length > 1 ? ` (+${pairs.length - 1} more)` : '';
   return {
     state: 'warn',
-    message: `"${first.a}" and "${first.b}" may overlap (both mention "${first.token}")${more}.`,
+    message: {
+      code: 'mece.exclusive.siblingOverlap',
+      params: { a: first.a, b: first.b, token: first.token, more: pairs.length - 1 },
+    },
   };
 }
 
@@ -154,13 +153,9 @@ function mixedAxis(children: IssueNode[]): CheckResult {
   const markers = children.map((c) => axisMarker(c.label)).filter((m): m is string => m !== null);
   const distinct = [...new Set(markers)];
   if (markers.length >= 2 && distinct.length >= 2) {
-    const named = distinct
-      .slice(0, 3)
-      .map((m) => `"${m}"`)
-      .join(', ');
     return {
       state: 'warn',
-      message: `These branches mix decomposition axes (${named}) — cut the level on one axis so the branches don't overlap.`,
+      message: { code: 'mece.exclusive.mixedAxis', params: { axes: distinct.slice(0, 3) } },
     };
   }
   return { state: 'unknown' };
@@ -170,11 +165,8 @@ function mixedAxis(children: IssueNode[]): CheckResult {
 function segmentExhaustive(children: IssueNode[]): CheckResult {
   const hasOther = children.some((c) => OTHER_BUCKET.test(c.label));
   return hasOther
-    ? { state: 'pass', message: 'The "Other" bucket makes the segments collectively exhaustive.' }
-    : {
-        state: 'warn',
-        message: 'Segments rarely cover everything — add an "Other / remaining" bucket.',
-      };
+    ? { state: 'pass', message: { code: 'mece.exhaustive.segmentHasOther' } }
+    : { state: 'warn', message: { code: 'mece.exhaustive.segmentNeedsOther' } };
 }
 
 function formulaExhaustive(
@@ -186,19 +178,23 @@ function formulaExhaustive(
   const parentValue = doc.nodes[split.parentId]?.value?.amount;
   const childValues = children.map((c) => c.value?.amount);
   if (parentValue === undefined || childValues.some((v) => v === undefined)) {
-    return {
-      state: 'unknown',
-      message: 'Add a number to the parent and each child to check the totals reconcile.',
-    };
+    return { state: 'unknown', message: { code: 'mece.exhaustive.formulaNeedsValues' } };
   }
   const combined = combineValues(childValues as number[], split.operator);
   const denom = Math.abs(parentValue) > 1e-9 ? Math.abs(parentValue) : 1;
   const rel = Math.abs(combined - parentValue) / denom;
+  // Raw numbers only — the edge applies Intl.NumberFormat for the locale.
   return rel <= tolerance
-    ? { state: 'pass', message: `Children reconcile to the parent (${combined}).` }
+    ? {
+        state: 'pass',
+        message: { code: 'mece.exhaustive.formulaReconciles', params: { combined } },
+      }
     : {
         state: 'warn',
-        message: `Children combine to ${combined} vs parent ${parentValue} — off by ${(rel * 100).toFixed(1)}%.`,
+        message: {
+          code: 'mece.exhaustive.formulaOff',
+          params: { combined, parent: parentValue, relative: rel },
+        },
       };
 }
 
@@ -212,13 +208,13 @@ const TOTAL_TERM = /\b(total|overall|aggregate|combined)\b/i;
  * (Semantic double-counts with no lexical tell are the AI judge's job.)
  */
 function formulaExclusive(split: Split, children: IssueNode[]): CheckResult {
-  const clean: CheckResult = { state: 'pass', message: 'Formula terms are mutually exclusive.' };
+  const clean: CheckResult = { state: 'pass', message: { code: 'mece.exclusive.formulaClean' } };
   if (split.operator && split.operator !== 'sum') return clean;
   const total = children.find((c) => TOTAL_TERM.test(c.label));
   if (total) {
     return {
       state: 'warn',
-      message: `"${total.label}" reads like a running total — summing it double-counts the other terms.`,
+      message: { code: 'mece.exclusive.formulaRunningTotal', params: { label: total.label } },
     };
   }
   const labels = children.map((c) => c.label.trim().toLowerCase());
@@ -226,7 +222,10 @@ function formulaExclusive(split: Split, children: IssueNode[]): CheckResult {
   if (dupIndex !== -1) {
     return {
       state: 'warn',
-      message: `Two terms share the label "${children[dupIndex]?.label}" — a summed term looks double-counted.`,
+      message: {
+        code: 'mece.exclusive.formulaDuplicateTerm',
+        params: { label: children[dupIndex]?.label ?? '' },
+      },
     };
   }
   return clean;
@@ -240,23 +239,11 @@ function formulaExclusive(split: Split, children: IssueNode[]): CheckResult {
 function exhaustiveHint(decomposition: DecompositionType): CheckResult {
   switch (decomposition) {
     case 'process':
-      return {
-        state: 'unknown',
-        message:
-          'Do the stages run end to end — nothing before the first or after the last, no steps skipped?',
-      };
+      return { state: 'unknown', message: { code: 'mece.exhaustive.processEndToEnd' } };
     case 'framework':
-      return {
-        state: 'unknown',
-        message:
-          "A framework organises thinking but isn't a provable partition — confirm nothing important sits outside these categories.",
-      };
+      return { state: 'unknown', message: { code: 'mece.exhaustive.frameworkNotPartition' } };
     default:
-      return {
-        state: 'unknown',
-        message:
-          "Freeform splits aren't auto-checked for gaps — confirm these branches cover the whole question.",
-      };
+      return { state: 'unknown', message: { code: 'mece.exhaustive.freeformUnchecked' } };
   }
 }
 
@@ -264,11 +251,8 @@ function exclusiveStatus(split: Split, children: IssueNode[], options: MeceOptio
   switch (split.decomposition) {
     case 'binary':
       return children.length === 2
-        ? { state: 'pass', message: 'A / not-A cannot overlap.' }
-        : {
-            state: 'warn',
-            message: 'A binary split should have exactly two branches (A / not-A).',
-          };
+        ? { state: 'pass', message: { code: 'mece.exclusive.binaryClean' } }
+        : { state: 'warn', message: { code: 'mece.exclusive.binaryNeedsTwo' } };
     case 'formula':
       return formulaExclusive(split, children);
     default: {
@@ -291,11 +275,8 @@ function exhaustiveStatus(
   switch (split.decomposition) {
     case 'binary':
       return children.length === 2
-        ? { state: 'pass', message: 'A / not-A covers every case.' }
-        : {
-            state: 'warn',
-            message: 'A binary split should have exactly two branches (A / not-A).',
-          };
+        ? { state: 'pass', message: { code: 'mece.exhaustive.binaryClean' } }
+        : { state: 'warn', message: { code: 'mece.exhaustive.binaryNeedsTwo' } };
     case 'formula':
       return formulaExhaustive(split, children, doc, options.formulaTolerance);
     case 'segment':
@@ -323,7 +304,10 @@ export function evaluateSplit(
       exclusive: { state: 'pass' },
       exhaustive: {
         state: 'warn',
-        message: `A decomposition needs at least ${MIN_SPLIT_CHILDREN} sub-issues.`,
+        message: {
+          code: 'mece.exhaustive.tooFewChildren',
+          params: { min: MIN_SPLIT_CHILDREN },
+        },
       },
     };
   }
@@ -334,16 +318,8 @@ export function evaluateSplit(
   // chain instead. Marking a split deductive is the user's declared intent.
   if (split.logic === 'deductive') {
     return {
-      exclusive: {
-        state: 'pass',
-        message:
-          'Deductive argument — the steps build to the conclusion, not a partition to keep exclusive.',
-      },
-      exhaustive: {
-        state: 'unknown',
-        message:
-          'Deductive chain — check each step follows from the one before, and the premises lead to the conclusion.',
-      },
+      exclusive: { state: 'pass', message: { code: 'mece.exclusive.deductive' } },
+      exhaustive: { state: 'unknown', message: { code: 'mece.exhaustive.deductive' } },
     };
   }
 
