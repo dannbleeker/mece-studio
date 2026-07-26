@@ -38,3 +38,8 @@ Reviewed and deliberately left out:
 ## Tooling backlog
 
 - **Extend the Playwright e2e suite** as new UI lands — coverage is already broad (see `e2e/`; runs in CI).
+- **Four majors held back**, each a deliberate deferral rather than an oversight. `pnpm audit` is clean at 0 advisories, so none of these is a security matter; take them one per PR, with `pnpm verify` as the judge.
+  - `typescript` 6 → **7** — the compiler the whole gate rests on. Its own release, its own PR.
+  - `nanoid` 5 → **6** — id generation; check the ESM/export shape before assuming a drop-in.
+  - `marked` 16 → **18** — used only by the docs/book builders, so a break shows up as mangled HTML rather than a failing test. Eyeball the rendered guide.
+  - `@types/node` 24 → **26** — track whatever Node the CI image runs.

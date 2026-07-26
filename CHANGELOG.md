@@ -4,6 +4,13 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [1.0.0] — 2026-07-26
+
+First tagged release. Everything below shipped before the tag; the version number
+records that the app reached a state worth freezing, not a change in it.
+
 ### Fixed
 - **A formula split no longer "reconciles" numbers in different units.** The reconciliation check compared amounts and ignored units entirely, so 60 M DKK + 40 k DKK read as a clean 100 against a 100 M DKK parent — a confidently wrong answer, which is the one thing a MECE check must never give. Added or subtracted terms in differing units now report exactly that instead of quoting a meaningless total. A **product** is exempt: multiplying dimensions is supposed to change unit (k DKK × k units = M DKK), which is how the value-driver examples are built. A blank unit means "same as the others", so nothing changes for the common case of typing the unit once. The book already promised units "prevent category errors (adding DKK to units)" — now they do.
 - **Undo no longer restores stale MECE badges.** A history entry carries the status computed when it was taken, so after changing formula tolerance or strict-overlap, undoing showed badges the current settings no longer justified — silently corrected by the next unrelated edit, which made it look like a flicker rather than a bug. Undo and redo now re-evaluate the restored document under the current settings.

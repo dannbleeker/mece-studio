@@ -83,7 +83,8 @@ plain typed objects.
 ```bash
 pnpm install
 pnpm dev        # start the dev server
-pnpm verify     # typecheck → lint/format → dead-code → i18n → test → build → size budget
+pnpm verify     # typecheck → lint/format → dead-code → i18n → feature catalogue
+                # → test → docs → build → size budget
 ```
 
 `pnpm verify` is the single source of truth for "is it green", and CI runs the exact same gate. (Scripts invoke each tool in node form — `node ./node_modules/<tool>/…` — so they work under the local AppLocker policy.)
