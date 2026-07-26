@@ -1,5 +1,6 @@
 import { migrateToCurrent, type RawDocument } from '@/domain/migrations';
 import { DEFAULT_SETTINGS, type Settings } from '@/domain/settings';
+import { isStrictTree } from '@/domain/tree';
 import { asLocaleCode, type IssueTreeDoc } from '@/domain/types';
 
 const LIBRARY_KEY = 'mece-studio:library:v1';
@@ -66,12 +67,20 @@ function isLibrary(value: unknown): value is Library {
  * Migrate an unvalidated, parsed value up to the current schema, then validate
  * its shape. Returns `null` for anything that isn't an object or fails the
  * structural guard after migration. This is the single seam every document
- * read — localStorage, the legacy key, and file import — passes through.
+ * read — localStorage, the legacy key, saved templates, and file import —
+ * passes through.
+ *
+ * The tree-shape check (`isStrictTree`) is here rather than at each walker: a
+ * document with a cycle or a two-parent node would spin or blow the stack in
+ * the exporters and the sensitivity roll-up, none of which carry their own
+ * guard. Enforcing it once at the door makes every one of them safe by
+ * invariant.
  */
 function coerceDoc(parsed: unknown): IssueTreeDoc | null {
   if (typeof parsed !== 'object' || parsed === null) return null;
   const migrated = migrateToCurrent(parsed as RawDocument);
-  return isDoc(migrated) ? migrated : null;
+  if (!isDoc(migrated)) return null;
+  return isStrictTree(migrated) ? migrated : null;
 }
 
 /** Read a stored document by key, migrating it before its shape is trusted. */
