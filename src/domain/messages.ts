@@ -21,7 +21,8 @@ import type { TreeMode } from './types/document';
 import type { NodeStatus } from './types/node';
 
 /**
- * Params for each MECE-engine message, keyed by code. `void` = takes no params.
+ * Params for each MECE-engine message, keyed by code. `undefined` = takes no
+ * params.
  *
  * Codes are grouped `mece.<axis>.<case>`, where axis is `exclusive` (mutually
  * exclusive — no overlap) or `exhaustive` (collectively exhaustive — no gaps).
@@ -100,7 +101,7 @@ export interface AdvisoryParams {
 
 /**
  * A reference to a message: the code, plus params **iff** that code takes any.
- * Codes with `void` params are `{ code }` alone — passing params is a type error,
+ * Codes with `undefined` params are `{ code }` alone — passing params is a type error,
  * and omitting required params is too.
  */
 type MessageRefOf<P> = {
