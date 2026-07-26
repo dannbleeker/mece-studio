@@ -1,4 +1,5 @@
 import type { DocId, NodeId, SplitId } from './ids';
+import type { LocaleCode } from './locale';
 import type { IssueNode } from './node';
 import type { Split } from './split';
 
@@ -49,6 +50,20 @@ export interface IssueTreeDoc {
   problemBrief?: ProblemBrief;
   /** Whether this is a "why?" (diagnostic) or "how?" (prescriptive) tree. Optional; unset = either. */
   mode?: TreeMode;
+  /**
+   * The app locale in effect when the document was created — i.e. the language
+   * its seeded labels ("Segment 1", "Other") were written in. Optional and
+   * additive, so no schema bump: an older save simply has none.
+   *
+   * Recorded but deliberately **not read** by any behaviour yet. It exists so a
+   * later change can collate and format a tree in its own language rather than
+   * the reader's (a Danish tree opened by an English reader still sorts æ/ø/å
+   * correctly), and so an imported tree can say what language it came from.
+   * Until then the app setting drives every read path. Covered by round-trip
+   * tests in `factory.test.ts` and `services/import.test.ts` so it can't be
+   * silently dropped on save/load.
+   */
+  locale?: LocaleCode;
   /** 'LR' (left-to-right) is the classic McKinsey look. */
   layout: { direction: LayoutDirection };
   createdAt: number;

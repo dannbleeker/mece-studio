@@ -56,9 +56,12 @@ describe('MECE rules — overlap heuristic (dimension-aware)', () => {
     const doc = withChildren(['Domestic retail', 'Domestic wholesale', 'Export']);
     const res = rootMece(doc).exclusive;
     expect(res.state).toBe('warn');
-    expect(res.message).toMatch(
-      /Domestic retail.*Domestic wholesale|Domestic wholesale.*Domestic retail/
-    );
+    // Asserting the code + params, not the prose: this now survives a reword
+    // and pins the *finding* (which pair, which shared token) far more tightly.
+    expect(res.message).toEqual({
+      code: 'mece.exclusive.siblingOverlap',
+      params: { a: 'Domestic retail', b: 'Domestic wholesale', token: 'domestic', more: 0 },
+    });
   });
 
   it('still flags a two-sibling overlap (the shared word is the only signal)', () => {
@@ -72,7 +75,10 @@ describe('MECE rules — mixed-axis advisory', () => {
     const doc = withChildren(['By region', 'By product', 'By customer segment']);
     const res = rootMece(doc).exclusive;
     expect(res.state).toBe('warn');
-    expect(res.message).toMatch(/mix.*axes/i);
+    expect(res.message).toEqual({
+      code: 'mece.exclusive.mixedAxis',
+      params: { axes: ['region', 'product', 'customer'] },
+    });
   });
 
   it('does not treat a mid-label "by" as an axis (means, not a cut)', () => {
@@ -91,7 +97,7 @@ describe('MECE rules — mixed-axis advisory', () => {
     const doc = withChildren(['Online marketing', 'Online sales']);
     const res = rootMece(doc).exclusive;
     expect(res.state).toBe('warn');
-    expect(res.message).toMatch(/overlap/i);
+    expect(res.message?.code).toBe('mece.exclusive.siblingOverlap');
   });
 });
 
@@ -112,7 +118,10 @@ describe('MECE rules — formula exclusivity (double-count smells)', () => {
   it('flags a running-total term among summed drivers', () => {
     const res = rootMece(formula(['Total revenue', 'New', 'Returning'], 'sum')).exclusive;
     expect(res.state).toBe('warn');
-    expect(res.message).toMatch(/total/i);
+    expect(res.message).toEqual({
+      code: 'mece.exclusive.formulaRunningTotal',
+      params: { label: 'Total revenue' },
+    });
   });
 
   it('flags duplicate additive term labels', () => {
@@ -131,7 +140,7 @@ describe('MECE rules — CE guidance for un-provable splits', () => {
     doc = setDecomposition(doc, doc.rootId, 'process');
     const ce = rootMece(doc).exhaustive;
     expect(ce.state).toBe('unknown');
-    expect(ce.message).toMatch(/end to end/i);
+    expect(ce.message?.code).toBe('mece.exhaustive.processEndToEnd');
   });
 
   it('coaches CE for a framework split', () => {
@@ -139,6 +148,6 @@ describe('MECE rules — CE guidance for un-provable splits', () => {
     doc = setDecomposition(doc, doc.rootId, 'framework');
     const ce = rootMece(doc).exhaustive;
     expect(ce.state).toBe('unknown');
-    expect(ce.message).toMatch(/framework/i);
+    expect(ce.message?.code).toBe('mece.exhaustive.frameworkNotPartition');
   });
 });

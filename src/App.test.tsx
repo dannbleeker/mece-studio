@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { childrenOf } from '@/domain/tree';
 import type { NodeId } from '@/domain/types';
+import { en } from '@/i18n/locales/en';
 import { copyToClipboard, downloadText } from '@/services/download';
 import { useStore } from '@/store';
 import { App } from './App';
@@ -36,7 +37,7 @@ afterEach(() => {
 
 /** Open the header overflow (⋯) menu so its items are in the DOM. */
 function openOverflow() {
-  fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
+  fireEvent.click(screen.getByRole('button', { name: en.app.moreActions }));
 }
 
 /** Stub the File System Access open picker to return a handle over `file`. */
@@ -56,22 +57,23 @@ function stubOpenPicker(file: File) {
 describe('App routing', () => {
   it('lands on the Start page (not the canvas) by default', () => {
     render(<App />);
-    expect(screen.getByText("What's your key question?")).toBeTruthy();
-    expect(screen.queryByLabelText('Find nodes')).toBeNull(); // the canvas is not mounted
+    expect(s().view).toBe('start');
+    expect(screen.queryByLabelText(en.canvas.findLabel)).toBeNull(); // the canvas is not mounted
+    expect(screen.queryByRole('button', { name: en.app.backToStart })).toBeNull(); // nor its header
   });
 
   it('shows the workspace once a tree is open', async () => {
     s().setView('workspace');
     render(<App />);
     // Workspace is a lazy chunk now, so wait for it to resolve behind Suspense.
-    expect(await screen.findByLabelText('Find nodes')).toBeTruthy(); // canvas toolbar
-    expect(screen.getByRole('button', { name: '← Start' })).toBeTruthy();
+    expect(await screen.findByLabelText(en.canvas.findLabel)).toBeTruthy(); // canvas toolbar
+    expect(screen.getByRole('button', { name: en.app.backToStart })).toBeTruthy();
   });
 
   it('returns to Start from the workspace Home button', async () => {
     s().setView('workspace');
     render(<App />);
-    fireEvent.click(await screen.findByRole('button', { name: '← Start' }));
+    fireEvent.click(await screen.findByRole('button', { name: en.app.backToStart }));
     expect(s().view).toBe('start');
   });
 });
@@ -79,28 +81,28 @@ describe('App routing', () => {
 describe('Workspace', () => {
   it('renders the header, the canvas toolbar, and the empty inspector', () => {
     render(<Workspace />);
-    expect(screen.getByRole('button', { name: 'MECE Studio' })).toBeTruthy();
-    expect(screen.getByLabelText('Find nodes')).toBeTruthy();
-    expect(screen.getByText(/Select a node to edit it/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'MECE Studio' })).toBeTruthy(); // brand, never translated
+    expect(screen.getByLabelText(en.canvas.findLabel)).toBeTruthy();
+    expect(screen.getByText(en.inspector.emptyLead, { exact: false })).toBeTruthy();
   });
 
   it('opens the About dialog from the overflow menu', () => {
     render(<Workspace />);
     openOverflow();
-    fireEvent.click(screen.getByRole('button', { name: 'About' }));
-    expect(screen.getByRole('dialog', { name: 'About MECE Studio' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: en.app.about }));
+    expect(screen.getByRole('dialog', { name: en.app.aboutTitle })).toBeTruthy();
   });
 
   it('opens the keyboard-shortcuts overlay with the ? key', () => {
     render(<Workspace />);
     fireEvent.keyDown(window, { key: '?' });
-    expect(screen.getByRole('dialog', { name: 'Keyboard shortcuts' })).toBeTruthy();
+    expect(screen.getByRole('dialog', { name: en.app.shortcuts })).toBeTruthy();
   });
 
   it('copies the tree as Markdown from the overflow menu', () => {
     render(<Workspace />);
     openOverflow();
-    fireEvent.click(screen.getByRole('button', { name: 'Copy Markdown' }));
+    fireEvent.click(screen.getByRole('button', { name: en.app.copyMarkdown }));
     expect(copyToClipboard).toHaveBeenCalledTimes(1);
   });
 
@@ -108,7 +110,7 @@ describe('Workspace', () => {
     // happy-dom has no File System Access API, so Save falls back to a download.
     render(<Workspace />);
     openOverflow();
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    fireEvent.click(screen.getByRole('button', { name: en.app.save }));
     await waitFor(() =>
       expect(downloadText).toHaveBeenCalledWith(
         expect.stringMatching(/\.json$/),
@@ -120,8 +122,8 @@ describe('Workspace', () => {
 
   it('exports the tree as JSON from the Export menu', () => {
     render(<Workspace />);
-    fireEvent.click(screen.getByRole('button', { name: 'Export' }));
-    fireEvent.click(screen.getByRole('button', { name: 'JSON' }));
+    fireEvent.click(screen.getByRole('button', { name: en.app.exportMenu }));
+    fireEvent.click(screen.getByRole('button', { name: en.app.exportJson }));
     expect(downloadText).toHaveBeenCalledWith(
       'mece-tree.json',
       expect.any(String),
@@ -131,8 +133,9 @@ describe('Workspace', () => {
 
   it('toggles the synthesis panel', () => {
     render(<Workspace />);
-    fireEvent.click(screen.getByRole('button', { name: 'Synthesis' }));
-    expect(screen.getByText('Answer-first synthesis')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: en.app.synthesis }));
+    // The synthesis leads with the tree's own question as its heading.
+    expect(screen.getByText(en.content.starterQuestion, { selector: 'h3' })).toBeTruthy();
   });
 
   it('undoes a tree edit from the toolbar and redoes it with the keyboard', () => {
@@ -140,7 +143,7 @@ describe('Workspace', () => {
     render(<Workspace />);
     const n = () => Object.keys(s().doc.nodes).length;
     expect(n()).toBe(2);
-    fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    fireEvent.click(screen.getByRole('button', { name: en.app.undo }));
     expect(n()).toBe(1);
     fireEvent.keyDown(window, { key: 'y', ctrlKey: true });
     expect(n()).toBe(2);
@@ -150,17 +153,17 @@ describe('Workspace', () => {
     s().newDoc();
     render(<Workspace />);
     openOverflow();
-    fireEvent.click(screen.getByRole('button', { name: 'Delete tree' })); // overflow → opens confirm
+    fireEvent.click(screen.getByRole('button', { name: en.app.deleteTree })); // overflow → confirm
     fireEvent.click(
-      within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete tree' })
+      within(screen.getByRole('dialog')).getByRole('button', { name: en.app.deleteTree })
     );
     expect(s().library).toHaveLength(1);
   });
 
   it('opens the Settings dialog from the header', () => {
     render(<Workspace />);
-    fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
-    expect(screen.getByRole('dialog', { name: 'Settings' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: en.app.settings }));
+    expect(screen.getByRole('dialog')).toBeTruthy();
   });
 
   it('opens a valid JSON tree from a file (File System Access)', async () => {
@@ -170,7 +173,7 @@ describe('Workspace', () => {
     stubOpenPicker(new File([json], 'tree.json', { type: 'application/json' }));
     render(<Workspace />);
     openOverflow();
-    fireEvent.click(screen.getByRole('button', { name: 'Open file…' }));
+    fireEvent.click(screen.getByRole('button', { name: en.app.openFile }));
     await waitFor(() => expect(s().doc.nodes[s().doc.rootId]?.label).toBe('Imported question'));
   });
 
@@ -180,7 +183,7 @@ describe('Workspace', () => {
     stubOpenPicker(new File(['not json'], 'bad.txt', { type: 'text/plain' }));
     render(<Workspace />);
     openOverflow();
-    fireEvent.click(screen.getByRole('button', { name: 'Open file…' }));
+    fireEvent.click(screen.getByRole('button', { name: en.app.openFile }));
     await waitFor(() => expect(alertMock).toHaveBeenCalled());
   });
 
@@ -210,11 +213,11 @@ describe('Workspace', () => {
     const before = s().library.length;
     render(<Workspace />);
     openOverflow();
-    fireEvent.click(screen.getByRole('button', { name: 'Import outline…' }));
-    fireEvent.change(screen.getByLabelText('Outline or JSON to import'), {
+    fireEvent.click(screen.getByRole('button', { name: en.app.importOutline }));
+    fireEvent.change(screen.getByLabelText(en.app.importFieldLabel), {
       target: { value: '# Imported outline\n- One\n- Two' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Import' }));
+    fireEvent.click(screen.getByRole('button', { name: en.app.importSubmit }));
     expect(s().library.length).toBe(before + 1);
     expect(s().doc.nodes[s().doc.rootId]?.label).toBe('Imported outline');
   });
@@ -222,12 +225,12 @@ describe('Workspace', () => {
   it('shows an error for unparseable import text and keeps the dialog open', () => {
     render(<Workspace />);
     openOverflow();
-    fireEvent.click(screen.getByRole('button', { name: 'Import outline…' }));
-    fireEvent.change(screen.getByLabelText('Outline or JSON to import'), {
+    fireEvent.click(screen.getByRole('button', { name: en.app.importOutline }));
+    fireEvent.change(screen.getByLabelText(en.app.importFieldLabel), {
       target: { value: '{bad json that is not a tree' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Import' }));
-    expect(screen.getByText(/Couldn't read that/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: en.app.importSubmit }));
+    expect(screen.getByText(en.app.importError)).toBeTruthy();
   });
 
   it('invokes the file picker from the Open file menu item', async () => {
@@ -238,18 +241,18 @@ describe('Workspace', () => {
     vi.stubGlobal('showSaveFilePicker', vi.fn());
     render(<Workspace />);
     openOverflow();
-    fireEvent.click(screen.getByRole('button', { name: 'Open file…' }));
+    fireEvent.click(screen.getByRole('button', { name: en.app.openFile }));
     await waitFor(() => expect(picker).toHaveBeenCalledTimes(1));
   });
 
   it('quick-adds several issues from the overflow menu', () => {
     render(<Workspace />);
     openOverflow();
-    fireEvent.click(screen.getByRole('button', { name: 'Quick add issues…' }));
-    fireEvent.change(screen.getByLabelText('Issues to add, one per line'), {
+    fireEvent.click(screen.getByRole('button', { name: en.app.quickAdd }));
+    fireEvent.change(screen.getByLabelText(en.app.quickAddFieldLabel), {
       target: { value: 'Pricing\nDemand\nDistribution' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Add issues' }));
+    fireEvent.click(screen.getByRole('button', { name: en.app.quickAddSubmit }));
     expect(childrenOf(s().doc, s().doc.rootId).map((n) => n.label)).toEqual([
       'Pricing',
       'Demand',
@@ -260,19 +263,22 @@ describe('Workspace', () => {
   it('shows a tab strip with multiple trees open and closes a tab', () => {
     s().newDoc(); // two trees open → strip appears
     render(<Workspace />);
-    expect(screen.getByRole('navigation', { name: 'Open trees' })).toBeTruthy();
-    const closeButtons = screen.getAllByRole('button', { name: /^Close / });
+    expect(screen.getByRole('navigation', { name: en.app.openTrees })).toBeTruthy();
+    // Both trees open on the starter question, so both close buttons share a name.
+    const closeButtons = screen.getAllByRole('button', {
+      name: en.app.closeTab({ name: en.content.starterQuestion }),
+    });
     fireEvent.click(closeButtons[0] as HTMLElement);
     expect(s().openTabs).toHaveLength(1);
     // strip hides with one tree
-    expect(screen.queryByRole('navigation', { name: 'Open trees' })).toBeNull();
+    expect(screen.queryByRole('navigation', { name: en.app.openTrees })).toBeNull();
   });
 
   it('toggles the MECE review dock from the health chip', () => {
     render(<Workspace />);
-    expect(screen.getByText(/Select a node to edit it/)).toBeTruthy(); // inspector by default
-    fireEvent.click(screen.getByRole('button', { name: /MECE clean/ }));
-    expect(screen.getByRole('complementary', { name: 'MECE review' })).toBeTruthy();
-    expect(screen.queryByText(/Select a node to edit it/)).toBeNull(); // inspector hidden
+    expect(screen.getByText(en.inspector.emptyLead, { exact: false })).toBeTruthy(); // inspector
+    fireEvent.click(screen.getByRole('button', { name: en.review.chipClean }));
+    expect(screen.getByRole('complementary', { name: en.review.panelLabel })).toBeTruthy();
+    expect(screen.queryByText(en.inspector.emptyLead, { exact: false })).toBeNull(); // hidden
   });
 });

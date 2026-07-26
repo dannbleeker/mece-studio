@@ -1,5 +1,6 @@
 import { registerSW } from 'virtual:pwa-register';
 import { showToast } from '@/components/toast/toastStore';
+import type { CoreMessages } from '@/i18n/types';
 
 let registered = false;
 let cachedUpdateSW: ((reloadPage?: boolean) => Promise<void>) | null = null;
@@ -7,25 +8,29 @@ let cachedUpdateSW: ((reloadPage?: boolean) => Promise<void>) | null = null;
 /**
  * Canonical "New version… Refresh now" prompt. Shared by the plugin's
  * onNeedRefresh callback and the manual-check already-waiting branch.
+ *
+ * This module runs outside React (it registers the service worker before the
+ * app mounts), so it can't read the catalogue from context — the caller passes
+ * it in, which also keeps the wording out of the PWA plumbing.
  */
-const showUpdateAvailableToast = (): void => {
+const showUpdateAvailableToast = (m: CoreMessages): void => {
   const refresh = cachedUpdateSW;
-  showToast('info', 'A new version is available.', {
+  showToast('info', m.app.updateAvailable, {
     // Refresh is the whole point of this toast — long dwell so the user can decide.
-    action: refresh ? { label: 'Refresh now', run: () => void refresh(true) } : undefined,
+    action: refresh ? { label: m.app.refreshNow, run: () => void refresh(true) } : undefined,
     durationMs: 15000,
   });
 };
 
-export const initPwaUpdateToast = (): void => {
+export const initPwaUpdateToast = (m: CoreMessages): void => {
   if (registered || typeof window === 'undefined') return;
   registered = true;
   // registerSW() registers the generated SW and returns updateSW(reload?). We hoist
   // that fn to module scope (cachedUpdateSW) so the manual "Check for updates" path
   // can drive it too.
   cachedUpdateSW = registerSW({
-    onNeedRefresh: () => showUpdateAvailableToast(),
-    onOfflineReady: () => showToast('success', 'Ready to use offline.'),
+    onNeedRefresh: () => showUpdateAvailableToast(m),
+    onOfflineReady: () => showToast('success', m.app.offlineReady),
   });
 };
 
@@ -42,14 +47,14 @@ export const initPwaUpdateToast = (): void => {
 export type UpdateCheckResult = 'unsupported' | 'already-pending' | 'newly-found' | 'up-to-date';
 
 /** Force a SW update check (the browser otherwise checks on each load + ~24h). */
-export const checkForUpdate = async (): Promise<UpdateCheckResult> => {
+export const checkForUpdate = async (m: CoreMessages): Promise<UpdateCheckResult> => {
   if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return 'unsupported';
   const reg = await navigator.serviceWorker.getRegistration();
   if (!reg) return 'unsupported';
   // Already waiting — the user likely dismissed the earlier prompt. Re-surface it
   // rather than firing a second, redundant "found an update" message.
   if (reg.waiting) {
-    showUpdateAvailableToast();
+    showUpdateAvailableToast(m);
     return 'already-pending';
   }
   try {

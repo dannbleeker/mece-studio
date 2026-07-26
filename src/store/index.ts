@@ -51,6 +51,8 @@ import type {
   TreeMode,
 } from '@/domain/types';
 import { templateFromDoc } from '@/domain/userTemplate';
+import { catalogueFor } from '@/i18n/registry';
+import type { CoreMessages } from '@/i18n/types';
 import {
   docName,
   type LibraryEntry,
@@ -69,7 +71,16 @@ import {
 } from '@/services/storage';
 
 const HISTORY_LIMIT = 100;
-const STARTER_QUESTION = 'Why is this happening?';
+
+/**
+ * The store is an edge, not domain: it is where language-free operations get
+ * their words. Every seeded label (a new tree's question, a scaffold's starter
+ * branches, a library entry's fallback name) is read from the catalogue for the
+ * persisted locale, then frozen into the document as ordinary user data.
+ */
+function cat(settings: Settings): CoreMessages {
+  return catalogueFor(settings.locale);
+}
 
 /** Which top-level surface is showing: the Start workspace shell, or a tree on the canvas. */
 type AppView = 'start' | 'workspace';
@@ -78,12 +89,20 @@ type AppView = 'start' | 'workspace';
  * React Flow viewport needed to rasterise) fulfils it, then clears the request. */
 type ExportKind = 'png' | 'svg' | 'pdf' | 'pptx' | 'copy';
 
-function freshDoc(options: MeceOptions, question: string = STARTER_QUESTION): IssueTreeDoc {
-  return recomputeMece(createDoc(question.trim() || STARTER_QUESTION, Date.now()), options);
+function freshDoc(options: MeceOptions, settings: Settings, question?: string): IssueTreeDoc {
+  const m = cat(settings);
+  const rootQuestion = question?.trim() || m.content.starterQuestion;
+  return recomputeMece(
+    createDoc(rootQuestion, Date.now(), {
+      title: m.content.untitledTree,
+      locale: settings.locale,
+    }),
+    options
+  );
 }
 
-function entryFor(doc: IssueTreeDoc): LibraryEntry {
-  return { id: doc.id, name: docName(doc) };
+function entryFor(doc: IssueTreeDoc, settings: Settings): LibraryEntry {
+  return { id: doc.id, name: docName(doc, cat(settings).content.untitledTree) };
 }
 
 /**
@@ -109,31 +128,35 @@ function initialState(): {
 } {
   const settings = loadSettings();
   const options = meceOptions(settings);
-  const ws = loadWorkspace();
+  const ws = loadWorkspace(cat(settings).content.untitledTree);
   if (ws) {
     // An emptied library loads with no active doc — hold a throwaway blank as the
     // workspace doc (the canvas always needs one) but leave the library empty.
     const openTabs = restoreTabs(ws.library.docs, ws.library.activeId);
     saveOpenTabs(openTabs);
     return {
-      doc: ws.doc ? recomputeMece(ws.doc, options) : freshDoc(options),
+      doc: ws.doc ? recomputeMece(ws.doc, options) : freshDoc(options, settings),
       library: ws.library.docs,
       activeId: ws.library.activeId,
       openTabs,
       settings,
     };
   }
-  const doc = freshDoc(options);
+  const doc = freshDoc(options, settings);
   saveDocById(doc);
-  const library = [entryFor(doc)];
+  const library = [entryFor(doc, settings)];
   saveLibrary({ activeId: doc.id, docs: library });
   saveOpenTabs([doc.id]);
   return { doc, library, activeId: doc.id, openTabs: [doc.id], settings };
 }
 
 /** Keep the active doc's library name in sync with its root question; persist on change. */
-function syncLibraryName(library: LibraryEntry[], doc: IssueTreeDoc): LibraryEntry[] {
-  const name = docName(doc);
+function syncLibraryName(
+  library: LibraryEntry[],
+  doc: IssueTreeDoc,
+  settings: Settings
+): LibraryEntry[] {
+  const name = docName(doc, cat(settings).content.untitledTree);
   const existing = library.find((e) => e.id === doc.id);
   if (!existing || existing.name === name) return library;
   const next = library.map((e) => (e.id === doc.id ? { ...e, name } : e));
@@ -290,7 +313,7 @@ export const useStore = create<AppState>((set, get) => {
       saveDocById(doc);
       return {
         doc,
-        library: syncLibraryName(s.library, doc),
+        library: syncLibraryName(s.library, doc, s.settings),
         past: [...s.past, s.doc].slice(-HISTORY_LIMIT),
         future: [],
         ...extras?.(doc, s),
@@ -346,8 +369,8 @@ export const useStore = create<AppState>((set, get) => {
 
     newDoc: (question) =>
       set((s) => {
-        const doc = freshDoc(meceOptions(s.settings), question);
-        return activate(doc, [...s.library, entryFor(doc)], s.openTabs);
+        const doc = freshDoc(meceOptions(s.settings), s.settings, question);
+        return activate(doc, [...s.library, entryFor(doc, s.settings)], s.openTabs);
       }),
 
     switchDoc: (id) =>
@@ -394,7 +417,11 @@ export const useStore = create<AppState>((set, get) => {
         // the first remaining library tree.
         if (docs.length > 0) {
           const nextId = tabs[0] ?? docs[0]?.id ?? '';
-          return activate(recomputeMece(loadDocById(nextId) ?? freshDoc(opts), opts), docs, tabs);
+          return activate(
+            recomputeMece(loadDocById(nextId) ?? freshDoc(opts, s.settings), opts),
+            docs,
+            tabs
+          );
         }
         // Deleting the LAST tree: the library is now empty. Persist it empty and
         // return to Start (the empty gallery) — don't reseed a starter, which
@@ -403,7 +430,7 @@ export const useStore = create<AppState>((set, get) => {
         saveLibrary({ activeId: '', docs: [] });
         saveOpenTabs([]);
         return {
-          doc: freshDoc(opts),
+          doc: freshDoc(opts, s.settings),
           library: [],
           activeId: '',
           openTabs: [],
@@ -426,7 +453,9 @@ export const useStore = create<AppState>((set, get) => {
         if (renamed === base) return s; // unchanged → no-op
         const doc = { ...renamed, updatedAt: Date.now() };
         saveDocById(doc);
-        const library = s.library.map((e) => (e.id === id ? { ...e, name: docName(doc) } : e));
+        const library = s.library.map((e) =>
+          e.id === id ? { ...e, name: docName(doc, cat(s.settings).content.untitledTree) } : e
+        );
         saveLibrary({ activeId: s.activeId, docs: library });
         // Reflect the rename in the live doc too if it's the one currently open.
         return id === s.activeId ? { doc, library } : { library };
@@ -441,9 +470,15 @@ export const useStore = create<AppState>((set, get) => {
           { ...base, id: nanoid() as DocId, createdAt: now, updatedAt: now },
           meceOptions(s.settings)
         );
-        const copy = renameNodeOp(cloned, cloned.rootId, `${docName(cloned)} (copy)`);
+        const copy = renameNodeOp(
+          cloned,
+          cloned.rootId,
+          cat(s.settings).content.copyOfTree({
+            name: docName(cloned, cat(s.settings).content.untitledTree),
+          })
+        );
         saveDocById(copy);
-        const library = [...s.library, entryFor(copy)];
+        const library = [...s.library, entryFor(copy, s.settings)];
         saveLibrary({ activeId: s.activeId, docs: library });
         return { library };
       }),
@@ -452,7 +487,7 @@ export const useStore = create<AppState>((set, get) => {
       set((s) => {
         const template: UserTemplate = {
           id: nanoid(),
-          name: name.trim() || docName(s.doc),
+          name: name.trim() || docName(s.doc, cat(s.settings).content.untitledTree),
           doc: templateFromDoc(s.doc),
         };
         const userTemplates = [...s.userTemplates, template];
@@ -473,7 +508,7 @@ export const useStore = create<AppState>((set, get) => {
           { ...incoming, id: nanoid() as DocId, updatedAt: Date.now() },
           meceOptions(s.settings)
         );
-        return activate(doc, [...s.library, entryFor(doc)], s.openTabs);
+        return activate(doc, [...s.library, entryFor(doc, s.settings)], s.openTabs);
       }),
 
     setRootQuestion: (label) => apply((doc) => renameNodeOp(doc, doc.rootId, label)),
@@ -481,7 +516,9 @@ export const useStore = create<AppState>((set, get) => {
     setProblemBrief: (patch) => apply((doc) => setProblemBriefOp(doc, patch)),
     setTreeMode: (mode) => apply((doc) => setTreeModeOp(doc, mode)),
     addChild: (parentId, label) =>
-      apply((doc) => addChildOp(doc, parentId, label ?? 'New issue').doc),
+      apply(
+        (doc) => addChildOp(doc, parentId, label ?? cat(get().settings).content.newIssueLabel).doc
+      ),
     addChildren: (parentId, labels) => apply((doc) => addChildrenOp(doc, parentId, labels)),
     captureChildren: (parentId, text) => apply((doc) => graftCaptureOutline(doc, parentId, text)),
     renameNode: (id, label) => apply((doc) => renameNodeOp(doc, id, label)),
@@ -522,7 +559,14 @@ export const useStore = create<AppState>((set, get) => {
       apply((doc) => setSplitSummaryOp(doc, parentId, summary)),
     setSplitOrder: (parentId, order) => apply((doc) => setSplitOrderOp(doc, parentId, order)),
     decompose: (parentId, decomposition) =>
-      apply((doc) => decomposeOp(doc, parentId, decomposition)),
+      apply((doc) =>
+        decomposeOp(
+          doc,
+          parentId,
+          decomposition,
+          cat(get().settings).content.scaffold[decomposition]
+        )
+      ),
     moveNode: (id, newParentId) => apply((doc) => moveNodeOp(doc, id, newParentId)),
     moveSibling: (id, direction) => apply((doc) => moveSiblingOp(doc, id, direction)),
     // Both go through `apply` (the single mutation path); they differ only in the
@@ -579,7 +623,7 @@ export const useStore = create<AppState>((set, get) => {
         const primaryOk = s.selectedId != null && prev.nodes[s.selectedId] !== undefined;
         return {
           doc: prev,
-          library: syncLibraryName(s.library, prev),
+          library: syncLibraryName(s.library, prev, s.settings),
           past: s.past.slice(0, -1),
           future: [s.doc, ...s.future],
           selectedIds,
@@ -595,7 +639,7 @@ export const useStore = create<AppState>((set, get) => {
         const primaryOk = s.selectedId != null && next.nodes[s.selectedId] !== undefined;
         return {
           doc: next,
-          library: syncLibraryName(s.library, next),
+          library: syncLibraryName(s.library, next, s.settings),
           past: [...s.past, s.doc],
           future: s.future.slice(1),
           selectedIds,

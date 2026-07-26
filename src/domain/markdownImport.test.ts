@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { en } from '@/i18n/locales/en';
 import { toMarkdown } from './export';
 import { createDoc } from './factory';
 import { graftCaptureOutline, markdownToDoc } from './markdownImport';
@@ -41,7 +42,7 @@ describe('markdownToDoc', () => {
 
   it('round-trips the structure of an exported Markdown outline', () => {
     const source = markdownToDoc('# Sales\n- Pricing\n  - Too high\n- Demand', 1);
-    const md = toMarkdown(source as never);
+    const md = toMarkdown(source as never, en);
     const back = markdownToDoc(md, 2);
     // The hierarchy survives a round-trip (labels carry export meta, so compare shape).
     expect(back?.nodes[back.rootId]?.label).toContain('Sales');

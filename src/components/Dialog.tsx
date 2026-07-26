@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { useModalFocus } from '@/components/useModalFocus';
+import { useMessages } from '@/i18n/useMessages';
 
 interface DialogProps {
   /** Accessible name for the dialog (its `aria-label`). */
@@ -21,13 +22,14 @@ interface DialogProps {
  * dialog supplies its own body as children.
  */
 export function Dialog({ label, heading, subtitle, wide = false, onClose, children }: DialogProps) {
+  const m = useMessages();
   const ref = useModalFocus<HTMLDivElement>(onClose);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <button
         type="button"
-        aria-label="Close"
+        aria-label={m.app.close}
         onClick={onClose}
         className="absolute inset-0 cursor-default bg-neutral-900/30"
       />
@@ -53,7 +55,7 @@ export function Dialog({ label, heading, subtitle, wide = false, onClose, childr
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={m.app.close}
             className="shrink-0 rounded-md px-2 py-1 text-neutral-400 text-sm hover:bg-neutral-100 hover:text-neutral-700"
           >
             ✕

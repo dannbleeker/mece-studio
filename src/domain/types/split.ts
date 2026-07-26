@@ -1,3 +1,4 @@
+import type { MeceMessageRef } from '../messages';
 import type { NodeId, SplitId } from './ids';
 
 /** How a node is decomposed into its children. */
@@ -30,7 +31,12 @@ export type CheckState = 'pass' | 'warn' | 'unknown';
 
 export interface CheckResult {
   state: CheckState;
-  message?: string;
+  /**
+   * What the engine found, as a language-free `{ code, params }` reference. The
+   * view / export edge renders it via the active locale's catalogue — the engine
+   * never produces prose. See `domain/messages.ts`.
+   */
+  message?: MeceMessageRef;
 }
 
 /** Cached MECE assessment of a split, recomputed by the rule engine. */

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 
 const DISMISS_KEY = 'mece-studio:coachDismissed:v1';
 
@@ -9,6 +10,7 @@ const DISMISS_KEY = 'mece-studio:coachDismissed:v1';
  * split is cut) and is dismissable, remembered per device.
  */
 export function CanvasCoach({ show }: { show: boolean }) {
+  const m = useEditorMessages();
   const [dismissed, setDismissed] = useState(() => {
     try {
       return localStorage.getItem(DISMISS_KEY) === '1';
@@ -34,15 +36,18 @@ export function CanvasCoach({ show }: { show: boolean }) {
           💡
         </span>
         <p className="text-[12px] text-neutral-600 leading-snug">
-          <span className="font-medium text-neutral-800">Start your tree.</span> Select a node and
-          press <kbd className="rounded border border-neutral-300 bg-neutral-50 px-1">Tab</kbd> to
-          add a branch — then in the <span className="font-medium">Logic</span> panel choose how it
-          splits (segment · binary · formula …) to turn on MECE checks.
+          <span className="font-medium text-neutral-800">{m.canvas.coachTitle}</span>{' '}
+          {m.canvas.coachBeforeKey}{' '}
+          <kbd className="rounded border border-neutral-300 bg-neutral-50 px-1">
+            {m.canvas.coachKey}
+          </kbd>{' '}
+          {m.canvas.coachBeforePanel} <span className="font-medium">{m.canvas.coachPanel}</span>{' '}
+          {m.canvas.coachAfterPanel}
         </p>
         <button
           type="button"
           onClick={dismiss}
-          aria-label="Dismiss tip"
+          aria-label={m.canvas.coachDismiss}
           className="ml-1 shrink-0 text-neutral-400 hover:text-neutral-700"
         >
           ✕

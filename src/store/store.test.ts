@@ -316,7 +316,7 @@ describe('store', () => {
     const a = s().library.find((e) => e.id !== s().activeId)?.id ?? '';
     const activeBefore = s().activeId;
     s().renameDoc(a, 'Renamed offline');
-    expect(docName(loadDocById(a) ?? s().doc)).toBe('Renamed offline');
+    expect(docName(loadDocById(a) ?? s().doc, 'Untitled tree')).toBe('Renamed offline');
     expect(s().library.find((e) => e.id === a)?.name).toBe('Renamed offline');
     expect(s().activeId).toBe(activeBefore); // the open tree is untouched
   });

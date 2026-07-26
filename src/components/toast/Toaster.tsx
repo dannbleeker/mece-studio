@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useMessages } from '@/i18n/useMessages';
 import { type Toast, type ToastKind, useToastStore } from './toastStore';
 
 // Accent dot per kind, drawn from the existing palette (brand / status colours).
@@ -9,6 +10,7 @@ const ACCENT: Record<ToastKind, string> = {
 };
 
 function ToastItem({ toast }: { toast: Toast }) {
+  const m = useMessages();
   const dismiss = useToastStore((s) => s.dismiss);
   useEffect(() => {
     const handle = window.setTimeout(() => dismiss(toast.id), toast.durationMs);
@@ -43,7 +45,7 @@ function ToastItem({ toast }: { toast: Toast }) {
       )}
       <button
         type="button"
-        aria-label="Dismiss"
+        aria-label={m.app.dismissToast}
         onClick={() => dismiss(toast.id)}
         className="shrink-0 rounded px-1 text-neutral-400 text-sm hover:text-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3f6fb0]/40"
       >

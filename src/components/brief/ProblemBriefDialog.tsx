@@ -1,56 +1,29 @@
 import { Dialog } from '@/components/Dialog';
 import { advisoriesFor } from '@/domain/advisories';
 import type { ProblemBrief, TreeMode } from '@/domain/types';
+import { renderAdvisory } from '@/i18n/render';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { useStore } from '@/store';
 
 type BriefField = keyof ProblemBrief;
 
-/** The brief fields, in reading order: Context → People → Scope. */
-const FIELDS: { key: BriefField; label: string; hint: string; area: boolean }[] = [
-  {
-    key: 'situation',
-    label: 'Situation',
-    hint: 'The stable, agreed context — only the relevant key facts.',
-    area: true,
-  },
-  {
-    key: 'complication',
-    label: 'Complication',
-    hint: 'What changed or is under threat — why act now.',
-    area: true,
-  },
-  { key: 'owner', label: 'Owner', hint: 'Who owns the problem.', area: false },
-  {
-    key: 'decisionMakers',
-    label: 'Decision-makers',
-    hint: 'Who is involved in making the decision.',
-    area: false,
-  },
-  {
-    key: 'successCriteria',
-    label: 'Success criteria',
-    hint: 'How a solution will be judged good.',
-    area: true,
-  },
-  {
-    key: 'inScope',
-    label: 'In scope',
-    hint: 'Deliverables / questions inside the boundary.',
-    area: true,
-  },
-  {
-    key: 'outOfScope',
-    label: 'Out of scope',
-    hint: 'What you decide upfront NOT to tackle.',
-    area: true,
-  },
-  {
-    key: 'desiredOutcome',
-    label: 'Desired outcome',
-    hint: 'What should be true at the end of the project.',
-    area: true,
-  },
+/**
+ * The brief fields, in reading order: Context → People → Scope. Only the shape
+ * lives here — every label and hint comes from `m.brief.fields`.
+ */
+const FIELDS: { key: BriefField; area: boolean }[] = [
+  { key: 'situation', area: true },
+  { key: 'complication', area: true },
+  { key: 'owner', area: false },
+  { key: 'decisionMakers', area: false },
+  { key: 'successCriteria', area: true },
+  { key: 'inScope', area: true },
+  { key: 'outOfScope', area: true },
+  { key: 'desiredOutcome', area: true },
 ];
+
+/** The tree-type choices, `undefined` being "no type set". */
+const TREE_MODES: (TreeMode | undefined)[] = [undefined, 'why', 'how'];
 
 const FIELD_CLS =
   'rounded-md border border-neutral-300 px-2 py-1.5 text-[13px] text-neutral-800 focus:border-[#3f6fb0] focus:outline-none';
@@ -62,6 +35,7 @@ const FIELD_CLS =
  * optional and commits on blur, like the rest of the app.
  */
 export function ProblemBriefDialog({ onClose }: { onClose: () => void }) {
+  const m = useEditorMessages();
   const doc = useStore((s) => s.doc);
   const setProblemBrief = useStore((s) => s.setProblemBrief);
   const setTreeMode = useStore((s) => s.setTreeMode);
@@ -76,66 +50,64 @@ export function ProblemBriefDialog({ onClose }: { onClose: () => void }) {
     setProblemBrief({ [key]: value } as Partial<ProblemBrief>);
 
   return (
-    <Dialog
-      label="Problem brief"
-      subtitle="Frame the problem before the tree — situation, complication, and scope. Optional; it leads the synthesis."
-      wide
-      onClose={onClose}
-    >
+    <Dialog label={m.brief.title} subtitle={m.brief.subtitle} wide onClose={onClose}>
       <div className="mt-5 flex flex-col gap-4">
         <div className="rounded-md bg-[#f6f9fd] px-3 py-2">
           <span className="block font-medium text-[10px] text-[#3f6fb0] uppercase tracking-wider">
-            Key question
+            {m.brief.keyQuestionLabel}
           </span>
-          <span className="block text-[13px] text-neutral-800">{rootLabel || 'Untitled'}</span>
+          <span className="block text-[13px] text-neutral-800">
+            {rootLabel || m.content.untitled}
+          </span>
           {keyQuestionNotes.map((a) => (
             <span key={a.id} className="mt-1 block text-[12px] text-[#8a5a14] leading-snug">
-              💡 {a.message}
+              💡 {renderAdvisory(m, a.message)}
             </span>
           ))}
         </div>
 
         <div className="flex flex-col gap-1">
           <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
-            Tree type
+            {m.brief.treeTypeLabel}
           </span>
           <div className="flex gap-1">
-            {([undefined, 'why', 'how'] as (TreeMode | undefined)[]).map((m) => {
-              const active = mode === m;
-              const label =
-                m === 'why' ? 'Why (diagnostic)' : m === 'how' ? 'How (prescriptive)' : '—';
+            {TREE_MODES.map((option) => {
+              const active = mode === option;
               return (
                 <button
-                  key={m ?? 'none'}
+                  key={option ?? 'none'}
                   type="button"
                   aria-pressed={active}
-                  aria-label={m ? `Tree type ${m}` : 'Tree type default'}
+                  aria-label={
+                    option
+                      ? m.brief.treeTypeName({ mode: m.enums.treeMode[option] })
+                      : m.brief.treeTypeDefaultName
+                  }
                   className={`flex-1 rounded px-2 py-1 text-[11px] ${
                     active
                       ? 'bg-[#3f6fb0] text-white'
                       : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
                   }`}
-                  onClick={() => setTreeMode(m)}
+                  onClick={() => setTreeMode(option)}
                 >
-                  {label}
+                  {m.brief.treeTypeOption[option ?? 'none']}
                 </button>
               );
             })}
           </div>
-          <span className="text-[11px] text-neutral-400 leading-snug">
-            A "why" tree breaks a problem into causes; a "how" tree lays out alternative solutions.
-          </span>
+          <span className="text-[11px] text-neutral-400 leading-snug">{m.brief.treeTypeHint}</span>
         </div>
 
         {FIELDS.map((f) => {
           const fieldId = `brief-${f.key}`;
+          const field = m.brief.fields[f.key];
           return (
             <div key={f.key} className="flex flex-col gap-1">
               <label
                 htmlFor={fieldId}
                 className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider"
               >
-                {f.label}
+                {field.label}
               </label>
               {f.area ? (
                 <textarea
@@ -156,7 +128,7 @@ export function ProblemBriefDialog({ onClose }: { onClose: () => void }) {
                   onBlur={(e) => update(f.key, e.target.value)}
                 />
               )}
-              <span className="text-[11px] text-neutral-400 leading-snug">{f.hint}</span>
+              <span className="text-[11px] text-neutral-400 leading-snug">{field.hint}</span>
             </div>
           );
         })}

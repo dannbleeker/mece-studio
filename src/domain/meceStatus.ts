@@ -1,17 +1,18 @@
+import type { MeceMessageRef } from './messages';
 import type { DecompositionType, IssueTreeDoc, NodeId, Split } from './types';
 
-/** Default messages shown when the engine flags a split but leaves no message. */
-const DEFAULT_EXCLUSIVE_WARNING = 'Siblings may overlap.';
-const DEFAULT_EXHAUSTIVE_WARNING = 'Children may not cover the parent.';
+/** Fallback refs for when the engine flags a split but leaves no message. */
+const DEFAULT_EXCLUSIVE_WARNING: MeceMessageRef = { code: 'mece.exclusive.default' };
+const DEFAULT_EXHAUSTIVE_WARNING: MeceMessageRef = { code: 'mece.exhaustive.default' };
 
 /**
  * The MECE warnings on a single split — a `warn` on mutual-exclusivity and/or
- * collective-exhaustiveness — using the engine's own message, or a default.
+ * collective-exhaustiveness — as the engine's own message ref, or a default.
  * Pure; reads the cached `split.mece`. The single source of truth both the
  * review dock and the print / presentation surfaces draw their wording from.
  */
-export function splitWarnings(split: Split): string[] {
-  const out: string[] = [];
+export function splitWarnings(split: Split): MeceMessageRef[] {
+  const out: MeceMessageRef[] = [];
   if (split.mece.exclusive.state === 'warn')
     out.push(split.mece.exclusive.message ?? DEFAULT_EXCLUSIVE_WARNING);
   if (split.mece.exhaustive.state === 'warn')
@@ -62,10 +63,10 @@ export interface FlaggedSplit {
   /** The parent node's label. */
   label: string;
   decomposition: DecompositionType;
-  /** Warning message when mutual-exclusivity is flagged, else null. */
-  exclusive: string | null;
-  /** Warning message when collective-exhaustiveness is flagged, else null. */
-  exhaustive: string | null;
+  /** Warning ref when mutual-exclusivity is flagged, else null. */
+  exclusive: MeceMessageRef | null;
+  /** Warning ref when collective-exhaustiveness is flagged, else null. */
+  exhaustive: MeceMessageRef | null;
 }
 
 /**

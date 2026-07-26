@@ -1,8 +1,9 @@
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import { useEffect, useRef } from 'react';
-import { CHECK_STATE_COLOR, CHECK_STATE_GLYPH, CHECK_STATE_LABEL } from '@/components/checkColors';
+import { CHECK_STATE_COLOR, CHECK_STATE_GLYPH } from '@/components/checkColors';
 import { childrenOf } from '@/domain/tree';
 import type { CheckResult, NodeId, NodeStatus } from '@/domain/types';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { useStore } from '@/store';
 import { useNodeEditing } from '../nodeEditing';
 import type { IssueFlowNode } from '../projection';
@@ -34,7 +35,8 @@ const STATUS_GLYPH: Record<NodeStatus, string> = {
  * users; the title/aria-label carries it to screen readers.
  */
 function MeceDot({ label, short, result }: { label: string; short: string; result: CheckResult }) {
-  const caption = `${label}: ${CHECK_STATE_LABEL[result.state]}`;
+  const m = useEditorMessages();
+  const caption = m.canvas.meceCaption({ axis: label, state: m.enums.checkState[result.state] });
   return (
     <span className="flex items-center gap-1" role="img" title={caption} aria-label={caption}>
       <span
@@ -65,6 +67,7 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
     status,
     selected,
   } = data;
+  const m = useEditorMessages();
   const { editingId, start, commit, cancel } = useNodeEditing();
   const toggleCollapse = useStore((s) => s.toggleCollapse);
   const addChild = useStore((s) => s.addChild);
@@ -96,6 +99,7 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
   const edgeColor = selected ? '#3f6fb0' : '#d7d4cb';
   const edgeWidth = selected ? 2 : 1;
   const showStatus = status !== 'open';
+  const statusCaption = m.canvas.statusCaption({ status: m.enums.status[status] });
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: canvas node; keyboard editing is via Enter/F2 (handled in Canvas)
     <div
@@ -120,7 +124,7 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
           className="absolute top-1 right-1 rounded px-1 py-px font-semibold text-[8px] uppercase tracking-wide"
           style={{ background: BAND[priority].bg, color: BAND[priority].fg }}
         >
-          {priority}
+          {m.enums.level[priority]}
         </span>
       )}
 
@@ -129,8 +133,8 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
           className="absolute top-1 left-1 font-bold text-[10px] leading-none"
           style={{ color: STATUS_BORDER[status] }}
           role="img"
-          title={`Status: ${status}`}
-          aria-label={`Status: ${status}`}
+          title={statusCaption}
+          aria-label={statusCaption}
         >
           {STATUS_GLYPH[status]}
         </span>
@@ -139,7 +143,7 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
       {isEditing ? (
         <textarea
           ref={inputRef}
-          aria-label="Edit node label"
+          aria-label={m.canvas.editLabel}
           defaultValue={label}
           rows={2}
           className="nodrag nopan w-full resize-none rounded border border-[#3f6fb0] bg-white px-1 py-0.5 font-medium text-[13px] text-neutral-800 leading-snug focus:outline-none"
@@ -158,27 +162,33 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
         />
       ) : (
         <div className="line-clamp-2 font-medium text-[13px] text-neutral-800 leading-snug">
-          {label || 'Untitled'}
+          {label || m.content.untitled}
         </div>
       )}
 
       {value && (
-        <div className="mt-0.5 text-[11px] text-neutral-500">
-          {value.amount}
-          {value.unit ? ` ${value.unit}` : ''}
-        </div>
+        <div className="mt-0.5 text-[11px] text-neutral-500">{m.canvas.nodeValue(value)}</div>
       )}
 
       {(evidence || hasNote) && (
         <div className="mt-0.5 flex items-center gap-2 text-[10px]">
           {evidence && evidence.supports > 0 && (
-            <span style={{ color: '#3f7d54' }}>✓ {evidence.supports}</span>
+            <span style={{ color: '#3f7d54' }}>
+              {m.canvas.evidenceSupports({ count: evidence.supports })}
+            </span>
           )}
           {evidence && evidence.contradicts > 0 && (
-            <span style={{ color: '#bd4a3a' }}>✗ {evidence.contradicts}</span>
+            <span style={{ color: '#bd4a3a' }}>
+              {m.canvas.evidenceContradicts({ count: evidence.contradicts })}
+            </span>
           )}
           {hasNote && (
-            <span className="text-neutral-400" role="img" title="Has notes" aria-label="Has notes">
+            <span
+              className="text-neutral-400"
+              role="img"
+              title={m.canvas.hasNotes}
+              aria-label={m.canvas.hasNotes}
+            >
               <svg
                 width="10"
                 height="10"
@@ -199,24 +209,32 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
       {hasChildren && dimension && (
         <div
           className="mt-0.5 truncate text-[9px] text-neutral-400 italic"
-          title={`Split by ${dimension}`}
+          title={m.canvas.splitByTitle({ dimension })}
         >
-          by {dimension}
+          {m.canvas.splitBy({ dimension })}
         </div>
       )}
 
       {hasChildren && mece && (
         <div className="mt-1 flex items-center gap-3 text-[10px] text-neutral-500">
-          <MeceDot label="Mutually exclusive" short="ME" result={mece.exclusive} />
-          <MeceDot label="Collectively exhaustive" short="CE" result={mece.exhaustive} />
+          <MeceDot
+            label={m.canvas.meceExclusive}
+            short={m.canvas.meceExclusiveShort}
+            result={mece.exclusive}
+          />
+          <MeceDot
+            label={m.canvas.meceExhaustive}
+            short={m.canvas.meceExhaustiveShort}
+            result={mece.exhaustive}
+          />
         </div>
       )}
 
       {hasChildren && (
         <button
           type="button"
-          title={collapsed ? 'Expand subtree' : 'Collapse subtree'}
-          aria-label={collapsed ? 'Expand subtree' : 'Collapse subtree'}
+          title={collapsed ? m.canvas.expandSubtree : m.canvas.collapseSubtree}
+          aria-label={collapsed ? m.canvas.expandSubtree : m.canvas.collapseSubtree}
           className="nodrag absolute -bottom-2.5 left-1/2 -translate-x-1/2 rounded-full border border-neutral-300 bg-white px-1.5 py-px font-medium text-[9px] text-neutral-500 leading-none shadow-sm hover:border-[#3f6fb0] hover:text-[#3f6fb0]"
           onClick={(e) => {
             e.stopPropagation();
@@ -224,14 +242,14 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
           }}
           onPointerDown={(e) => e.stopPropagation()}
         >
-          {collapsed ? `▶ ${childCount}` : '▼'}
+          {collapsed ? m.canvas.collapsedCount({ count: childCount }) : '▼'}
         </button>
       )}
 
       <button
         type="button"
-        title="Add a sub-issue"
-        aria-label="Add sub-issue"
+        title={m.canvas.addChildTitle}
+        aria-label={m.canvas.addChildLabel}
         className={`nodrag absolute top-1/2 -right-2.5 z-10 -translate-y-1/2 rounded-full border border-neutral-300 bg-white px-1.5 py-px font-medium text-[11px] leading-none shadow-sm transition-opacity hover:border-[#3f6fb0] hover:text-[#3f6fb0] focus-visible:opacity-100 ${selected ? 'text-[#3f6fb0] opacity-100' : 'text-neutral-500 opacity-0 group-hover:opacity-100'}`}
         onClick={(e) => {
           e.stopPropagation();

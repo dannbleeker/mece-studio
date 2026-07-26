@@ -26,17 +26,64 @@ Sibling to [TP Studio](https://tp-studio.struktureretsundfornuft.dk) (Theory of 
 
 The domain core (`src/domain`) is framework-free and pure — the tree operations, MECE engine, roll-up, priority, synthesis, and export are all plain functions with unit tests. The Zustand store wraps them with history + persistence, and the React / React Flow layer renders. One source of truth per concern; the view holds no business logic.
 
+## Localization
+
+The app ships in **English only**, but every user-facing string lives in a typed
+catalogue rather than in the components, so adding a language is additive work
+with a compiler checking it.
+
+- **Catalogue** — `src/i18n/locales/en/`, one file per area, composed into two
+  halves: `en-core.ts` (everything reachable before a tree is open) and
+  `en-editor.ts` (the canvas, inspector, review, exports and rule-engine wording,
+  shipped in the lazy `Workspace` chunk). `useMessages()` returns the core half
+  and works anywhere; `useEditorMessages()` returns both and only resolves inside
+  the editor, so `m.inspector` on a Start-page component is a compile error.
+  A locale must still supply **both** halves in full — the split is about *when*
+  wording loads, never about which locales have to provide it. Every locale is
+  declared against `typeof en`, so a missing key, an extra key, or a render
+  function with the wrong params is a **typecheck** failure. There is no runtime
+  completeness test because there doesn't need to be one.
+- **A web-app manifest per locale.** `src/i18n/manifests.ts` is the one typed
+  source; a Vite plugin emits `manifest.<locale>.webmanifest` for each, and
+  `useDocumentLanguage` points `<link rel="manifest">` at the active one. A
+  browser reads the manifest at install time, so this gets the next install right
+  rather than renaming an already-installed icon.
+- **The domain never speaks a language.** The MECE engine and the coaching lints
+  return `{ code, params }` refs (`src/domain/messages.ts`) with raw numbers and
+  raw enum members; `src/i18n/render.ts` turns them into prose at the edge. That
+  is why rewording a warning never touches a rule, and why a rule's tests assert
+  what it *found* rather than what it *said*.
+- **Formatting** — numbers, percentages and dates go through `Intl` in
+  `src/i18n/format.ts`; sorting and accent-aware search go through
+  `Intl.Collator` in `src/domain/collation.ts`. Plurals use `Intl.PluralRules`
+  with the full CLDR category set, so a locale with four plural forms needs no
+  rewrite.
+- **Seeded content** (starter branch labels, example trees, framework templates)
+  is resolved from the catalogue at creation time and then frozen into the
+  document as ordinary user text — reopening a tree never retranslates it.
+  `IssueTreeDoc.locale` records which language a tree was seeded in.
+
+**To add a locale:** add its code to `LocaleCode` in
+`src/domain/types/locale.ts`, copy `src/i18n/locales/en/` to a new folder,
+translate it, then register its two halves in `src/i18n/registry.ts` and
+`src/i18n/editorRegistry.ts` and add its entry to `src/i18n/manifests.ts`.
+`pnpm verify` then tells you precisely what is missing — the compiler for
+coverage, `scripts/check-i18n.mjs` for hardcoded strings and orphan keys, the
+`en-XA` pseudo-locale test for anything that slipped past both, and
+`check-bundle-size.mjs` for the editor catalogue leaking onto the eager path.
+
 ## Stack
 
 React 19 · Vite 8 · TypeScript 6 · Tailwind 4 · Zustand 5 · React Flow (`@xyflow/react`) + dagre · `vite-plugin-pwa`.
-Tooling: Biome, Vitest, knip, pnpm.
+Tooling: Biome, Vitest, knip, pnpm. No i18n runtime dependency — the catalogue is
+plain typed objects.
 
 ## Develop
 
 ```bash
 pnpm install
 pnpm dev        # start the dev server
-pnpm verify     # typecheck → lint/format → dead-code → test → build → size budget
+pnpm verify     # typecheck → lint/format → dead-code → i18n → test → build → size budget
 ```
 
 `pnpm verify` is the single source of truth for "is it green", and CI runs the exact same gate. (Scripts invoke each tool in node form — `node ./node_modules/<tool>/…` — so they work under the local AppLocker policy.)

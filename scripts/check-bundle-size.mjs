@@ -40,10 +40,30 @@ for (const { file, kb } of rows) {
   process.stdout.write(`  ${kb.toFixed(1).padStart(7)} KB gz  ${file}\n`);
 }
 
+// --- the i18n core/editor split, verified against the built output ----------
+// The editor catalogue (inspector / canvas / export wording) belongs in the lazy
+// Workspace chunk. That split is easy to undo by accident — one eager module
+// importing the editor hook is enough, and it happened once during the original
+// build-out — and the only symptom is a slightly fatter entry chunk, which reads
+// as ordinary drift. So assert it directly: a string only the editor catalogue
+// contains must not appear in the eager chunk, and must appear somewhere lazy.
+const EDITOR_ONLY_MARKER = 'double-counts the other terms';
+const eagerSource = [...refs].map((rel) => readFileSync(path.join('dist', rel), 'utf8')).join('');
+if (eagerSource.includes(EDITOR_ONLY_MARKER)) {
+  process.stderr.write(
+    `\nThe editor catalogue leaked into the eager chunk (found ${JSON.stringify(EDITOR_ONLY_MARKER)}).\n` +
+      "Something outside Workspace's import graph is importing @/i18n/useEditorMessages,\n" +
+      '@/i18n/editorRegistry or ./locales/en-editor — see src/i18n/locales/en-core.ts.\n'
+  );
+  process.exit(1);
+}
+
 const totalKb = totalBytes / 1024;
 const limit = budget.totalJsGzipKb;
 process.stdout.write(`  ${'-'.repeat(30)}\n`);
-process.stdout.write(`  ${totalKb.toFixed(1).padStart(7)} KB gz  eager total (budget ${limit} KB)\n`);
+process.stdout.write(
+  `  ${totalKb.toFixed(1).padStart(7)} KB gz  eager total (budget ${limit} KB)\n`
+);
 
 if (totalKb > limit) {
   process.stderr.write(

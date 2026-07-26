@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Dialog } from '@/components/Dialog';
 import { childrenOf } from '@/domain/tree';
+import { useMessages } from '@/i18n/useMessages';
 import { useStore } from '@/store';
 
 // TODO(studio-kit): swap the local Dialog + inline button styles for the shared
@@ -13,6 +14,7 @@ import { useStore } from '@/store';
  * node — the MECE analogue of TP Studio's QuickCaptureDialog.
  */
 export function QuickCaptureDialog({ onClose }: { onClose: () => void }) {
+  const m = useMessages();
   const doc = useStore((s) => s.doc);
   const selectedId = useStore((s) => s.selectedId);
   const addChildren = useStore((s) => s.addChildren);
@@ -20,7 +22,7 @@ export function QuickCaptureDialog({ onClose }: { onClose: () => void }) {
   const select = useStore((s) => s.select);
 
   const parentId = selectedId ?? doc.rootId;
-  const parentLabel = doc.nodes[parentId]?.label ?? 'the root question';
+  const parentLabel = doc.nodes[parentId]?.label ?? m.app.quickAddParentFallback;
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -60,35 +62,37 @@ export function QuickCaptureDialog({ onClose }: { onClose: () => void }) {
 
   return (
     <Dialog
-      label="Quick add issues"
+      label={m.app.quickAddTitle}
       subtitle={
         <>
-          One issue per line — each becomes a child of{' '}
-          <span className="font-medium text-neutral-700">“{parentLabel}”</span>.{' '}
-          <span className="text-neutral-400">Indent (Tab / spaces) to nest sub-issues.</span>
+          {m.app.quickAddSubtitleLead}{' '}
+          <span className="font-medium text-neutral-700">
+            {m.app.quickAddParentName({ name: parentLabel })}
+          </span>
+          . <span className="text-neutral-400">{m.app.quickAddNestHint}</span>
         </>
       }
       onClose={onClose}
     >
       <textarea
         ref={textareaRef}
-        aria-label="Issues to add, one per line"
+        aria-label={m.app.quickAddFieldLabel}
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={onKeyDown}
         rows={6}
-        placeholder={'Pricing\n  Cost floor\n  Value ceiling\nDemand\nDistribution'}
+        placeholder={m.app.quickAddPlaceholder}
         className="mt-4 w-full resize-y rounded-lg border border-neutral-200 bg-white p-3 text-[14px] text-neutral-800 outline-none focus-visible:ring-2 focus-visible:ring-[#3f6fb0]/40"
       />
       <div className="mt-4 flex items-center justify-between gap-2">
-        <span className="text-[12px] text-neutral-400">⌘/Ctrl + Enter to add</span>
+        <span className="text-[12px] text-neutral-400">{m.app.quickAddSubmitHint}</span>
         <div className="flex gap-2">
           <button
             type="button"
             onClick={onClose}
             className="rounded-md px-3 py-1.5 text-[13px] text-neutral-600 hover:bg-neutral-100"
           >
-            Cancel
+            {m.app.cancel}
           </button>
           <button
             type="button"
@@ -96,7 +100,7 @@ export function QuickCaptureDialog({ onClose }: { onClose: () => void }) {
             disabled={text.trim() === ''}
             className="rounded-md bg-[#3f6fb0] px-3 py-1.5 font-medium text-[13px] text-white shadow-sm transition hover:bg-[#365f98] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Add issues
+            {m.app.quickAddSubmit}
           </button>
         </div>
       </div>

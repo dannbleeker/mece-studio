@@ -16,6 +16,20 @@ describe('importText', () => {
     expect(result?.doc.rootId).toBe(doc.rootId);
   });
 
+  it('carries a document locale through an export → import round trip', () => {
+    const doc = createDoc('Exported question', 1, { locale: 'en' });
+    expect(importText(treeToJson(doc), 2)?.doc.locale).toBe('en');
+  });
+
+  it('accepts a document saved before the locale field existed', () => {
+    const doc = createDoc('Legacy question', 1);
+    const legacy = JSON.parse(treeToJson(doc)) as Record<string, unknown>;
+    delete legacy.locale;
+    const result = importText(JSON.stringify(legacy), 2);
+    expect(result?.doc.rootId).toBe(doc.rootId);
+    expect(result?.doc.locale).toBeUndefined();
+  });
+
   it('rejects JSON-looking text that is not a valid tree', () => {
     expect(importText('{"not":"a tree"}', 1)).toBeNull();
   });

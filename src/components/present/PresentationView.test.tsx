@@ -2,6 +2,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { NodeId } from '@/domain/types';
+import { en } from '@/i18n/locales/en';
 import { useStore } from '@/store';
 import { PresentationView } from './PresentationView';
 
@@ -33,12 +34,20 @@ describe('PresentationView', () => {
     render(<PresentationView onClose={() => {}} />);
     expect(screen.getByRole('heading', { name: 'Why are sales down?' })).toBeTruthy();
     expect(screen.getByText('Pricing')).toBeTruthy();
-    expect(screen.getByText('1 / 2')).toBeTruthy(); // root + Pricing are the two steps
+    // root + Pricing are the two steps
+    expect(screen.getByText(en.exports.presentProgress({ index: 1, total: 2 }))).toBeTruthy();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Next →' }));
+    fireEvent.click(screen.getByRole('button', { name: en.exports.presentNext }));
     expect(screen.getByRole('heading', { name: 'Pricing' })).toBeTruthy();
     expect(screen.getByText('Too high')).toBeTruthy();
-    expect(screen.getByText('2 / 2')).toBeTruthy();
+    expect(screen.getByText(en.exports.presentProgress({ index: 2, total: 2 }))).toBeTruthy();
+  });
+
+  it('labels its chrome from the catalogue', () => {
+    render(<PresentationView onClose={() => {}} />);
+    expect(screen.getByText(en.exports.presentHeader)).toBeTruthy();
+    expect(screen.getByRole('button', { name: en.exports.presentExitLabel })).toBeTruthy();
+    expect(screen.getByText(en.exports.presentNavHint)).toBeTruthy();
   });
 
   it('navigates with the arrow keys and exits on Escape', () => {

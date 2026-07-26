@@ -1,3 +1,4 @@
+import { useMessages } from '@/i18n/useMessages';
 import { Dialog } from './Dialog';
 
 /**
@@ -8,18 +9,20 @@ import { Dialog } from './Dialog';
 export function ConfirmDialog({
   label,
   message,
-  confirmLabel = 'Confirm',
+  confirmLabel,
   destructive = false,
   onConfirm,
   onClose,
 }: {
   label: string;
   message: string;
+  /** Defaults to a plain "Confirm" when the caller has no better verb. */
   confirmLabel?: string;
   destructive?: boolean;
   onConfirm: () => void;
   onClose: () => void;
 }) {
+  const m = useMessages();
   return (
     <Dialog label={label} onClose={onClose}>
       <p className="mt-3 text-[13px] text-neutral-600 leading-relaxed">{message}</p>
@@ -29,7 +32,7 @@ export function ConfirmDialog({
           onClick={onClose}
           className="rounded-md px-3 py-1.5 text-[13px] text-neutral-600 hover:bg-neutral-100"
         >
-          Cancel
+          {m.app.cancel}
         </button>
         <button
           type="button"
@@ -41,7 +44,7 @@ export function ConfirmDialog({
             destructive ? 'bg-[#bd4a3a] hover:bg-[#a53f31]' : 'bg-[#3f6fb0] hover:bg-[#365f98]'
           }`}
         >
-          {confirmLabel}
+          {confirmLabel ?? m.app.confirm}
         </button>
       </div>
     </Dialog>

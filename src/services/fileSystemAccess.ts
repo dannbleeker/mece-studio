@@ -86,9 +86,17 @@ export function serializeTree(doc: IssueTreeDoc): string {
   return treeToJson(doc);
 }
 
-/** A filesystem-friendly filename derived from the tree's root question. */
+/**
+ * A filesystem-friendly filename derived from the tree's root question.
+ *
+ * Deliberately *not* localised: with no root question it falls through to the
+ * ASCII `mece-tree` default rather than a translated "untitled" that would slug
+ * to mojibake (Danish "Unavngivet træ" → `unavngivet-tr`). A filename is an
+ * identifier, and the user's own question — whatever language it is in — is
+ * still what names the file when there is one.
+ */
 export function suggestedFileName(doc: IssueTreeDoc): string {
-  const slug = docName(doc)
+  const slug = docName(doc, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')

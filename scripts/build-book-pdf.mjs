@@ -41,7 +41,12 @@ function loadChapters() {
     const md = readFileSync(full, 'utf8');
     const slug = slugOf(file);
     const html = marked.parse(expand(md), { async: false });
-    return { file, slug, title: titleOf(md, file), body: html.replace(/<h1([^>]*)>/, `<h1$1 id="${slug}">`) };
+    return {
+      file,
+      slug,
+      title: titleOf(md, file),
+      body: html.replace(/<h1([^>]*)>/, `<h1$1 id="${slug}">`),
+    };
   });
 }
 
@@ -78,7 +83,9 @@ const PRINT_CSS = `
 
 function buildHtml(chapters) {
   const cover = `<section class="cover"><div class="cover-title">${esc(BOOK_TITLE)}</div><div class="cover-sub">${esc(BOOK_SUBTITLE)}</div><div class="cover-author">${esc(BOOK_AUTHOR)}</div></section>`;
-  const toc = `<section class="toc-page"><div class="toc-title">Contents</div>${groupChapters(chapters)
+  const toc = `<section class="toc-page"><div class="toc-title">Contents</div>${groupChapters(
+    chapters
+  )
     .map(
       (g) =>
         `<div class="toc-group">${esc(g.label)}</div>${g.items
@@ -124,7 +131,9 @@ async function main() {
   doc.context.trailerInfo.ID = id;
   const out = await doc.save();
   writeFileSync(OUT, out);
-  process.stdout.write(`PDF: ${OUT} (${chapters.length} chapters, ${(out.length / 1024).toFixed(0)} KB)\n`);
+  process.stdout.write(
+    `PDF: ${OUT} (${chapters.length} chapters, ${(out.length / 1024).toFixed(0)} KB)\n`
+  );
 }
 
 main().catch((e) => {

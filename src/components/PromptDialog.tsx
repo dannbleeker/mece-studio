@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useMessages } from '@/i18n/useMessages';
 import { Dialog } from './Dialog';
 
 /**
@@ -10,7 +11,7 @@ export function PromptDialog({
   subtitle,
   initialValue = '',
   placeholder,
-  submitLabel = 'Save',
+  submitLabel,
   onSubmit,
   onClose,
 }: {
@@ -18,10 +19,12 @@ export function PromptDialog({
   subtitle?: string;
   initialValue?: string;
   placeholder?: string;
+  /** Defaults to a plain "Save" when the caller has no better verb. */
   submitLabel?: string;
   onSubmit: (value: string) => void;
   onClose: () => void;
 }) {
+  const m = useMessages();
   const [value, setValue] = useState(initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
   // Move focus to the field once the dialog has mounted (Dialog focuses its shell).
@@ -57,14 +60,14 @@ export function PromptDialog({
           onClick={onClose}
           className="rounded-md px-3 py-1.5 text-[13px] text-neutral-600 hover:bg-neutral-100"
         >
-          Cancel
+          {m.app.cancel}
         </button>
         <button
           type="button"
           onClick={submit}
           className="rounded-md bg-[#3f6fb0] px-3 py-1.5 font-medium text-[13px] text-white hover:bg-[#365f98]"
         >
-          {submitLabel}
+          {submitLabel ?? m.app.save}
         </button>
       </div>
     </Dialog>

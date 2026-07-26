@@ -5,14 +5,14 @@ import { addChild } from './tree';
 
 describe('matchesQuery', () => {
   it('matches case-insensitively as a substring', () => {
-    expect(matchesQuery('Pricing strategy', 'price')).toBe(false); // not a substring
-    expect(matchesQuery('Pricing strategy', 'pric')).toBe(true);
-    expect(matchesQuery('Pricing strategy', 'STRATEGY')).toBe(true);
+    expect(matchesQuery('Pricing strategy', 'price', 'en')).toBe(false); // not a substring
+    expect(matchesQuery('Pricing strategy', 'pric', 'en')).toBe(true);
+    expect(matchesQuery('Pricing strategy', 'STRATEGY', 'en')).toBe(true);
   });
 
   it('treats a blank query as no match', () => {
-    expect(matchesQuery('anything', '')).toBe(false);
-    expect(matchesQuery('anything', '   ')).toBe(false);
+    expect(matchesQuery('anything', '', 'en')).toBe(false);
+    expect(matchesQuery('anything', '   ', 'en')).toBe(false);
   });
 });
 
@@ -26,7 +26,7 @@ describe('searchNodes', () => {
     const c = addChild(doc, doc.rootId, 'Overheads');
     doc = c.doc;
 
-    const hits = searchNodes(doc, 'cost');
+    const hits = searchNodes(doc, 'cost', 'en');
     expect(hits).toContain(a.childId);
     expect(hits).toContain(b.childId);
     expect(hits).toContain(doc.rootId); // "...costs high?"
@@ -35,6 +35,6 @@ describe('searchNodes', () => {
 
   it('returns nothing for a blank query', () => {
     const doc = createDoc('Root', 1);
-    expect(searchNodes(doc, '')).toEqual([]);
+    expect(searchNodes(doc, '', 'en')).toEqual([]);
   });
 });

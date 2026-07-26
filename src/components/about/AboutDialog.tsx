@@ -1,55 +1,42 @@
 import { Dialog } from '@/components/Dialog';
 import { showToast } from '@/components/toast/toastStore';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { checkForUpdate } from '@/pwa/pwaUpdate';
 
 const REPO = 'https://github.com/dannbleeker/mece-studio';
 
-const LINKS: { href: string; label: string; hint: string }[] = [
-  {
-    href: '/user-guide.html',
-    label: 'User Guide',
-    hint: 'Reference for every feature and shortcut.',
-  },
-  {
-    href: '/Issue-Trees-with-MECE-Studio.pdf',
-    label: 'Read the book (PDF)',
-    hint: 'Issue Trees with MECE Studio — the practitioner’s guide.',
-  },
-  {
-    href: '/Issue-Trees-with-MECE-Studio.epub',
-    label: 'Read the book (EPUB)',
-    hint: 'Same book, for Kindle and e-readers.',
-  },
-  {
-    href: '/notices.html',
-    label: 'Third-party notices & trademarks',
-    hint: 'Attribution and licenses for dependencies.',
-  },
-  { href: REPO, label: 'Source on GitHub', hint: 'Code, issues, and releases.' },
-];
-
 const LICENSE_LINK = 'text-[#3f6fb0] underline';
 
 export function AboutDialog({ onClose }: { onClose: () => void }) {
+  const m = useEditorMessages();
+
+  // The hrefs are not language; only the label and the hint are, so they pair up
+  // here rather than living as one order-coupled list in the catalogue.
+  const links = [
+    { href: '/user-guide.html', ...m.app.aboutLinks.guide },
+    { href: '/Issue-Trees-with-MECE-Studio.pdf', ...m.app.aboutLinks.bookPdf },
+    { href: '/Issue-Trees-with-MECE-Studio.epub', ...m.app.aboutLinks.bookEpub },
+    { href: '/notices.html', ...m.app.aboutLinks.notices },
+    { href: REPO, ...m.app.aboutLinks.source },
+  ];
+
   const onCheckForUpdate = async () => {
-    const result = await checkForUpdate();
-    if (result === 'up-to-date') showToast('success', "You're on the latest version.");
-    else if (result === 'newly-found')
-      showToast('info', 'New version found — the refresh prompt will appear once it downloads.');
-    else if (result === 'unsupported')
-      showToast('info', "Update checks aren't available here (no service worker running).");
+    const result = await checkForUpdate(m);
+    if (result === 'up-to-date') showToast('success', m.app.updateUpToDate);
+    else if (result === 'newly-found') showToast('info', m.app.updateFound);
+    else if (result === 'unsupported') showToast('info', m.app.updateUnsupported);
     // 'already-pending' — checkForUpdate already re-surfaced the "Refresh now" prompt.
   };
 
   return (
     <Dialog
-      label="About MECE Studio"
+      label={m.app.aboutTitle}
       heading="MECE Studio"
-      subtitle="Build McKinsey-style issue trees with MECE checking built in. Free, local-first, runs in your browser."
+      subtitle={m.app.aboutSubtitle}
       onClose={onClose}
     >
       <div className="mt-5 space-y-0.5">
-        {LINKS.map((l) => (
+        {links.map((l) => (
           <a
             key={l.href}
             href={l.href}
@@ -68,31 +55,31 @@ export function AboutDialog({ onClose }: { onClose: () => void }) {
         onClick={() => void onCheckForUpdate()}
         className="mt-4 rounded-md border border-neutral-200 px-3 py-1.5 text-[13px] text-neutral-600 hover:bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3f6fb0]/40"
       >
-        Check for updates
+        {m.app.checkForUpdates}
       </button>
 
       <p className="mt-5 border-neutral-200 border-t pt-4 text-[11px] text-neutral-500 leading-relaxed">
-        © 2026 Dann Bleeker Pedersen. Software under{' '}
+        {m.app.licenseIntro}{' '}
         <a
           className={LICENSE_LINK}
           href={`${REPO}/blob/main/LICENSE`}
           target="_blank"
           rel="noopener noreferrer"
         >
-          Apache-2.0
+          {m.app.licenseSoftware}
         </a>
-        ; the book under{' '}
+        {m.app.licenseBookIntro}{' '}
         <a
           className={LICENSE_LINK}
           href={`${REPO}/blob/main/LICENSE-BOOK`}
           target="_blank"
           rel="noopener noreferrer"
         >
-          CC BY-NC 4.0
+          {m.app.licenseBook}
         </a>
-        . “McKinsey” and “MECE” are referenced descriptively — see the{' '}
+        {m.app.licenseTrademarks}{' '}
         <a className={LICENSE_LINK} href="/notices.html" target="_blank" rel="noopener noreferrer">
-          third-party notices
+          {m.app.licenseNotices}
         </a>
         .
       </p>

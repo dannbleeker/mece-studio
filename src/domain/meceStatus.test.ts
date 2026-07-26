@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { en } from '@/i18n/locales/en';
 import { EXAMPLE_TREES } from './examples';
 import { createDoc } from './factory';
 import { recomputeMece } from './mece';
@@ -41,7 +42,7 @@ describe('meceStatus', () => {
 
   it('matches the recomputed status on the example trees (no divergence)', () => {
     for (const ex of EXAMPLE_TREES) {
-      const doc = recomputeMece(ex.build());
+      const doc = recomputeMece(ex.build(en));
       const summary = meceSummary(doc);
       // The profit example is built to reconcile, so it should be clean.
       if (ex.id === 'profit') expect(summary.kind).toBe('clean');
@@ -61,7 +62,9 @@ describe('meceStatus', () => {
     expect(flagged).toHaveLength(1);
     expect(flagged[0]?.nodeId).toBe(doc.rootId);
     expect(flagged[0]?.decomposition).toBe('segment');
-    expect(flagged[0]?.exhaustive).toBeTruthy();
+    // A language-free ref, not prose — the review dock renders it at the edge.
+    expect(flagged[0]?.exhaustive).toEqual({ code: 'mece.exhaustive.segmentNeedsOther' });
+    expect(flagged[0]?.exclusive).toBeNull();
   });
 
   it('flaggedSplits is empty for a clean tree', () => {

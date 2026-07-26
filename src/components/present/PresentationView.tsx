@@ -1,20 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { TREE_KIND_LABELS } from '@/domain/constants';
 import { splitWarnings } from '@/domain/meceStatus';
 import { presentationSteps } from '@/domain/presentation';
 import { childrenOf, splitOf } from '@/domain/tree';
-import type { IssueTreeDoc, NodeId } from '@/domain/types';
+import { renderMece } from '@/i18n/render';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { useStore } from '@/store';
 
 // TODO(studio-kit): swap the local full-screen overlay for the shared
 // presentation primitive once MECE adopts studio-kit.
-
-/** A node's value rendered as "12 DKK" / "12", or "" when it has none. */
-function valueText(doc: IssueTreeDoc, id: NodeId): string {
-  const v = doc.nodes[id]?.value;
-  if (!v) return '';
-  return v.unit ? `${v.amount} ${v.unit}` : `${v.amount}`;
-}
 
 /**
  * Full-screen, step-through presentation of a tree: one decomposition per
@@ -22,6 +15,7 @@ function valueText(doc: IssueTreeDoc, id: NodeId): string {
  * advance; Escape exits. The MECE analogue of TP Studio's PresentationStepThrough.
  */
 export function PresentationView({ onClose }: { onClose: () => void }) {
+  const m = useEditorMessages();
   const doc = useStore((s) => s.doc);
   const steps = useMemo(() => presentationSteps(doc), [doc]);
   const [index, setIndex] = useState(0);
@@ -54,20 +48,29 @@ export function PresentationView({ onClose }: { onClose: () => void }) {
   const node = nodeId ? doc.nodes[nodeId] : undefined;
   const split = nodeId ? splitOf(doc, nodeId) : undefined;
   const kids = nodeId ? childrenOf(doc, nodeId) : [];
-  const warnings = split ? splitWarnings(split) : [];
-  const kindLabel = split ? TREE_KIND_LABELS[split.decomposition] : 'Issue';
+  const warnings = split ? splitWarnings(split).map((ref) => renderMece(m, ref)) : [];
+  const kindLabel = split ? m.enums.treeKind[split.decomposition] : m.exports.presentNodeKind;
+  // The slide's MECE footer: the split's warnings, or an all-clear once it has a
+  // split and nothing is flagged. Nothing at all for an undecomposed leaf.
+  const meceLine =
+    warnings.length > 0
+      ? `⚠ ${warnings.join(' · ')}`
+      : split
+        ? `✓ ${m.exports.presentClean}`
+        : null;
+  const meceTone = warnings.length > 0 ? 'text-[#e6b768]' : 'text-[#7fd1a0]';
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-[#1d2433] text-neutral-100">
       <div className="flex shrink-0 items-center justify-between px-6 py-4">
-        <span className="font-medium text-[13px] text-neutral-400">MECE Studio · Presentation</span>
+        <span className="font-medium text-[13px] text-neutral-400">{m.exports.presentHeader}</span>
         <button
           type="button"
           onClick={onClose}
-          aria-label="Exit presentation"
+          aria-label={m.exports.presentExitLabel}
           className="rounded-md px-3 py-1.5 text-[13px] text-neutral-300 hover:bg-white/10"
         >
-          Exit (Esc)
+          {m.exports.presentExit}
         </button>
       </div>
 
@@ -77,42 +80,37 @@ export function PresentationView({ onClose }: { onClose: () => void }) {
             {kindLabel}
           </p>
           <h1 className="mt-2 font-semibold text-3xl text-white tracking-tight">
-            {node?.label ?? 'Untitled tree'}
+            {node?.label ?? m.content.untitledTree}
           </h1>
           {kids.length > 0 ? (
             <ul className="mt-8 space-y-3">
-              {kids.map((k) => {
-                const value = valueText(doc, k.id);
-                return (
-                  <li
-                    key={k.id}
-                    className="flex items-baseline gap-3 rounded-lg bg-white/5 px-4 py-3 text-lg"
-                  >
-                    <span className="text-[#9db8e0]">›</span>
-                    <span className="text-neutral-100">{k.label}</span>
-                    {value && <span className="ml-auto text-[15px] text-neutral-400">{value}</span>}
-                  </li>
-                );
-              })}
+              {kids.map((k) => (
+                <li
+                  key={k.id}
+                  className="flex items-baseline gap-3 rounded-lg bg-white/5 px-4 py-3 text-lg"
+                >
+                  <span className="text-[#9db8e0]">›</span>
+                  <span className="text-neutral-100">{k.label}</span>
+                  {k.value && (
+                    <span className="ml-auto text-[15px] text-neutral-400">
+                      {m.exports.valueText(k.value)}
+                    </span>
+                  )}
+                </li>
+              ))}
             </ul>
           ) : (
-            <p className="mt-8 text-lg text-neutral-400">A leaf issue — no decomposition.</p>
+            <p className="mt-8 text-lg text-neutral-400">{m.exports.presentLeaf}</p>
           )}
           <div className="mt-6 text-[14px]">
-            {warnings.length > 0 ? (
-              <span className="text-[#e6b768]">⚠ {warnings.join(' · ')}</span>
-            ) : split ? (
-              <span className="text-[#7fd1a0]">✓ MECE clean</span>
-            ) : null}
+            {meceLine && <span className={meceTone}>{meceLine}</span>}
           </div>
         </div>
       </div>
 
       <div className="flex shrink-0 items-center justify-between px-6 py-4 text-[13px] text-neutral-400">
-        <span>
-          {safeIndex + 1} / {steps.length}
-        </span>
-        <span className="hidden sm:inline">← / → to navigate · Esc to exit</span>
+        <span>{m.exports.presentProgress({ index: safeIndex + 1, total: steps.length })}</span>
+        <span className="hidden sm:inline">{m.exports.presentNavHint}</span>
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -120,7 +118,7 @@ export function PresentationView({ onClose }: { onClose: () => void }) {
             disabled={safeIndex === 0}
             className="rounded-md px-3 py-1.5 text-neutral-200 hover:bg-white/10 disabled:opacity-40"
           >
-            ← Prev
+            {m.exports.presentPrev}
           </button>
           <button
             type="button"
@@ -128,7 +126,7 @@ export function PresentationView({ onClose }: { onClose: () => void }) {
             disabled={safeIndex >= steps.length - 1}
             className="rounded-md bg-[#3f6fb0] px-3 py-1.5 font-medium text-white hover:bg-[#365f98] disabled:opacity-40"
           >
-            Next →
+            {m.exports.presentNext}
           </button>
         </div>
       </div>

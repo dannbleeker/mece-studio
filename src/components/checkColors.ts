@@ -16,10 +16,3 @@ export const CHECK_STATE_GLYPH: Record<CheckState, string> = {
   warn: '!',
   unknown: '–',
 };
-
-/** Human words for each state — used in title / aria-label text. */
-export const CHECK_STATE_LABEL: Record<CheckState, string> = {
-  pass: 'looks good',
-  warn: 'needs review',
-  unknown: 'not checked',
-};

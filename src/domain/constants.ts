@@ -20,36 +20,19 @@ export const IDEAL_SPLIT_MAX = 5;
 /** Relative tolerance for formula reconciliation (children combined vs parent value). */
 export const FORMULA_TOLERANCE = 0.005;
 
-/** Human-readable labels for each decomposition type (one source of truth). */
-export const DECOMPOSITION_LABELS: Record<DecompositionType, string> = {
-  formula: 'Formula (A = B + C)',
-  segment: 'Segments',
-  process: 'Process / stages',
-  binary: 'Binary (A / not-A)',
-  framework: 'Framework',
-  freeform: 'Freeform',
-};
-
 /**
- * Short tree-type label for the editor header badge, keyed by the root split's
- * decomposition. A formula root is the classic consulting "value-driver tree";
- * an undecomposed root falls back to the generic "Issue tree".
+ * Every decomposition type, in the order the pickers offer them. The registry
+ * the UI iterates: a screen that lists decompositions maps this, so adding a
+ * type surfaces everywhere without touching a component.
+ *
+ * The *words* for each type live in each locale's `enums` catalogue — this file
+ * holds the model, not the language.
  */
-export const TREE_KIND_LABELS: Record<DecompositionType, string> = {
-  formula: 'Value-driver tree',
-  segment: 'Segmentation tree',
-  process: 'Process tree',
-  binary: 'Binary tree',
-  framework: 'Framework tree',
-  freeform: 'Issue tree',
-};
-
-/** Short hint shown under each decomposition type in the picker. */
-export const DECOMPOSITION_HINTS: Record<DecompositionType, string> = {
-  formula: 'Numbers that combine to the parent — provably MECE.',
-  segment: 'Partition a set (customers, regions, products).',
-  process: 'Sequential, non-overlapping stages of a flow.',
-  binary: 'A vs not-A — exhaustive by construction.',
-  framework: 'A named framework (4Ps, value chain, …).',
-  freeform: 'Unconstrained — no automatic MECE guarantee.',
-};
+export const DECOMPOSITION_TYPES: readonly DecompositionType[] = [
+  'freeform',
+  'segment',
+  'process',
+  'binary',
+  'formula',
+  'framework',
+];

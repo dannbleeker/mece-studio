@@ -3,7 +3,14 @@ import { layoutTree } from '@/domain/layout';
 import { orderSiblings, type PriorityBand, priorityBand } from '@/domain/priority';
 import { matchesQuery } from '@/domain/search';
 import { hiddenNodeIds, nodeDepths, splitOf } from '@/domain/tree';
-import type { IssueNode, IssueTreeDoc, MeceStatus, NodeId } from '@/domain/types';
+import {
+  DEFAULT_LOCALE,
+  type IssueNode,
+  type IssueTreeDoc,
+  type LocaleCode,
+  type MeceStatus,
+  type NodeId,
+} from '@/domain/types';
 
 /** Data carried by each React Flow node. Must extend Record for React Flow v12. */
 interface IssueNodeData extends Record<string, unknown> {
@@ -54,7 +61,10 @@ export function toFlow(
   doc: IssueTreeDoc,
   selectedIds: readonly NodeId[] = [],
   query = '',
-  sortByPriority = false
+  sortByPriority = false,
+  // Search matching is collated, not code-point compared, so it needs to know
+  // the alphabet it is matching in (see `domain/collation.ts`).
+  locale: LocaleCode = DEFAULT_LOCALE
 ): { nodes: IssueFlowNode[]; edges: Edge[] } {
   const selected = new Set(selectedIds);
   const hidden = hiddenNodeIds(doc);
@@ -94,7 +104,7 @@ export function toFlow(
           hasNote: !!n.detail?.trim(),
           collapsed: n.collapsed === true,
           childCount: split ? split.childIds.length : 0,
-          matched: matchesQuery(n.label, query),
+          matched: matchesQuery(n.label, query, locale),
           selected: selected.has(n.id),
           depth: depths[n.id] ?? 0,
         },

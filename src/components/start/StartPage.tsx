@@ -6,6 +6,7 @@ import type { ExampleTree } from '@/domain/examples';
 import { buildFrameworkTree, type FrameworkTemplate } from '@/domain/frameworks';
 import { meceSummary } from '@/domain/meceStatus';
 import type { DecompositionType } from '@/domain/types';
+import { useLocale, useMessages } from '@/i18n/useMessages';
 import { docName, type UserTemplate } from '@/services/storage';
 import { useStore } from '@/store';
 import { relativeTime, treeKind } from './format';
@@ -16,20 +17,13 @@ import { StartHome } from './StartHome';
 import { type ManageHandlers, MecePill, TreeGallery } from './TreeGallery';
 import { type LibraryDoc, useLibraryDocs } from './useLibraryDocs';
 
-const SECTION_TITLE: Record<Section, string> = {
-  start: 'Start',
-  all: 'All trees',
-  recent: 'Recent',
-  templates: 'Templates',
-  review: 'Needs review',
-  learn: 'Learn MECE',
-};
-
 /** A compact, most-recent-first list of every tree. */
 function RecentList({ docs, onOpen }: { docs: LibraryDoc[]; onOpen: (id: string) => void }) {
+  const m = useMessages();
+  const locale = useLocale();
   const recent = [...docs].sort((a, b) => b.doc.updatedAt - a.doc.updatedAt);
   if (recent.length === 0) {
-    return <p className="text-[13px] text-neutral-500">No trees yet.</p>;
+    return <p className="text-[13px] text-neutral-500">{m.start.noTreesYet}</p>;
   }
   return (
     <ul className="divide-y divide-[#efece4] overflow-hidden rounded-xl border border-[#e7e4dc] bg-white">
@@ -41,13 +35,13 @@ function RecentList({ docs, onOpen }: { docs: LibraryDoc[]; onOpen: (id: string)
             className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-[#faf9f5] focus:bg-[#faf9f5] focus:outline-none"
           >
             <span className="min-w-0 flex-1 truncate text-[14px] text-neutral-800">
-              {docName(doc)}
+              {docName(doc, m.content.untitledTree)}
             </span>
             <span className="hidden shrink-0 text-[12px] text-neutral-400 sm:block">
-              {treeKind(doc)}
+              {treeKind(doc, m)}
             </span>
             <span className="w-20 shrink-0 text-right text-[12px] text-neutral-400">
-              {relativeTime(doc.updatedAt)}
+              {relativeTime(locale, doc.updatedAt)}
             </span>
             <MecePill summary={meceSummary(doc)} />
           </button>
@@ -73,14 +67,16 @@ function TemplatesPage({
   onPickFrameworkTemplate: (t: FrameworkTemplate) => void;
   onPickExample: (ex: ExampleTree) => void;
 }) {
+  const m = useMessages();
   return (
     <div className="space-y-8">
       {userTemplates.length > 0 && (
         <section>
-          <h2 className="font-semibold text-[16px] text-neutral-800">Your templates</h2>
+          <h2 className="font-semibold text-[16px] text-neutral-800">
+            {m.start.yourTemplatesHeading}
+          </h2>
           <p className="mt-1 mb-3 max-w-2xl text-[13px] text-neutral-500">
-            Trees you saved as reusable starting points (structure only — values, evidence, and
-            status are stripped). Save the current tree from <strong>⋯ → Save as template…</strong>.
+            {m.start.yourTemplatesBlurb} <strong>{m.start.saveAsTemplatePath}</strong>.
           </p>
           <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(216px,1fr))]">
             {userTemplates.map((t) => (
@@ -92,16 +88,16 @@ function TemplatesPage({
                   type="button"
                   onClick={() => onOpenTemplate(t)}
                   className="pr-5 text-left font-semibold text-[13px] text-neutral-800 hover:text-[#3f6fb0] focus:outline-none"
-                  aria-label={`Open template ${t.name}`}
+                  aria-label={m.start.openTemplate({ name: t.name })}
                 >
                   {t.name}
                 </button>
-                <span className="text-[11px] text-neutral-400">Custom template</span>
+                <span className="text-[11px] text-neutral-400">{m.start.customTemplate}</span>
                 <button
                   type="button"
                   onClick={() => onDeleteTemplate(t.id)}
-                  aria-label={`Delete template ${t.name}`}
-                  title="Delete template"
+                  aria-label={m.start.deleteTemplateNamed({ name: t.name })}
+                  title={m.start.deleteTemplate}
                   className="absolute top-2 right-2 rounded px-1 text-[12px] text-neutral-300 hover:text-[#bd4a3a]"
                 >
                   ✕
@@ -112,27 +108,29 @@ function TemplatesPage({
         </section>
       )}
       <section>
-        <h2 className="font-semibold text-[16px] text-neutral-800">Decomposition frameworks</h2>
+        <h2 className="font-semibold text-[16px] text-neutral-800">
+          {m.start.decompositionsHeading}
+        </h2>
         <p className="mt-1 mb-3 max-w-2xl text-[13px] text-neutral-500">
-          Start a tree from a MECE-clean split. Binary and formula are provably MECE; the rest
-          scaffold sensible starter branches you rename.
+          {m.start.decompositionsBlurb}
         </p>
         <FrameworksGroup onPick={onPickFramework} />
       </section>
       <section>
-        <h2 className="font-semibold text-[16px] text-neutral-800">Named frameworks</h2>
+        <h2 className="font-semibold text-[16px] text-neutral-800">
+          {m.start.namedFrameworksHeading}
+        </h2>
         <p className="mt-1 mb-3 max-w-2xl text-[13px] text-neutral-500">
-          Classic strategy, marketing, and diagnosis frameworks, ready to fill in. They organise
-          your thinking but aren't guaranteed MECE — rename each branch to your situation and let
-          the checks flag overlaps and gaps.
+          {m.start.namedFrameworksBlurb}
         </p>
         <FrameworkTemplatesGroup onPick={onPickFrameworkTemplate} />
       </section>
       <section>
-        <h2 className="font-semibold text-[16px] text-neutral-800">Example trees</h2>
+        <h2 className="font-semibold text-[16px] text-neutral-800">
+          {m.start.exampleTreesHeading}
+        </h2>
         <p className="mt-1 mb-3 max-w-2xl text-[13px] text-neutral-500">
-          Open a ready-made tree and learn by poking at a real one. Each opens as a fresh copy in
-          your library.
+          {m.start.exampleTreesBlurb}
         </p>
         <ExampleTreesGroup onPick={onPickExample} />
       </section>
@@ -142,6 +140,7 @@ function TemplatesPage({
 
 /** The Start workspace shell: a persistent sidebar whose nav switches the main view. */
 export function StartPage() {
+  const m = useMessages();
   const newDoc = useStore((s) => s.newDoc);
   const openDoc = useStore((s) => s.openDoc);
   const switchDoc = useStore((s) => s.switchDoc);
@@ -196,8 +195,8 @@ export function StartPage() {
     newDoc(buildQuestion ?? undefined);
     setBuildQuestion(null);
   };
-  const onPickExample = (ex: ExampleTree) => openDoc(ex.build());
-  const onPickFrameworkTemplate = (t: FrameworkTemplate) => openDoc(buildFrameworkTree(t));
+  const onPickExample = (ex: ExampleTree) => openDoc(ex.build(m));
+  const onPickFrameworkTemplate = (t: FrameworkTemplate) => openDoc(buildFrameworkTree(t, m));
   // setView too: opening the already-active tree is a no-op in switchDoc, but we
   // still want to leave the Start shell for the canvas.
   const onOpen = (id: string) => {
@@ -227,12 +226,14 @@ export function StartPage() {
           <button
             type="button"
             onClick={() => setNavOpen(true)}
-            aria-label="Open navigation"
+            aria-label={m.start.openNav}
             className="-ml-1 grid h-9 w-9 shrink-0 place-items-center rounded-md text-[18px] text-neutral-600 hover:bg-neutral-100 sm:hidden"
           >
             ☰
           </button>
-          <span className="font-medium text-[13px] text-neutral-500">{SECTION_TITLE[section]}</span>
+          <span className="font-medium text-[13px] text-neutral-500">
+            {m.start.section[section]}
+          </span>
           <div className="relative ml-auto min-w-0 flex-1 sm:flex-none">
             <input
               ref={searchRef}
@@ -244,8 +245,8 @@ export function StartPage() {
               onKeyDown={(e) => {
                 if (e.key === 'Escape') setQuery('');
               }}
-              placeholder="Search trees…"
-              aria-label="Search trees"
+              placeholder={m.start.searchPlaceholder}
+              aria-label={m.start.searchLabel}
               className="w-full rounded-lg border border-[#e7e4dc] bg-[#faf9f5] py-1.5 pr-12 pl-3 text-[13px] focus:border-[#3f6fb0] focus:bg-white focus:outline-none sm:w-64"
             />
             <kbd className="-translate-y-1/2 absolute top-1/2 right-2 hidden rounded border border-[#e7e4dc] bg-white px-1.5 text-[11px] text-neutral-400 sm:block">
@@ -285,13 +286,13 @@ export function StartPage() {
             <div className="space-y-4">
               <p className="text-[13px] text-neutral-500">
                 {reviewDocs.length === 0
-                  ? 'Every split is MECE clean — nothing to review.'
-                  : `${reviewDocs.length} ${reviewDocs.length === 1 ? 'tree has' : 'trees have'} a split flagged for review.`}
+                  ? m.start.reviewAllClean
+                  : m.start.reviewFlagged({ count: reviewDocs.length })}
               </p>
               <TreeGallery
                 docs={reviewDocs}
                 query={query}
-                emptyMessage="Nothing to review — every split is MECE clean."
+                emptyMessage={m.start.reviewGalleryEmpty}
                 onOpen={onOpen}
                 {...manage}
               />
@@ -303,11 +304,11 @@ export function StartPage() {
 
       {buildQuestion !== null && (
         <Dialog
-          label="How do you want to split it?"
+          label={m.start.splitChooserTitle}
           subtitle={
             buildQuestion.trim()
-              ? `“${buildQuestion.trim()}” — pick a decomposition to scaffold the first split, or start blank.`
-              : 'Pick a decomposition to scaffold the first split, or start blank.'
+              ? m.start.splitChooserPromptFor({ question: buildQuestion.trim() })
+              : m.start.splitChooserPrompt
           }
           wide
           onClose={() => setBuildQuestion(null)}
@@ -319,7 +320,7 @@ export function StartPage() {
               onClick={buildBlank}
               className="mt-4 text-[13px] text-neutral-500 hover:text-neutral-800 hover:underline"
             >
-              Start blank instead →
+              {m.start.startBlank}
             </button>
           </div>
         </Dialog>
@@ -327,18 +328,20 @@ export function StartPage() {
 
       {renamingId && (
         <PromptDialog
-          label="Rename tree"
+          label={m.start.renameDialogTitle}
           initialValue={nameOf(renamingId)}
-          submitLabel="Rename"
+          submitLabel={m.start.rename}
           onSubmit={(name) => renameDoc(renamingId, name)}
           onClose={() => setRenamingId(null)}
         />
       )}
       {deletingId && (
         <ConfirmDialog
-          label="Delete tree"
-          message={`Delete "${nameOf(deletingId) || 'this tree'}"? This cannot be undone.`}
-          confirmLabel="Delete tree"
+          label={m.start.deleteDialogTitle}
+          message={m.start.deleteDialogMessage({
+            name: nameOf(deletingId) || m.start.thisTree,
+          })}
+          confirmLabel={m.start.deleteDialogTitle}
           destructive
           onConfirm={() => {
             deleteDoc(deletingId);

@@ -1,6 +1,6 @@
 import { migrateToCurrent, type RawDocument } from '@/domain/migrations';
 import { DEFAULT_SETTINGS, type Settings } from '@/domain/settings';
-import type { IssueTreeDoc } from '@/domain/types';
+import { asLocaleCode, type IssueTreeDoc } from '@/domain/types';
 
 const LIBRARY_KEY = 'mece-studio:library:v1';
 const LEGACY_DOC_KEY = 'mece-studio:doc:v1';
@@ -119,9 +119,14 @@ export function parseDoc(json: string): IssueTreeDoc | null {
   }
 }
 
-/** The display name for a document — its root question. */
-export function docName(doc: IssueTreeDoc): string {
-  return doc.nodes[doc.rootId]?.label?.trim() || 'Untitled tree';
+/**
+ * The display name for a document — its root question, or `fallback` when the
+ * root has no text yet. The fallback is passed in rather than hardcoded because
+ * it is a word: callers read it from the active locale's catalogue
+ * (`m.content.untitledTree`), which keeps this service language-free.
+ */
+export function docName(doc: IssueTreeDoc, fallback: string): string {
+  return doc.nodes[doc.rootId]?.label?.trim() || fallback;
 }
 
 export function loadDocById(id: string): IssueTreeDoc | null {
@@ -152,7 +157,14 @@ export function saveLibrary(library: Library): void {
  * deleting every tree is a real, loadable state: it returns with `doc: null` so
  * the store keeps an empty library instead of reseeding a starter.
  */
-export function loadWorkspace(): { library: Library; doc: IssueTreeDoc | null } | null {
+/**
+ * `untitledFallback` names a library entry migrated from the pre-library save
+ * format when its root question is blank. Passed in rather than hardcoded — it
+ * is a word, and this service stays language-free.
+ */
+export function loadWorkspace(
+  untitledFallback: string
+): { library: Library; doc: IssueTreeDoc | null } | null {
   const s = storage();
   if (!s) return null;
 
@@ -162,7 +174,10 @@ export function loadWorkspace(): { library: Library; doc: IssueTreeDoc | null } 
     if (legacy) {
       saveDocById(legacy);
       s.removeItem(LEGACY_DOC_KEY);
-      library = { activeId: legacy.id, docs: [{ id: legacy.id, name: docName(legacy) }] };
+      library = {
+        activeId: legacy.id,
+        docs: [{ id: legacy.id, name: docName(legacy, untitledFallback) }],
+      };
       saveLibrary(library);
     }
   }
@@ -199,6 +214,9 @@ export function loadSettings(): Settings {
   );
   if (!raw) return { ...DEFAULT_SETTINGS };
   return {
+    // An unknown or removed locale code falls back to the default rather than
+    // leaving the app pointing at a catalogue that no longer ships.
+    locale: asLocaleCode(raw.locale) ?? DEFAULT_SETTINGS.locale,
     sortSiblingsByPriority:
       typeof raw.sortSiblingsByPriority === 'boolean'
         ? raw.sortSiblingsByPriority

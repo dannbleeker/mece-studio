@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { ReactFlow, ReactFlowProvider } from '@xyflow/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { childrenOf } from '@/domain/tree';
+import { en } from '@/i18n/locales/en';
 import { useStore } from '@/store';
 import { type NodeEditing, NodeEditingContext } from '../nodeEditing';
 import type { IssueFlowNode } from '../projection';
@@ -72,23 +73,23 @@ describe('IssueNode', () => {
       mece: { exclusive: { state: 'pass' }, exhaustive: { state: 'warn' } },
     });
     expect(screen.getByText('Revenue')).toBeTruthy();
-    expect(screen.getByText(/100 M DKK/)).toBeTruthy();
-    expect(screen.getByText('high')).toBeTruthy();
-    expect(screen.getByText('✓ 2')).toBeTruthy();
-    expect(screen.getByText('✗ 1')).toBeTruthy();
-    expect(screen.getByText('ME')).toBeTruthy();
-    expect(screen.getByText('CE')).toBeTruthy();
+    expect(screen.getByText(en.canvas.nodeValue({ amount: 100, unit: 'M DKK' }))).toBeTruthy();
+    expect(screen.getByText(en.enums.level.high)).toBeTruthy();
+    expect(screen.getByText(en.canvas.evidenceSupports({ count: 2 }))).toBeTruthy();
+    expect(screen.getByText(en.canvas.evidenceContradicts({ count: 1 }))).toBeTruthy();
+    expect(screen.getByText(en.canvas.meceExclusiveShort)).toBeTruthy();
+    expect(screen.getByText(en.canvas.meceExhaustiveShort)).toBeTruthy();
     expect(screen.getByText('▼')).toBeTruthy();
   });
 
   it('shows the expand affordance with a hidden count when collapsed', () => {
     renderNode({ label: 'Costs', hasChildren: true, collapsed: true, childCount: 3 });
-    expect(screen.getByText('▶ 3')).toBeTruthy();
+    expect(screen.getByText(en.canvas.collapsedCount({ count: 3 }))).toBeTruthy();
   });
 
-  it("falls back to 'Untitled' for an empty label", () => {
+  it('falls back to the untitled placeholder for an empty label', () => {
     renderNode({ label: '' });
-    expect(screen.getByText('Untitled')).toBeTruthy();
+    expect(screen.getByText(en.content.untitled)).toBeTruthy();
   });
 
   it('renders status, matched, and selected styling without crashing', () => {
@@ -100,14 +101,14 @@ describe('IssueNode', () => {
       hasNote: true,
     });
     expect(screen.getByText('Refuted')).toBeTruthy();
-    expect(screen.getByLabelText('Has notes')).toBeTruthy();
+    expect(screen.getByLabelText(en.canvas.hasNotes)).toBeTruthy();
   });
 
   it('edits inline: commits on Enter and blur, cancels on Escape', () => {
     const commit = vi.fn();
     const cancel = vi.fn();
     renderNode({ label: 'Old' }, { editingId: 'n1', start: vi.fn(), commit, cancel });
-    const ta = screen.getByLabelText('Edit node label');
+    const ta = screen.getByLabelText(en.canvas.editLabel);
     fireEvent.change(ta, { target: { value: 'New' } });
     fireEvent.keyDown(ta, { key: 'Enter' });
     expect(commit).toHaveBeenCalledWith('n1', 'New');
@@ -137,7 +138,7 @@ describe('IssueNode', () => {
       rootId
     );
     const before = childrenOf(useStore.getState().doc, rootId).length;
-    fireEvent.click(screen.getByLabelText('Add sub-issue'));
+    fireEvent.click(screen.getByLabelText(en.canvas.addChildLabel));
     const kids = childrenOf(useStore.getState().doc, rootId);
     expect(kids.length).toBe(before + 1);
     const newId = kids[kids.length - 1]?.id;
