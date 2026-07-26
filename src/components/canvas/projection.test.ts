@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { en } from '@/i18n/locales/en';
 import { createDoc, createEvidence } from '../../domain/factory';
 import { recomputeMece } from '../../domain/mece';
 import {
@@ -40,6 +41,14 @@ const yOf = (nodes: IssueFlowNode[], id: string): number => {
 };
 
 describe('toFlow projection', () => {
+  it('words the aria-label of an unnamed node from the catalogue', () => {
+    // A screen reader speaks this string, so it must come from the catalogue —
+    // it was hardcoded English until the i18n gate learned to spot a literal
+    // that duplicates a catalogue value.
+    const doc = recomputeMece(createDoc('', 0));
+    expect(toFlow(doc, []).nodes[0]?.ariaLabel).toBe(en.content.untitled);
+  });
+
   it('maps node data and derives edges from splits', () => {
     const { doc, revenueId, costsId } = sample();
     const { nodes, edges } = toFlow(doc, []);

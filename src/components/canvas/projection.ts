@@ -11,6 +11,7 @@ import {
   type MeceStatus,
   type NodeId,
 } from '@/domain/types';
+import { catalogueFor } from '@/i18n/registry';
 
 /** Data carried by each React Flow node. Must extend Record for React Flow v12. */
 interface IssueNodeData extends Record<string, unknown> {
@@ -66,6 +67,11 @@ export function toFlow(
   // the alphabet it is matching in (see `domain/collation.ts`).
   locale: LocaleCode = DEFAULT_LOCALE
 ): { nodes: IssueFlowNode[]; edges: Edge[] } {
+  // The aria-label for an unnamed node is text a screen reader speaks, so it is
+  // worded in the catalogue like any other. Read from `locale` rather than taken
+  // as a parameter — the locale is already here, and a seventh positional string
+  // is one more thing a call site can get wrong.
+  const { untitled } = catalogueFor(locale).content;
   const selected = new Set(selectedIds);
   const hidden = hiddenNodeIds(doc);
   const depths = nodeDepths(doc);
@@ -86,7 +92,7 @@ export function toFlow(
         // the `.react-flow__node` wrapper (role/aria-label/domAttributes). Only
         // nodes with children carry aria-expanded; leaves omit it entirely.
         ariaRole: 'treeitem',
-        ariaLabel: n.label || 'Untitled',
+        ariaLabel: n.label || untitled,
         domAttributes: {
           'aria-level': level,
           'aria-selected': selected.has(n.id),

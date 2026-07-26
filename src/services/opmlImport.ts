@@ -3,6 +3,14 @@ import { MAX_NODES } from '@/domain/markdownImport';
 import { addChild } from '@/domain/tree';
 import type { IssueTreeDoc, NodeId } from '@/domain/types';
 
+/** Locale-supplied fallback labels for an import that names things poorly. */
+export interface ImportLabels {
+  /** Root question when the source names no top-level outline. */
+  root: string;
+  /** Node label when an outline carries neither `text` nor `title`. */
+  untitled: string;
+}
+
 /** An OPML `<outline>`'s label — `text` (the OPML standard) or `title`. */
 function outlineLabel(el: Element): string {
   return (el.getAttribute('text') ?? el.getAttribute('title') ?? '').trim();
@@ -24,11 +32,11 @@ export function opmlToDoc(
   text: string,
   now: number,
   /**
-   * Root label when the OPML names no top-level outline. Passed in because it
-   * is a word that becomes the tree's key question — seeded content, read from
-   * the active locale by the caller (`m.content.importedOutlineLabel`).
+   * Names for outlines the OPML leaves unlabelled. Passed in because they are
+   * words that become node labels — seeded content, read from the active locale
+   * by the caller (`m.content.importedOutlineLabel` / `m.content.untitled`).
    */
-  fallbackLabel: string
+  labels: ImportLabels
 ): IssueTreeDoc | null {
   let dom: Document;
   try {
@@ -43,7 +51,7 @@ export function opmlToDoc(
   const first = tops[0];
   if (!first) return null;
 
-  let doc = createDoc(outlineLabel(first) || fallbackLabel, now);
+  let doc = createDoc(outlineLabel(first) || labels.root, now);
 
   // Cap total nodes (like the Markdown importer) so a pathologically wide/deep
   // third-party OPML can't hang or overflow the tab on import. Bounding the count
@@ -52,7 +60,7 @@ export function opmlToDoc(
   const graft = (el: Element, parentId: NodeId): void => {
     for (const child of childOutlines(el)) {
       if (count >= MAX_NODES) return;
-      const added = addChild(doc, parentId, outlineLabel(child) || 'Untitled');
+      const added = addChild(doc, parentId, outlineLabel(child) || labels.untitled);
       doc = added.doc;
       count++;
       graft(child, added.childId);
@@ -62,7 +70,7 @@ export function opmlToDoc(
   // Extra top-level outlines (a flat OPML) become further branches of the root.
   for (const sibling of tops.slice(1)) {
     if (count >= MAX_NODES) break;
-    const added = addChild(doc, doc.rootId, outlineLabel(sibling) || 'Untitled');
+    const added = addChild(doc, doc.rootId, outlineLabel(sibling) || labels.untitled);
     doc = added.doc;
     count++;
     graft(sibling, added.childId);

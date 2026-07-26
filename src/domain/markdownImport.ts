@@ -12,8 +12,10 @@ import type { IssueTreeDoc, NodeId } from './types';
  * everything else nests beneath it. Pure, so it's unit-testable.
  */
 
-/** A guard against pathological pastes turning into enormous trees. */
-/** Cap on nodes an outline/OPML paste can create — shared by every importer. */
+/**
+ * Cap on nodes an outline/OPML paste can create — shared by every importer, so
+ * a pathological paste can't turn into an enormous tree.
+ */
 export const MAX_NODES = 500;
 /** Indent (in spaces) that counts as one nesting level. */
 const INDENT_WIDTH = 2;
