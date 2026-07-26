@@ -1,6 +1,6 @@
 import { registerSW } from 'virtual:pwa-register';
 import { showToast } from '@/components/toast/toastStore';
-import type { Messages } from '@/i18n/types';
+import type { CoreMessages } from '@/i18n/types';
 
 let registered = false;
 let cachedUpdateSW: ((reloadPage?: boolean) => Promise<void>) | null = null;
@@ -13,7 +13,7 @@ let cachedUpdateSW: ((reloadPage?: boolean) => Promise<void>) | null = null;
  * app mounts), so it can't read the catalogue from context — the caller passes
  * it in, which also keeps the wording out of the PWA plumbing.
  */
-const showUpdateAvailableToast = (m: Messages): void => {
+const showUpdateAvailableToast = (m: CoreMessages): void => {
   const refresh = cachedUpdateSW;
   showToast('info', m.app.updateAvailable, {
     // Refresh is the whole point of this toast — long dwell so the user can decide.
@@ -22,7 +22,7 @@ const showUpdateAvailableToast = (m: Messages): void => {
   });
 };
 
-export const initPwaUpdateToast = (m: Messages): void => {
+export const initPwaUpdateToast = (m: CoreMessages): void => {
   if (registered || typeof window === 'undefined') return;
   registered = true;
   // registerSW() registers the generated SW and returns updateSW(reload?). We hoist
@@ -47,7 +47,7 @@ export const initPwaUpdateToast = (m: Messages): void => {
 export type UpdateCheckResult = 'unsupported' | 'already-pending' | 'newly-found' | 'up-to-date';
 
 /** Force a SW update check (the browser otherwise checks on each load + ~24h). */
-export const checkForUpdate = async (m: Messages): Promise<UpdateCheckResult> => {
+export const checkForUpdate = async (m: CoreMessages): Promise<UpdateCheckResult> => {
   if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return 'unsupported';
   const reg = await navigator.serviceWorker.getRegistration();
   if (!reg) return 'unsupported';

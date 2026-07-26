@@ -15,7 +15,7 @@
 // each one splits. Their words (card copy, root label, canonical branches) come
 // from the caller's catalogue, keyed by id, so a starter tree seeds in the
 // reader's language while this module stays pure.
-import type { Messages } from '@/i18n/types';
+import type { CoreMessages } from '@/i18n/types';
 import { createDoc } from './factory';
 import { recomputeMece } from './mece';
 import { addChild } from './tree';
@@ -57,7 +57,7 @@ export interface FrameworkTemplate {
 }
 
 /** Inflate a framework template into a fresh single-split tree. */
-export function buildFrameworkTree(t: FrameworkTemplate, m: Messages): IssueTreeDoc {
+export function buildFrameworkTree(t: FrameworkTemplate, m: CoreMessages): IssueTreeDoc {
   const content = m.content.frameworks[t.id];
   let doc = createDoc(content.root, EPOCH);
   // The first addChild creates the split with `t.decomposition`; the rest append.

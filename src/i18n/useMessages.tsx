@@ -1,31 +1,38 @@
 /**
  * The React binding: the active catalogue and the active locale code.
  *
+ * Two hooks, because the catalogue has two halves (see `types.ts`):
+ * - `useMessages()` returns `CoreMessages` and works anywhere.
+ * - `useEditorMessages()` returns core **plus** the editor namespaces, and is
+ *   only callable under the provider `Workspace` mounts.
+ *
+ * That split is a type boundary, not a convention: a Start-page component holds
+ * `CoreMessages`, so `m.inspector` there is a compile error rather than a
+ * runtime crash — and the editor wording stays out of the eager chunk.
+ *
  * `MessagesProvider` sits at the app root and feeds the catalogue for the
- * persisted locale setting, so switching language re-renders everything below
- * it. `useMessages` prefers that context but falls back to reading the store
- * directly — which is what lets a component test render a single component in
- * isolation (no provider) *and* lets the pseudo-locale test wrap a subtree in a
- * provider carrying a different catalogue.
+ * persisted locale, so switching language re-renders everything below it. Both
+ * hooks fall back to reading the store directly when no provider is present,
+ * which is what lets a component test render one component in isolation.
  */
 import { createContext, type ReactNode, useContext, useMemo } from 'react';
 import { DEFAULT_LOCALE, type LocaleCode } from '@/domain/types';
 import { useStore } from '@/store';
 import { catalogueFor } from './registry';
-import type { Messages } from './types';
+import type { CoreMessages } from './types';
 
 interface LocaleContextValue {
   locale: LocaleCode;
-  messages: Messages;
+  messages: CoreMessages;
 }
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 /**
- * Provide a catalogue to everything below. With no `messages` override it
- * follows the app's locale setting — the production path. Tests pass an
- * override to render a subtree in another catalogue (see the pseudo-locale
- * smoke test) without touching global state.
+ * Provide the core catalogue to everything below. With no `messages` override it
+ * follows the app's locale setting — the production path. Tests pass an override
+ * to render a subtree in another catalogue (see the pseudo-locale smoke test)
+ * without touching global state.
  */
 export function MessagesProvider({
   children,
@@ -33,7 +40,7 @@ export function MessagesProvider({
   locale,
 }: {
   children: ReactNode;
-  messages?: Messages;
+  messages?: CoreMessages;
   locale?: LocaleCode;
 }) {
   const settingsLocale = useStore((s) => s.settings.locale);
@@ -45,8 +52,8 @@ export function MessagesProvider({
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
 }
 
-/** The active catalogue. */
-export function useMessages(): Messages {
+/** The active core catalogue. Safe anywhere. */
+export function useMessages(): CoreMessages {
   return useLocaleContext().messages;
 }
 
@@ -55,7 +62,8 @@ export function useLocale(): LocaleCode {
   return useLocaleContext().locale;
 }
 
-function useLocaleContext(): LocaleContextValue {
+/** Shared by both hooks; exported so the editor module can build on it. */
+export function useLocaleContext(): LocaleContextValue {
   const ctx = useContext(LocaleContext);
   // Fallback for components rendered outside the provider (isolated unit tests).
   const settingsLocale = useStore((s) => s.settings.locale);

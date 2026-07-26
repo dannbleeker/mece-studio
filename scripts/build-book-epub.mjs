@@ -201,7 +201,9 @@ async function main() {
     mimeType: 'application/epub+zip',
   });
   writeFileSync(OUT, buf);
-  process.stdout.write(`EPUB: ${OUT} (${chapters.length} chapters, ${(buf.length / 1024).toFixed(0)} KB)\n`);
+  process.stdout.write(
+    `EPUB: ${OUT} (${chapters.length} chapters, ${(buf.length / 1024).toFixed(0)} KB)\n`
+  );
 }
 
 main().catch((e) => {

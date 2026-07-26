@@ -1,15 +1,20 @@
 /**
- * The locale registry — the single seam every catalogue read goes through.
+ * The locale registry for the **core** catalogue — the seam every eager
+ * catalogue read goes through.
  *
- * Catalogues are imported statically today: with one locale that costs nothing,
- * and it keeps the whole i18n layer synchronous (no loading state, no flash of
- * untranslated content, no async setup in tests). Because *every* read comes
- * through `catalogueFor`, switching to `await import('./locales/da')` when the
- * locale count justifies it is a change to this file alone — no call site moves.
+ * Catalogues are imported statically: that keeps the whole i18n layer
+ * synchronous (no loading state, no flash of untranslated content, no async
+ * setup in tests). What used to be a bundling problem — one composed object
+ * dragging the editor wording onto the cold-start path — is now solved by the
+ * core/editor split rather than by making reads async.
+ *
+ * Because *every* core read comes through `catalogueFor`, switching to
+ * `await import('./locales/da-core')` when the locale count justifies it is a
+ * change to this file and its editor twin, not to any call site.
  */
 import { DEFAULT_LOCALE, type LocaleCode } from '@/domain/types';
-import { en } from './locales/en';
-import type { Messages } from './types';
+import { enCore } from './locales/en-core';
+import type { CoreMessages } from './types';
 
 /** How a locale presents itself in the language picker, and how it reads. */
 export interface LocaleDescriptor {
@@ -23,19 +28,19 @@ export interface LocaleDescriptor {
 }
 
 /**
- * Every shipped locale, in picker order. Typed `Record<LocaleCode, …>`, so
+ * Every shipped locale's core catalogue. Typed `Record<LocaleCode, …>`, so
  * adding a code in `domain/types/locale.ts` without a catalogue — or the other
  * way round — fails typecheck.
  */
-const CATALOGUES: Record<LocaleCode, Messages> = { en };
+const CORE_CATALOGUES: Record<LocaleCode, CoreMessages> = { en: enCore };
 
 export const LOCALES: readonly LocaleDescriptor[] = [
   { code: 'en', label: 'English', nativeLabel: 'English', dir: 'ltr' },
 ];
 
-/** The catalogue for a locale, falling back to the default for an unknown code. */
-export function catalogueFor(locale: LocaleCode): Messages {
-  return CATALOGUES[locale] ?? CATALOGUES[DEFAULT_LOCALE];
+/** The core catalogue for a locale, falling back to the default for an unknown code. */
+export function catalogueFor(locale: LocaleCode): CoreMessages {
+  return CORE_CATALOGUES[locale] ?? CORE_CATALOGUES[DEFAULT_LOCALE];
 }
 
 /** A locale's descriptor, falling back to the default for an unknown code. */

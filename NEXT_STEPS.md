@@ -7,28 +7,23 @@ Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 The architecture is in place and English is the only locale. What's open:
 
 - **Add Danish (`da`).** Add the code to `LocaleCode`, copy
-  `src/i18n/locales/en/` to `locales/da/`, translate, register in
-  `src/i18n/registry.ts`. The compiler enumerates every missing key, so this is
+  `src/i18n/locales/en/` to `locales/da/`, translate, and register the two halves
+  in `src/i18n/registry.ts` and `src/i18n/editorRegistry.ts` (plus its entry in
+  `src/i18n/manifests.ts`). The compiler enumerates every missing key, so this is
   translation work rather than engineering work. Note the seeded content
   (`content-examples.ts`, `content-frameworks.ts`) is the bulk of it.
-- **Split the catalogue along the Workspace lazy boundary.** Measured: the
-  catalogue took the eager entry chunk from **105.0 KB to 115.2 KB gz (+10.2 KB)**,
-  and the budget was bumped 115 → 118 to let it land. The cause is that
-  `locales/en.ts` composes every namespace into one object, so the eager store
-  pulls the `inspector` / `canvas` / `exports` wording in even though the
-  Workspace that renders them is lazy-loaded. Splitting those namespaces onto the
-  lazy chunk should give most of the 10 KB back. Worth doing before a second
-  locale doubles the number.
 - **Lazy-load whole locales** once there is more than one. Every read already
-  goes through `catalogueFor` in `src/i18n/registry.ts`, so it is a one-file
-  change to `await import(…)` plus a loading state.
-- **Per-locale PWA manifest.** `vite-plugin-pwa` emits one manifest, so the
-  install-time app name and description are fixed at build. Serving one manifest
-  per locale and switching `<link rel="manifest">` at runtime is the known fix;
-  not worth doing until there is a second locale.
+  goes through `catalogueFor` / `editorCatalogueFor`, so it is a change to those
+  two files plus a loading state — no call site moves.
 - **Read `IssueTreeDoc.locale`.** It is recorded on every new document but no
   behaviour reads it yet. The intended use is collating and formatting a tree in
   its own language rather than the reader's.
+- **Trim the remaining eager catalogue** (~4.7 KB gz over the pre-i18n baseline)
+  if it ever matters. It is dominated by `content-examples` /
+  `content-frameworks`, which are eager because the Start page renders a preview
+  of all nine example trees. Deferring those would mean changing how Start
+  previews work, not how the catalogue is split — a product change, not a
+  bundling one.
 
 ## Out of scope by design (not building)
 

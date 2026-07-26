@@ -1,4 +1,4 @@
-import type { Messages } from '@/i18n/types';
+import type { EditorMessages } from '@/i18n/types';
 import { priorityBand, priorityScore } from './priority';
 import { rollUpValue } from './rollup';
 import { sensitivity } from './sensitivity';
@@ -6,7 +6,7 @@ import { childrenOf, splitOf } from './tree';
 import type { IssueNode, IssueTreeDoc, NodeId, Split } from './types';
 
 /** How the tested top branches add up — the catalogue supplies the wording. */
-type Stance = keyof Messages['exports']['verdictStance'];
+type Stance = keyof EditorMessages['exports']['verdictStance'];
 
 function scoreOf(node: IssueNode | undefined): number {
   return node?.priority ? priorityScore(node.priority) : 0;
@@ -25,7 +25,7 @@ function stanceOf(supported: number, refuted: number, total: number): Stance {
  * holds." Null until at least one top branch has been tested (so we never imply
  * a verdict from an untouched tree). Pure.
  */
-export function verdict(doc: IssueTreeDoc, m: Messages): string | null {
+export function verdict(doc: IssueTreeDoc, m: EditorMessages): string | null {
   const branches = childrenOf(doc, doc.rootId);
   const n = branches.length;
   if (n === 0) return null;
@@ -45,19 +45,19 @@ export function verdict(doc: IssueTreeDoc, m: Messages): string | null {
   return m.exports.verdictLine({ parts, stance });
 }
 
-function meceFlags(split: Split | undefined, m: Messages): string {
+function meceFlags(split: Split | undefined, m: EditorMessages): string {
   if (!split) return '';
   const overlap = split.mece.exclusive.state === 'warn';
   const gap = split.mece.exhaustive.state === 'warn';
   return overlap || gap ? m.exports.synthMeceFlags({ overlap, gap }) : '';
 }
 
-function dimensionNote(split: Split | undefined, m: Messages): string {
+function dimensionNote(split: Split | undefined, m: EditorMessages): string {
   return split?.dimension ? m.exports.synthDimension({ dimension: split.dimension }) : '';
 }
 
 /** Value / roll-up / sensitivity lines for a node (the numbers behind the answer). */
-function valueMeta(doc: IssueTreeDoc, id: NodeId, indent: string, m: Messages): string[] {
+function valueMeta(doc: IssueTreeDoc, id: NodeId, indent: string, m: EditorMessages): string[] {
   const out: string[] = [];
   const node = doc.nodes[id];
   if (node?.value) out.push(`${indent}${m.exports.synthValue(node.value)}`);
@@ -74,7 +74,13 @@ function valueMeta(doc: IssueTreeDoc, id: NodeId, indent: string, m: Messages): 
   return out;
 }
 
-function render(doc: IssueTreeDoc, id: NodeId, depth: number, lines: string[], m: Messages): void {
+function render(
+  doc: IssueTreeDoc,
+  id: NodeId,
+  depth: number,
+  lines: string[],
+  m: EditorMessages
+): void {
   const node = doc.nodes[id];
   if (!node) return;
   const split = splitOf(doc, id);
@@ -113,7 +119,7 @@ function render(doc: IssueTreeDoc, id: NodeId, depth: number, lines: string[], m
  * `synthesisFormat.formatSynthesis()` parses this document back out of the same
  * catalogue. Localise one and the other follows; there is no second copy.
  */
-export function synthesise(doc: IssueTreeDoc, m: Messages): string {
+export function synthesise(doc: IssueTreeDoc, m: EditorMessages): string {
   const root = doc.nodes[doc.rootId];
   const branches = childrenOf(doc, doc.rootId).sort((a, b) => scoreOf(b) - scoreOf(a));
   const top = branches[0];

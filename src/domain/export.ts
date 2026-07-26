@@ -1,4 +1,4 @@
-import type { Messages } from '@/i18n/types';
+import type { EditorMessages } from '@/i18n/types';
 import { priorityBand } from './priority';
 import { childrenOf, splitOf } from './tree';
 import type { EvidenceItem, IssueNode, IssueTreeDoc, NodeId, NodeStatus } from './types';
@@ -10,7 +10,7 @@ const STATUS_GLYPH: Partial<Record<NodeStatus, string>> = {
   parked: '⊘',
 };
 
-function meceNote(doc: IssueTreeDoc, id: NodeId, m: Messages): string {
+function meceNote(doc: IssueTreeDoc, id: NodeId, m: EditorMessages): string {
   const split = splitOf(doc, id);
   if (!split) return '';
   return m.exports.meceNote({
@@ -22,7 +22,7 @@ function meceNote(doc: IssueTreeDoc, id: NodeId, m: Messages): string {
 }
 
 /** Status + priority annotations, e.g. " — ✓ supported, High priority". */
-export function metaTag(node: IssueNode, m: Messages): string {
+export function metaTag(node: IssueNode, m: EditorMessages): string {
   const parts: string[] = [];
   const glyph = STATUS_GLYPH[node.status];
   if (glyph) parts.push(`${glyph} ${m.enums.status[node.status]}`);
@@ -39,7 +39,11 @@ function detailNote(detail: string | undefined, indent: string): string {
 }
 
 /** Evidence as sub-bullets under a node, e.g. "  - ✓ (strong) summary". */
-export function evidenceLines(evidence: EvidenceItem[], indent: string, m: Messages): string[] {
+export function evidenceLines(
+  evidence: EvidenceItem[],
+  indent: string,
+  m: EditorMessages
+): string[] {
   return evidence.map((e) => {
     const strength = m.enums.evidenceStrength[e.strength];
     return `${indent}  - ${e.supports ? '✓' : '✗'} (${strength}) ${e.summary}`;
@@ -51,7 +55,7 @@ function nodeBlock(
   id: NodeId,
   depth: number,
   lines: string[],
-  m: Messages
+  m: EditorMessages
 ): void {
   const node = doc.nodes[id];
   if (!node) return;
@@ -71,7 +75,7 @@ function nodeBlock(
  * the whole analysis. Pure — the caller hands in the catalogue, so the domain
  * stays framework- and language-free.
  */
-export function toMarkdown(doc: IssueTreeDoc, m: Messages): string {
+export function toMarkdown(doc: IssueTreeDoc, m: EditorMessages): string {
   const root = doc.nodes[doc.rootId];
   const lines: string[] = [
     `# ${root?.label ?? doc.title}${root ? metaTag(root, m) : ''}${meceNote(doc, doc.rootId, m)}${detailNote(root?.detail, '')}`,

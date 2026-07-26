@@ -3,7 +3,7 @@ import { splitWarnings } from '@/domain/meceStatus';
 import { presentationSteps } from '@/domain/presentation';
 import { childrenOf, splitOf } from '@/domain/tree';
 import { renderMece } from '@/i18n/render';
-import { useMessages } from '@/i18n/useMessages';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { useStore } from '@/store';
 
 // TODO(studio-kit): swap the local full-screen overlay for the shared
@@ -15,7 +15,7 @@ import { useStore } from '@/store';
  * advance; Escape exits. The MECE analogue of TP Studio's PresentationStepThrough.
  */
 export function PresentationView({ onClose }: { onClose: () => void }) {
-  const m = useMessages();
+  const m = useEditorMessages();
   const doc = useStore((s) => s.doc);
   const steps = useMemo(() => presentationSteps(doc), [doc]);
   const [index, setIndex] = useState(0);

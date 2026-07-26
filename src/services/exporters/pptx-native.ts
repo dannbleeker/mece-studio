@@ -16,7 +16,7 @@
 import type { Edge } from '@xyflow/react';
 import type { IssueFlowNode } from '@/components/canvas/projection';
 import { NODE_HEIGHT, NODE_WIDTH } from '@/domain/constants';
-import type { Messages } from '@/i18n/types';
+import type { EditorMessages } from '@/i18n/types';
 import type { ExportHeader } from './image';
 
 // Default 16:9 slide is 10 × 5.625 inches; keep a small uniform margin. A header
@@ -112,7 +112,7 @@ function treeBounds(nodes: IssueFlowNode[]): Rect | null {
 }
 
 /** The one-line detail under a node's label: value · evidence · dimension · ME/CE. */
-function detailText(data: IssueFlowNode['data'], m: Messages): string {
+function detailText(data: IssueFlowNode['data'], m: EditorMessages): string {
   const parts: string[] = [];
   if (data.value) parts.push(m.exports.valueText(data.value));
   if (data.evidence) {
@@ -141,7 +141,7 @@ export function layoutPptxShapes(
   nodes: IssueFlowNode[],
   edges: Edge[],
   opts: { hasHeader: boolean },
-  m: Messages
+  m: EditorMessages
 ): PptxShapes {
   const bounds = treeBounds(nodes);
   if (!bounds || bounds.w <= 0 || bounds.h <= 0) return { nodes: [], lines: [] };
@@ -254,7 +254,7 @@ export async function saveTreePptxNative(
   nodes: IssueFlowNode[],
   edges: Edge[],
   fileName: string,
-  m: Messages,
+  m: EditorMessages,
   header?: ExportHeader
 ): Promise<void> {
   const PptxGenJS = (await import('pptxgenjs')).default;

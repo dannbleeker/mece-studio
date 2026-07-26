@@ -18,7 +18,7 @@ import type {
   SplitOrder,
 } from '@/domain/types';
 import { renderAdvisory, renderMece } from '@/i18n/render';
-import { useMessages } from '@/i18n/useMessages';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { copyToClipboard } from '@/services/download';
 import { useStore } from '@/store';
 
@@ -44,7 +44,7 @@ const STATUS_ACTIVE: Record<NodeStatus, string> = {
 type TabId = 'issue' | 'logic' | 'evidence' | 'value';
 
 function MeceRow({ label, result }: { label: string; result: CheckResult }) {
-  const m = useMessages();
+  const m = useEditorMessages();
   const finding = result.message
     ? renderMece(m, result.message)
     : result.state === 'unknown'
@@ -71,7 +71,7 @@ function MeceRow({ label, result }: { label: string; result: CheckResult }) {
 }
 
 export function Inspector() {
-  const m = useMessages();
+  const m = useEditorMessages();
   const doc = useStore((s) => s.doc);
   const selectedId = useStore((s) => s.selectedId);
   const selectedIds = useStore((s) => s.selectedIds);

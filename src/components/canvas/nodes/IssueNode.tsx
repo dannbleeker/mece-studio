@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { CHECK_STATE_COLOR, CHECK_STATE_GLYPH } from '@/components/checkColors';
 import { childrenOf } from '@/domain/tree';
 import type { CheckResult, NodeId, NodeStatus } from '@/domain/types';
-import { useMessages } from '@/i18n/useMessages';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { useStore } from '@/store';
 import { useNodeEditing } from '../nodeEditing';
 import type { IssueFlowNode } from '../projection';
@@ -35,7 +35,7 @@ const STATUS_GLYPH: Record<NodeStatus, string> = {
  * users; the title/aria-label carries it to screen readers.
  */
 function MeceDot({ label, short, result }: { label: string; short: string; result: CheckResult }) {
-  const m = useMessages();
+  const m = useEditorMessages();
   const caption = m.canvas.meceCaption({ axis: label, state: m.enums.checkState[result.state] });
   return (
     <span className="flex items-center gap-1" role="img" title={caption} aria-label={caption}>
@@ -67,7 +67,7 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
     status,
     selected,
   } = data;
-  const m = useMessages();
+  const m = useEditorMessages();
   const { editingId, start, commit, cancel } = useNodeEditing();
   const toggleCollapse = useStore((s) => s.toggleCollapse);
   const addChild = useStore((s) => s.addChild);

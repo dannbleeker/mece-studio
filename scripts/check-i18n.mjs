@@ -161,7 +161,6 @@ function keysFromSource(src, rootName) {
             else if (text[i] === '}') nested--;
             i++;
           }
-          continue;
         } else i++;
       }
       i++;
@@ -213,7 +212,10 @@ if (process.argv.includes('--print-keys')) {
 // ---------------------------------------------------------------------------
 // 2. Collect the key paths the app actually references.
 // ---------------------------------------------------------------------------
-const usageFiles = filesUnder(USAGE_ROOTS, (f) => /\.(ts|tsx)$/.test(f) && !f.includes('/locales/'));
+const usageFiles = filesUnder(
+  USAGE_ROOTS,
+  (f) => /\.(ts|tsx)$/.test(f) && !f.includes('/locales/')
+);
 const referenced = new Set();
 
 // Match on the namespace name itself rather than on the variable holding the

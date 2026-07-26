@@ -3,7 +3,7 @@ import { meceSummary, splitWarnings } from '@/domain/meceStatus';
 import { childrenOf, splitOf } from '@/domain/tree';
 import type { IssueTreeDoc, NodeId } from '@/domain/types';
 import { renderMece } from '@/i18n/render';
-import { useMessages } from '@/i18n/useMessages';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { useStore } from '@/store';
 import './print.css';
 
@@ -12,7 +12,7 @@ import './print.css';
 
 /** One node and its subtree, as a nested outline item. */
 function PrintNode({ doc, id }: { doc: IssueTreeDoc; id: NodeId }) {
-  const m = useMessages();
+  const m = useEditorMessages();
   const node = doc.nodes[id];
   if (!node) return null;
   const split = splitOf(doc, id);
@@ -58,7 +58,7 @@ function PrintNode({ doc, id }: { doc: IssueTreeDoc; id: NodeId }) {
  * stylesheet hides the app chrome so only the paper prints.
  */
 export function PrintPreview({ onClose }: { onClose: () => void }) {
-  const m = useMessages();
+  const m = useEditorMessages();
   const doc = useStore((s) => s.doc);
   const root = doc.nodes[doc.rootId];
   const rootSplit = splitOf(doc, doc.rootId);

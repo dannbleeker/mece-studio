@@ -20,7 +20,7 @@ import { useMediaQuery } from '@/components/useMediaQuery';
 import { toMarkdown } from '@/domain/export';
 import { answerPageHtml } from '@/domain/synthesisFormat';
 import { splitOf } from '@/domain/tree';
-import { useMessages } from '@/i18n/useMessages';
+import { EditorMessagesProvider, useEditorMessages } from '@/i18n/useEditorMessages';
 import { copyToClipboard, downloadText } from '@/services/download';
 import { treeToCsv, treeToJson } from '@/services/exporters';
 import { clearFileHandle, getFileHandle, setFileHandle } from '@/services/fileHandles';
@@ -69,8 +69,21 @@ function IconBtn({
 }
 
 /** The tree-editing surface: header actions + canvas + inspector. */
+/**
+ * The editor shell. Exported wrapped in `EditorMessagesProvider` so the editor
+ * catalogue is imported as part of loading this (lazy) chunk rather than on the
+ * cold-start path — see `i18n/locales/en-core.ts`.
+ */
 export function Workspace() {
-  const m = useMessages();
+  return (
+    <EditorMessagesProvider>
+      <WorkspaceShell />
+    </EditorMessagesProvider>
+  );
+}
+
+function WorkspaceShell() {
+  const m = useEditorMessages();
   const doc = useStore((s) => s.doc);
   const newDoc = useStore((s) => s.newDoc);
   const openDoc = useStore((s) => s.openDoc);

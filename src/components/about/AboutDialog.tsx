@@ -1,6 +1,6 @@
 import { Dialog } from '@/components/Dialog';
 import { showToast } from '@/components/toast/toastStore';
-import { useMessages } from '@/i18n/useMessages';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { checkForUpdate } from '@/pwa/pwaUpdate';
 
 const REPO = 'https://github.com/dannbleeker/mece-studio';
@@ -8,7 +8,7 @@ const REPO = 'https://github.com/dannbleeker/mece-studio';
 const LICENSE_LINK = 'text-[#3f6fb0] underline';
 
 export function AboutDialog({ onClose }: { onClose: () => void }) {
-  const m = useMessages();
+  const m = useEditorMessages();
 
   // The hrefs are not language; only the label and the hint are, so they pair up
   // here rather than living as one order-coupled list in the catalogue.

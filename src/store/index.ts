@@ -52,7 +52,7 @@ import type {
 } from '@/domain/types';
 import { templateFromDoc } from '@/domain/userTemplate';
 import { catalogueFor } from '@/i18n/registry';
-import type { Messages } from '@/i18n/types';
+import type { CoreMessages } from '@/i18n/types';
 import {
   docName,
   type LibraryEntry,
@@ -78,7 +78,7 @@ const HISTORY_LIMIT = 100;
  * branches, a library entry's fallback name) is read from the catalogue for the
  * persisted locale, then frozen into the document as ordinary user data.
  */
-function cat(settings: Settings): Messages {
+function cat(settings: Settings): CoreMessages {
   return catalogueFor(settings.locale);
 }
 

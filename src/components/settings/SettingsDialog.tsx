@@ -2,7 +2,7 @@ import { Dialog } from '@/components/Dialog';
 import { DEFAULT_SETTINGS } from '@/domain/settings';
 import type { LocaleCode } from '@/domain/types';
 import { LOCALES } from '@/i18n/registry';
-import { useMessages } from '@/i18n/useMessages';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { useStore } from '@/store';
 
 /** Formula-tolerance choices as raw ratios — the catalogue does the wording. */
@@ -22,7 +22,7 @@ function Caption({ label, hint }: { label: string; hint: string }) {
 }
 
 export function SettingsDialog({ onClose }: { onClose: () => void }) {
-  const m = useMessages();
+  const m = useEditorMessages();
   const settings = useStore((s) => s.settings);
   const setSettings = useStore((s) => s.setSettings);
 

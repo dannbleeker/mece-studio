@@ -1,5 +1,5 @@
 import { meceSummary } from '@/domain/meceStatus';
-import { useMessages } from '@/i18n/useMessages';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { useStore } from '@/store';
 
 /**
@@ -7,7 +7,7 @@ import { useStore } from '@/store';
  * when nothing is flagged, amber "N to review" otherwise. Toggles the review dock.
  */
 export function HealthChip() {
-  const m = useMessages();
+  const m = useEditorMessages();
   const doc = useStore((s) => s.doc);
   const reviewOpen = useStore((s) => s.reviewOpen);
   const setReviewOpen = useStore((s) => s.setReviewOpen);

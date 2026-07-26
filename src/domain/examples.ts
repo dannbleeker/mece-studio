@@ -7,8 +7,8 @@
 // This file holds the *structure* — which nodes exist, how they split, and the
 // numbers, priorities and evidence they carry. The words come from the caller's
 // catalogue (`content.examples`), so an example seeds a document in the reader's
-// language; the builders stay pure and take `Messages` as a parameter.
-import type { Messages } from '@/i18n/types';
+// language; the builders stay pure and take `CoreMessages` as a parameter.
+import type { CoreMessages } from '@/i18n/types';
 import { createDoc, createEvidence } from './factory';
 import { recomputeMece } from './mece';
 import {
@@ -126,7 +126,7 @@ class TreeBuilder {
  * A value-driver tree: a metric decomposed into formula splits whose children
  * provably reconcile (revenue − costs; price × volume; fixed + variable).
  */
-function profitTree(m: Messages): IssueTreeDoc {
+function profitTree(m: CoreMessages): IssueTreeDoc {
   const n = m.content.examples.profit.nodes;
   const b = new TreeBuilder(n.root, { value: { amount: 30, unit: 'M DKK' } });
 
@@ -153,7 +153,7 @@ function profitTree(m: Messages): IssueTreeDoc {
  * A classic issue tree: a question segmented into a collectively-exhaustive set
  * (note the explicit "Other" bucket), with hypotheses, statuses, and evidence.
  */
-function churnTree(m: Messages): IssueTreeDoc {
+function churnTree(m: CoreMessages): IssueTreeDoc {
   const n = m.content.examples.churn.nodes;
   const b = new TreeBuilder(n.root);
 
@@ -179,7 +179,7 @@ function churnTree(m: Messages): IssueTreeDoc {
  * A decision frame: a binary (provably MECE) split, with the "yes" branch tested
  * against a desirability / viability / feasibility framework.
  */
-function decisionTree(m: Messages): IssueTreeDoc {
+function decisionTree(m: CoreMessages): IssueTreeDoc {
   const n = m.content.examples.decision.nodes;
   const b = new TreeBuilder(n.root);
 
@@ -202,7 +202,7 @@ function decisionTree(m: Messages): IssueTreeDoc {
  * A market-entry decision as four logical gates — each must hold for entry to
  * make sense. A `framework` split: useful, but not guaranteed MECE.
  */
-function marketEntryTree(m: Messages): IssueTreeDoc {
+function marketEntryTree(m: CoreMessages): IssueTreeDoc {
   const n = m.content.examples['market-entry'].nodes;
   const b = new TreeBuilder(n.root);
 
@@ -228,7 +228,7 @@ function marketEntryTree(m: Messages): IssueTreeDoc {
  * qualitative framework checks, but the synergies branch is a provable formula
  * split whose numbers must clear the deal's profit goal.
  */
-function acquisitionTree(m: Messages): IssueTreeDoc {
+function acquisitionTree(m: CoreMessages): IssueTreeDoc {
   const n = m.content.examples.acquisition.nodes;
   const b = new TreeBuilder(n.root);
 
@@ -256,7 +256,7 @@ function acquisitionTree(m: Messages): IssueTreeDoc {
  * A pricing decision triangulated from three reference points — the cost floor,
  * the value ceiling, and where competitors sit. A `framework` split.
  */
-function pricingTree(m: Messages): IssueTreeDoc {
+function pricingTree(m: CoreMessages): IssueTreeDoc {
   const n = m.content.examples.pricing.nodes;
   const b = new TreeBuilder(n.root);
 
@@ -276,7 +276,7 @@ function pricingTree(m: Messages): IssueTreeDoc {
  * A top-down market-sizing tree: start from the population and narrow with
  * formula splits, so every level provably reconciles.
  */
-function marketSizingTree(m: Messages): IssueTreeDoc {
+function marketSizingTree(m: CoreMessages): IssueTreeDoc {
   const n = m.content.examples['market-sizing'].nodes;
   const b = new TreeBuilder(n.root, { value: { amount: 600, unit: 'M DKK' } });
 
@@ -295,7 +295,7 @@ function marketSizingTree(m: Messages): IssueTreeDoc {
  * A build / buy / partner sourcing decision — three named options weighed on the
  * same trade-offs. A `framework` split, not a provable partition.
  */
-function sourcingTree(m: Messages): IssueTreeDoc {
+function sourcingTree(m: CoreMessages): IssueTreeDoc {
   const n = m.content.examples.sourcing.nodes;
   const b = new TreeBuilder(n.root);
 
@@ -312,7 +312,7 @@ function sourcingTree(m: Messages): IssueTreeDoc {
  * split provably reconciling. Complements the profit tree by decomposing the top
  * line by customers rather than price × volume.
  */
-function revenueDriverTree(m: Messages): IssueTreeDoc {
+function revenueDriverTree(m: CoreMessages): IssueTreeDoc {
   const n = m.content.examples['revenue-drivers'].nodes;
   const b = new TreeBuilder(n.root, { value: { amount: 2400, unit: 'M DKK' } });
 
@@ -337,7 +337,7 @@ function revenueDriverTree(m: Messages): IssueTreeDoc {
 
 export interface ExampleTree {
   id: ExampleId;
-  build: (m: Messages) => IssueTreeDoc;
+  build: (m: CoreMessages) => IssueTreeDoc;
 }
 
 /** Ready-made trees offered in the header's "Examples" picker. */

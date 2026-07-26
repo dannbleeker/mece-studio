@@ -6,7 +6,7 @@
  * Everything upstream is language-free.
  */
 import type { AdvisoryMessageRef, MeceMessageRef } from '@/domain/messages';
-import type { Messages } from './types';
+import type { EditorMessages } from './types';
 
 /**
  * Look a ref up in a catalogue namespace and render it.
@@ -29,11 +29,11 @@ function render(
 }
 
 /** Render a MECE rule-engine finding. */
-export function renderMece(messages: Messages, ref: MeceMessageRef): string {
+export function renderMece(messages: EditorMessages, ref: MeceMessageRef): string {
   return render(messages.mece, ref);
 }
 
 /** Render a coaching advisory. */
-export function renderAdvisory(messages: Messages, ref: AdvisoryMessageRef): string {
+export function renderAdvisory(messages: EditorMessages, ref: AdvisoryMessageRef): string {
   return render(messages.advisories, ref);
 }

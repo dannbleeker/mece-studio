@@ -1,7 +1,7 @@
 import { critiquePrompt } from '@/domain/aiPrompts';
 import { synthesise } from '@/domain/synthesis';
 import { formatSynthesis, type SynthLine } from '@/domain/synthesisFormat';
-import { useMessages } from '@/i18n/useMessages';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { copyToClipboard } from '@/services/download';
 import { useStore } from '@/store';
 
@@ -9,7 +9,7 @@ const BTN = 'rounded-md px-2.5 py-1 text-[12px] text-neutral-600 hover:bg-neutra
 
 /** One formatted line of the synthesis — the answer, verdict, and ranked branches. */
 function Line({ line }: { line: SynthLine }) {
-  const m = useMessages();
+  const m = useEditorMessages();
   const indent = { marginLeft: `${line.depth * 12}px` };
   switch (line.kind) {
     case 'title':
@@ -65,7 +65,7 @@ function Line({ line }: { line: SynthLine }) {
 }
 
 export function SynthesisPanel({ onClose }: { onClose: () => void }) {
-  const m = useMessages();
+  const m = useEditorMessages();
   const doc = useStore((s) => s.doc);
   const md = synthesise(doc, m);
   const lines = formatSynthesis(md, m);

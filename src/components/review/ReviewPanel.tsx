@@ -2,7 +2,7 @@ import { type FlaggedSplit, flaggedSplits } from '@/domain/meceStatus';
 import { priorityBand, priorityScore } from '@/domain/priority';
 import type { IssueTreeDoc, NodeId } from '@/domain/types';
 import { renderMece } from '@/i18n/render';
-import { useMessages } from '@/i18n/useMessages';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { useStore } from '@/store';
 
 type Axis = 'ME' | 'CE';
@@ -36,7 +36,7 @@ function ReviewCard({
   onReview: () => void;
   onRemedy?: () => void;
 }) {
-  const m = useMessages();
+  const m = useEditorMessages();
   const priority = doc.nodes[row.nodeId]?.priority;
   const band = priority ? priorityBand(priority) : null;
   const ref = axis === 'ME' ? row.exclusive : row.exhaustive;
@@ -99,7 +99,7 @@ function ReviewCard({
  * and CE gaps keep the one-click remedy.
  */
 export function ReviewPanel() {
-  const m = useMessages();
+  const m = useEditorMessages();
   const doc = useStore((s) => s.doc);
   const selectedId = useStore((s) => s.selectedId);
   const locate = useStore((s) => s.locate);

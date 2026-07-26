@@ -1,4 +1,4 @@
-import type { Messages } from '@/i18n/types';
+import type { EditorMessages } from '@/i18n/types';
 import { synthesise } from './synthesis';
 import type { IssueTreeDoc } from './types';
 
@@ -39,7 +39,7 @@ function stripEmphasis(s: string): string {
  * with, so the parser follows the document into any language rather than
  * silently failing to recognise a translated `**Answer:**`.
  */
-export function formatSynthesis(md: string, m: Messages): SynthLine[] {
+export function formatSynthesis(md: string, m: EditorMessages): SynthLine[] {
   const marker = m.exports.markers;
   // The four prefixes that introduce a supporting-detail line under a branch.
   const metaPrefixes = [marker.value, marker.rollUp, marker.sensitivity, marker.evidence];
@@ -103,7 +103,7 @@ const escapeHtml = (s: string): string =>
  * `<html lang>` carries the catalogue's own locale, so the file a reader opens
  * (or a screen reader speaks) declares the language it is actually written in.
  */
-export function answerPageHtml(doc: IssueTreeDoc, m: Messages): string {
+export function answerPageHtml(doc: IssueTreeDoc, m: EditorMessages): string {
   const lines = formatSynthesis(synthesise(doc, m), m);
   const body = lines
     .map((l) => {

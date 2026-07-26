@@ -2,7 +2,7 @@ import { Dialog } from '@/components/Dialog';
 import { advisoriesFor } from '@/domain/advisories';
 import type { ProblemBrief, TreeMode } from '@/domain/types';
 import { renderAdvisory } from '@/i18n/render';
-import { useMessages } from '@/i18n/useMessages';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { useStore } from '@/store';
 
 type BriefField = keyof ProblemBrief;
@@ -35,7 +35,7 @@ const FIELD_CLS =
  * optional and commits on blur, like the rest of the app.
  */
 export function ProblemBriefDialog({ onClose }: { onClose: () => void }) {
-  const m = useMessages();
+  const m = useEditorMessages();
   const doc = useStore((s) => s.doc);
   const setProblemBrief = useStore((s) => s.setProblemBrief);
   const setTreeMode = useStore((s) => s.setTreeMode);

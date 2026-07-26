@@ -32,11 +32,22 @@ The app ships in **English only**, but every user-facing string lives in a typed
 catalogue rather than in the components, so adding a language is additive work
 with a compiler checking it.
 
-- **Catalogue** — `src/i18n/locales/en/`, one file per area, composed in
-  `locales/en.ts`. `Messages = typeof en`, so every other locale is declared
-  `Messages` and a missing key, an extra key, or a render function with the
-  wrong params is a **typecheck** failure. There is no runtime completeness test
-  because there doesn't need to be one.
+- **Catalogue** — `src/i18n/locales/en/`, one file per area, composed into two
+  halves: `en-core.ts` (everything reachable before a tree is open) and
+  `en-editor.ts` (the canvas, inspector, review, exports and rule-engine wording,
+  shipped in the lazy `Workspace` chunk). `useMessages()` returns the core half
+  and works anywhere; `useEditorMessages()` returns both and only resolves inside
+  the editor, so `m.inspector` on a Start-page component is a compile error.
+  A locale must still supply **both** halves in full — the split is about *when*
+  wording loads, never about which locales have to provide it. Every locale is
+  declared against `typeof en`, so a missing key, an extra key, or a render
+  function with the wrong params is a **typecheck** failure. There is no runtime
+  completeness test because there doesn't need to be one.
+- **A web-app manifest per locale.** `src/i18n/manifests.ts` is the one typed
+  source; a Vite plugin emits `manifest.<locale>.webmanifest` for each, and
+  `useDocumentLanguage` points `<link rel="manifest">` at the active one. A
+  browser reads the manifest at install time, so this gets the next install right
+  rather than renaming an already-installed icon.
 - **The domain never speaks a language.** The MECE engine and the coaching lints
   return `{ code, params }` refs (`src/domain/messages.ts`) with raw numbers and
   raw enum members; `src/i18n/render.ts` turns them into prose at the edge. That
@@ -54,10 +65,12 @@ with a compiler checking it.
 
 **To add a locale:** add its code to `LocaleCode` in
 `src/domain/types/locale.ts`, copy `src/i18n/locales/en/` to a new folder,
-translate it, and register it in `src/i18n/registry.ts`. `pnpm verify` then tells
-you precisely what is missing — the compiler for coverage, `scripts/check-i18n.mjs`
-for hardcoded strings and orphan keys, and the `en-XA` pseudo-locale test for
-anything that slipped past both.
+translate it, then register its two halves in `src/i18n/registry.ts` and
+`src/i18n/editorRegistry.ts` and add its entry to `src/i18n/manifests.ts`.
+`pnpm verify` then tells you precisely what is missing — the compiler for
+coverage, `scripts/check-i18n.mjs` for hardcoded strings and orphan keys, the
+`en-XA` pseudo-locale test for anything that slipped past both, and
+`check-bundle-size.mjs` for the editor catalogue leaking onto the eager path.
 
 ## Stack
 

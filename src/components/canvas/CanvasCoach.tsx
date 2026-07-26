@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMessages } from '@/i18n/useMessages';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 
 const DISMISS_KEY = 'mece-studio:coachDismissed:v1';
 
@@ -10,7 +10,7 @@ const DISMISS_KEY = 'mece-studio:coachDismissed:v1';
  * split is cut) and is dismissable, remembered per device.
  */
 export function CanvasCoach({ show }: { show: boolean }) {
-  const m = useMessages();
+  const m = useEditorMessages();
   const [dismissed, setDismissed] = useState(() => {
     try {
       return localStorage.getItem(DISMISS_KEY) === '1';

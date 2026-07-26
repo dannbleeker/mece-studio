@@ -21,6 +21,7 @@ import type { NodeId } from '@/domain/types';
 import { useStore } from '@/store';
 import { Workspace } from '@/Workspace';
 import { PSEUDO_CLOSE, PSEUDO_OPEN, pseudoMessages } from './pseudo';
+import { EditorMessagesProvider } from './useEditorMessages';
 import { MessagesProvider } from './useMessages';
 
 /**
@@ -104,8 +105,19 @@ function untranslated(root: HTMLElement): string[] {
   return [...new Set(found)];
 }
 
+/**
+ * Both halves have to be overridden: the core provider alone leaves the editor
+ * namespaces composing themselves from the real catalogue, so the inspector and
+ * the review dock would render in plain English and the test would pass while
+ * checking nothing.
+ */
 function renderPseudo(ui: React.ReactElement) {
-  return render(<MessagesProvider messages={pseudoMessages()}>{ui}</MessagesProvider>);
+  const messages = pseudoMessages();
+  return render(
+    <MessagesProvider messages={messages}>
+      <EditorMessagesProvider messages={messages}>{ui}</EditorMessagesProvider>
+    </MessagesProvider>
+  );
 }
 
 describe('pseudo-locale', () => {

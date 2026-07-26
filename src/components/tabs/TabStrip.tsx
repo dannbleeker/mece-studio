@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { type MeceSummary, meceSummary } from '@/domain/meceStatus';
-import { useMessages } from '@/i18n/useMessages';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { loadDocById } from '@/services/storage';
 import { useStore } from '@/store';
 
@@ -26,7 +26,7 @@ const HEALTH_TONE: Record<MeceSummary['kind'], string> = {
  * open, so a single-tree workspace stays uncluttered.
  */
 export function TabStrip() {
-  const m = useMessages();
+  const m = useEditorMessages();
   const openTabs = useStore((s) => s.openTabs);
   const activeId = useStore((s) => s.activeId);
   const library = useStore((s) => s.library);

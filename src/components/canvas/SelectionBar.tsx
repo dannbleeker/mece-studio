@@ -1,5 +1,5 @@
 import type { Level, NodeStatus } from '@/domain/types';
-import { useMessages } from '@/i18n/useMessages';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { useStore } from '@/store';
 
 const STATUSES: NodeStatus[] = ['open', 'supported', 'refuted', 'parked'];
@@ -17,7 +17,7 @@ const LEVELS: Level[] = ['high', 'medium', 'low'];
  * in one undoable step; the inspector still edits the primary node.
  */
 export function SelectionBar() {
-  const m = useMessages();
+  const m = useEditorMessages();
   const selectedIds = useStore((s) => s.selectedIds);
   const setStatusMany = useStore((s) => s.setStatusMany);
   const setPriorityMany = useStore((s) => s.setPriorityMany);

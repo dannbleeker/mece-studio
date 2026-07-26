@@ -18,8 +18,9 @@ import { flaggedSplits } from '@/domain/meceStatus';
 import { childrenOf, descendantIds, parentOf } from '@/domain/tree';
 import type { IssueTreeDoc, LocaleCode, NodeId } from '@/domain/types';
 import { formatDate } from '@/i18n/format';
-import type { Messages } from '@/i18n/types';
-import { useLocale, useMessages } from '@/i18n/useMessages';
+import type { EditorMessages } from '@/i18n/types';
+import { useEditorMessages } from '@/i18n/useEditorMessages';
+import { useLocale } from '@/i18n/useMessages';
 import { copyImageToClipboard, downloadDataUrl, downloadText } from '@/services/download';
 import {
   type ExportHeader,
@@ -52,7 +53,7 @@ function minimapNodeColor(node: IssueFlowNode): string {
  * Title band for a PDF / PPTX export: the key question + today's date, both in
  * the reader's language — the date via `Intl`, not the machine's default locale.
  */
-function exportHeader(doc: IssueTreeDoc, m: Messages, locale: LocaleCode): ExportHeader {
+function exportHeader(doc: IssueTreeDoc, m: EditorMessages, locale: LocaleCode): ExportHeader {
   const title = doc.nodes[doc.rootId]?.label ?? m.canvas.fallbackTitle;
   const date = formatDate(locale, Date.now(), {
     year: 'numeric',
@@ -71,7 +72,7 @@ const sameSet = (a: readonly string[], b: readonly string[]): boolean =>
   a.length === b.length && a.every((x) => b.includes(x));
 
 function Flow() {
-  const m = useMessages();
+  const m = useEditorMessages();
   const locale = useLocale();
   const doc = useStore((s) => s.doc);
   const selectedId = useStore((s) => s.selectedId);

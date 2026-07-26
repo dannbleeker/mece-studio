@@ -1,7 +1,7 @@
 import { priorityBand } from '@/domain/priority';
 import { childrenOf, splitOf } from '@/domain/tree';
 import type { IssueTreeDoc, NodeId } from '@/domain/types';
-import type { Messages } from '@/i18n/types';
+import type { EditorMessages } from '@/i18n/types';
 
 /** Quote a CSV cell when it contains a comma, quote, or newline (RFC 4180). */
 function csvCell(value: string | number | undefined): string {
@@ -10,7 +10,7 @@ function csvCell(value: string | number | undefined): string {
 }
 
 /** The column order. The words come from the catalogue; the order lives here. */
-function headerRow(m: Messages): string[] {
+function headerRow(m: EditorMessages): string[] {
   const c = m.exports.csvColumns;
   return [
     c.path,
@@ -37,7 +37,7 @@ function headerRow(m: Messages): string[] {
  * a pivot table or formula written against one export keeps working against the
  * same tree exported in another language.
  */
-export function treeToCsv(doc: IssueTreeDoc, m: Messages): string {
+export function treeToCsv(doc: IssueTreeDoc, m: EditorMessages): string {
   const rows: string[][] = [headerRow(m)];
 
   const walk = (id: NodeId, parentPath: string): void => {

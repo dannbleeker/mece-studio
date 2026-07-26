@@ -16,7 +16,8 @@ const COL = 210;
 const ROW = 58;
 const PAD = 14;
 
-const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+const esc = (s) =>
+  String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 
 // The source of truth for the figure: a question decomposed into sub-issues.
 const TREE = {

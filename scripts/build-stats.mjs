@@ -62,16 +62,24 @@ const docsMd = [...walk('docs', ['.md']), ...rootMd];
 
 // ---- test counts ----
 const TEST_RE = /(?:^|\s)(?:it|test)(?:\.\w+)?\s*\(/g;
-const countTests = (files) => files.reduce((n, f) => n + (readText(f).match(TEST_RE)?.length || 0), 0);
+const countTests = (files) =>
+  files.reduce((n, f) => n + (readText(f).match(TEST_RE)?.length || 0), 0);
 const unitCount = countTests(unitTests);
 const e2eCount = countTests(e2eTests);
 
 // ---- coverage (from vitest --coverage json-summary; may be absent) ----
 const cov = readJson('coverage/coverage-summary.json');
 const covPart = (k) =>
-  cov?.total?.[k] ? { pct: cov.total[k].pct, covered: cov.total[k].covered, total: cov.total[k].total } : null;
+  cov?.total?.[k]
+    ? { pct: cov.total[k].pct, covered: cov.total[k].covered, total: cov.total[k].total }
+    : null;
 const coverage = cov
-  ? { lines: covPart('lines'), statements: covPart('statements'), functions: covPart('functions'), branches: covPart('branches') }
+  ? {
+      lines: covPart('lines'),
+      statements: covPart('statements'),
+      functions: covPart('functions'),
+      branches: covPart('branches'),
+    }
   : null;
 const linePct = coverage?.lines?.pct ?? null;
 const perFile = [];
@@ -107,11 +115,15 @@ const bundle = {
 
 // ---- churn (90d, src only) + risky (high-churn ∩ low-coverage) ----
 const churnMap = new Map();
-for (const line of git('log', '--since=90 days ago', '--name-only', '--format=', '--', 'src').split('\n')) {
+for (const line of git('log', '--since=90 days ago', '--name-only', '--format=', '--', 'src').split(
+  '\n'
+)) {
   const f = line.trim();
   if (f.startsWith('src/') && /\.tsx?$/.test(f)) churnMap.set(f, (churnMap.get(f) || 0) + 1);
 }
-const churnAll = [...churnMap.entries()].map(([file, commits]) => ({ file, commits })).sort((a, b) => b.commits - a.commits);
+const churnAll = [...churnMap.entries()]
+  .map(([file, commits]) => ({ file, commits }))
+  .sort((a, b) => b.commits - a.commits);
 const lowCov = new Set(perFile.filter((f) => f.pct < 70).map((f) => f.file));
 const risky = churnAll
   .slice(0, 15)
@@ -155,7 +167,9 @@ const featureCoverage = {
   bookExamplePct: pctOf(fExample),
   byArea,
   gaps: {
-    noManual: feats.filter((f) => !f.manual).map((f) => ({ id: f.id, name: f.name, since: f.since })),
+    noManual: feats
+      .filter((f) => !f.manual)
+      .map((f) => ({ id: f.id, name: f.name, since: f.since })),
     noBook: feats.filter((f) => !f.book).map((f) => ({ id: f.id, name: f.name, since: f.since })),
   },
 };
@@ -179,13 +193,20 @@ const domain = {
 };
 const guideMd = walk('docs/guide', ['.md']);
 const docs = {
-  bookWords: guideMd.reduce((n, f) => n + readText(f).trim().split(/\s+/).filter(Boolean).length, 0),
+  bookWords: guideMd.reduce(
+    (n, f) => n + readText(f).trim().split(/\s+/).filter(Boolean).length,
+    0
+  ),
   chapters: guideMd.length,
   appLoc: sumLines(srcApp),
   docToCodeRatio: sumLines(srcApp) ? round(sumLines(docsMd) / sumLines(srcApp), 2) : 0,
 };
-const bornIso = (git('log', '--max-parents=0', '--format=%aI', 'HEAD').trim().split('\n').pop() || '').trim();
-const ageDays = bornIso ? Math.max(1, Math.round((Date.now() - new Date(bornIso).getTime()) / 86400000)) : 0;
+const bornIso = (
+  git('log', '--max-parents=0', '--format=%aI', 'HEAD').trim().split('\n').pop() || ''
+).trim();
+const ageDays = bornIso
+  ? Math.max(1, Math.round((Date.now() - new Date(bornIso).getTime()) / 86400000))
+  : 0;
 const authorTally = {};
 for (const a of git('log', '--format=%an', 'HEAD').split('\n')) {
   const n = a.trim();
