@@ -122,12 +122,14 @@ function WorkspaceShell() {
   // id so a later Save writes back to the same file. (openDoc re-ids on import.)
   const onOpenFile = async () => {
     try {
-      const opened = await openTreeFile();
+      const opened = await openTreeFile(m.app.treeFileTypeLabel);
       if (!opened) return; // user cancelled the picker
       openDoc(opened.doc);
       if (opened.handle) await setFileHandle(useStore.getState().doc.id, opened.handle);
     } catch (err) {
-      window.alert(err instanceof InvalidTreeFileError ? err.message : m.app.openFileFailed);
+      window.alert(
+        err instanceof InvalidTreeFileError ? m.app.invalidTreeFile : m.app.openFileFailed
+      );
     }
   };
 
@@ -135,13 +137,13 @@ function WorkspaceShell() {
   const onSaveJson = async () => {
     const id = doc.id;
     const existing = await getFileHandle(id);
-    const handle = await saveTreeFile(doc, existing);
+    const handle = await saveTreeFile(doc, existing, m.app.treeFileTypeLabel);
     if (handle && handle !== existing) await setFileHandle(id, handle);
   };
 
   // Save As: always prompt for a new location, then bind to it.
   const onSaveAs = async () => {
-    const handle = await saveTreeFileAs(doc);
+    const handle = await saveTreeFileAs(doc, m.app.treeFileTypeLabel);
     if (handle) await setFileHandle(doc.id, handle);
   };
 

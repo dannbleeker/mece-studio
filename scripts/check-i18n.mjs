@@ -8,13 +8,23 @@
 // Node-form, zero deps, no shell — runs under the local AppLocker policy and
 // identically on CI (see CLAUDE.md).
 import { readdirSync, readFileSync, statSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join, relative, sep } from 'node:path';
 
 const ROOT = process.cwd();
 const CATALOGUE_DIR = 'src/i18n/locales/en';
-/** Surfaces that must not contain literal user-facing text. */
+/** Surfaces that must not contain literal user-facing text (JSX + attributes). */
 const UI_ROOTS = ['src/components'];
 const UI_FILES = ['src/App.tsx', 'src/Workspace.tsx'];
+/**
+ * Additionally scanned for prose-shaped **string literals**.
+ *
+ * Restricting the scan to components was a real hole: two user-facing strings
+ * shipped from `src/services` — the "not a valid MECE Studio tree" alert and the
+ * fallback root label for an OPML import with no title. Neither is JSX, so
+ * neither scan above could see them, and the pseudo-locale test only renders
+ * screens, not error paths. Prose can live anywhere a string can.
+ */
+const CODE_ROOTS = ['src/services', 'src/domain', 'src/store', 'src/pwa', 'src/i18n'];
 /**
  * Namespaces whose entries are keyed by a domain message code rather than by a
  * plain name — see `src/domain/messages.ts`. They are checked differently: the
@@ -39,6 +49,7 @@ const ALLOWED_LITERALS = new Map([
   ['CE', 'Axis abbreviation rendered as a badge.'],
   ['A', 'Binary-split placeholder branch, not prose.'],
   ['not-A', 'Binary-split placeholder branch, not prose.'],
+  ['Segoe UI', 'CSS font-family name in the exported HTML stylesheet, not prose.'],
 ]);
 
 /** Characters that are symbols/punctuation rather than words. */
@@ -355,6 +366,20 @@ for (const file of filesUnder([...UI_ROOTS, ...UI_FILES], (f) => /\.tsx$/.test(f
   for (const match of src.matchAll(JSX_TEXT)) {
     flagLiteral(file, match[1] ?? '', 'JSX text');
   }
+  for (const match of src.matchAll(STRING_LITERAL)) {
+    const value = (match[1] ?? match[2] ?? '').trim();
+    if (!READS_AS_PROSE.test(value) || NOT_PROSE.test(value)) continue;
+    flagLiteral(file, value, 'string literal');
+  }
+}
+
+// Prose can hide in a service or a store as easily as in a component. The
+// catalogue itself is exempt — it is *supposed* to be full of English.
+for (const file of filesUnder(CODE_ROOTS, (f) => /\.tsx?$/.test(f))) {
+  if (/\.test\.tsx?$/.test(file) || file.includes(`${CATALOGUE_DIR.replace(/\//g, sep)}${sep}`)) {
+    continue;
+  }
+  const src = stripComments(readFileSync(file, 'utf8'));
   for (const match of src.matchAll(STRING_LITERAL)) {
     const value = (match[1] ?? match[2] ?? '').trim();
     if (!READS_AS_PROSE.test(value) || NOT_PROSE.test(value)) continue;

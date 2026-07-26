@@ -27,7 +27,12 @@ export interface ImportedTree {
  * document (and rejected if it isn't a valid one); anything else is parsed as a
  * Markdown outline. Returns `null` when neither yields a tree.
  */
-export function importText(text: string, now: number): ImportedTree | null {
+export function importText(
+  text: string,
+  now: number,
+  /** Root label for an OPML import that names no top-level outline. */
+  fallbackLabel: string
+): ImportedTree | null {
   const trimmed = text.trim();
   if (!trimmed) return null;
 
@@ -39,7 +44,7 @@ export function importText(text: string, now: number): ImportedTree | null {
   // OPML / XML (outliners, mind-mappers): try structured parse; fall through if it
   // isn't valid OPML (so a stray '<' in prose still parses as a Markdown outline).
   if (trimmed.startsWith('<')) {
-    const doc = opmlToDoc(trimmed, now);
+    const doc = opmlToDoc(trimmed, now, fallbackLabel);
     if (doc) return { doc, format: 'opml' };
   }
 
