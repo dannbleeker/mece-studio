@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-07-26T12:50:54.986Z",
-  "commit": "4665e1b",
+  "generatedAt": "2026-07-26T13:02:58.900Z",
+  "commit": "70ef3d5",
   "headline": {
-    "linesTsJs": 22561,
-    "tests": 525,
-    "lineCoveragePct": 88.76,
-    "commits": 292,
+    "linesTsJs": 22632,
+    "tests": 528,
+    "lineCoveragePct": 88.77,
+    "commits": 296,
     "ageDays": 45,
     "trackedFiles": 292,
     "featureManualPct": 100,
@@ -16,12 +16,12 @@
     {
       "category": "App code (src, excl. tests)",
       "files": 124,
-      "lines": 13406
+      "lines": 13441
     },
     {
       "category": "Unit tests",
       "files": 72,
-      "lines": 6371
+      "lines": 6407
     },
     {
       "category": "E2E tests (Playwright)",
@@ -41,33 +41,33 @@
     {
       "category": "Docs (Markdown)",
       "files": 24,
-      "lines": 3050
+      "lines": 3052
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 88.76,
-      "covered": 2640,
-      "total": 2974
+      "pct": 88.77,
+      "covered": 2642,
+      "total": 2976
     },
     "statements": {
-      "pct": 87.36,
-      "covered": 3132,
-      "total": 3585
+      "pct": 87.37,
+      "covered": 3135,
+      "total": 3588
     },
     "functions": {
-      "pct": 83.54,
-      "covered": 909,
-      "total": 1088
+      "pct": 83.57,
+      "covered": 911,
+      "total": 1090
     },
     "branches": {
-      "pct": 79.4,
-      "covered": 1615,
-      "total": 2034
+      "pct": 79.42,
+      "covered": 1617,
+      "total": 2036
     }
   },
   "tests": {
-    "unit": 479,
+    "unit": 482,
     "e2e": 46
   },
   "domain": {
@@ -190,7 +190,7 @@
   },
   "bundle": {
     "eagerJsGzipKb": 110.1,
-    "totalJsGzipKb": 552.1,
+    "totalJsGzipKb": 552.2,
     "cssGzipKb": 9.3,
     "budgetKb": 113,
     "withinBudget": true
@@ -198,7 +198,7 @@
   "docs": {
     "bookWords": 27875,
     "chapters": 16,
-    "appLoc": 13406,
+    "appLoc": 13441,
     "docToCodeRatio": 0.23
   },
   "featureCoverage": {
@@ -295,26 +295,26 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 45,
-    "commits": 292,
-    "commits7d": 20,
+    "commits": 296,
+    "commits7d": 24,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 139
+        "count": 140
       },
       {
         "name": "github-actions[bot]",
-        "count": 100
+        "count": 102
       },
       {
         "name": "Claude",
-        "count": 53
+        "count": 54
       }
     ],
     "churn30d": {
-      "added": 19570,
-      "removed": 6247
+      "added": 19710,
+      "removed": 6314
     },
-    "changelogEntries": 106
+    "changelogEntries": 108
   }
 }
