@@ -45,6 +45,9 @@ export const mece: MessagesOf<MeceParams> = {
     `Children reconcile to the parent (${num(combined)}).`,
   'mece.exhaustive.formulaOff': ({ combined, parent, relative }) =>
     `Children combine to ${num(combined)} vs parent ${num(parent)} — off by ${pct(relative)}.`,
+  'mece.exhaustive.formulaMixedUnits': ({ units }) =>
+    `These terms are added up but carry different units (${units.map(quote).join(', ')}) — ` +
+    `put them in one unit before the total means anything.`,
   'mece.exhaustive.binaryNeedsTwo': 'A binary split should have exactly two branches (A / not-A).',
   'mece.exhaustive.binaryClean': 'A / not-A covers every case.',
   'mece.exhaustive.processEndToEnd':

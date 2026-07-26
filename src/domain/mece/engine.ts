@@ -169,13 +169,48 @@ function segmentExhaustive(children: IssueNode[]): CheckResult {
     : { state: 'warn', message: { code: 'mece.exhaustive.segmentNeedsOther' } };
 }
 
+/**
+ * The distinct units declared across a formula split's parent and children.
+ *
+ * Blank units are ignored: leaving the unit empty is normal, and means "same as
+ * everything else here", not a second unit. Comparison is case- and
+ * whitespace-insensitive so "DKK m" and "dkk m" are one unit, not two.
+ */
+function declaredUnits(parent: IssueNode | undefined, children: IssueNode[]): string[] {
+  const seen = new Map<string, string>();
+  for (const node of [parent, ...children]) {
+    const unit = node?.value?.unit?.trim();
+    if (!unit) continue;
+    const key = unit.toLowerCase().replace(/\s+/g, ' ');
+    if (!seen.has(key)) seen.set(key, unit);
+  }
+  return [...seen.values()];
+}
+
 function formulaExhaustive(
   split: Split,
   children: IssueNode[],
   doc: IssueTreeDoc,
   tolerance: number
 ): CheckResult {
-  const parentValue = doc.nodes[split.parentId]?.value?.amount;
+  const parent = doc.nodes[split.parentId];
+
+  // Adding or subtracting terms in different units produces a number that means
+  // nothing, so neither "reconciles" nor "off by x%" would be a true answer —
+  // say what is actually wrong instead. A product is exempt: multiplying
+  // dimensions is *supposed* to change unit (k DKK × k units = M DKK), which is
+  // exactly how the value-driver examples are built.
+  if (split.operator !== 'product') {
+    const units = declaredUnits(parent, children);
+    if (units.length > 1) {
+      return {
+        state: 'warn',
+        message: { code: 'mece.exhaustive.formulaMixedUnits', params: { units } },
+      };
+    }
+  }
+
+  const parentValue = parent?.value?.amount;
   const childValues = children.map((c) => c.value?.amount);
   if (parentValue === undefined || childValues.some((v) => v === undefined)) {
     return { state: 'unknown', message: { code: 'mece.exhaustive.formulaNeedsValues' } };
