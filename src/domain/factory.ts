@@ -6,6 +6,7 @@ import type {
   EvidenceStrength,
   IssueNode,
   IssueTreeDoc,
+  LocaleCode,
   NodeId,
   Split,
   SplitId,
@@ -34,13 +35,25 @@ export function createSplit(parentId: NodeId, decomposition: DecompositionType):
   };
 }
 
-/** Create a fresh document seeded with a single root question. */
-export function createDoc(rootQuestion: string, now: number): IssueTreeDoc {
+/**
+ * Create a fresh document seeded with a single root question.
+ *
+ * `title` and `locale` come from the caller because both are language-bound:
+ * the title is a word, and the locale records which language this document's
+ * seeded labels were written in. `title` defaults to empty rather than to an
+ * English placeholder — display surfaces supply their own localised fallback.
+ */
+export function createDoc(
+  rootQuestion: string,
+  now: number,
+  options: { title?: string; locale?: LocaleCode } = {}
+): IssueTreeDoc {
   const root = createNode(rootQuestion);
   return {
     schemaVersion: SCHEMA_VERSION,
     id: nanoid() as DocId,
-    title: 'Untitled tree',
+    title: options.title ?? '',
+    ...(options.locale ? { locale: options.locale } : {}),
     rootId: root.id,
     nodes: { [root.id]: root },
     splits: {},

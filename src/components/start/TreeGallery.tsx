@@ -1,7 +1,9 @@
 import { CHECK_STATE_COLOR } from '@/components/checkColors';
+import { includesText } from '@/domain/collation';
 import { type MeceSummary, meceSummary } from '@/domain/meceStatus';
 import { searchNodes } from '@/domain/search';
-import type { IssueTreeDoc } from '@/domain/types';
+import type { IssueTreeDoc, LocaleCode } from '@/domain/types';
+import { useLocale, useMessages } from '@/i18n/useMessages';
 import { docName } from '@/services/storage';
 import { relativeTime, treeKind } from './format';
 import { TreePreview } from './TreePreview';
@@ -25,6 +27,7 @@ const ACTION =
 
 /** The MECE pill — reads the SAME `split.mece` the canvas + inspector use. */
 export function MecePill({ summary }: { summary: MeceSummary }) {
+  const m = useMessages();
   const color =
     summary.kind === 'clean'
       ? CHECK_STATE_COLOR.pass
@@ -33,10 +36,10 @@ export function MecePill({ summary }: { summary: MeceSummary }) {
         : CHECK_STATE_COLOR.unknown;
   const label =
     summary.kind === 'clean'
-      ? 'MECE clean'
+      ? m.start.pillClean
       : summary.kind === 'review'
-        ? `${summary.warns} to check`
-        : 'No splits yet';
+        ? m.start.pillToCheck({ count: summary.warns })
+        : m.start.pillNoSplits;
   return (
     <span
       className="inline-flex items-center gap-1.5 self-start rounded-full px-2 py-0.5 font-medium text-[11px]"
@@ -53,12 +56,18 @@ export function MecePill({ summary }: { summary: MeceSummary }) {
  * — so a library search finds "which tree has the pricing-floor logic?", not just
  * matching titles. Returns a hint (the matching node's label) for a content match.
  */
-function treeMatch(doc: IssueTreeDoc, q: string): { match: boolean; hint?: string } {
+function treeMatch(
+  doc: IssueTreeDoc,
+  q: string,
+  untitled: string,
+  // Content search is collated, so it needs the alphabet it is matching in.
+  locale: LocaleCode
+): { match: boolean; hint?: string } {
   if (!q) return { match: true };
-  if (docName(doc).toLowerCase().includes(q)) return { match: true };
-  const nodeHit = searchNodes(doc, q)[0];
+  if (includesText(locale, docName(doc, untitled), q)) return { match: true };
+  const nodeHit = searchNodes(doc, q, locale)[0];
   if (nodeHit) return { match: true, hint: doc.nodes[nodeHit]?.label };
-  const noteHit = Object.values(doc.nodes).find((n) => n.detail?.toLowerCase().includes(q));
+  const noteHit = Object.values(doc.nodes).find((n) => includesText(locale, n.detail ?? '', q));
   if (noteHit) return { match: true, hint: noteHit.label };
   return { match: false };
 }
@@ -77,11 +86,18 @@ function TreeCard({
   onOpen: () => void;
   matchHint?: string | undefined;
 } & ManageHandlers) {
-  const name = docName(doc);
+  const m = useMessages();
+  const locale = useLocale();
+  const name = docName(doc, m.content.untitledTree);
   const hasActions = onRename || onDuplicate || onDelete;
   return (
     <div className={CARD}>
-      <button type="button" onClick={onOpen} className={OPEN_BTN} aria-label={`Open ${name}`}>
+      <button
+        type="button"
+        onClick={onOpen}
+        className={OPEN_BTN}
+        aria-label={m.start.openTree({ name })}
+      >
         <span className="block h-28 overflow-hidden rounded-lg border border-[#efece4] bg-[#faf9f5]">
           <TreePreview doc={doc} />
         </span>
@@ -89,11 +105,14 @@ function TreeCard({
           {name}
         </span>
         <span className="text-[12px] text-neutral-500">
-          {treeKind(doc)} · edited {relativeTime(doc.updatedAt)}
+          {m.start.treeMeta({
+            kind: treeKind(doc, m),
+            edited: relativeTime(locale, doc.updatedAt),
+          })}
         </span>
         {matchHint && (
           <span className="truncate text-[11px] text-[#3f6fb0]" title={matchHint}>
-            matches “{matchHint}”
+            {m.start.matchHint({ label: matchHint })}
           </span>
         )}
         <MecePill summary={meceSummary(doc)} />
@@ -104,33 +123,33 @@ function TreeCard({
             <button
               type="button"
               className={ACTION}
-              aria-label={`Rename ${name}`}
-              title="Rename"
+              aria-label={m.start.renameTree({ name })}
+              title={m.start.rename}
               onClick={() => onRename(id)}
             >
-              Rename
+              {m.start.rename}
             </button>
           )}
           {onDuplicate && (
             <button
               type="button"
               className={ACTION}
-              aria-label={`Duplicate ${name}`}
-              title="Duplicate"
+              aria-label={m.start.duplicateTree({ name })}
+              title={m.start.duplicate}
               onClick={() => onDuplicate(id)}
             >
-              Duplicate
+              {m.start.duplicate}
             </button>
           )}
           {onDelete && (
             <button
               type="button"
               className={`${ACTION} hover:text-[#bd4a3a]`}
-              aria-label={`Delete ${name}`}
-              title="Delete"
+              aria-label={m.start.deleteTree({ name })}
+              title={m.start.delete}
               onClick={() => onDelete(id)}
             >
-              Delete
+              {m.start.delete}
             </button>
           )}
         </div>
@@ -155,13 +174,17 @@ export function TreeGallery({
   onDuplicate,
   onDelete,
 }: TreeGalleryProps) {
+  const m = useMessages();
+  const locale = useLocale();
   const q = query.trim().toLowerCase();
-  const results = docs.map((d) => ({ d, ...treeMatch(d.doc, q) })).filter((r) => r.match);
+  const results = docs
+    .map((d) => ({ d, ...treeMatch(d.doc, q, m.content.untitledTree, locale) }))
+    .filter((r) => r.match);
 
   if (results.length === 0) {
     return (
       <p className="rounded-xl border border-[#e7e4dc] border-dashed bg-white/50 px-4 py-8 text-center text-[13px] text-neutral-500">
-        {emptyMessage ?? (q ? `No trees match “${query}”.` : 'No trees yet.')}
+        {emptyMessage ?? (q ? m.start.noMatches({ query }) : m.start.noTreesYet)}
       </p>
     );
   }

@@ -1,4 +1,5 @@
 import type { Level, NodeStatus } from '@/domain/types';
+import { useMessages } from '@/i18n/useMessages';
 import { useStore } from '@/store';
 
 const STATUSES: NodeStatus[] = ['open', 'supported', 'refuted', 'parked'];
@@ -8,11 +9,7 @@ const STATUS_TONE: Record<NodeStatus, string> = {
   refuted: 'bg-[#f6e9e7] text-[#a23b2c] hover:bg-[#f0ddda]',
   parked: 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200',
 };
-const LEVELS: [Level, string][] = [
-  ['high', 'H'],
-  ['medium', 'M'],
-  ['low', 'L'],
-];
+const LEVELS: Level[] = ['high', 'medium', 'low'];
 
 /**
  * A floating action bar for a multi-node selection — shown only when 2+ nodes
@@ -20,6 +17,7 @@ const LEVELS: [Level, string][] = [
  * in one undoable step; the inspector still edits the primary node.
  */
 export function SelectionBar() {
+  const m = useMessages();
   const selectedIds = useStore((s) => s.selectedIds);
   const setStatusMany = useStore((s) => s.setStatusMany);
   const setPriorityMany = useStore((s) => s.setPriorityMany);
@@ -31,7 +29,7 @@ export function SelectionBar() {
   return (
     <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-[#e7e4dc] bg-white/95 px-3 py-1.5 shadow-lg">
       <span className="font-medium text-[12px] text-neutral-700">
-        {selectedIds.length} selected
+        {m.canvas.selectionCount({ count: selectedIds.length })}
       </span>
       <span className="h-4 w-px bg-neutral-200" />
       <span className="flex gap-1">
@@ -39,28 +37,30 @@ export function SelectionBar() {
           <button
             key={st}
             type="button"
-            title={`Set ${st} for the selection`}
-            aria-label={`Set status ${st}`}
+            title={m.canvas.setStatusTitle({ status: m.enums.status[st] })}
+            aria-label={m.canvas.setStatusLabel({ status: m.enums.status[st] })}
             onClick={() => setStatusMany(selectedIds, st)}
             className={`rounded px-1.5 py-0.5 text-[11px] capitalize ${STATUS_TONE[st]}`}
           >
-            {st}
+            {m.enums.status[st]}
           </button>
         ))}
       </span>
       <span className="h-4 w-px bg-neutral-200" />
       <span className="flex items-center gap-1">
-        <span className="text-[10px] text-neutral-400 uppercase tracking-wider">Priority</span>
-        {LEVELS.map(([lvl, abbr]) => (
+        <span className="text-[10px] text-neutral-400 uppercase tracking-wider">
+          {m.canvas.priorityHeading}
+        </span>
+        {LEVELS.map((lvl) => (
           <button
             key={lvl}
             type="button"
-            title={lvl}
-            aria-label={`Set priority ${lvl}`}
+            title={m.enums.level[lvl]}
+            aria-label={m.canvas.setPriorityLabel({ level: m.enums.level[lvl] })}
             onClick={() => setPriorityMany(selectedIds, { impact: lvl, ease: lvl })}
             className="rounded bg-neutral-100 px-1.5 py-0.5 text-[11px] text-neutral-600 hover:bg-neutral-200"
           >
-            {abbr}
+            {m.canvas.levelAbbr[lvl]}
           </button>
         ))}
         <button
@@ -68,7 +68,7 @@ export function SelectionBar() {
           onClick={() => setPriorityMany(selectedIds, undefined)}
           className="rounded px-1 text-[11px] text-neutral-400 hover:text-neutral-700"
         >
-          clear
+          {m.canvas.clearPriority}
         </button>
       </span>
       <span className="h-4 w-px bg-neutral-200" />
@@ -77,14 +77,14 @@ export function SelectionBar() {
         onClick={() => removeNodes(selectedIds)}
         className="rounded-md bg-[#bd4a3a] px-2 py-0.5 font-medium text-[11px] text-white hover:bg-[#a53f31]"
       >
-        Delete
+        {m.canvas.deleteSelection}
       </button>
       <button
         type="button"
         onClick={() => select(null)}
         className="rounded px-1.5 text-[11px] text-neutral-500 hover:text-neutral-800"
       >
-        Clear
+        {m.canvas.clearSelection}
       </button>
     </div>
   );

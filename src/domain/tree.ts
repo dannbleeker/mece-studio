@@ -1,5 +1,4 @@
 import { createNode, createSplit } from './factory';
-import { scaffoldChildren } from './scaffold';
 import type {
   DecompositionType,
   EvidenceItem,
@@ -436,17 +435,24 @@ export function duplicateNode(
 
 /**
  * Decompose `parentId`. If it already has a split, just change the type;
- * otherwise create the split and seed type-appropriate starter children.
+ * otherwise create the split and seed it with `childLabels`.
+ *
+ * The starter labels are passed in rather than chosen here: they are words, and
+ * words have a language. The caller reads them from the active locale's
+ * catalogue (`content.scaffold`), which is also what freezes them into the
+ * document as ordinary user data — a tree seeded in Danish keeps its Danish
+ * labels when an English reader opens it.
  */
 export function decompose(
   doc: IssueTreeDoc,
   parentId: NodeId,
-  decomposition: DecompositionType
+  decomposition: DecompositionType,
+  childLabels: readonly string[]
 ): IssueTreeDoc {
   if (!doc.nodes[parentId]) return doc;
   if (splitOf(doc, parentId)) return setDecomposition(doc, parentId, decomposition);
   let next = doc;
-  for (const label of scaffoldChildren(decomposition)) {
+  for (const label of childLabels) {
     next = addChild(next, parentId, label, decomposition).doc;
   }
   return next;

@@ -16,7 +16,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NODE_HEIGHT, NODE_WIDTH } from '@/domain/constants';
 import { flaggedSplits } from '@/domain/meceStatus';
 import { childrenOf, descendantIds, parentOf } from '@/domain/tree';
-import type { IssueTreeDoc, NodeId } from '@/domain/types';
+import type { IssueTreeDoc, LocaleCode, NodeId } from '@/domain/types';
+import { formatDate } from '@/i18n/format';
+import type { Messages } from '@/i18n/types';
+import { useLocale, useMessages } from '@/i18n/useMessages';
 import { copyImageToClipboard, downloadDataUrl, downloadText } from '@/services/download';
 import {
   type ExportHeader,
@@ -45,10 +48,13 @@ function minimapNodeColor(node: IssueFlowNode): string {
   return '#cfccc3';
 }
 
-/** Title band for a PDF / PPTX export: the key question + today's date. */
-function exportHeader(doc: IssueTreeDoc): ExportHeader {
-  const title = doc.nodes[doc.rootId]?.label ?? 'Issue tree';
-  const date = new Date().toLocaleDateString(undefined, {
+/**
+ * Title band for a PDF / PPTX export: the key question + today's date, both in
+ * the reader's language — the date via `Intl`, not the machine's default locale.
+ */
+function exportHeader(doc: IssueTreeDoc, m: Messages, locale: LocaleCode): ExportHeader {
+  const title = doc.nodes[doc.rootId]?.label ?? m.canvas.fallbackTitle;
+  const date = formatDate(locale, Date.now(), {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -65,6 +71,8 @@ const sameSet = (a: readonly string[], b: readonly string[]): boolean =>
   a.length === b.length && a.every((x) => b.includes(x));
 
 function Flow() {
+  const m = useMessages();
+  const locale = useLocale();
   const doc = useStore((s) => s.doc);
   const selectedId = useStore((s) => s.selectedId);
   const selectedIds = useStore((s) => s.selectedIds);
@@ -156,8 +164,8 @@ function Flow() {
   }, [selectedId, editingId, addChild, select]);
 
   const { nodes: layoutNodes, edges } = useMemo(
-    () => toFlow(doc, selectedIds, query, sortByPriority),
-    [doc, selectedIds, query, sortByPriority]
+    () => toFlow(doc, selectedIds, query, sortByPriority, locale),
+    [doc, selectedIds, query, sortByPriority, locale]
   );
   const [nodes, setNodes, onNodesChange] = useNodesState(layoutNodes);
 
@@ -254,9 +262,11 @@ function Flow() {
       const st = useStore.getState();
       // Keep the live search query — passing '' here silently wiped the match
       // highlight/count on any drag (incl. a snap-back that changes nothing).
-      setNodes(toFlow(st.doc, st.selectedIds, query, st.settings.sortSiblingsByPriority).nodes);
+      setNodes(
+        toFlow(st.doc, st.selectedIds, query, st.settings.sortSiblingsByPriority, locale).nodes
+      );
     },
-    [findDropTarget, moveNode, setNodes, query]
+    [findDropTarget, moveNode, setNodes, query, locale]
   );
 
   // Zoom to the nodes whose label matches the search query.
@@ -313,10 +323,10 @@ function Flow() {
       // and falls back to the embedded-image deck once the tree is too big to read
       // on one slide.
       if (exportRequest === 'pptx') {
-        const header = exportHeader(useStore.getState().doc);
+        const header = exportHeader(useStore.getState().doc, m, locale);
         const rfNodes = getNodes() as IssueFlowNode[];
         if (nativePptxViable(rfNodes.length)) {
-          await saveTreePptxNative(rfNodes, getEdges(), 'mece-tree.pptx', header);
+          await saveTreePptxNative(rfNodes, getEdges(), 'mece-tree.pptx', m, header);
         } else {
           const image = await renderCanvasPng(rfNodes);
           if (image) await saveTreePptx(image, 'mece-tree.pptx', header);
@@ -331,12 +341,12 @@ function Flow() {
         const copied = await copyImageToClipboard(image.dataUrl);
         if (!copied) downloadDataUrl('mece-tree.png', image.dataUrl);
       } else if (exportRequest === 'pdf') {
-        await saveTreePdf(image, 'mece-tree.pdf', exportHeader(useStore.getState().doc));
+        await saveTreePdf(image, 'mece-tree.pdf', exportHeader(useStore.getState().doc, m, locale));
       }
     };
     void run();
     requestExport(null);
-  }, [exportRequest, getNodes, getEdges, requestExport]);
+  }, [exportRequest, getNodes, getEdges, requestExport, m, locale]);
 
   return (
     <NodeEditingContext.Provider value={editing}>
@@ -344,10 +354,15 @@ function Flow() {
           on its own .react-flow div. Screen readers still associate the treeitems. */}
       <div
         role="tree"
-        aria-label={`Issue tree: ${doc.nodes[doc.rootId]?.label ?? 'Issue tree'}`}
+        aria-label={m.canvas.regionLabel({
+          title: doc.nodes[doc.rootId]?.label ?? m.canvas.fallbackTitle,
+        })}
         className="h-full w-full"
       >
+        {/* ariaLabelConfig: React Flow ships its own English a11y strings for the
+            controls, minimap and keyboard hints — hand it ours instead. */}
         <ReactFlow
+          ariaLabelConfig={m.canvas.flowAria}
           nodes={displayNodes}
           edges={displayEdges}
           nodeTypes={nodeTypes}
@@ -398,8 +413,8 @@ function Flow() {
                   if (e.key === 'Enter') fitToMatches();
                   e.stopPropagation();
                 }}
-                placeholder="Find…"
-                aria-label="Find nodes"
+                placeholder={m.canvas.findPlaceholder}
+                aria-label={m.canvas.findLabel}
                 className="nodrag w-44 rounded-md border border-neutral-200 bg-white/90 px-2.5 py-1 text-[12px] text-neutral-700 shadow-sm focus:border-[#3f6fb0] focus:outline-none"
               />
               <div className="flex gap-1">
@@ -408,21 +423,21 @@ function Flow() {
                   onClick={() => collapseAll()}
                   className="nodrag rounded-md border border-neutral-200 bg-white/90 px-2 py-0.5 text-[11px] text-neutral-600 shadow-sm hover:bg-white"
                 >
-                  Collapse all
+                  {m.canvas.collapseAll}
                 </button>
                 <button
                   type="button"
                   onClick={() => expandAll()}
                   className="nodrag rounded-md border border-neutral-200 bg-white/90 px-2 py-0.5 text-[11px] text-neutral-600 shadow-sm hover:bg-white"
                 >
-                  Expand all
+                  {m.canvas.expandAll}
                 </button>
               </div>
               {query.trim() !== '' && (
                 <span className="px-0.5 text-[10px] text-neutral-400">
                   {matchCount === 0
-                    ? 'No matches'
-                    : `${matchCount} match${matchCount === 1 ? '' : 'es'}`}
+                    ? m.canvas.noMatches
+                    : m.canvas.matchCount({ count: matchCount })}
                 </span>
               )}
             </div>

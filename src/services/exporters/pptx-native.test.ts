@@ -11,6 +11,7 @@ import {
   setPriority,
   setStatus,
 } from '@/domain/tree';
+import { en } from '@/i18n/locales/en';
 import { layoutPptxShapes, nativePptxViable } from './pptx-native';
 
 // 10 × 5.625" slide with a 0.3" margin (mirrors the exporter constants).
@@ -37,7 +38,7 @@ describe('pptx-native layout', () => {
   it('produces one box per node and one line per edge', () => {
     const { doc } = sample();
     const { nodes, edges } = toFlow(doc);
-    const shapes = layoutPptxShapes(nodes, edges, { hasHeader: false });
+    const shapes = layoutPptxShapes(nodes, edges, { hasHeader: false }, en);
     expect(shapes.nodes).toHaveLength(nodes.length); // root + 2
     expect(shapes.lines).toHaveLength(edges.length); // 2
   });
@@ -45,7 +46,7 @@ describe('pptx-native layout', () => {
   it('scales every box inside the slide content area', () => {
     const { doc } = sample();
     const { nodes, edges } = toFlow(doc);
-    const shapes = layoutPptxShapes(nodes, edges, { hasHeader: true });
+    const shapes = layoutPptxShapes(nodes, edges, { hasHeader: true }, en);
     for (const spec of shapes.nodes) {
       expect(spec.box.x).toBeGreaterThanOrEqual(MARGIN - 0.01);
       expect(spec.box.y).toBeGreaterThanOrEqual(MARGIN - 0.01);
@@ -58,7 +59,7 @@ describe('pptx-native layout', () => {
     const { doc, revenueId, rootId } = sample();
     const { nodes, edges } = toFlow(doc);
     const byId = new Map(
-      layoutPptxShapes(nodes, edges, { hasHeader: false }).nodes.map((s) => [s.id, s])
+      layoutPptxShapes(nodes, edges, { hasHeader: false }, en).nodes.map((s) => [s.id, s])
     );
     expect(byId.get(revenueId)?.stripe?.color).toBe('3F7D54'); // supported
     expect(byId.get(rootId)?.stripe).toBeNull(); // open → no stripe
@@ -68,15 +69,17 @@ describe('pptx-native layout', () => {
     const { doc, revenueId, rootId } = sample();
     const { nodes, edges } = toFlow(doc);
     const byId = new Map(
-      layoutPptxShapes(nodes, edges, { hasHeader: false }).nodes.map((s) => [s.id, s])
+      layoutPptxShapes(nodes, edges, { hasHeader: false }, en).nodes.map((s) => [s.id, s])
     );
     const rev = byId.get(revenueId);
+    const value = en.exports.valueText({ amount: 100, unit: 'M' });
     expect(rev?.texts[0]?.text).toBe('Revenue');
-    expect(rev?.texts.some((t) => t.text === 'HIGH')).toBe(true);
-    expect(rev?.texts.some((t) => /100 M/.test(t.text) && /✓1/.test(t.text))).toBe(true);
+    expect(rev?.texts.some((t) => t.text === en.enums.level.high.toUpperCase())).toBe(true);
+    expect(rev?.texts.some((t) => t.text.includes(value) && t.text.includes('✓1'))).toBe(true);
     // The parent carries the ME/CE glyph line and the named dimension.
+    const dimension = en.exports.byDimension({ dimension: 'geography' });
     const root = byId.get(rootId);
-    expect(root?.texts.some((t) => /ME .* CE /.test(t.text) && /by geography/.test(t.text))).toBe(
+    expect(root?.texts.some((t) => /ME .* CE /.test(t.text) && t.text.includes(dimension))).toBe(
       true
     );
   });

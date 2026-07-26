@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { type MeceSummary, meceSummary } from '@/domain/meceStatus';
+import { useMessages } from '@/i18n/useMessages';
 import { loadDocById } from '@/services/storage';
 import { useStore } from '@/store';
 
@@ -7,9 +8,9 @@ import { useStore } from '@/store';
 // adopts studio-kit. The multi-document store state (openTabs / closeTab) is
 // MECE-owned and stays; only this rendering is provisional.
 
-/** The display name for an open tab — its tree's root question. */
-function tabName(library: { id: string; name: string }[], id: string): string {
-  return library.find((e) => e.id === id)?.name || 'Untitled tree';
+/** The display name for an open tab — its tree's root question, else `fallback`. */
+function tabName(library: { id: string; name: string }[], id: string, fallback: string): string {
+  return library.find((e) => e.id === id)?.name || fallback;
 }
 
 /** Per-tab MECE health dot — clean (green) / to-review (amber) / empty (grey). */
@@ -25,6 +26,7 @@ const HEALTH_TONE: Record<MeceSummary['kind'], string> = {
  * open, so a single-tree workspace stays uncluttered.
  */
 export function TabStrip() {
+  const m = useMessages();
   const openTabs = useStore((s) => s.openTabs);
   const activeId = useStore((s) => s.activeId);
   const library = useStore((s) => s.library);
@@ -47,12 +49,13 @@ export function TabStrip() {
 
   return (
     <nav
-      aria-label="Open trees"
+      aria-label={m.app.openTrees}
       className="flex shrink-0 items-center gap-1 overflow-x-auto border-neutral-200 border-b bg-[#f3f1ea] px-2 py-1"
     >
       {openTabs.map((id) => {
         const active = id === activeId;
         const summary = health[id];
+        const name = tabName(library, id, m.content.untitledTree);
         return (
           <div
             key={id}
@@ -69,10 +72,10 @@ export function TabStrip() {
                 style={{ background: HEALTH_TONE[summary.kind] }}
                 title={
                   summary.kind === 'review'
-                    ? `${summary.warns} to review`
+                    ? m.review.chipReview({ count: summary.warns })
                     : summary.kind === 'clean'
-                      ? 'MECE clean'
-                      : 'Not decomposed yet'
+                      ? m.review.chipClean
+                      : m.app.tabNotDecomposed
                 }
               />
             )}
@@ -80,14 +83,14 @@ export function TabStrip() {
               type="button"
               onClick={() => switchDoc(id)}
               className="max-w-[14rem] truncate"
-              title={tabName(library, id)}
+              title={name}
             >
-              {tabName(library, id)}
+              {name}
             </button>
             <button
               type="button"
               onClick={() => closeTab(id)}
-              aria-label={`Close ${tabName(library, id)}`}
+              aria-label={m.app.closeTab({ name })}
               className="rounded px-1 text-neutral-400 opacity-0 transition hover:bg-neutral-200 hover:text-neutral-700 group-hover:opacity-100"
             >
               ✕
@@ -98,8 +101,8 @@ export function TabStrip() {
       <button
         type="button"
         onClick={() => newDoc()}
-        aria-label="New tree"
-        title="New tree"
+        aria-label={m.app.newTree}
+        title={m.app.newTree}
         className="ml-1 shrink-0 rounded-md px-2 py-1 text-[15px] text-neutral-500 leading-none hover:bg-white/60"
       >
         +

@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { DECOMPOSITION_HINTS, DECOMPOSITION_LABELS } from '@/domain/constants';
+import { DECOMPOSITION_TYPES } from '@/domain/constants';
 import { EXAMPLE_TREES, type ExampleTree } from '@/domain/examples';
 import { FRAMEWORK_TEMPLATES, type FrameworkTemplate } from '@/domain/frameworks';
-import { scaffoldChildren } from '@/domain/scaffold';
 import type { DecompositionType } from '@/domain/types';
+import { useMessages } from '@/i18n/useMessages';
 import { decompositionMeta } from './meta';
 import { TreePreview } from './TreePreview';
 
@@ -11,15 +11,15 @@ const TILE =
   'flex flex-col gap-2 rounded-xl border border-[#e7e4dc] bg-white p-3.5 text-left shadow-sm transition hover:border-[#3f6fb0] hover:shadow-md focus:border-[#3f6fb0] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3f6fb0]/40';
 
 /**
- * The decomposition frameworks, mapped from DECOMPOSITION_LABELS (not hardcoded) —
- * so a new type added to the union/labels renders here with no edits. Clicking
+ * The decomposition frameworks, mapped from DECOMPOSITION_TYPES (not hardcoded) —
+ * so a new type added to the registry renders here with no edits. Clicking
  * picks the type; the caller creates a tree (or decomposes the selection) by it.
  */
 export function FrameworksGroup({ onPick }: { onPick: (type: DecompositionType) => void }) {
-  const types = Object.keys(DECOMPOSITION_LABELS) as DecompositionType[];
+  const m = useMessages();
   return (
     <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(216px,1fr))]">
-      {types.map((type) => {
+      {DECOMPOSITION_TYPES.map((type) => {
         const meta = decompositionMeta(type);
         return (
           <button key={type} type="button" onClick={() => onPick(type)} className={TILE}>
@@ -32,7 +32,7 @@ export function FrameworksGroup({ onPick }: { onPick: (type: DecompositionType) 
                 {meta.icon}
               </span>
               <span className="font-semibold text-[13px] text-neutral-800">
-                {DECOMPOSITION_LABELS[type]}
+                {m.enums.decomposition[type]}
               </span>
             </span>
             {meta.provable && (
@@ -40,14 +40,14 @@ export function FrameworksGroup({ onPick }: { onPick: (type: DecompositionType) 
                 className="self-start rounded px-1.5 py-0.5 font-medium text-[10px]"
                 style={{ color: '#3f7d54', background: '#3f7d5414' }}
               >
-                provably MECE
+                {m.start.provablyMece}
               </span>
             )}
             <span className="text-[12px] text-neutral-500 leading-snug">
-              {DECOMPOSITION_HINTS[type]}
+              {m.enums.decompositionHint[type]}
             </span>
             <span className="mt-0.5 flex flex-wrap gap-1">
-              {scaffoldChildren(type).map((label) => (
+              {m.content.scaffold[type].map((label) => (
                 <span
                   key={label}
                   className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] text-neutral-600"
@@ -69,6 +69,7 @@ export function FrameworksGroup({ onPick }: { onPick: (type: DecompositionType) 
  * canonical branches as chips; clicking opens a fresh starter tree for it.
  */
 export function FrameworkTemplatesGroup({ onPick }: { onPick: (t: FrameworkTemplate) => void }) {
+  const m = useMessages();
   return (
     <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(216px,1fr))]">
       {FRAMEWORK_TEMPLATES.map((t) => {
@@ -83,11 +84,15 @@ export function FrameworkTemplatesGroup({ onPick }: { onPick: (t: FrameworkTempl
               >
                 {meta.icon}
               </span>
-              <span className="font-semibold text-[13px] text-neutral-800">{t.name}</span>
+              <span className="font-semibold text-[13px] text-neutral-800">
+                {m.content.frameworks[t.id].name}
+              </span>
             </span>
-            <span className="text-[12px] text-neutral-500 leading-snug">{t.blurb}</span>
+            <span className="text-[12px] text-neutral-500 leading-snug">
+              {m.content.frameworks[t.id].blurb}
+            </span>
             <span className="mt-0.5 flex flex-wrap gap-1">
-              {t.children.map((label) => (
+              {m.content.frameworks[t.id].children.map((label: string) => (
                 <span
                   key={label}
                   className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] text-neutral-600"
@@ -108,7 +113,8 @@ export function FrameworkTemplatesGroup({ onPick }: { onPick: (t: FrameworkTempl
  * makes a card appear here with no edits. Clicking opens a fresh copy.
  */
 export function ExampleTreesGroup({ onPick }: { onPick: (ex: ExampleTree) => void }) {
-  const built = useMemo(() => EXAMPLE_TREES.map((ex) => ({ ex, doc: ex.build() })), []);
+  const m = useMessages();
+  const built = useMemo(() => EXAMPLE_TREES.map((ex) => ({ ex, doc: ex.build(m) })), [m]);
   return (
     <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(240px,1fr))]">
       {built.map(({ ex, doc }) => (
@@ -116,8 +122,12 @@ export function ExampleTreesGroup({ onPick }: { onPick: (ex: ExampleTree) => voi
           <span className="block h-24 overflow-hidden rounded-lg border border-[#efece4] bg-[#faf9f5]">
             <TreePreview doc={doc} />
           </span>
-          <span className="font-semibold text-[13px] text-neutral-800">{ex.name}</span>
-          <span className="text-[12px] text-neutral-500 leading-snug">{ex.blurb}</span>
+          <span className="font-semibold text-[13px] text-neutral-800">
+            {m.content.examples[ex.id].name}
+          </span>
+          <span className="text-[12px] text-neutral-500 leading-snug">
+            {m.content.examples[ex.id].blurb}
+          </span>
         </button>
       ))}
     </div>

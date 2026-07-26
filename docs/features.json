@@ -17,7 +17,7 @@
     "AI",
     "App"
   ],
-  "reviewedThroughChangelogEntries": 99,
+  "reviewedThroughChangelogEntries": 101,
   "features": [
     {
       "id": "issue-tree",
@@ -1106,6 +1106,15 @@
       "since": 11,
       "manual": true,
       "book": true,
+      "bookExample": false
+    },
+    {
+      "id": "ui-language",
+      "name": "UI language setting (English only)",
+      "area": "App",
+      "since": 11,
+      "manual": true,
+      "book": false,
       "bookExample": false
     }
   ]

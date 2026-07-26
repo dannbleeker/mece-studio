@@ -535,9 +535,14 @@ natural reload picks the update up anyway. You can also check on demand from
 
 ## Settings
 
-Open **⚙ Settings** in the header to tune three preferences. They're saved on
-this device and apply to every tree; all three default to the original behaviour.
+Open **⚙ Settings** in the header to tune four preferences. They're saved on
+this device and apply to every tree; each defaults to the original behaviour.
 
+- **Language.** The language MECE Studio is shown in. English is currently the
+  only one available, so the picker has a single entry — the setting exists
+  because the app is built to add languages, and this is where you'd pick one.
+  Your own text is never translated: node labels, notes and evidence are your
+  content and stay exactly as you typed them.
 - **Sort siblings by priority.** Lay each split's branches out highest-impact
   first (by the impact × ease score) instead of the order you added them. Off by
   default — turning it on never changes your data, only the layout.

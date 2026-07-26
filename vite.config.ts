@@ -31,6 +31,14 @@ export default defineConfig({
         short_name: 'MECE Studio',
         description:
           'Build McKinsey-style issue trees with built-in MECE checking — spot overlaps and gaps as you decompose.',
+        // vite-plugin-pwa emits ONE manifest, so this is the install-time default
+        // language, not the running app's — the app re-renders in whatever locale
+        // the user has set, but the icon caption on the home screen is fixed at
+        // install. Shipping per-locale manifests would mean one build output and
+        // one `<link rel="manifest">` per locale, chosen at runtime; that is a
+        // real change and it waits until there is a second locale to justify it.
+        lang: 'en',
+        dir: 'ltr',
         theme_color: '#3f6fb0',
         background_color: '#ffffff',
         display: 'standalone',

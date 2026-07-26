@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { en } from '@/i18n/locales/en';
 import { toMarkdown } from './export';
 import { createDoc, createEvidence } from './factory';
 import { recomputeMece } from './mece';
@@ -17,7 +18,7 @@ describe('toMarkdown', () => {
     let doc = createDoc('Why are profits falling?', 0);
     doc = addChild(doc, doc.rootId, 'Revenue down').doc;
     doc = addChild(doc, doc.rootId, 'Costs up').doc;
-    const md = toMarkdown(doc);
+    const md = toMarkdown(doc, en);
     expect(md).toContain('# Why are profits falling?');
     expect(md).toContain('- Revenue down');
     expect(md).toContain('- Costs up');
@@ -33,10 +34,12 @@ describe('toMarkdown', () => {
     doc = setDetail(doc, childId, 'A note');
     doc = addEvidence(doc, childId, createEvidence('Backed by data', true, 'strong'));
 
-    const md = toMarkdown(doc);
-    expect(md).toContain('- Driver (100 M DKK) — ✓ supported, High priority');
+    const md = toMarkdown(doc, en);
+    const value = en.exports.valueSuffix({ amount: 100, unit: 'M DKK' });
+    const priority = en.exports.priorityTag({ level: en.enums.level.high });
+    expect(md).toContain(`- Driver${value} — ✓ ${en.enums.status.supported}, ${priority}`);
     expect(md).toMatch(/_A note_/);
-    expect(md).toContain('  - ✓ (strong) Backed by data');
+    expect(md).toContain(`  - ✓ (${en.enums.evidenceStrength.strong}) Backed by data`);
   });
 
   it('annotates a split with its decomposition and MECE state', () => {
@@ -45,13 +48,15 @@ describe('toMarkdown', () => {
     doc = addChild(doc, doc.rootId, 'No').doc;
     doc = setDecomposition(doc, doc.rootId, 'binary');
     doc = recomputeMece(doc);
-    expect(toMarkdown(doc)).toContain('_[binary · ME:pass · CE:pass]_');
+    expect(toMarkdown(doc, en)).toContain(
+      en.exports.meceNote({ type: 'binary', exclusive: 'pass', exhaustive: 'pass' }).trim()
+    );
   });
 
   it('omits the meta tag for a plain, open, unprioritised node', () => {
     let doc = createDoc('Root', 0);
     doc = addChild(doc, doc.rootId, 'Plain').doc;
-    const line = toMarkdown(doc)
+    const line = toMarkdown(doc, en)
       .split('\n')
       .find((l) => l.includes('- Plain'));
     expect(line).toBe('- Plain');
@@ -60,7 +65,7 @@ describe('toMarkdown', () => {
   it('falls back to the document title when the root node is missing', () => {
     const doc = createDoc('Orphaned tree', 0);
     const broken = { ...doc, nodes: {} }; // a corrupt import: rootId dangles
-    const md = toMarkdown(broken);
+    const md = toMarkdown(broken, en);
     expect(md.startsWith('# ')).toBe(true);
     expect(md).toContain(`# ${doc.title}`);
     expect(md).not.toContain('undefined');
@@ -72,16 +77,17 @@ describe('toMarkdown', () => {
     doc = d;
     doc = setNodeValue(doc, childId, { amount: 42 }); // no unit
     doc = addEvidence(doc, doc.rootId, createEvidence('Root-level proof', false, 'indicative'));
-    const md = toMarkdown(doc);
-    expect(md).toContain('- Count (42)'); // unit-less value suffix
-    expect(md).toContain('- ✗ (indicative) Root-level proof'); // contradicting evidence on the root
+    const md = toMarkdown(doc, en);
+    expect(md).toContain(`- Count${en.exports.valueSuffix({ amount: 42 })}`); // unit-less suffix
+    // contradicting evidence on the root
+    expect(md).toContain(`- ✗ (${en.enums.evidenceStrength.indicative}) Root-level proof`);
   });
 
   it('nests descendants with indentation', () => {
     let doc = createDoc('Root', 0);
     const { doc: d1, childId } = addChild(doc, doc.rootId, 'Parent');
     doc = addChild(d1, childId, 'Child').doc;
-    const md = toMarkdown(doc);
+    const md = toMarkdown(doc, en);
     expect(md).toContain('- Parent');
     expect(md).toContain('  - Child'); // a grandchild indents one level deeper
   });

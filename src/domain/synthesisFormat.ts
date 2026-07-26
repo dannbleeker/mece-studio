@@ -1,3 +1,4 @@
+import type { Messages } from '@/i18n/types';
 import { synthesise } from './synthesis';
 import type { IssueTreeDoc } from './types';
 
@@ -33,8 +34,15 @@ function stripEmphasis(s: string): string {
  * Parse the `synthesise()` Markdown into typed lines so the same content can be
  * rendered as a formatted panel (React) or a one-page HTML deliverable — instead
  * of a raw monospace block. Pure; the Markdown stays the single source of truth.
+ *
+ * The section markers come from the **same catalogue** `synthesise()` wrote them
+ * with, so the parser follows the document into any language rather than
+ * silently failing to recognise a translated `**Answer:**`.
  */
-export function formatSynthesis(md: string): SynthLine[] {
+export function formatSynthesis(md: string, m: Messages): SynthLine[] {
+  const marker = m.exports.markers;
+  // The four prefixes that introduce a supporting-detail line under a branch.
+  const metaPrefixes = [marker.value, marker.rollUp, marker.sensitivity, marker.evidence];
   const out: SynthLine[] = [];
   for (const raw of md.split('\n')) {
     if (raw.trim() === '') {
@@ -45,25 +53,25 @@ export function formatSynthesis(md: string): SynthLine[] {
       out.push({ kind: 'title', text: raw.slice(2).trim(), depth: 0 });
       continue;
     }
-    if (raw.startsWith('**Answer:**')) {
-      out.push({ kind: 'answer', text: raw.replace('**Answer:**', '').trim(), depth: 0 });
+    if (raw.startsWith(marker.answer)) {
+      out.push({ kind: 'answer', text: raw.replace(marker.answer, '').trim(), depth: 0 });
       continue;
     }
-    if (raw.startsWith('**Situation:**')) {
-      out.push({ kind: 'situation', text: raw.replace('**Situation:**', '').trim(), depth: 0 });
+    if (raw.startsWith(marker.situation)) {
+      out.push({ kind: 'situation', text: raw.replace(marker.situation, '').trim(), depth: 0 });
       continue;
     }
-    if (raw.startsWith('**Complication:**')) {
+    if (raw.startsWith(marker.complication)) {
       out.push({
         kind: 'complication',
-        text: raw.replace('**Complication:**', '').trim(),
+        text: raw.replace(marker.complication, '').trim(),
         depth: 0,
       });
       continue;
     }
     const trimmed = raw.trimStart();
     const depth = Math.floor((raw.length - trimmed.length) / 2);
-    if (/^_Verdict:/.test(trimmed)) {
+    if (trimmed.startsWith(`_${marker.verdict}`)) {
       out.push({ kind: 'verdict', text: trimmed.replace(/^_/, '').replace(/_$/, ''), depth: 0 });
       continue;
     }
@@ -75,7 +83,7 @@ export function formatSynthesis(md: string): SynthLine[] {
       out.push({ kind: 'branch', text: stripEmphasis(trimmed.slice(2)), depth });
       continue;
     }
-    if (/^(value:|rolls up|most sensitive to:|evidence:)/.test(trimmed)) {
+    if (metaPrefixes.some((p) => trimmed.startsWith(p))) {
       out.push({ kind: 'meta', text: stripEmphasis(trimmed), depth });
       continue;
     }
@@ -91,9 +99,12 @@ const escapeHtml = (s: string): string =>
  * A standalone, self-contained one-page HTML deliverable of the answer-first
  * synthesis — a governing thesis on top, a verdict, then the branches in
  * priority order. Reads like a memo, not a canvas screenshot. Pure string.
+ *
+ * `<html lang>` carries the catalogue's own locale, so the file a reader opens
+ * (or a screen reader speaks) declares the language it is actually written in.
  */
-export function answerPageHtml(doc: IssueTreeDoc): string {
-  const lines = formatSynthesis(synthesise(doc));
+export function answerPageHtml(doc: IssueTreeDoc, m: Messages): string {
+  const lines = formatSynthesis(synthesise(doc, m), m);
   const body = lines
     .map((l) => {
       const indent = l.depth * 18;
@@ -101,9 +112,9 @@ export function answerPageHtml(doc: IssueTreeDoc): string {
         case 'title':
           return `<h1>${escapeHtml(l.text)}</h1>`;
         case 'situation':
-          return `<p class="brief"><strong>Situation.</strong> ${escapeHtml(l.text)}</p>`;
+          return `<p class="brief"><strong>${escapeHtml(m.synthesis.situationLead)}</strong> ${escapeHtml(l.text)}</p>`;
         case 'complication':
-          return `<p class="brief"><strong>Complication.</strong> ${escapeHtml(l.text)}</p>`;
+          return `<p class="brief"><strong>${escapeHtml(m.synthesis.complicationLead)}</strong> ${escapeHtml(l.text)}</p>`;
         case 'answer':
           return `<p class="answer">${escapeHtml(l.text)}</p>`;
         case 'verdict':
@@ -122,9 +133,9 @@ export function answerPageHtml(doc: IssueTreeDoc): string {
     })
     .join('\n');
 
-  const title = escapeHtml(doc.nodes[doc.rootId]?.label ?? 'MECE Studio answer');
+  const title = escapeHtml(doc.nodes[doc.rootId]?.label ?? m.exports.answerPage.title);
   return `<!doctype html>
-<html lang="en">
+<html lang="${m.exports.answerPage.lang}">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -150,7 +161,7 @@ export function answerPageHtml(doc: IssueTreeDoc): string {
 <body>
 <main>
 ${body}
-<footer>Answer-first synthesis · generated by MECE Studio</footer>
+<footer>${escapeHtml(m.exports.answerPage.footer)}</footer>
 </main>
 </body>
 </html>

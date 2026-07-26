@@ -1,6 +1,7 @@
 import { critiquePrompt } from '@/domain/aiPrompts';
 import { synthesise } from '@/domain/synthesis';
 import { formatSynthesis, type SynthLine } from '@/domain/synthesisFormat';
+import { useMessages } from '@/i18n/useMessages';
 import { copyToClipboard } from '@/services/download';
 import { useStore } from '@/store';
 
@@ -8,6 +9,7 @@ const BTN = 'rounded-md px-2.5 py-1 text-[12px] text-neutral-600 hover:bg-neutra
 
 /** One formatted line of the synthesis — the answer, verdict, and ranked branches. */
 function Line({ line }: { line: SynthLine }) {
+  const m = useMessages();
   const indent = { marginLeft: `${line.depth * 12}px` };
   switch (line.kind) {
     case 'title':
@@ -21,13 +23,15 @@ function Line({ line }: { line: SynthLine }) {
     case 'situation':
       return (
         <p className="text-[12px] text-neutral-600">
-          <span className="font-semibold text-neutral-800">Situation.</span> {line.text}
+          <span className="font-semibold text-neutral-800">{m.synthesis.situationLead}</span>{' '}
+          {line.text}
         </p>
       );
     case 'complication':
       return (
         <p className="text-[12px] text-neutral-600">
-          <span className="font-semibold text-neutral-800">Complication.</span> {line.text}
+          <span className="font-semibold text-neutral-800">{m.synthesis.complicationLead}</span>{' '}
+          {line.text}
         </p>
       );
     case 'insight':
@@ -61,28 +65,29 @@ function Line({ line }: { line: SynthLine }) {
 }
 
 export function SynthesisPanel({ onClose }: { onClose: () => void }) {
+  const m = useMessages();
   const doc = useStore((s) => s.doc);
-  const md = synthesise(doc);
-  const lines = formatSynthesis(md);
+  const md = synthesise(doc, m);
+  const lines = formatSynthesis(md, m);
 
   return (
     <div className="absolute inset-y-0 right-0 z-20 flex w-96 max-w-full flex-col border-neutral-200 border-l bg-white shadow-lg">
       <div className="flex shrink-0 items-center justify-between border-neutral-200 border-b px-4 py-2.5">
-        <span className="font-semibold text-[#3f6fb0] text-sm">Answer-first synthesis</span>
+        <span className="font-semibold text-[#3f6fb0] text-sm">{m.synthesis.title}</span>
         <div className="flex gap-1">
           <button type="button" className={BTN} onClick={() => void copyToClipboard(md)}>
-            Copy
+            {m.synthesis.copy}
           </button>
           <button
             type="button"
             className={BTN}
-            title="Copy a prompt to critique this tree in Claude or ChatGPT"
-            onClick={() => void copyToClipboard(critiquePrompt(doc))}
+            title={m.synthesis.critiqueTitle}
+            onClick={() => void copyToClipboard(critiquePrompt(doc, m))}
           >
-            AI critique
+            {m.synthesis.critique}
           </button>
           <button type="button" className={BTN} onClick={onClose}>
-            Close
+            {m.synthesis.close}
           </button>
         </div>
       </div>

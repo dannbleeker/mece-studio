@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useToastStore } from '@/components/toast/toastStore';
+import { en } from '@/i18n/locales/en';
 // The same stub the VITEST alias points `virtual:pwa-register` at, so firing these
 // drives the callbacks pwaUpdate registered.
 import {
@@ -22,32 +23,32 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe('initPwaUpdateToast', () => {
   it('registers both SW lifecycle callbacks', () => {
-    initPwaUpdateToast();
+    initPwaUpdateToast(en);
     const opts = __getLastRegisterSWOptions();
     expect(opts?.onNeedRefresh).toBeTypeOf('function');
     expect(opts?.onOfflineReady).toBeTypeOf('function');
   });
 
   it('onNeedRefresh shows a "Refresh now" toast whose action calls updateSW(true)', () => {
-    initPwaUpdateToast();
+    initPwaUpdateToast(en);
     __triggerNeedRefresh();
     const { toasts } = useToastStore.getState();
     expect(toasts).toHaveLength(1);
-    expect(toasts[0]?.message).toMatch(/new version/i);
-    expect(toasts[0]?.action?.label).toBe('Refresh now');
+    expect(toasts[0]?.message).toBe(en.app.updateAvailable);
+    expect(toasts[0]?.action?.label).toBe(en.app.refreshNow);
     toasts[0]?.action?.run();
     expect(__getUpdateCalls()).toEqual([true]);
   });
 
   it('onOfflineReady shows the offline-ready toast', () => {
-    initPwaUpdateToast();
+    initPwaUpdateToast(en);
     __triggerOfflineReady();
-    expect(useToastStore.getState().toasts[0]?.message).toMatch(/offline/i);
+    expect(useToastStore.getState().toasts[0]?.message).toBe(en.app.offlineReady);
   });
 
   it('is idempotent — repeated calls register the SW once', () => {
-    initPwaUpdateToast();
-    initPwaUpdateToast();
+    initPwaUpdateToast(en);
+    initPwaUpdateToast(en);
     expect(__getRegisterCount()).toBe(1);
   });
 });
@@ -55,20 +56,20 @@ describe('initPwaUpdateToast', () => {
 describe('checkForUpdate', () => {
   it("returns 'unsupported' without a serviceWorker API", async () => {
     vi.stubGlobal('navigator', {});
-    expect(await checkForUpdate()).toBe('unsupported');
+    expect(await checkForUpdate(en)).toBe('unsupported');
   });
 
   it("returns 'unsupported' with no registration", async () => {
     vi.stubGlobal('navigator', { serviceWorker: { getRegistration: async () => undefined } });
-    expect(await checkForUpdate()).toBe('unsupported');
+    expect(await checkForUpdate(en)).toBe('unsupported');
   });
 
   it("re-surfaces the prompt and returns 'already-pending' when a worker is waiting", async () => {
-    initPwaUpdateToast();
+    initPwaUpdateToast(en);
     vi.stubGlobal('navigator', {
       serviceWorker: { getRegistration: async () => ({ waiting: {} }) },
     });
-    expect(await checkForUpdate()).toBe('already-pending');
+    expect(await checkForUpdate(en)).toBe('already-pending');
     expect(useToastStore.getState().toasts).toHaveLength(1);
   });
 
@@ -81,7 +82,7 @@ describe('checkForUpdate', () => {
       },
     };
     vi.stubGlobal('navigator', { serviceWorker: { getRegistration: async () => reg } });
-    expect(await checkForUpdate()).toBe('newly-found');
+    expect(await checkForUpdate(en)).toBe('newly-found');
   });
 
   it("returns 'up-to-date' when nothing new is found", async () => {
@@ -90,7 +91,7 @@ describe('checkForUpdate', () => {
         getRegistration: async () => ({ waiting: null, installing: null, update: async () => {} }),
       },
     });
-    expect(await checkForUpdate()).toBe('up-to-date');
+    expect(await checkForUpdate(en)).toBe('up-to-date');
   });
 
   it("returns 'unsupported' when update() throws", async () => {
@@ -105,6 +106,6 @@ describe('checkForUpdate', () => {
         }),
       },
     });
-    expect(await checkForUpdate()).toBe('unsupported');
+    expect(await checkForUpdate(en)).toBe('unsupported');
   });
 });

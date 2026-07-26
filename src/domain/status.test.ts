@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createDoc } from '@/domain/factory';
 import { synthesise } from '@/domain/synthesis';
 import { addChild, setStatus } from '@/domain/tree';
+import { en } from '@/i18n/locales/en';
 
 describe('hypothesis status', () => {
   it('sets a node status', () => {
@@ -19,7 +20,7 @@ describe('hypothesis status', () => {
     doc = setStatus(doc, pricing.childId, 'refuted');
     doc = setStatus(doc, product.childId, 'supported');
 
-    const md = synthesise(doc);
+    const md = synthesise(doc, en);
     expect(md).toContain('✗ Pricing');
     expect(md).toContain('✓ Product');
   });

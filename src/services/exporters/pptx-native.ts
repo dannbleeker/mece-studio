@@ -16,6 +16,7 @@
 import type { Edge } from '@xyflow/react';
 import type { IssueFlowNode } from '@/components/canvas/projection';
 import { NODE_HEIGHT, NODE_WIDTH } from '@/domain/constants';
+import type { Messages } from '@/i18n/types';
 import type { ExportHeader } from './image';
 
 // Default 16:9 slide is 10 × 5.625 inches; keep a small uniform margin. A header
@@ -111,16 +112,18 @@ function treeBounds(nodes: IssueFlowNode[]): Rect | null {
 }
 
 /** The one-line detail under a node's label: value · evidence · dimension · ME/CE. */
-function detailText(data: IssueFlowNode['data']): string {
+function detailText(data: IssueFlowNode['data'], m: Messages): string {
   const parts: string[] = [];
-  if (data.value) parts.push(`${data.value.amount}${data.value.unit ? ` ${data.value.unit}` : ''}`);
+  if (data.value) parts.push(m.exports.valueText(data.value));
   if (data.evidence) {
     const ev: string[] = [];
     if (data.evidence.supports > 0) ev.push(`✓${data.evidence.supports}`);
     if (data.evidence.contradicts > 0) ev.push(`✗${data.evidence.contradicts}`);
     if (ev.length > 0) parts.push(ev.join(' '));
   }
-  if (data.hasChildren && data.dimension) parts.push(`by ${data.dimension}`);
+  if (data.hasChildren && data.dimension) {
+    parts.push(m.exports.byDimension({ dimension: data.dimension }));
+  }
   if (data.hasChildren && data.mece) {
     parts.push(
       `ME ${CHECK_GLYPH[data.mece.exclusive.state]}  CE ${CHECK_GLYPH[data.mece.exhaustive.state]}`
@@ -132,11 +135,13 @@ function detailText(data: IssueFlowNode['data']): string {
 /**
  * Pure geometry: map dagre px positions to slide inches and produce the box /
  * stripe / text / line specs. No pptxgenjs dependency, so it is unit-testable.
+ * The slide is a deliverable, so its wording follows the active catalogue.
  */
 export function layoutPptxShapes(
   nodes: IssueFlowNode[],
   edges: Edge[],
-  opts: { hasHeader: boolean }
+  opts: { hasHeader: boolean },
+  m: Messages
 ): PptxShapes {
   const bounds = treeBounds(nodes);
   if (!bounds || bounds.w <= 0 || bounds.h <= 0) return { nodes: [], lines: [] };
@@ -168,7 +173,7 @@ export function layoutPptxShapes(
     const prioW = n.data.priority ? box.w * 0.34 : 0;
     const texts: TextSpec[] = [
       {
-        text: n.data.label || 'Untitled',
+        text: n.data.label || m.content.untitled,
         x: box.x + pad,
         y: box.y + pad,
         w: box.w - pad * 2 - prioW,
@@ -183,7 +188,7 @@ export function layoutPptxShapes(
     ];
     if (n.data.priority) {
       texts.push({
-        text: n.data.priority.toUpperCase(),
+        text: m.enums.level[n.data.priority].toUpperCase(),
         x: box.x + box.w - prioW - pad,
         y: box.y + pad,
         w: prioW,
@@ -196,7 +201,7 @@ export function layoutPptxShapes(
         valign: 'top',
       });
     }
-    const detail = detailText(n.data);
+    const detail = detailText(n.data, m);
     if (detail) {
       texts.push({
         text: detail,
@@ -249,6 +254,7 @@ export async function saveTreePptxNative(
   nodes: IssueFlowNode[],
   edges: Edge[],
   fileName: string,
+  m: Messages,
   header?: ExportHeader
 ): Promise<void> {
   const PptxGenJS = (await import('pptxgenjs')).default;
@@ -277,7 +283,7 @@ export async function saveTreePptxNative(
     }
   }
 
-  const { nodes: nodeSpecs, lines } = layoutPptxShapes(nodes, edges, { hasHeader: !!header });
+  const { nodes: nodeSpecs, lines } = layoutPptxShapes(nodes, edges, { hasHeader: !!header }, m);
 
   // Edges first, so the node boxes sit on top of the connectors.
   for (const ln of lines) {

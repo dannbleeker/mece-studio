@@ -17,10 +17,10 @@ import { SettingsDialog } from '@/components/settings/SettingsDialog';
 import { ShortcutsDialog } from '@/components/shortcuts/ShortcutsDialog';
 import { TabStrip } from '@/components/tabs/TabStrip';
 import { useMediaQuery } from '@/components/useMediaQuery';
-import { TREE_KIND_LABELS } from '@/domain/constants';
 import { toMarkdown } from '@/domain/export';
 import { answerPageHtml } from '@/domain/synthesisFormat';
 import { splitOf } from '@/domain/tree';
+import { useMessages } from '@/i18n/useMessages';
 import { copyToClipboard, downloadText } from '@/services/download';
 import { treeToCsv, treeToJson } from '@/services/exporters';
 import { clearFileHandle, getFileHandle, setFileHandle } from '@/services/fileHandles';
@@ -70,6 +70,7 @@ function IconBtn({
 
 /** The tree-editing surface: header actions + canvas + inspector. */
 export function Workspace() {
+  const m = useMessages();
   const doc = useStore((s) => s.doc);
   const newDoc = useStore((s) => s.newDoc);
   const openDoc = useStore((s) => s.openDoc);
@@ -102,7 +103,7 @@ export function Workspace() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSaveTemplate, setShowSaveTemplate] = useState(false);
 
-  const onCopyMarkdown = () => void copyToClipboard(toMarkdown(doc));
+  const onCopyMarkdown = () => void copyToClipboard(toMarkdown(doc, m));
 
   // Open a .json tree from disk; bind its file handle to the freshly-imported
   // id so a later Save writes back to the same file. (openDoc re-ids on import.)
@@ -113,7 +114,7 @@ export function Workspace() {
       openDoc(opened.doc);
       if (opened.handle) await setFileHandle(useStore.getState().doc.id, opened.handle);
     } catch (err) {
-      window.alert(err instanceof InvalidTreeFileError ? err.message : 'Could not open that file.');
+      window.alert(err instanceof InvalidTreeFileError ? err.message : m.app.openFileFailed);
     }
   };
 
@@ -171,17 +172,19 @@ export function Workspace() {
     return () => window.removeEventListener('keydown', onKey);
   }, [undo, redo, removeNodes, setPriority, selectedId, selectedIds]);
 
-  // The tree's title + a type badge derived from how the root is decomposed.
-  const rootLabel = doc.nodes[doc.rootId]?.label ?? 'Untitled tree';
+  // The tree's title + a type badge derived from how the root is decomposed. An
+  // undecomposed root reads as the generic issue tree — the freeform wording.
+  const rootLabel = doc.nodes[doc.rootId]?.label ?? m.content.untitledTree;
   const rootSplit = splitOf(doc, doc.rootId);
-  const kindLabel = rootSplit ? TREE_KIND_LABELS[rootSplit.decomposition] : 'Issue tree';
-  const modeLabel = doc.mode === 'why' ? 'Why' : doc.mode === 'how' ? 'How' : null;
+  const kindLabel = m.enums.treeKind[rootSplit?.decomposition ?? 'freeform'];
+  const modeLabel = doc.mode ? m.app.modeBadge[doc.mode] : null;
 
   // PNG/PDF/PPTX render the canvas, so they route through the store to the
   // canvas; JSON only needs the document, so it downloads straight from here.
   const onExportJson = () => downloadText('mece-tree.json', treeToJson(doc), 'application/json');
-  const onExportCsv = () => downloadText('mece-tree.csv', treeToCsv(doc), 'text/csv');
-  const onExportAnswer = () => downloadText('mece-answer.html', answerPageHtml(doc), 'text/html');
+  const onExportCsv = () => downloadText('mece-tree.csv', treeToCsv(doc, m), 'text/csv');
+  const onExportAnswer = () =>
+    downloadText('mece-answer.html', answerPageHtml(doc, m), 'text/html');
   // A backend-free, read-anywhere share link: the tree's JSON, base64'd into the URL
   // hash. Opening the link imports the tree as a new library entry (see App).
   const onCopyShareLink = () => {
@@ -192,54 +195,75 @@ export function Workspace() {
     void copyToClipboard(url);
   };
   const exportItems: MenuEntry[] = [
-    { key: 'png', label: 'PNG', onClick: () => requestExport('png') },
-    { key: 'svg', label: 'SVG', onClick: () => requestExport('svg') },
-    { key: 'pdf', label: 'PDF', onClick: () => requestExport('pdf') },
-    { key: 'pptx', label: 'PPTX', onClick: () => requestExport('pptx') },
-    { key: 'copyImg', label: 'Copy image', onClick: () => requestExport('copy') },
+    { key: 'png', label: m.app.exportPng, onClick: () => requestExport('png') },
+    { key: 'svg', label: m.app.exportSvg, onClick: () => requestExport('svg') },
+    { key: 'pdf', label: m.app.exportPdf, onClick: () => requestExport('pdf') },
+    { key: 'pptx', label: m.app.exportPptx, onClick: () => requestExport('pptx') },
+    { key: 'copyImg', label: m.app.exportCopyImage, onClick: () => requestExport('copy') },
     { key: 'sep-e', divider: true },
-    { key: 'json', label: 'JSON', onClick: onExportJson },
-    { key: 'csv', label: 'CSV (value model)', onClick: onExportCsv },
-    { key: 'answer', label: 'Answer (1-page)', onClick: onExportAnswer },
-    { key: 'share', label: 'Copy share link', onClick: onCopyShareLink },
+    { key: 'json', label: m.app.exportJson, onClick: onExportJson },
+    { key: 'csv', label: m.app.exportCsv, onClick: onExportCsv },
+    { key: 'answer', label: m.app.exportAnswer, onClick: onExportAnswer },
+    { key: 'share', label: m.app.exportShareLink, onClick: onCopyShareLink },
   ];
   // On a compact (mobile) header the secondary actions collapse into the ⋯ menu.
   const compactItems: MenuEntry[] = compact
     ? [
-        { key: 'c-undo', label: 'Undo', onClick: undo, disabled: !canUndo },
-        { key: 'c-redo', label: 'Redo', onClick: redo, disabled: !canRedo },
-        { key: 'c-synthesis', label: 'Synthesis', onClick: () => setShowSynthesis((v) => !v) },
-        { key: 'c-settings', label: 'Settings', onClick: () => setShowSettings(true) },
-        { key: 'c-shortcuts', label: 'Keyboard shortcuts', onClick: () => setShowShortcuts(true) },
+        { key: 'c-undo', label: m.app.undo, onClick: undo, disabled: !canUndo },
+        { key: 'c-redo', label: m.app.redo, onClick: redo, disabled: !canRedo },
+        { key: 'c-synthesis', label: m.app.synthesis, onClick: () => setShowSynthesis((v) => !v) },
+        { key: 'c-settings', label: m.app.settings, onClick: () => setShowSettings(true) },
+        { key: 'c-shortcuts', label: m.app.shortcuts, onClick: () => setShowShortcuts(true) },
         { key: 'c-sep', divider: true },
       ]
     : [];
   // Secondary actions, tucked into an overflow menu to keep the header clustered.
   const overflowItems: MenuEntry[] = [
     ...compactItems,
-    { key: 'quickAdd', label: 'Quick add issues…', onClick: () => setShowQuickCapture(true) },
+    { key: 'quickAdd', label: m.app.quickAdd, onClick: () => setShowQuickCapture(true) },
     { key: 'sep0', divider: true },
-    { key: 'copy', label: 'Copy Markdown', onClick: onCopyMarkdown },
-    { key: 'open', label: 'Open file…', onClick: () => void onOpenFile() },
-    { key: 'import', label: 'Import outline…', onClick: () => setShowImport(true) },
-    { key: 'save', label: 'Save', onClick: () => void onSaveJson() },
-    { key: 'saveAs', label: 'Save As…', onClick: () => void onSaveAs() },
-    { key: 'template', label: 'Save as template…', onClick: () => setShowSaveTemplate(true) },
+    { key: 'copy', label: m.app.copyMarkdown, onClick: onCopyMarkdown },
+    { key: 'open', label: m.app.openFile, onClick: () => void onOpenFile() },
+    { key: 'import', label: m.app.importOutline, onClick: () => setShowImport(true) },
+    { key: 'save', label: m.app.save, onClick: () => void onSaveJson() },
+    { key: 'saveAs', label: m.app.saveAs, onClick: () => void onSaveAs() },
+    { key: 'template', label: m.app.saveAsTemplate, onClick: () => setShowSaveTemplate(true) },
     { key: 'sep1', divider: true },
-    { key: 'present', label: 'Present', onClick: () => setShowPresentation(true) },
-    { key: 'print', label: 'Print…', onClick: () => setShowPrint(true) },
+    { key: 'present', label: m.app.present, onClick: () => setShowPresentation(true) },
+    { key: 'print', label: m.app.print, onClick: () => setShowPrint(true) },
     { key: 'sep2', divider: true },
-    { key: 'about', label: 'About', onClick: () => setShowAbout(true) },
+    { key: 'about', label: m.app.about, onClick: () => setShowAbout(true) },
     { key: 'sep3', divider: true },
-    { key: 'new', label: 'New tree', onClick: () => newDoc() },
+    { key: 'new', label: m.app.newTree, onClick: () => newDoc() },
     { key: 'sep4', divider: true },
     {
       key: 'delete',
-      label: 'Delete tree',
+      label: m.app.deleteTree,
       destructive: true,
       onClick: () => setShowDeleteConfirm(true),
     },
   ];
+
+  // The docked panel beside the canvas: the MECE review dock when it's open,
+  // else the per-node inspector. On a compact viewport the same panel is a
+  // dismissible bottom sheet instead, shown only when there's something in it.
+  const sidePanel = reviewOpen ? <ReviewPanel /> : <Inspector />;
+  const compactSheet = (reviewOpen || selectedId !== null) && (
+    <div className="fixed inset-x-0 bottom-0 z-30 flex max-h-[70vh] flex-col rounded-t-2xl border-neutral-200 border-t bg-white shadow-2xl">
+      <div className="flex shrink-0 items-center justify-center py-2">
+        <span aria-hidden="true" className="h-1 w-10 rounded-full bg-neutral-300" />
+        <button
+          type="button"
+          aria-label={m.app.closePanel}
+          onClick={() => (reviewOpen ? setReviewOpen(false) : select(null))}
+          className="absolute top-1.5 right-2 rounded px-2 text-neutral-500 text-sm hover:text-neutral-800"
+        >
+          ✕
+        </button>
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">{sidePanel}</div>
+    </div>
+  );
 
   return (
     <div className="flex h-full flex-col bg-[#faf9f5] text-neutral-800">
@@ -249,7 +273,7 @@ export function Workspace() {
           type="button"
           onClick={() => setView('start')}
           className="shrink-0 whitespace-nowrap rounded-md px-1 font-semibold text-[#3f6fb0] text-lg tracking-tight hover:opacity-80"
-          title="Back to Start"
+          title={m.app.backToStartTitle}
         >
           MECE Studio
         </button>
@@ -260,9 +284,9 @@ export function Workspace() {
               type="button"
               onClick={() => setView('start')}
               className={GHOST_BTN}
-              title="All trees (Start)"
+              title={m.app.allTreesTitle}
             >
-              ← Start
+              {m.app.backToStart}
             </button>
             <Divider />
             <span className="flex min-w-0 items-center gap-2">
@@ -277,7 +301,7 @@ export function Workspace() {
               </span>
               {modeLabel && (
                 <span className="shrink-0 rounded-md border border-[#c9d9ef] px-1.5 py-0.5 font-medium text-[#3f6fb0] text-[10px]">
-                  {modeLabel} tree
+                  {modeLabel}
                 </span>
               )}
             </span>
@@ -290,12 +314,17 @@ export function Workspace() {
           {!compact && (
             <>
               <Divider />
-              <IconBtn label="Undo" title="Undo (Ctrl/⌘+Z)" disabled={!canUndo} onClick={undo}>
+              <IconBtn
+                label={m.app.undo}
+                title={m.app.undoTitle}
+                disabled={!canUndo}
+                onClick={undo}
+              >
                 ↶
               </IconBtn>
               <IconBtn
-                label="Redo"
-                title="Redo (Ctrl/⌘+Y or Ctrl/⌘+Shift+Z)"
+                label={m.app.redo}
+                title={m.app.redoTitle}
                 disabled={!canRedo}
                 onClick={redo}
               >
@@ -307,15 +336,15 @@ export function Workspace() {
                 onClick={() => setShowSynthesis((v) => !v)}
                 className={GHOST_BTN}
               >
-                Synthesis
+                {m.app.synthesis}
               </button>
             </>
           )}
           <HeaderMenu
-            triggerLabel="Export"
+            triggerLabel={m.app.exportMenu}
             triggerContent={
               <>
-                Export
+                {m.app.exportMenu}
                 <span aria-hidden="true" className="text-[10px] opacity-70">
                   ▾
                 </span>
@@ -326,12 +355,16 @@ export function Workspace() {
           />
           {!compact && (
             <>
-              <IconBtn label="Settings" title="Settings" onClick={() => setShowSettings(true)}>
+              <IconBtn
+                label={m.app.settings}
+                title={m.app.settings}
+                onClick={() => setShowSettings(true)}
+              >
                 ⚙
               </IconBtn>
               <IconBtn
-                label="Keyboard shortcuts"
-                title="Keyboard shortcuts (?)"
+                label={m.app.shortcuts}
+                title={m.app.shortcutsTitle}
                 onClick={() => setShowShortcuts(true)}
               >
                 ?
@@ -339,7 +372,7 @@ export function Workspace() {
             </>
           )}
           <HeaderMenu
-            triggerLabel="More actions"
+            triggerLabel={m.app.moreActions}
             triggerContent={<span aria-hidden="true">⋯</span>}
             triggerClassName="grid h-8 w-8 place-items-center rounded-md text-[18px] text-neutral-600 leading-none hover:bg-neutral-100"
             items={overflowItems}
@@ -363,9 +396,9 @@ export function Workspace() {
           {showQuickCapture && <QuickCaptureDialog onClose={() => setShowQuickCapture(false)} />}
           {showDeleteConfirm && (
             <ConfirmDialog
-              label="Delete tree"
-              message={`Delete "${rootLabel}"? This cannot be undone.`}
-              confirmLabel="Delete tree"
+              label={m.app.deleteTree}
+              message={m.app.deleteTreeConfirm({ name: rootLabel })}
+              confirmLabel={m.app.deleteTree}
               destructive
               onConfirm={doDelete}
               onClose={() => setShowDeleteConfirm(false)}
@@ -373,39 +406,16 @@ export function Workspace() {
           )}
           {showSaveTemplate && (
             <PromptDialog
-              label="Save as template"
-              subtitle="Reuse this tree's structure on a future engagement — values, evidence, and status are stripped."
+              label={m.app.saveTemplateTitle}
+              subtitle={m.app.saveTemplateSubtitle}
               initialValue={rootLabel}
-              submitLabel="Save template"
+              submitLabel={m.app.saveTemplateSubmit}
               onSubmit={(name) => saveAsTemplate(name)}
               onClose={() => setShowSaveTemplate(false)}
             />
           )}
         </main>
-        {compact ? (
-          (reviewOpen || selectedId !== null) && (
-            <div className="fixed inset-x-0 bottom-0 z-30 flex max-h-[70vh] flex-col rounded-t-2xl border-neutral-200 border-t bg-white shadow-2xl">
-              <div className="flex shrink-0 items-center justify-center py-2">
-                <span aria-hidden="true" className="h-1 w-10 rounded-full bg-neutral-300" />
-                <button
-                  type="button"
-                  aria-label="Close panel"
-                  onClick={() => (reviewOpen ? setReviewOpen(false) : select(null))}
-                  className="absolute top-1.5 right-2 rounded px-2 text-neutral-500 text-sm hover:text-neutral-800"
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-                {reviewOpen ? <ReviewPanel /> : <Inspector />}
-              </div>
-            </div>
-          )
-        ) : reviewOpen ? (
-          <ReviewPanel />
-        ) : (
-          <Inspector />
-        )}
+        {compact ? compactSheet : sidePanel}
       </div>
     </div>
   );

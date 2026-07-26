@@ -1,26 +1,23 @@
-import { DECOMPOSITION_LABELS } from '@/domain/constants';
 import { splitOf } from '@/domain/tree';
-import type { IssueTreeDoc } from '@/domain/types';
+import type { IssueTreeDoc, LocaleCode } from '@/domain/types';
+import { formatRelativeTime } from '@/i18n/format';
+import type { Messages } from '@/i18n/types';
 
-/** A short "kind" label for a tree — how its root decomposes, or 'Issue tree' if undecomposed. */
-export function treeKind(doc: IssueTreeDoc): string {
+/**
+ * A short "kind" label for a tree — how its root decomposes. An undecomposed
+ * root has no split type yet, and `freeform` is where the catalogue keeps the
+ * generic wording for exactly that case.
+ */
+export function treeKind(doc: IssueTreeDoc, m: Messages): string {
   const root = splitOf(doc, doc.rootId);
-  if (!root) return 'Issue tree';
-  // Drop the parenthetical from the label ("Formula (A = B + C)" → "Formula") for a compact chip.
-  return DECOMPOSITION_LABELS[root.decomposition].replace(/\s*\(.*\)$/, '');
+  return m.enums.treeKind[root?.decomposition ?? 'freeform'];
 }
 
-/** A coarse "edited 2h ago" string. `now` is injectable so it's testable. */
-export function relativeTime(ts: number, now: number = Date.now()): string {
-  const diff = Math.max(0, now - ts);
-  const min = Math.floor(diff / 60_000);
-  if (min < 1) return 'just now';
-  if (min < 60) return `${min}m ago`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}h ago`;
-  const day = Math.floor(hr / 24);
-  if (day < 30) return `${day}d ago`;
-  const mo = Math.floor(day / 30);
-  if (mo < 12) return `${mo}mo ago`;
-  return `${Math.floor(mo / 12)}y ago`;
+/**
+ * A coarse "edited 2 hours ago" for a tree card, in the reader's language.
+ * `Intl` owns the wording and the plural rules; `now` stays injectable so the
+ * cards' timestamps are testable.
+ */
+export function relativeTime(locale: LocaleCode, ts: number, now: number = Date.now()): string {
+  return formatRelativeTime(locale, ts, now);
 }

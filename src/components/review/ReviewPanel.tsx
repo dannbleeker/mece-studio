@@ -1,6 +1,8 @@
 import { type FlaggedSplit, flaggedSplits } from '@/domain/meceStatus';
 import { priorityBand, priorityScore } from '@/domain/priority';
 import type { IssueTreeDoc, NodeId } from '@/domain/types';
+import { renderMece } from '@/i18n/render';
+import { useMessages } from '@/i18n/useMessages';
 import { useStore } from '@/store';
 
 type Axis = 'ME' | 'CE';
@@ -34,9 +36,11 @@ function ReviewCard({
   onReview: () => void;
   onRemedy?: () => void;
 }) {
+  const m = useMessages();
   const priority = doc.nodes[row.nodeId]?.priority;
   const band = priority ? priorityBand(priority) : null;
-  const message = axis === 'ME' ? row.exclusive : row.exhaustive;
+  const ref = axis === 'ME' ? row.exclusive : row.exhaustive;
+  const message = ref ? renderMece(m, ref) : null;
 
   return (
     <div
@@ -52,13 +56,13 @@ function ReviewCard({
         </button>
         {band && (
           <span className={`shrink-0 rounded px-1 py-px text-[9px] uppercase ${BAND_TONE[band]}`}>
-            {band}
+            {m.enums.level[band]}
           </span>
         )}
         <button
           type="button"
           onClick={onLocate}
-          aria-label="Locate on canvas"
+          aria-label={m.review.locate}
           className="shrink-0 text-[11px] text-neutral-400 hover:text-neutral-700"
         >
           ◎
@@ -71,7 +75,7 @@ function ReviewCard({
           onClick={onReview}
           className="rounded-md border border-[#3f6fb0] px-2 py-1 font-medium text-[11px] text-[#3f6fb0] hover:bg-[#eef2f9] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3f6fb0]/40"
         >
-          Review logic →
+          {m.review.reviewLogic}
         </button>
         {axis === 'CE' && onRemedy && (
           <button
@@ -79,7 +83,7 @@ function ReviewCard({
             onClick={onRemedy}
             className="rounded-md bg-[#3f6fb0] px-2 py-1 font-medium text-[11px] text-white hover:bg-[#365f98] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3f6fb0]/40"
           >
-            {row.decomposition === 'segment' ? 'Add an “Other” bucket' : 'Add a sub-issue'}
+            {row.decomposition === 'segment' ? m.review.addOtherBucket : m.review.addSubIssue}
           </button>
         )}
       </div>
@@ -95,6 +99,7 @@ function ReviewCard({
  * and CE gaps keep the one-click remedy.
  */
 export function ReviewPanel() {
+  const m = useMessages();
   const doc = useStore((s) => s.doc);
   const selectedId = useStore((s) => s.selectedId);
   const locate = useStore((s) => s.locate);
@@ -117,20 +122,20 @@ export function ReviewPanel() {
   return (
     <aside
       className="flex h-full w-full flex-col border-neutral-200 bg-white sm:w-80 sm:shrink-0 sm:border-l"
-      aria-label="MECE review"
+      aria-label={m.review.panelLabel}
     >
       <div className="flex items-center gap-2 border-neutral-100 border-b px-4 py-3">
         <span aria-hidden="true" className="text-[#bd842c]">
           ⚠
         </span>
-        <span className="font-semibold text-[14px] text-neutral-800">MECE review</span>
+        <span className="font-semibold text-[14px] text-neutral-800">{m.review.title}</span>
         <span className="rounded-full bg-[#f8efdd] px-2 py-0.5 font-medium text-[#bd842c] text-[11px]">
-          {rows.length} open
+          {m.review.openCount({ count: rows.length })}
         </span>
         <button
           type="button"
           onClick={() => setReviewOpen(false)}
-          aria-label="Close review"
+          aria-label={m.review.close}
           className="ml-auto rounded px-1 text-neutral-400 text-sm hover:text-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3f6fb0]/40"
         >
           ✕
@@ -139,14 +144,14 @@ export function ReviewPanel() {
       <div className="min-h-0 flex-1 overflow-y-auto p-3">
         {rows.length === 0 ? (
           <p className="px-1 py-6 text-center text-[13px] text-neutral-500 leading-relaxed">
-            Every split is MECE clean — nothing to review.
+            {m.review.empty}
           </p>
         ) : (
           <>
             {overlaps.length > 0 && (
               <>
                 <h3 className="mb-1.5 font-medium text-[10px] text-neutral-400 uppercase tracking-wider">
-                  Overlaps · not mutually exclusive
+                  {m.review.overlapsHeading}
                 </h3>
                 {overlaps.map((row) => (
                   <ReviewCard
@@ -164,7 +169,7 @@ export function ReviewPanel() {
             {gaps.length > 0 && (
               <>
                 <h3 className="mt-3 mb-1.5 font-medium text-[10px] text-neutral-400 uppercase tracking-wider">
-                  Gaps · not collectively exhaustive
+                  {m.review.gapsHeading}
                 </h3>
                 {gaps.map((row) => (
                   <ReviewCard
@@ -176,7 +181,12 @@ export function ReviewPanel() {
                     onLocate={() => locate(row.nodeId)}
                     onReview={() => reviewLogic(row.nodeId)}
                     onRemedy={() =>
-                      addChild(row.nodeId, row.decomposition === 'segment' ? 'Other' : undefined)
+                      addChild(
+                        row.nodeId,
+                        row.decomposition === 'segment'
+                          ? m.content.otherBucketLabel
+                          : m.content.newIssueLabel
+                      )
                     }
                   />
                 ))}

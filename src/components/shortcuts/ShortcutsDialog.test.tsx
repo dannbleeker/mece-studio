@@ -1,18 +1,19 @@
 // @vitest-environment happy-dom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { en } from '@/i18n/locales/en';
 import { ShortcutsDialog } from './ShortcutsDialog';
 
 afterEach(cleanup);
 
 describe('ShortcutsDialog', () => {
-  it('lists shortcuts and their keys', () => {
+  it('lists every shortcut in the catalogue with its keys', () => {
     render(<ShortcutsDialog onClose={vi.fn()} />);
-    expect(screen.getByRole('dialog', { name: 'Keyboard shortcuts' })).toBeTruthy();
-    expect(screen.getByText('Add a child to the selected node and edit it')).toBeTruthy();
-    expect(screen.getByText('Remove the selected node and its subtree')).toBeTruthy();
-    expect(screen.getByText('Search the library (on the Start page)')).toBeTruthy();
-    expect(screen.getAllByText('Tab').length).toBeGreaterThan(0);
+    expect(screen.getByRole('dialog', { name: en.app.shortcuts })).toBeTruthy();
+    for (const row of en.app.shortcutRows) {
+      expect(screen.getByText(row.action)).toBeTruthy();
+      for (const key of row.keys) expect(screen.getAllByText(key).length).toBeGreaterThan(0);
+    }
   });
 
   it('closes on Escape', () => {

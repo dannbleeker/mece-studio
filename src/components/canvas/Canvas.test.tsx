@@ -2,6 +2,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { childrenOf } from '@/domain/tree';
+import { en } from '@/i18n/locales/en';
 import { downloadDataUrl, downloadText } from '@/services/download';
 import { useStore } from '@/store';
 import { Canvas } from './Canvas';
@@ -85,16 +86,16 @@ afterEach(() => {
 describe('Canvas', () => {
   it('renders the canvas toolbar (find, collapse)', () => {
     render(<Canvas />);
-    expect(screen.getByLabelText('Find nodes')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Collapse all' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Expand all' })).toBeTruthy();
+    expect(screen.getByLabelText(en.canvas.findLabel)).toBeTruthy();
+    expect(screen.getByRole('button', { name: en.canvas.collapseAll })).toBeTruthy();
+    expect(screen.getByRole('button', { name: en.canvas.expandAll })).toBeTruthy();
   });
 
   it('reports a match count while searching', async () => {
     s().setRootQuestion('Find me here');
     render(<Canvas />);
-    fireEvent.change(screen.getByLabelText('Find nodes'), { target: { value: 'find' } });
-    expect(await screen.findByText(/1 match/)).toBeTruthy();
+    fireEvent.change(screen.getByLabelText(en.canvas.findLabel), { target: { value: 'find' } });
+    expect(await screen.findByText(en.canvas.matchCount({ count: 1 }))).toBeTruthy();
   });
 
   it('collapse all / expand all drive the store', () => {
@@ -104,9 +105,9 @@ describe('Canvas', () => {
     if (!a) throw new Error('expected child A');
     s().addChild(a.id, 'A1'); // A (non-root) now has a child → collapsible
     render(<Canvas />);
-    fireEvent.click(screen.getByRole('button', { name: 'Collapse all' }));
+    fireEvent.click(screen.getByRole('button', { name: en.canvas.collapseAll }));
     expect(s().doc.nodes[a.id]?.collapsed).toBe(true);
-    fireEvent.click(screen.getByRole('button', { name: 'Expand all' }));
+    fireEvent.click(screen.getByRole('button', { name: en.canvas.expandAll }));
     expect(s().doc.nodes[a.id]?.collapsed).toBeUndefined();
   });
 
@@ -163,9 +164,9 @@ describe('Canvas', () => {
   it('zooms to matches when Enter is pressed in the search box', () => {
     s().setRootQuestion('Find me here');
     render(<Canvas />);
-    const input = screen.getByLabelText('Find nodes');
+    const input = screen.getByLabelText(en.canvas.findLabel);
     fireEvent.change(input, { target: { value: 'find' } });
     fireEvent.keyDown(input, { key: 'Enter' }); // exercises fitToMatches + stopPropagation
-    expect(screen.getByText(/1 match/)).toBeTruthy();
+    expect(screen.getByText(en.canvas.matchCount({ count: 1 }))).toBeTruthy();
   });
 });

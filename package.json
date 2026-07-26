@@ -17,6 +17,7 @@
     "knip": "node ./node_modules/knip/bin/knip.js",
     "check:bundle-size": "node ./scripts/check-bundle-size.mjs",
     "check:features": "node ./scripts/check-feature-coverage.mjs",
+    "check:i18n": "node ./scripts/check-i18n.mjs",
     "stats": "node ./scripts/build-stats.mjs",
     "docs": "node ./scripts/build-docs.mjs",
     "icons": "node ./scripts/build-icons.mjs",

@@ -46,8 +46,8 @@ describe('storage', () => {
   it('persists and restores the workspace (library + active doc)', () => {
     const doc = createDoc('Root Q', 1);
     saveDocById(doc);
-    saveLibrary({ activeId: doc.id, docs: [{ id: doc.id, name: docName(doc) }] });
-    const ws = loadWorkspace();
+    saveLibrary({ activeId: doc.id, docs: [{ id: doc.id, name: docName(doc, 'Untitled tree') }] });
+    const ws = loadWorkspace('Untitled tree');
     expect(ws?.doc?.rootId).toBe(doc.rootId);
     expect(ws?.library.docs).toHaveLength(1);
     expect(ws?.library.activeId).toBe(doc.id);
@@ -57,16 +57,16 @@ describe('storage', () => {
     const doc = createDoc('Q', 1);
     saveDocById(doc);
     saveLibrary({ activeId: 'gone', docs: [{ id: doc.id, name: 'Q' }] });
-    expect(loadWorkspace()?.library.activeId).toBe(doc.id);
+    expect(loadWorkspace('Untitled tree')?.library.activeId).toBe(doc.id);
   });
 
   it('returns null when nothing is stored', () => {
-    expect(loadWorkspace()).toBeNull();
+    expect(loadWorkspace('Untitled tree')).toBeNull();
   });
 
   it('loads an emptied library as an empty state, not a reseeded starter', () => {
     saveLibrary({ activeId: '', docs: [] });
-    const ws = loadWorkspace();
+    const ws = loadWorkspace('Untitled tree');
     expect(ws).not.toBeNull();
     expect(ws?.library.docs).toHaveLength(0);
     expect(ws?.doc).toBeNull();
@@ -75,7 +75,7 @@ describe('storage', () => {
   it('migrates a legacy single-document save into the library', () => {
     const legacy = createDoc('Legacy tree', 1);
     localStorage.setItem('mece-studio:doc:v1', JSON.stringify(legacy));
-    const ws = loadWorkspace();
+    const ws = loadWorkspace('Untitled tree');
     expect(ws?.doc?.rootId).toBe(legacy.rootId);
     expect(ws?.library.docs).toHaveLength(1);
     expect(ws?.library.docs[0]?.id).toBe(legacy.id);
@@ -105,7 +105,12 @@ describe('storage', () => {
   });
 
   it('round-trips settings and falls back to defaults for bad values', () => {
-    saveSettings({ sortSiblingsByPriority: true, strictOverlap: false, formulaTolerance: 0.02 });
+    saveSettings({
+      locale: 'en',
+      sortSiblingsByPriority: true,
+      strictOverlap: false,
+      formulaTolerance: 0.02,
+    });
     const s = loadSettings();
     expect(s.sortSiblingsByPriority).toBe(true);
     expect(s.formulaTolerance).toBe(0.02);
@@ -116,8 +121,8 @@ describe('storage', () => {
   });
 
   it('names a document by its root label, with a blank fallback', () => {
-    expect(docName(createDoc('My question', 1))).toBe('My question');
-    expect(docName(createDoc('   ', 1))).toBe('Untitled tree');
+    expect(docName(createDoc('My question', 1), 'Untitled tree')).toBe('My question');
+    expect(docName(createDoc('   ', 1), 'Untitled tree')).toBe('Untitled tree');
   });
 
   it('keeps the library and falls back to a loadable doc when the active blob is missing', () => {
@@ -134,7 +139,7 @@ describe('storage', () => {
     });
     removeDocById(a.id); // active blob gone (e.g. a swallowed quota-save)
 
-    const ws = loadWorkspace();
+    const ws = loadWorkspace('Untitled tree');
     expect(ws).not.toBeNull();
     expect(ws?.library.docs).toHaveLength(2); // library NOT wiped
     expect(ws?.doc?.id).toBe(b.id); // fell back to the loadable doc
