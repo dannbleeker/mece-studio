@@ -2,6 +2,22 @@
 
 Shipped work lives in `CHANGELOG.md`. Keep this list to OPEN items.
 
+## Picking this up cold
+
+The app was left at **v1.0.0** in a deliberately finished state — not paused
+mid-change. There is no half-built feature to find and no branch to resume.
+
+1. `pnpm install --frozen-lockfile && pnpm verify`. That is the whole health
+   check; it was last confirmed green from a clean clone at the v1.0.0 tag. If
+   it fails, the cause is drift in the toolchain or the environment, not
+   unfinished work — read `CLAUDE.md`'s environment note first (AppLocker means
+   scripts run tools in node-form and never chain with `&&`).
+2. `CLAUDE.md` is the working agreement and the map: the model decisions, the
+   language architecture, and the gate.
+3. Everything genuinely open is below. Nothing here is blocking; the largest
+   single item is translating a second locale, which the compiler will
+   enumerate for you.
+
 ## Localization
 
 The architecture is in place and English is the only locale. What's open:
