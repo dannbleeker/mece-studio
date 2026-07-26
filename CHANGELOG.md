@@ -4,7 +4,9 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+- **A CSV export can't smuggle a spreadsheet formula.** Cells were quoted per RFC 4180 but nothing stopped a label like `=HYPERLINK("http://…")` from being *evaluated* when the file opened in Excel, LibreOffice or Sheets. Trees travel — exported to JSON, imported, saved as templates — so a label is not necessarily text the exporting user typed. The three free-text columns (path, label, unit) are now prefixed so a spreadsheet reads them as text. The **amount** column is deliberately left alone: a leading `-` there is a negative number, and those cells are generated from a `number`, never from free text, so they can't carry a payload. The HTML export already escaped properly, which is what made this look like an oversight rather than a decision.
+- **A download can no longer be cancelled by its own cleanup.** `downloadText` revoked the blob URL in the same task as the anchor click, which can abort a download that hasn't started fetching. It matters precisely on the fallback path: the browsers without File System Access (Firefox, Safari) are both the ones that use it and the ones where the synchronous revoke is known to misfire. The revoke is now deferred.
 
 ## [1.0.0] — 2026-07-26
 

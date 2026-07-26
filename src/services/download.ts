@@ -23,7 +23,15 @@ export async function copyImageToClipboard(dataUrl: string): Promise<boolean> {
   }
 }
 
-/** Trigger a browser download of `text` as `filename`. */
+/**
+ * Trigger a browser download of `text` as `filename`.
+ *
+ * The object URL is revoked on a later task, not straight after `click()`:
+ * revoking synchronously can cancel a download that has not started fetching
+ * yet. That race matters most here, because this is the *fallback* path — the
+ * browsers that lack File System Access (Firefox, Safari) are the ones that
+ * take it, and the ones where the synchronous revoke is known to misfire.
+ */
 export function downloadText(filename: string, text: string, type = 'text/plain'): void {
   const url = URL.createObjectURL(new Blob([text], { type }));
   const anchor = document.createElement('a');
@@ -32,7 +40,7 @@ export function downloadText(filename: string, text: string, type = 'text/plain'
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 /** Trigger a browser download of a data URL (e.g. a generated PNG). */
