@@ -35,13 +35,23 @@ describe('downloads', () => {
   });
   afterEach(() => vi.restoreAllMocks());
 
-  it('downloadText creates a blob anchor with the filename and revokes the URL', () => {
-    downloadText('tree.json', '{}', 'application/json');
-    expect(clicked).toHaveLength(1);
-    expect(clicked[0]?.download).toBe('tree.json');
-    expect(clicked[0]?.href).toContain('blob:abc');
-    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:abc');
-    expect(document.querySelector('a')).toBeNull(); // anchor cleaned up
+  it('downloadText creates a blob anchor with the filename and revokes the URL after the click', () => {
+    vi.useFakeTimers();
+    try {
+      downloadText('tree.json', '{}', 'application/json');
+      expect(clicked).toHaveLength(1);
+      expect(clicked[0]?.download).toBe('tree.json');
+      expect(clicked[0]?.href).toContain('blob:abc');
+      expect(document.querySelector('a')).toBeNull(); // anchor cleaned up
+
+      // Revoking in the same task can cancel a download that has not started
+      // fetching yet, so it must be deferred — not merely called eventually.
+      expect(URL.revokeObjectURL).not.toHaveBeenCalled();
+      vi.runAllTimers();
+      expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:abc');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('downloadDataUrl clicks an anchor pointing at the data URL', () => {
