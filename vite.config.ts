@@ -3,9 +3,32 @@ import { fileURLToPath } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-import { defineConfig } from 'vitest/config';
+import { defineConfig, type Plugin } from 'vitest/config';
+import { DEFAULT_LOCALE } from './src/domain/types';
+import { allManifests, manifestFor } from './src/i18n/manifests';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Emit one web-app manifest per locale alongside the plugin's default.
+ *
+ * `vite-plugin-pwa` only knows how to write a single manifest, so the installed
+ * app's name and description would otherwise be frozen in one language. These
+ * sit next to it and `useDocumentLanguage` points `<link rel="manifest">` at the
+ * right one; `globPatterns` includes `webmanifest`, so they are precached and an
+ * offline install still gets its own language.
+ */
+function localeManifests(): Plugin {
+  return {
+    name: 'mece-locale-manifests',
+    apply: 'build',
+    generateBundle() {
+      for (const { fileName, source } of allManifests()) {
+        this.emitFile({ type: 'asset', fileName, source });
+      }
+    },
+  };
+}
 
 export default defineConfig({
   // base stays '/' — the app is served at the root of a custom subdomain
@@ -13,11 +36,12 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    localeManifests(),
     VitePWA({
       // 'prompt' = surface a "new version" toast rather than force-reload.
       registerType: 'prompt',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,webp,ico,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,webp,ico,woff2,webmanifest}'],
         // SPA deep links fall back to the app shell...
         navigateFallback: '/index.html',
         // ...but never rewrite the standalone pages (/user-guide.html, /notices.html,
@@ -26,28 +50,8 @@ export default defineConfig({
         // app instead of the file. (No /api/ — the app has no backend.)
         navigateFallbackDenylist: [/\.html$/, /\.(?:pdf|epub)$/],
       },
-      manifest: {
-        name: 'MECE Studio',
-        short_name: 'MECE Studio',
-        description:
-          'Build McKinsey-style issue trees with built-in MECE checking — spot overlaps and gaps as you decompose.',
-        // vite-plugin-pwa emits ONE manifest, so this is the install-time default
-        // language, not the running app's — the app re-renders in whatever locale
-        // the user has set, but the icon caption on the home screen is fixed at
-        // install. Shipping per-locale manifests would mean one build output and
-        // one `<link rel="manifest">` per locale, chosen at runtime; that is a
-        // real change and it waits until there is a second locale to justify it.
-        lang: 'en',
-        dir: 'ltr',
-        theme_color: '#3f6fb0',
-        background_color: '#ffffff',
-        display: 'standalone',
-        start_url: '/',
-        icons: [
-          { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
-          { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
-        ],
-      },
+      // The default-locale manifest; `localeManifests()` emits the rest.
+      manifest: manifestFor(DEFAULT_LOCALE),
       devOptions: { enabled: false },
     }),
   ],

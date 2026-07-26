@@ -12,8 +12,8 @@ export type LocaleCode = 'en';
 /** The locale used when nothing is persisted yet, and the fallback for unknown codes. */
 export const DEFAULT_LOCALE: LocaleCode = 'en';
 
-/** Every known locale code, for iteration (settings picker, catalogue checks). */
-const LOCALE_CODES: readonly LocaleCode[] = ['en'];
+/** Every known locale code, for iteration (the per-locale manifest build, checks). */
+export const LOCALE_CODES: readonly LocaleCode[] = ['en'];
 
 /** Narrow an untrusted string (persisted setting, imported doc) to a known locale. */
 export function asLocaleCode(value: unknown): LocaleCode | undefined {

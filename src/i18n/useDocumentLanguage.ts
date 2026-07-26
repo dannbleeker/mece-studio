@@ -8,6 +8,7 @@
  * no new wiring, only a registry entry.
  */
 import { useEffect } from 'react';
+import { manifestHref } from './manifests';
 import { localeDescriptor } from './registry';
 import { useLocale, useMessages } from './useMessages';
 
@@ -23,5 +24,10 @@ export function useDocumentLanguage(): void {
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute('content', m.documentMeta.documentDescription);
+    // Point the install manifest at this locale's copy. A browser reads the
+    // manifest at install time, so this does not rename an already-installed
+    // icon — it makes the next install land in the right language, which is as
+    // far as a static host can go.
+    document.querySelector('link[rel="manifest"]')?.setAttribute('href', manifestHref(locale));
   }, [locale, m]);
 }
