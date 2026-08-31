@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-08-24T07:29:11.743Z",
-  "commit": "daad1d0",
+  "generatedAt": "2026-08-31T13:52:22.687Z",
+  "commit": "bd4cb3e",
   "headline": {
     "linesTsJs": 22632,
     "tests": 528,
     "lineCoveragePct": 88.77,
-    "commits": 301,
-    "ageDays": 74,
+    "commits": 302,
+    "ageDays": 81,
     "trackedFiles": 292,
     "featureManualPct": 100,
     "featureBookPct": 99.2,
@@ -294,8 +294,8 @@
   },
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
-    "ageDays": 74,
-    "commits": 301,
+    "ageDays": 81,
+    "commits": 302,
     "commits7d": 0,
     "authors": [
       {
@@ -304,7 +304,7 @@
       },
       {
         "name": "github-actions[bot]",
-        "count": 107
+        "count": 108
       },
       {
         "name": "Claude",
@@ -312,8 +312,8 @@
       }
     ],
     "churn30d": {
-      "added": 7698,
-      "removed": 3273
+      "added": 76,
+      "removed": 36
     },
     "changelogEntries": 108
   }
