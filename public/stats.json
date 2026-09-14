@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-09-07T12:33:57.956Z",
-  "commit": "f389fd5",
+  "generatedAt": "2026-09-14T12:49:07.948Z",
+  "commit": "f208463",
   "headline": {
     "linesTsJs": 22632,
     "tests": 528,
     "lineCoveragePct": 88.77,
-    "commits": 303,
-    "ageDays": 88,
+    "commits": 304,
+    "ageDays": 95,
     "trackedFiles": 292,
     "featureManualPct": 100,
     "featureBookPct": 99.2,
@@ -136,45 +136,35 @@
     ],
     "churnHotspots": [
       {
+        "file": "src/Workspace.tsx",
+        "commits": 17
+      },
+      {
         "file": "src/store/index.ts",
-        "commits": 39
+        "commits": 16
       },
       {
         "file": "src/components/canvas/Canvas.tsx",
-        "commits": 28
+        "commits": 13
       },
       {
         "file": "src/domain/tree.ts",
-        "commits": 26
+        "commits": 12
       },
       {
         "file": "src/components/inspector/Inspector.tsx",
-        "commits": 26
+        "commits": 10
       },
       {
-        "file": "src/Workspace.tsx",
-        "commits": 18
-      },
-      {
-        "file": "src/components/canvas/projection.ts",
-        "commits": 17
+        "file": "src/store/store.test.ts",
+        "commits": 9
       }
     ],
     "risky": [
       {
         "file": "src/components/canvas/Canvas.tsx",
-        "commits": 28,
+        "commits": 13,
         "pct": 63.63
-      },
-      {
-        "file": "src/App.tsx",
-        "commits": 17,
-        "pct": 62.5
-      },
-      {
-        "file": "src/components/start/StartPage.tsx",
-        "commits": 9,
-        "pct": 65.38
       }
     ]
   },
@@ -294,9 +284,9 @@
   },
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
-    "ageDays": 88,
-    "commits": 303,
-    "commits7d": 1,
+    "ageDays": 95,
+    "commits": 304,
+    "commits7d": 0,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
@@ -304,7 +294,7 @@
       },
       {
         "name": "github-actions[bot]",
-        "count": 109
+        "count": 110
       },
       {
         "name": "Claude",
@@ -312,8 +302,8 @@
       }
     ],
     "churn30d": {
-      "added": 75,
-      "removed": 35
+      "added": 78,
+      "removed": 38
     },
     "changelogEntries": 108
   }
