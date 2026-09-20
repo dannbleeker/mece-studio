@@ -96,25 +96,54 @@ test('the app, its indicator and every chunk survive the network going away', as
     // has finished precaching, since that happens during install.
     await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined));
     // With `registerType: 'prompt'` there is no clientsClaim, so the first load
-    // is uncontrolled. The second one is — exactly like a user's second visit.
-    await page.reload();
-    await page.waitForFunction(() => navigator.serviceWorker.controller !== null);
+    // is uncontrolled and a reload is what hands the page over — exactly like a
+    // user's second visit. The subtlety that makes a single attempt flaky: a
+    // worker takes a document at navigation-commit time, so if the reload
+    // commits before the worker is ready to take it, THIS document has no
+    // controller and never will, and waiting on it cannot succeed however
+    // generous the timeout. Reload until one sticks instead.
+    let controlled = false;
+    for (let attempt = 0; attempt < 5 && !controlled; attempt += 1) {
+      await page.reload();
+      controlled = await page
+        .waitForFunction(() => navigator.serviceWorker.controller !== null, undefined, {
+          timeout: 5_000,
+        })
+        .then(() => true)
+        .catch(() => false);
+    }
+    expect(controlled, 'the service worker took control of the page').toBe(true);
   });
 
   await context.setOffline(true);
+
+  await test.step('the offline notice tells the user it is the network', async () => {
+    // Asserted on the *transition*, before the reload below, and that ordering is
+    // load-bearing rather than incidental.
+    //
+    // Chromium does not propagate emulated-offline into a document that is
+    // created after `setOffline`: measured under this exact setup (Chrome 151,
+    // vite preview, service-worker-served reload), `navigator.onLine` still reads
+    // `true` in the new document and no `offline` event ever fires, so the notice
+    // correctly does not render and this assertion would fail against a perfectly
+    // healthy app. A real machine with no network reports `false` at document
+    // creation, so that path is sound in production, and it is covered by
+    // useOnlineStatus's unit tests, which seed the hook from `navigator.onLine`.
+    //
+    // Going offline while the page is open is the path the emulator does drive
+    // faithfully — it fires the event — so that is what is asserted here. Do not
+    // move this below the reload without re-checking the measurement above.
+    // Matched on the notice's opening words rather than the whole sentence, so a
+    // reworded reassurance does not fail the offline test. The em dash keeps it
+    // from also matching the "Ready to use offline." precache toast.
+    await expect(page.getByRole('status').filter({ hasText: 'Offline —' })).toBeVisible();
+  });
 
   await test.step('a reload with no network still renders the app', async () => {
     await page.reload();
     // A user-visible locator, not a status code: the failure mode is the
     // browser's error page, which also "loads".
     await expect(page.getByRole('heading', { name: "What's your key question?" })).toBeVisible();
-  });
-
-  await test.step('the offline notice tells the user it is the network', async () => {
-    // Matched on the notice's opening words rather than the whole sentence, so
-    // a reworded reassurance does not fail the offline test. The em dash keeps
-    // it from also matching the "Ready to use offline." precache toast.
-    await expect(page.getByRole('status').filter({ hasText: 'Offline —' })).toBeVisible();
   });
 
   await test.step('every emitted JS chunk resolves from the precache', async () => {
