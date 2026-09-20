@@ -97,6 +97,7 @@ export function AboutDialog({ onClose }: { onClose: () => void }) {
     if (result === 'up-to-date') showToast('success', m.app.updateUpToDate);
     else if (result === 'newly-found') showToast('info', m.app.updateFound);
     else if (result === 'unsupported') showToast('info', m.app.updateUnsupported);
+    else if (result === 'check-failed') showToast('info', m.app.updateCheckFailed);
     // 'already-pending' — checkForUpdate already re-surfaced the "Refresh now" prompt.
   };
 

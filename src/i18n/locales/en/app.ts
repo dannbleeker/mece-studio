@@ -168,6 +168,8 @@ export const app = {
   updateUpToDate: "You're on the latest version.",
   updateFound: 'New version found — the refresh prompt will appear once it downloads.',
   updateUnsupported: "Update checks aren't available here (no service worker running).",
+  updateCheckFailed:
+    "Couldn't reach the network to check — you're still running the installed version.",
 
   /**
    * The licence footnote, in fragments because two licence names and the notices

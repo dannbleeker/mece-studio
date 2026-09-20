@@ -94,7 +94,13 @@ describe('checkForUpdate', () => {
     expect(await checkForUpdate(en)).toBe('up-to-date');
   });
 
-  it("returns 'unsupported' when update() throws", async () => {
+  // `update()` re-fetches the worker script over the network, so it rejects when
+  // there is no connection. This used to report 'unsupported', which the About
+  // dialog words as "no service worker running" — while the readiness panel
+  // directly below it reported the worker as active. Two contradictory claims in
+  // one dialog, and the false one was the one a user would screenshot. This test
+  // previously asserted 'unsupported', pinning the defect rather than catching it.
+  it("returns 'check-failed' when update() rejects because the network is gone", async () => {
     vi.stubGlobal('navigator', {
       serviceWorker: {
         getRegistration: async () => ({
@@ -106,6 +112,16 @@ describe('checkForUpdate', () => {
         }),
       },
     });
+    expect(await checkForUpdate(en)).toBe('check-failed');
+  });
+
+  // The two cases that genuinely mean "unsupported" must stay distinguishable
+  // from the one above, or the honest wording has nothing to attach to.
+  it("reserves 'unsupported' for a missing API and a missing registration", async () => {
+    vi.stubGlobal('navigator', {});
+    expect(await checkForUpdate(en)).toBe('unsupported');
+
+    vi.stubGlobal('navigator', { serviceWorker: { getRegistration: async () => undefined } });
     expect(await checkForUpdate(en)).toBe('unsupported');
   });
 });
