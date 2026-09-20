@@ -11,6 +11,7 @@
 import { advisories } from './en/advisories';
 import { brief } from './en/brief';
 import { canvas } from './en/canvas';
+import { diagnostics } from './en/diagnostics';
 import { exports } from './en/exports';
 import { inspector } from './en/inspector';
 import { mece } from './en/mece';
@@ -22,6 +23,7 @@ export const enEditor = {
   advisories,
   brief,
   canvas,
+  diagnostics,
   exports,
   inspector,
   mece,

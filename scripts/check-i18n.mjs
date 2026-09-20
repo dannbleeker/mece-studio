@@ -24,7 +24,7 @@ const UI_FILES = ['src/App.tsx', 'src/Workspace.tsx'];
  * neither scan above could see them, and the pseudo-locale test only renders
  * screens, not error paths. Prose can live anywhere a string can.
  */
-const CODE_ROOTS = ['src/services', 'src/domain', 'src/store', 'src/pwa', 'src/i18n'];
+const CODE_ROOTS = ['src/services', 'src/domain', 'src/store', 'src/pwa', 'src/i18n', 'src/hooks'];
 /**
  * Namespaces whose entries are keyed by a domain message code rather than by a
  * plain name — see `src/domain/messages.ts`. They are checked differently: the
@@ -424,7 +424,9 @@ for (const file of catalogueFiles()) {
   }
 }
 
-for (const file of filesUnder([...UI_ROOTS, ...UI_FILES, ...CODE_ROOTS], (f) => /\.tsx?$/.test(f))) {
+for (const file of filesUnder([...UI_ROOTS, ...UI_FILES, ...CODE_ROOTS], (f) =>
+  /\.tsx?$/.test(f)
+)) {
   if (/\.test\.tsx?$/.test(file) || file.includes(`${CATALOGUE_DIR.replace(/\//g, sep)}${sep}`)) {
     continue;
   }

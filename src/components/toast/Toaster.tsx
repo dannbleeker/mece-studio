@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { OfflineIndicator } from '@/components/offline/OfflineIndicator';
 import { useMessages } from '@/i18n/useMessages';
 import { type Toast, type ToastKind, useToastStore } from './toastStore';
 
@@ -55,15 +56,29 @@ function ToastItem({ toast }: { toast: Toast }) {
   );
 }
 
-/** Bottom-right transient notifications. Rendered once at the app root. */
+/**
+ * The app's status layer, rendered once at the root next to `<App/>` — so both
+ * halves of the app, Start and the canvas, get it without either mounting its
+ * own copy.
+ *
+ * Two things live here: the transient toasts (bottom right) and the standing
+ * offline notice (bottom left, and its own live region). They share a home
+ * rather than a stack: a toast expires, the offline notice stays for as long as
+ * the condition does, so stacking them would let a toast shove a persistent
+ * message around.
+ */
 export function Toaster() {
   const toasts = useToastStore((s) => s.toasts);
-  if (toasts.length === 0) return null;
   return (
-    <div className="fixed right-4 bottom-4 z-[100] flex flex-col gap-2" aria-live="polite">
-      {toasts.map((toast) => (
-        <ToastItem key={toast.id} toast={toast} />
-      ))}
-    </div>
+    <>
+      <OfflineIndicator />
+      {toasts.length > 0 && (
+        <div className="fixed right-4 bottom-4 z-[100] flex flex-col gap-2" aria-live="polite">
+          {toasts.map((toast) => (
+            <ToastItem key={toast.id} toast={toast} />
+          ))}
+        </div>
+      )}
+    </>
   );
 }

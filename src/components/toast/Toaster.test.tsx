@@ -28,8 +28,15 @@ describe('Toaster', () => {
     expect(useToastStore.getState().toasts).toHaveLength(0);
   });
 
-  it('renders nothing when there are no toasts', () => {
-    const { container } = render(<Toaster />);
-    expect(container.firstChild).toBeNull();
+  it('renders no toast stack when there are no toasts', () => {
+    render(<Toaster />);
+    expect(screen.queryByRole('button', { name: en.app.dismissToast })).toBeNull();
+  });
+
+  // The status layer also carries the offline notice, which mounts its live
+  // region up front (empty) so the notice is announced when it appears.
+  it('mounts the offline live region, silent while online', () => {
+    render(<Toaster />);
+    expect(screen.getByRole('status').textContent).toBe('');
   });
 });
