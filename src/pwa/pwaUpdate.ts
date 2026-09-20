@@ -44,7 +44,12 @@ export const initPwaUpdateToast = (m: CoreMessages): void => {
  *                      onNeedRefresh hook will prompt when install completes
  *  - 'up-to-date'      check completed, no new worker
  */
-export type UpdateCheckResult = 'unsupported' | 'already-pending' | 'newly-found' | 'up-to-date';
+export type UpdateCheckResult =
+  | 'unsupported'
+  | 'check-failed'
+  | 'already-pending'
+  | 'newly-found'
+  | 'up-to-date';
 
 /** Force a SW update check (the browser otherwise checks on each load + ~24h). */
 export const checkForUpdate = async (m: CoreMessages): Promise<UpdateCheckResult> => {
@@ -57,10 +62,17 @@ export const checkForUpdate = async (m: CoreMessages): Promise<UpdateCheckResult
     showUpdateAvailableToast(m);
     return 'already-pending';
   }
+  // Offline, or a captive portal: `update()` re-fetches the worker script over
+  // the network, so it rejects with no connection. That is NOT 'unsupported' —
+  // a registration was resolved two lines above, so a worker provably exists and
+  // is the very thing serving this page. Reporting it as "no service worker
+  // running" made the toast contradict the readiness panel directly below it,
+  // and pointed a user at reinstalling or clearing site data — which would take
+  // their locally stored trees with it.
   try {
     await reg.update();
   } catch {
-    return 'unsupported';
+    return 'check-failed';
   }
   if (reg.installing || reg.waiting) return 'newly-found';
   return 'up-to-date';

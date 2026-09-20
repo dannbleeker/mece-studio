@@ -81,8 +81,16 @@ for (const p of PAGES) {
 }
 
 // Copy the built book artifacts into public/ so they ship to the site root
-// (/Issue-Trees-with-MECE-Studio.pdf / .epub), get cached offline, and can be
-// linked from the About dialog. Skipped until `pnpm book` has produced them.
+// (/Issue-Trees-with-MECE-Studio.pdf / .epub) and can be linked from the About
+// dialog. Skipped until `pnpm book` has produced them.
+//
+// They are deliberately NOT precached: `globPatterns` excludes pdf/epub, so the
+// install-time precache stays at ~0.59 MiB. Workbox precaching is all-or-nothing
+// — one failed request rejects the whole install and the worker never activates,
+// leaving the origin with no cache at all — so a multi-MiB artifact on the
+// install-critical path buys offline reading at the cost of the app opening
+// offline at all. If offline book access is ever wanted it belongs in a
+// `runtimeCaching` CacheFirst rule, cached on first open.
 for (const ext of ['pdf', 'epub']) {
   const src = `docs/guide/${BOOK_SLUG}.${ext}`;
   if (existsSync(src)) {

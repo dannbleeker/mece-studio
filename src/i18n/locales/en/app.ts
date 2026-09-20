@@ -168,6 +168,8 @@ export const app = {
   updateUpToDate: "You're on the latest version.",
   updateFound: 'New version found — the refresh prompt will appear once it downloads.',
   updateUnsupported: "Update checks aren't available here (no service worker running).",
+  updateCheckFailed:
+    "Couldn't reach the network to check — you're still running the installed version.",
 
   /**
    * The licence footnote, in fragments because two licence names and the notices
@@ -191,4 +193,13 @@ export const app = {
   updateAvailable: 'A new version is available.',
   refreshNow: 'Refresh now',
   offlineReady: 'Ready to use offline.',
+
+  /**
+   * The standing notice while the browser reports no connection. Core wording,
+   * not editor: it is rendered at the app root, so it shows on the Start page
+   * as readily as on the canvas. Reassuring on purpose — the app is local-first,
+   * so losing the network changes nothing, and the notice exists to say that a
+   * failure the user hits next is the connection rather than MECE Studio.
+   */
+  offlineNotice: 'Offline — everything still works, and your trees are saved on this device.',
 };

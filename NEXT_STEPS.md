@@ -51,6 +51,28 @@ Reviewed and deliberately left out:
 - **Snapshots / versioning** (review item F12).
 - **Bulk multi-node re-parent** (drag re-parents one node at a time).
 
+## Offline / PWA
+
+- **The book isn't available offline.** `Issue-Trees-with-MECE-Studio.pdf` (483 KB) and
+  `.epub` (82 KB) ship to the site root and are linked from About and the Start
+  page, but they are deliberately not precached — `globPatterns` excludes
+  pdf/epub so the install-time precache stays at ~0.59 MiB. Workbox precaching is
+  all-or-nothing, so a multi-MiB artifact on the install path risks the worker
+  never activating at all, which is a far worse failure than a book that needs a
+  connection. If offline reading is wanted, add a `runtimeCaching` **CacheFirst**
+  rule on `/\.(?:pdf|epub)$/` so it caches on first open — never a `globPatterns`
+  entry. (TP Studio had exactly this defect: 5.29 MiB of book inside a 5.94 MiB
+  install precache.)
+- **`e2e/offline.spec.ts` has not been executed in this environment.** The
+  container's pre-installed Chromium doesn't match the pinned `@playwright/test`,
+  so the spec is unrun locally; the behaviour it asserts *was* verified
+  independently against a real browser and the production build. CI's e2e job is
+  authoritative — confirm it green on the first run.
+- **`repairRequested` is computed but not shown.** `checkOfflineReadiness()`
+  reports whether it drove a reinstall this session; the About panel shows four
+  rows and not that one. A fifth row would be cheap if the self-heal ever needs
+  observing in the field.
+
 ## Tooling backlog
 
 - **Extend the Playwright e2e suite** as new UI lands — coverage is already broad (see `e2e/`; runs in CI).
