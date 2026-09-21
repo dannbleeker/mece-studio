@@ -134,17 +134,31 @@ function WorkspaceShell() {
   };
 
   // Save: write back to the bound file if we have one, else prompt for a location.
+  // A cancelled picker already resolves null inside the service, so anything that
+  // throws out here is a genuine write failure — a full disk, a revoked permission,
+  // a handle whose file moved. Unhandled, it was an unhandled rejection and nothing
+  // else: the menu closed, no error appeared, and the user believed they had saved.
+  // `onOpenFile` above has always reported its failures; saving is the direction
+  // where staying silent actually costs data.
   const onSaveJson = async () => {
     const id = doc.id;
-    const existing = await getFileHandle(id);
-    const handle = await saveTreeFile(doc, existing, m.app.treeFileTypeLabel);
-    if (handle && handle !== existing) await setFileHandle(id, handle);
+    try {
+      const existing = await getFileHandle(id);
+      const handle = await saveTreeFile(doc, existing, m.app.treeFileTypeLabel);
+      if (handle && handle !== existing) await setFileHandle(id, handle);
+    } catch {
+      window.alert(m.app.saveFileFailed);
+    }
   };
 
   // Save As: always prompt for a new location, then bind to it.
   const onSaveAs = async () => {
-    const handle = await saveTreeFileAs(doc, m.app.treeFileTypeLabel);
-    if (handle) await setFileHandle(doc.id, handle);
+    try {
+      const handle = await saveTreeFileAs(doc, m.app.treeFileTypeLabel);
+      if (handle) await setFileHandle(doc.id, handle);
+    } catch {
+      window.alert(m.app.saveFileFailed);
+    }
   };
 
   const doDelete = () => {

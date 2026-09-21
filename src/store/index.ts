@@ -417,11 +417,32 @@ export const useStore = create<AppState>((set, get) => {
         // the first remaining library tree.
         if (docs.length > 0) {
           const nextId = tabs[0] ?? docs[0]?.id ?? '';
-          return activate(
-            recomputeMece(loadDocById(nextId) ?? freshDoc(opts, s.settings), opts),
-            docs,
-            tabs
-          );
+          const next = loadDocById(nextId);
+          if (next) return activate(recomputeMece(next, opts), docs, tabs);
+          // The next tree could not be read back — evicted, a write that hit quota,
+          // or a browser handing us no localStorage at all. The old fallback opened
+          // a fabricated blank doc while passing the UNCHANGED library to `activate`,
+          // which then persisted an `activeId` naming a document no entry listed:
+          // the next reload silently fell back to the first entry and everything
+          // typed into that blank tree was stranded in a blob nothing pointed at.
+          // Go to Start instead — the same shape the last-tree branch below uses.
+          // It strands nothing, invents no tree, and leaves the remaining trees one
+          // click away. (Listing the blank doc would be the other repair, but on a
+          // profile with no storage at all every delete would then breed a phantom.)
+          saveLibrary({ activeId: '', docs });
+          saveOpenTabs(tabs);
+          return {
+            doc: freshDoc(opts, s.settings),
+            library: docs,
+            activeId: '',
+            openTabs: tabs,
+            past: [],
+            future: [],
+            selectedId: null,
+            selectedIds: [],
+            view: 'start' as const,
+            reviewOpen: false,
+          };
         }
         // Deleting the LAST tree: the library is now empty. Persist it empty and
         // return to Start (the empty gallery) — don't reseed a starter, which

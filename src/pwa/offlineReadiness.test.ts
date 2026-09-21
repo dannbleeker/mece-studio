@@ -153,4 +153,73 @@ describe('checkOfflineReadiness', () => {
     await expect(checkOfflineReadiness()).resolves.toMatchObject({ repairRequested: true });
     expect(update).toHaveBeenCalledTimes(1);
   });
+
+  // The repair calls registration.update(), which only reinstalls when the fetched
+  // sw.js differs byte-for-byte from the running one. On an origin that has not
+  // redeployed since the cache was wiped it completes having done nothing — the
+  // exact shape of the damage the repair targets — so the reading must come from
+  // a second look at the cache, not from the assumption that the attempt worked.
+  it('reports the precache as still empty when the repair changes nothing', async () => {
+    const { reg, update } = activeRegistration();
+    stubEnv({ registration: reg, caches: cachesWith(0) });
+    const result = await checkOfflineReadiness();
+    expect(update).toHaveBeenCalledTimes(1);
+    expect(result.repairRequested).toBe(true);
+    expect(result.precacheEntries).toBe(0);
+    expect(result.ready).toBe(false);
+  });
+
+  it('reports the repopulated count when the repair does reinstall', async () => {
+    let entries = 0;
+    const update = vi.fn(async () => {
+      entries = 26; // a new build landed, so this update really did reinstall
+    });
+    vi.stubGlobal('navigator', {
+      onLine: true,
+      serviceWorker: { getRegistration: async () => ({ active: {}, update }) },
+    });
+    vi.stubGlobal('caches', {
+      keys: async () => ['workbox-precache-v2-https://mece.test/'],
+      open: async () => ({
+        keys: async () => Array.from({ length: entries }, (_, i) => `/asset-${i}`),
+      }),
+    });
+    const result = await checkOfflineReadiness();
+    expect(result.precacheEntries).toBe(26);
+    expect(result.ready).toBe(true);
+    expect(result.repairRequested).toBe(true);
+  });
+
+  // A profile that blocks site data hands back throwing getters rather than
+  // undefined, so the `typeof` guards themselves threw. That rejected the whole
+  // check — an unhandled rejection at boot, and an About panel frozen on
+  // "Checking…", which is the unactionable non-answer the panel exists to replace.
+  it('survives a `caches` accessor that throws', async () => {
+    vi.stubGlobal('navigator', {
+      onLine: true,
+      serviceWorker: { getRegistration: async () => ({ active: {} }) },
+    });
+    Object.defineProperty(globalThis, 'caches', {
+      configurable: true,
+      get() {
+        throw new Error('blocked by policy');
+      },
+    });
+    const result = await checkOfflineReadiness();
+    expect(result.worker).toBe('active');
+    expect(result.precacheEntries).toBeNull(); // "could not tell", not "empty"
+    expect(result.ready).toBe(false);
+    Reflect.deleteProperty(globalThis, 'caches');
+  });
+
+  it('survives a `navigator.serviceWorker` accessor that throws', async () => {
+    vi.stubGlobal('caches', cachesWith(26));
+    vi.stubGlobal('navigator', {
+      onLine: true,
+      get serviceWorker(): never {
+        throw new Error('blocked by policy');
+      },
+    });
+    expect((await checkOfflineReadiness()).worker).toBe('unsupported');
+  });
 });

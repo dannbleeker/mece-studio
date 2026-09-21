@@ -46,6 +46,18 @@ export const diagnostics = {
       one: `No — only ${num(count)} file cached, so the app shell is incomplete`,
       other: `No — only ${num(count)} files cached, so the app shell is incomplete`,
     }),
+  /**
+   * Files cached, but nothing serving them. Split out because the "incomplete
+   * shell" wording above blamed the cache for the service worker's absence — over
+   * a *complete* precache it read "only 26 files cached, so the app shell is
+   * incomplete", contradicting the row directly above it. The count stays in the
+   * sentence: it is the evidence that the cache is not the problem here.
+   */
+  offlineReadyNoWorker: ({ count }: { count: number }) =>
+    plur(count, {
+      one: `Not yet — ${num(count)} file cached, but no service worker is serving them`,
+      other: `Not yet — ${num(count)} files cached, but no service worker is serving them`,
+    }),
   offlineReadyUnknown: 'Cannot tell — cache storage could not be read',
 
   /**
