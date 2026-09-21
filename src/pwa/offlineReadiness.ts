@@ -44,8 +44,13 @@ let repairAttempted = false;
  * these calls, and a rejection must not be read as a wiped cache.
  */
 const countPrecacheEntries = async (): Promise<number | null> => {
-  if (typeof caches === 'undefined' || typeof caches?.keys !== 'function') return null;
   try {
+    // `typeof caches` is inside the try on purpose: on a profile that blocks site
+    // data the binding is a throwing getter, not `undefined`, so the guard itself
+    // threw — rejecting this whole check and freezing the About panel on
+    // "Checking…" forever, with an unhandled rejection at boot. The hook's own
+    // contract is that every read swallows its failure; this is that contract.
+    if (typeof caches === 'undefined' || typeof caches?.keys !== 'function') return null;
     let total = 0;
     for (const name of await caches.keys()) {
       if (!name.includes(PRECACHE_NAME_TOKEN)) continue;
@@ -77,10 +82,27 @@ const countPrecacheEntries = async (): Promise<number | null> => {
  * the cache (null means the API refused us, not that the cache is gone), and we
  * must be online. It runs at most once per session either way.
  *
+ * What the repair cannot do: `update()` reinstalls only when the fetched `sw.js`
+ * differs byte-for-byte from the running one. If the origin has not redeployed
+ * since the cache was lost, the check finds an identical script, aborts, and
+ * repopulates nothing. That is why the count is re-read afterwards instead of
+ * assumed — the caller is told what the cache actually holds now, not what the
+ * attempt hoped for. A stronger repair (unregister and re-register) is possible
+ * but would tear down a working worker to fix a cache, so it is not taken
+ * unprompted.
+ *
  * Returns data only — no strings, no toasts. The About panel owns the wording.
  */
 export const checkOfflineReadiness = async (): Promise<OfflineReadiness> => {
-  const sw = typeof navigator === 'undefined' ? undefined : navigator.serviceWorker;
+  // Same throwing-accessor hazard as `caches` above: reading `navigator.serviceWorker`
+  // can throw outright rather than yield undefined, and an unreadable API is
+  // 'unsupported', not a crash.
+  let sw: ServiceWorkerContainer | undefined;
+  try {
+    sw = typeof navigator === 'undefined' ? undefined : navigator.serviceWorker;
+  } catch {
+    sw = undefined;
+  }
   if (typeof sw?.getRegistration !== 'function') {
     return { worker: 'unsupported', precacheEntries: null, ready: false, repairRequested: false };
   }
@@ -105,17 +127,33 @@ export const checkOfflineReadiness = async (): Promise<OfflineReadiness> => {
   const repairRequested =
     worker === 'active' && precacheEntries !== null && !populated && !repairAttempted && online;
 
-  if (repairRequested) {
-    repairAttempted = true;
-    try {
-      await registration.update();
-    } catch {
-      // Nothing to fall back to — the next boot gets one more attempt, and the
-      // About panel reports the state either way.
-    }
+  if (!repairRequested) {
+    return { worker, precacheEntries, ready: worker === 'active' && populated, repairRequested };
   }
 
-  return { worker, precacheEntries, ready: worker === 'active' && populated, repairRequested };
+  repairAttempted = true;
+  try {
+    await registration.update();
+  } catch {
+    // Nothing to fall back to — the next boot gets one more attempt, and the
+    // readings below report the state either way.
+  }
+
+  // Re-read rather than assume. `update()` only reinstalls when the fetched
+  // `sw.js` differs byte-for-byte from the running one, so on an origin that has
+  // not redeployed since the precache was wiped it completes having done nothing
+  // at all — the exact shape of the damage this repair targets. Returning the
+  // pre-repair count would then have the panel describe a cache that the repair
+  // silently failed to restore. The second count costs one Cache Storage sweep
+  // and is the only way to say which of the two happened.
+  const afterEntries = await countPrecacheEntries();
+  const afterPopulated = afterEntries !== null && afterEntries >= MIN_HEALTHY_PRECACHE_ENTRIES;
+  return {
+    worker,
+    precacheEntries: afterEntries,
+    ready: worker === 'active' && afterPopulated,
+    repairRequested,
+  };
 };
 
 // Test-only: clear the once-per-session repair guard.

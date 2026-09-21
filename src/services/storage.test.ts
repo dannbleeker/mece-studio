@@ -86,6 +86,34 @@ describe('storage', () => {
     expect(loadDocById(legacy.id)?.rootId).toBe(legacy.rootId); // re-saved under its own key
   });
 
+  // The migration copies the legacy tree to its new key and then deletes the old
+  // one. `writeJson` swallows a quota failure, so deleting unconditionally meant a
+  // full localStorage erased the user's only tree: the copy never written, the
+  // original removed, nothing left to recover from. A failed copy must leave the
+  // legacy key exactly where it is so the next run can try again.
+  it('keeps the legacy save when the migrating copy cannot be written', () => {
+    const legacy = createDoc('Legacy tree', 1);
+    const base = makeLocalStorage();
+    vi.stubGlobal('localStorage', {
+      ...base,
+      getItem: (k: string) => base.getItem(k),
+      removeItem: (k: string) => base.removeItem(k),
+      setItem: (k: string, v: string) => {
+        // Everything writes except the copy itself — the shape of a quota failure
+        // that hits when the new key would push the origin over its budget.
+        if (k.startsWith('mece-studio:doc:') && k !== 'mece-studio:doc:v1') {
+          throw new DOMException('quota', 'QuotaExceededError');
+        }
+        base.setItem(k, v);
+      },
+    });
+    localStorage.setItem('mece-studio:doc:v1', JSON.stringify(legacy));
+
+    loadWorkspace('Untitled');
+
+    expect(localStorage.getItem('mece-studio:doc:v1')).not.toBeNull();
+  });
+
   it('parses a valid document and rejects junk', () => {
     const doc = createDoc('Q', 1);
     expect(parseDoc(JSON.stringify(doc))?.rootId).toBe(doc.rootId);

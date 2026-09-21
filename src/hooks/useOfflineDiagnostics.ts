@@ -79,7 +79,13 @@ export function useOfflineDiagnostics(): OfflineDiagnostics {
     let live = true;
     void (async () => {
       const [readiness, persisted, usageBytes] = await Promise.all([
-        checkOfflineReadiness(),
+        // The readiness check guards its own reads, but a guard is a claim and this
+        // panel is the one surface that must never make one it cannot keep: if it
+        // ever rejects, `settled` would stay false and every row would read
+        // "Checking…" forever — the unactionable non-answer this panel exists to
+        // replace. Falling back to the unread readiness reports "unsupported",
+        // which is at least a diagnosis the user can screenshot.
+        checkOfflineReadiness().catch(() => UNREAD.readiness),
         readPersisted(),
         readUsage(),
       ]);

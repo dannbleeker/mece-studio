@@ -63,11 +63,22 @@ Reviewed and deliberately left out:
   rule on `/\.(?:pdf|epub)$/` so it caches on first open — never a `globPatterns`
   entry. (TP Studio had exactly this defect: 5.29 MiB of book inside a 5.94 MiB
   install precache.)
-- **`e2e/offline.spec.ts` has not been executed in this environment.** The
-  container's pre-installed Chromium doesn't match the pinned `@playwright/test`,
-  so the spec is unrun locally; the behaviour it asserts *was* verified
-  independently against a real browser and the production build. CI's e2e job is
-  authoritative — confirm it green on the first run.
+- **Playwright's pinned browser is still absent from this container.** The
+  pre-installed Chromium doesn't match the version `@playwright/test` expects, so
+  `pnpm test:e2e` fails at launch on its own. Pointing `use.launchOptions.executablePath`
+  at an installed Chromium runs the suite fine (`offline.spec.ts` and `about.spec.ts`
+  both pass that way), but that is a local override, not something to commit —
+  CI's e2e job runs the correct pinned browser and stays authoritative.
+- **Two open windows clobber each other's library index.** Every `saveLibrary`
+  call writes the whole index from the calling window's in-memory copy, and
+  nothing listens for the `storage` event, so a second window can delete trees
+  the first created (orphaning their blobs) or resurrect ones it deleted. This is
+  confirmed by reading, not hypothetical — but it wants cross-window
+  coordination, not a patch: merging on write still loses a race, and a partial
+  fix to a data-loss bug buys false confidence, which is worse than the known
+  bug. The shape worth building is a `storage`-event listener that reconciles the
+  library, with the write path made merge-based rather than replace-based, landed
+  as a prep commit that pins today's single-window behaviour first.
 - **`repairRequested` is computed but not shown.** `checkOfflineReadiness()`
   reports whether it drove a reinstall this session; the About panel shows four
   rows and not that one. A fifth row would be cheap if the self-heal ever needs

@@ -104,6 +104,9 @@ export const app = {
   deleteTree: 'Delete tree',
   /** Fallback alert when a chosen file could not be read at all. */
   openFileFailed: 'Could not open that file.',
+  // Says the tree is still here, because the failure the user needs to act on is
+  // "that copy does not exist", not "something went wrong".
+  saveFileFailed: 'Could not save that file. Your tree is still open and saved in this browser.',
   /** File-type row in the OS open/save dialog. */
   treeFileTypeLabel: 'MECE Studio tree',
   /** The chosen file parsed, but isn't a MECE Studio tree. */
@@ -168,8 +171,11 @@ export const app = {
   updateUpToDate: "You're on the latest version.",
   updateFound: 'New version found — the refresh prompt will appear once it downloads.',
   updateUnsupported: "Update checks aren't available here (no service worker running).",
-  updateCheckFailed:
-    "Couldn't reach the network to check — you're still running the installed version.",
+  // Two causes, one sentence: `update()` needs the network, and a managed profile
+  // can refuse the registration lookup. Naming the network alone would be a wrong
+  // diagnosis for the second, and the honest half — that the installed version is
+  // still there and still works — is the part that matters either way.
+  updateCheckFailed: "Couldn't check for updates — you're still running the installed version.",
 
   /**
    * The licence footnote, in fragments because two licence names and the notices

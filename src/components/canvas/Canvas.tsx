@@ -13,6 +13,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { showToast } from '@/components/toast/toastStore';
 import { NODE_HEIGHT, NODE_WIDTH } from '@/domain/constants';
 import { flaggedSplits } from '@/domain/meceStatus';
 import { childrenOf, descendantIds, parentOf } from '@/domain/tree';
@@ -345,7 +346,10 @@ function Flow() {
         await saveTreePdf(image, 'mece-tree.pdf', exportHeader(useStore.getState().doc, m, locale));
       }
     };
-    void run();
+    // Exporters are lazy chunks: offline, an un-precached one rejects on import and
+    // this whole effect used to swallow it — the menu item did nothing, no error,
+    // no file, nothing in the UI to distinguish "failed" from "still working".
+    void run().catch(() => showToast('error', m.canvas.exportFailed));
     requestExport(null);
   }, [exportRequest, getNodes, getEdges, requestExport, m, locale]);
 

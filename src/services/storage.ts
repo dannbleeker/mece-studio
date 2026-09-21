@@ -109,13 +109,24 @@ function readJson<T>(key: string, guard: (v: unknown) => v is T): T | null {
   }
 }
 
-function writeJson(key: string, value: unknown): void {
+/**
+ * Persist `value` under `key`. Returns whether the write actually landed.
+ *
+ * Most callers legitimately ignore the result — a failed autosave is non-fatal
+ * and the next keystroke retries. It is returned for the one caller that must
+ * not ignore it: a migration that deletes the original after copying it. Quota
+ * is the realistic failure here, and a quota error arrives exactly when the
+ * user has the most to lose.
+ */
+function writeJson(key: string, value: unknown): boolean {
   const s = storage();
-  if (!s) return;
+  if (!s) return false;
   try {
     s.setItem(key, JSON.stringify(value));
+    return true;
   } catch {
     // Quota / serialization errors are non-fatal for a local-first app.
+    return false;
   }
 }
 
@@ -142,8 +153,9 @@ export function loadDocById(id: string): IssueTreeDoc | null {
   return readDoc(docKey(id));
 }
 
-export function saveDocById(doc: IssueTreeDoc): void {
-  writeJson(docKey(doc.id), doc);
+/** Persist one document. Returns false when the write was refused (quota, no storage). */
+export function saveDocById(doc: IssueTreeDoc): boolean {
+  return writeJson(docKey(doc.id), doc);
 }
 
 export function removeDocById(id: string): void {
@@ -154,8 +166,8 @@ function loadLibrary(): Library | null {
   return readJson(LIBRARY_KEY, isLibrary);
 }
 
-export function saveLibrary(library: Library): void {
-  writeJson(LIBRARY_KEY, library);
+export function saveLibrary(library: Library): boolean {
+  return writeJson(LIBRARY_KEY, library);
 }
 
 /**
@@ -180,13 +192,19 @@ export function loadWorkspace(
   if (!library) {
     const legacy = readDoc(LEGACY_DOC_KEY);
     if (legacy) {
-      saveDocById(legacy);
-      s.removeItem(LEGACY_DOC_KEY);
-      library = {
-        activeId: legacy.id,
-        docs: [{ id: legacy.id, name: docName(legacy, untitledFallback) }],
-      };
-      saveLibrary(library);
+      // Copy, THEN delete — and only if the copy landed. `saveDocById` swallows a
+      // quota failure, so deleting unconditionally meant a full localStorage could
+      // erase the user's only tree: the copy never written, the original removed.
+      // On a failed copy the legacy key stays put and the next run migrates again,
+      // which is the harmless outcome; the alternative is not.
+      if (saveDocById(legacy)) {
+        s.removeItem(LEGACY_DOC_KEY);
+        library = {
+          activeId: legacy.id,
+          docs: [{ id: legacy.id, name: docName(legacy, untitledFallback) }],
+        };
+        saveLibrary(library);
+      }
     }
   }
   if (!library) return null; // never used → caller seeds the onboarding starter

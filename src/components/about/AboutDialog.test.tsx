@@ -86,6 +86,27 @@ describe('AboutDialog', () => {
       expect(screen.getByText(en.diagnostics.persistedNo)).toBeTruthy();
     });
 
+    // A worker still installing over a COMPLETE precache used to render as
+    // "only 26 files cached, so the app shell is incomplete" — blaming the cache
+    // for the worker's absence, and contradicting the row directly above it, which
+    // said "Installing…". The panel's whole value is that a screenshot of it is a
+    // diagnosis, so a wrong diagnosis is the defect, not a wording nit.
+    it('blames the worker, not the cache, when a full precache has nothing serving it', async () => {
+      Object.defineProperty(navigator, 'serviceWorker', {
+        configurable: true,
+        value: { getRegistration: async () => ({ active: null, installing: {} }) },
+      });
+      vi.stubGlobal('caches', {
+        keys: async () => ['workbox-precache-v2-https://mece'],
+        open: async () => ({ keys: async () => Array.from({ length: 26 }, () => ({})) }),
+      });
+
+      render(<AboutDialog onClose={vi.fn()} />);
+      await waitFor(() => expect(screen.getByText(en.diagnostics.swPending)).toBeTruthy());
+      expect(screen.getByText(en.diagnostics.offlineReadyNoWorker({ count: 26 }))).toBeTruthy();
+      expect(screen.queryByText(en.diagnostics.offlineReadyPartial({ count: 26 }))).toBeNull();
+    });
+
     it('distinguishes "cannot tell" from "no" when the APIs are unavailable', async () => {
       render(<AboutDialog onClose={vi.fn()} />);
       await waitFor(() => expect(screen.getByText(en.diagnostics.swUnsupported)).toBeTruthy());

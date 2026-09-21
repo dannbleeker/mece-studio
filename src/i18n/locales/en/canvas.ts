@@ -46,6 +46,14 @@ export const canvas = {
   /** Stands in for the root's question when a tree hasn't got one. */
   fallbackTitle: 'Issue tree',
 
+  /**
+   * An export that threw. Every exporter is a lazily-imported chunk, so the
+   * realistic cause is a chunk that is not in the precache and not reachable —
+   * i.e. offline. The wording names the retry that actually works rather than
+   * the exception, and does not promise which one it was.
+   */
+  exportFailed: 'Could not finish that export. If you are offline, try again once you reconnect.',
+
   /** Top-left toolbar: search, and collapse / expand the whole tree. */
   findPlaceholder: 'Find…',
   findLabel: 'Find nodes',

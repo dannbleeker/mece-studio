@@ -476,4 +476,30 @@ describe('store — history reconciles selection', () => {
     const afterRedo = s().selectedId;
     expect(afterRedo === null || s().doc.nodes[afterRedo] !== undefined).toBe(true);
   });
+
+  // Deleting the active tree when the NEXT tree's blob cannot be read back (evicted,
+  // a write that hit quota, or a browser handing us no localStorage at all). The old
+  // fallback activated a fabricated blank doc while persisting the unchanged library,
+  // leaving `activeId` pointing at a document no entry listed: on reload the app fell
+  // back to the first entry and everything typed into that blank tree was stranded in
+  // a blob nothing referenced. Start is the honest destination — nothing invented,
+  // nothing stranded, the remaining trees one click away.
+  it('falls back to Start, not an unlisted document, when the next tree cannot be loaded', () => {
+    s().newDoc();
+    const before = s().library.length;
+    expect(before).toBeGreaterThan(1);
+    const active = s().activeId;
+    // Wipe the blob of every tree we would fall back to, leaving their library
+    // entries in place — exactly what a partial eviction leaves behind.
+    for (const e of s().library)
+      if (e.id !== active) localStorage.removeItem(`mece-studio:doc:${e.id}`);
+
+    s().deleteDoc(active);
+
+    expect(s().library).toHaveLength(before - 1);
+    expect(s().view).toBe('start');
+    // The real defect: an active id naming a document the library does not list.
+    expect(s().activeId).toBe('');
+    expect(s().library.some((e) => e.id === s().doc.id)).toBe(false);
+  });
 });

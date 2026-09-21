@@ -29,10 +29,15 @@ function serviceWorkerWord(d: OfflineDiagnostics, m: EditorMessages): string {
 }
 
 function offlineReadyWord(d: OfflineDiagnostics, m: EditorMessages): string {
-  const { precacheEntries, ready } = d.readiness;
+  const { precacheEntries, ready, worker } = d.readiness;
   if (precacheEntries === null) return m.diagnostics.offlineReadyUnknown;
   if (ready) return m.diagnostics.offlineReadyYes({ count: precacheEntries });
   if (precacheEntries === 0) return m.diagnostics.offlineReadyEmpty;
+  // Cached files exist but `ready` is false, so one of the two halves is missing.
+  // When it is the worker, say that: a count of 26 with the shell called
+  // "incomplete" is a false diagnosis, and it contradicts the service-worker row
+  // immediately above.
+  if (worker !== 'active') return m.diagnostics.offlineReadyNoWorker({ count: precacheEntries });
   return m.diagnostics.offlineReadyPartial({ count: precacheEntries });
 }
 
