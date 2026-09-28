@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-09-21T12:49:53.314Z",
-  "commit": "6970802",
+  "generatedAt": "2026-09-28T13:56:48.529Z",
+  "commit": "9d97b0d",
   "headline": {
     "linesTsJs": 24370,
     "tests": 587,
     "lineCoveragePct": 89.22,
-    "commits": 314,
-    "ageDays": 102,
+    "commits": 315,
+    "ageDays": 109,
     "trackedFiles": 305,
     "featureManualPct": 100,
     "featureBookPct": 99.2,
@@ -136,35 +136,40 @@
     ],
     "churnHotspots": [
       {
-        "file": "src/Workspace.tsx",
-        "commits": 18
-      },
-      {
         "file": "src/store/index.ts",
-        "commits": 16
-      },
-      {
-        "file": "src/components/canvas/Canvas.tsx",
         "commits": 14
       },
       {
-        "file": "src/domain/tree.ts",
+        "file": "src/Workspace.tsx",
         "commits": 12
+      },
+      {
+        "file": "src/components/canvas/Canvas.tsx",
+        "commits": 12
+      },
+      {
+        "file": "src/domain/tree.ts",
+        "commits": 11
       },
       {
         "file": "src/components/inspector/Inspector.tsx",
         "commits": 10
       },
       {
-        "file": "src/services/storage.ts",
-        "commits": 8
+        "file": "src/store/store.test.ts",
+        "commits": 7
       }
     ],
     "risky": [
       {
         "file": "src/components/canvas/Canvas.tsx",
-        "commits": 14,
+        "commits": 12,
         "pct": 63.63
+      },
+      {
+        "file": "src/components/start/StartPage.tsx",
+        "commits": 5,
+        "pct": 65.38
       }
     ]
   },
@@ -284,9 +289,9 @@
   },
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
-    "ageDays": 102,
-    "commits": 314,
-    "commits7d": 9,
+    "ageDays": 109,
+    "commits": 315,
+    "commits7d": 0,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
@@ -294,7 +299,7 @@
       },
       {
         "name": "github-actions[bot]",
-        "count": 113
+        "count": 114
       },
       {
         "name": "Claude",
@@ -302,8 +307,8 @@
       }
     ],
     "churn30d": {
-      "added": 2066,
-      "removed": 239
+      "added": 2053,
+      "removed": 236
     },
     "changelogEntries": 123
   }
