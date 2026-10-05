@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-09-28T13:56:48.529Z",
-  "commit": "9d97b0d",
+  "generatedAt": "2026-10-05T14:41:34.709Z",
+  "commit": "9e798e7",
   "headline": {
     "linesTsJs": 24370,
     "tests": 587,
     "lineCoveragePct": 89.22,
-    "commits": 315,
-    "ageDays": 109,
+    "commits": 316,
+    "ageDays": 116,
     "trackedFiles": 305,
     "featureManualPct": 100,
     "featureBookPct": 99.2,
@@ -137,39 +137,34 @@
     "churnHotspots": [
       {
         "file": "src/store/index.ts",
-        "commits": 14
-      },
-      {
-        "file": "src/Workspace.tsx",
-        "commits": 12
-      },
-      {
-        "file": "src/components/canvas/Canvas.tsx",
-        "commits": 12
+        "commits": 7
       },
       {
         "file": "src/domain/tree.ts",
-        "commits": 11
-      },
-      {
-        "file": "src/components/inspector/Inspector.tsx",
-        "commits": 10
-      },
-      {
-        "file": "src/store/store.test.ts",
         "commits": 7
+      },
+      {
+        "file": "src/Workspace.tsx",
+        "commits": 6
+      },
+      {
+        "file": "src/components/about/AboutDialog.tsx",
+        "commits": 5
+      },
+      {
+        "file": "src/i18n/locales/en/app.ts",
+        "commits": 5
+      },
+      {
+        "file": "src/services/storage.ts",
+        "commits": 5
       }
     ],
     "risky": [
       {
         "file": "src/components/canvas/Canvas.tsx",
-        "commits": 12,
+        "commits": 4,
         "pct": 63.63
-      },
-      {
-        "file": "src/components/start/StartPage.tsx",
-        "commits": 5,
-        "pct": 65.38
       }
     ]
   },
@@ -289,8 +284,8 @@
   },
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
-    "ageDays": 109,
-    "commits": 315,
+    "ageDays": 116,
+    "commits": 316,
     "commits7d": 0,
     "authors": [
       {
@@ -299,7 +294,7 @@
       },
       {
         "name": "github-actions[bot]",
-        "count": 114
+        "count": 115
       },
       {
         "name": "Claude",
@@ -307,8 +302,8 @@
       }
     ],
     "churn30d": {
-      "added": 2053,
-      "removed": 236
+      "added": 2068,
+      "removed": 246
     },
     "changelogEntries": 123
   }
