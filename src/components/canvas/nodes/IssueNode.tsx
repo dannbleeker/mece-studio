@@ -146,7 +146,7 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
           aria-label={m.canvas.editLabel}
           defaultValue={label}
           rows={2}
-          className="nodrag nopan w-full resize-none rounded border border-[#3f6fb0] bg-white px-1 py-0.5 font-medium text-[13px] text-neutral-800 leading-snug focus:outline-none"
+          className="nodrag nopan min-h-0 w-full flex-1 resize-none rounded border border-[#3f6fb0] bg-white px-1 py-0.5 font-medium text-[13px] text-neutral-800 leading-snug focus:outline-none"
           onBlur={(e) => commit(id, e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
