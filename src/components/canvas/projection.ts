@@ -1,5 +1,6 @@
 import type { Edge, Node } from '@xyflow/react';
-import { layoutTree } from '@/domain/layout';
+import { NODE_WIDTH } from '@/domain/constants';
+import { layoutTree, nodeHeight } from '@/domain/layout';
 import { orderSiblings, type PriorityBand, priorityBand } from '@/domain/priority';
 import { matchesQuery } from '@/domain/search';
 import { hiddenNodeIds, nodeDepths, splitOf } from '@/domain/tree';
@@ -88,6 +89,10 @@ export function toFlow(
         id: n.id,
         type: 'issue',
         position: positions[n.id] ?? { x: 0, y: 0 },
+        // Pin the rendered box to the one layout used. Left to auto-size, a long
+        // label stretches the node past NODE_WIDTH and it overlaps its children.
+        width: NODE_WIDTH,
+        height: nodeHeight(n, split),
         // ARIA tree semantics for assistive tech: React Flow spreads these onto
         // the `.react-flow__node` wrapper (role/aria-label/domAttributes). Only
         // nodes with children carry aria-expanded; leaves omit it entirely.

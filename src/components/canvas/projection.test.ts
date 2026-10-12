@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { NODE_WIDTH } from '@/domain/constants';
+import { nodeHeight } from '@/domain/layout';
 import { en } from '@/i18n/locales/en';
 import { createDoc, createEvidence } from '../../domain/factory';
 import { recomputeMece } from '../../domain/mece';
@@ -10,8 +12,10 @@ import {
   setNodeValue,
   setPriority,
   setStatus,
+  splitOf,
   toggleCollapse,
 } from '../../domain/tree';
+import type { NodeId } from '../../domain/types';
 import type { IssueFlowNode } from './projection';
 import { toFlow } from './projection';
 
@@ -141,5 +145,27 @@ describe('toFlow projection', () => {
     // Sorted: highest priority first (Second above First).
     const sorted = toFlow(doc, [], '', true).nodes;
     expect(yOf(sorted, second.childId)).toBeLessThan(yOf(sorted, first.childId));
+  });
+
+  it('sizes every node to the box layout used, so a long label cannot overlap its children', () => {
+    const long = 'Why do we have bad POS performance in peak season in Germany and the Nordics?';
+    let doc = createDoc(long, 0);
+    const a = addChild(doc, doc.rootId, 'Ownership');
+    const b = addChild(a.doc, doc.rootId, 'Sub-issue 2');
+    doc = recomputeMece(b.doc);
+
+    const { nodes } = toFlow(doc, []);
+    for (const n of nodes) {
+      const src = doc.nodes[n.id as NodeId];
+      if (!src) throw new Error(`no node ${n.id}`);
+      expect(n.width).toBe(NODE_WIDTH);
+      expect(n.height).toBe(nodeHeight(src, splitOf(doc, src.id)));
+    }
+
+    const root = nodes.find((n) => n.id === doc.rootId);
+    if (!root) throw new Error('no root');
+    for (const child of nodes.filter((n) => n.id !== doc.rootId)) {
+      expect(child.position.x).toBeGreaterThanOrEqual(root.position.x + (root.width ?? 0));
+    }
   });
 });

@@ -1,5 +1,14 @@
 import dagre from 'dagre';
-import { NODE_GAP, NODE_HEIGHT, NODE_WIDTH, RANK_GAP } from './constants';
+import {
+  LABEL_CHARS_PER_LINE,
+  LABEL_LINE_HEIGHT,
+  LABEL_LINES_IN_BASE,
+  LABEL_MAX_LINES,
+  NODE_GAP,
+  NODE_HEIGHT,
+  NODE_WIDTH,
+  RANK_GAP,
+} from './constants';
 import { splitOf } from './tree';
 import type { IssueNode, IssueTreeDoc, LayoutDirection, NodeId, Split } from './types';
 
@@ -15,10 +24,12 @@ const NO_HIDDEN: ReadonlySet<NodeId> = new Set();
  * ranks by the real size instead of a fixed 64px — otherwise a content-rich
  * value-driver node (value + evidence + ME/CE dots) renders taller than the gap
  * and overlaps its siblings. A plain node stays at NODE_HEIGHT (so simple trees
- * lay out exactly as before). Deterministic — no DOM measurement.
+ * lay out exactly as before; a label past two lines adds the third). Deterministic — no DOM measurement.
  */
 export function nodeHeight(node: IssueNode, split: Split | undefined): number {
   let h = NODE_HEIGHT;
+  const labelLines = Math.min(LABEL_MAX_LINES, Math.ceil(node.label.length / LABEL_CHARS_PER_LINE));
+  h += Math.max(0, labelLines - LABEL_LINES_IN_BASE) * LABEL_LINE_HEIGHT;
   if (node.value) h += 14;
   if (node.evidence.length > 0 || node.detail?.trim()) h += 13;
   if (split) {

@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
+import {
+  LABEL_LINE_HEIGHT,
+  LABEL_MAX_LINES,
+  NODE_GAP,
+  NODE_HEIGHT,
+  NODE_WIDTH,
+  RANK_GAP,
+} from '@/domain/constants';
 import { createDoc } from '@/domain/factory';
-import { NODE_GAP, NODE_HEIGHT, NODE_WIDTH, RANK_GAP } from '@/domain/constants';
 import { layoutTree, nodeHeight } from '@/domain/layout';
 import { addChild, splitOf } from '@/domain/tree';
 
@@ -47,5 +54,15 @@ describe('layoutTree', () => {
     if (!root || !pa || !pb) throw new Error('missing position');
     expect(pa.x - (root.x + NODE_WIDTH)).toBeGreaterThanOrEqual(RANK_GAP);
     expect(Math.abs(pa.y - pb.y)).toBeGreaterThanOrEqual(NODE_HEIGHT + NODE_GAP);
+  });
+
+  it('grows for a third label line and stops there however long the label is', () => {
+    const doc0 = createDoc('x'.repeat(60), 1000);
+    const root = doc0.nodes[doc0.rootId];
+    if (!root) throw new Error('missing root');
+    const three = nodeHeight(root, undefined);
+    expect(three).toBe(NODE_HEIGHT + LABEL_LINE_HEIGHT);
+    expect(nodeHeight({ ...root, label: 'x'.repeat(5000) }, undefined)).toBe(three);
+    expect(LABEL_MAX_LINES).toBe(3);
   });
 });
