@@ -17,7 +17,7 @@ const NO_HIDDEN: ReadonlySet<NodeId> = new Set();
  * and overlaps its siblings. A plain node stays at NODE_HEIGHT (so simple trees
  * lay out exactly as before). Deterministic — no DOM measurement.
  */
-function nodeHeight(node: IssueNode, split: Split | undefined): number {
+export function nodeHeight(node: IssueNode, split: Split | undefined): number {
   let h = NODE_HEIGHT;
   if (node.value) h += 14;
   if (node.evidence.length > 0 || node.detail?.trim()) h += 13;
