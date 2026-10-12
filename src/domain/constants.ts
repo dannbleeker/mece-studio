@@ -4,6 +4,19 @@ import type { DecompositionType } from './types';
 export const NODE_WIDTH = 220;
 export const NODE_HEIGHT = 64;
 
+/**
+ * A node label wraps to at most this many lines, then ends in an ellipsis (the
+ * full text lives in the inspector). Layout estimates height from these, so the
+ * rendered box and the dagre box can't drift.
+ */
+export const LABEL_MAX_LINES = 3;
+/** Conservative characters per label line at NODE_WIDTH (13px text, 12px padding). */
+export const LABEL_CHARS_PER_LINE = 28;
+/** Rendered height of one label line (13px × leading-snug), in px. */
+export const LABEL_LINE_HEIGHT = 18;
+/** NODE_HEIGHT already fits this many label lines; only lines beyond it add height. */
+export const LABEL_LINES_IN_BASE = 2;
+
 /** dagre spacing (px). */
 export const RANK_GAP = 90;
 export const NODE_GAP = 24;

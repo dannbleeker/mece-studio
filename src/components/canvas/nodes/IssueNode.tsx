@@ -161,7 +161,10 @@ export function IssueNode({ id, data }: NodeProps<IssueFlowNode>) {
           onPointerDown={(e) => e.stopPropagation()}
         />
       ) : (
-        <div className="line-clamp-2 font-medium text-[13px] text-neutral-800 leading-snug">
+        <div
+          className="line-clamp-3 break-words font-medium text-[13px] text-neutral-800 leading-snug"
+          title={label.length > 0 ? label : undefined}
+        >
           {label || m.content.untitled}
         </div>
       )}
