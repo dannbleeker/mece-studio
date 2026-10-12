@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-10-12T15:27:14.156Z",
-  "commit": "faae5e9",
+  "generatedAt": "2026-10-12T15:30:29.679Z",
+  "commit": "0327bcc",
   "headline": {
     "linesTsJs": 24471,
     "tests": 591,
     "lineCoveragePct": 89.4,
-    "commits": 320,
+    "commits": 322,
     "ageDays": 123,
     "trackedFiles": 305,
     "featureManualPct": 100,
@@ -41,7 +41,7 @@
     {
       "category": "Docs (Markdown)",
       "files": 24,
-      "lines": 3105
+      "lines": 3106
     }
   ],
   "coverage": {
@@ -148,15 +148,15 @@
         "commits": 5
       },
       {
+        "file": "src/components/canvas/nodes/IssueNode.tsx",
+        "commits": 4
+      },
+      {
         "file": "src/pwa/pwaUpdate.ts",
         "commits": 4
       },
       {
         "file": "src/services/storage.ts",
-        "commits": 4
-      },
-      {
-        "file": "src/store/index.ts",
         "commits": 4
       }
     ],
@@ -285,8 +285,8 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 123,
-    "commits": 320,
-    "commits7d": 3,
+    "commits": 322,
+    "commits7d": 5,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
@@ -294,17 +294,17 @@
       },
       {
         "name": "github-actions[bot]",
-        "count": 117
+        "count": 118
       },
       {
         "name": "Claude",
-        "count": 61
+        "count": 62
       }
     ],
     "churn30d": {
-      "added": 2244,
-      "removed": 315
+      "added": 2254,
+      "removed": 324
     },
-    "changelogEntries": 124
+    "changelogEntries": 125
   }
 }
