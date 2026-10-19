@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-10-12T15:30:29.679Z",
-  "commit": "0327bcc",
+  "generatedAt": "2026-10-19T13:17:21.589Z",
+  "commit": "154e9c2",
   "headline": {
     "linesTsJs": 24471,
     "tests": 591,
     "lineCoveragePct": 89.4,
-    "commits": 322,
-    "ageDays": 123,
+    "commits": 323,
+    "ageDays": 130,
     "trackedFiles": 305,
     "featureManualPct": 100,
     "featureBookPct": 99.2,
@@ -136,10 +136,6 @@
     ],
     "churnHotspots": [
       {
-        "file": "src/Workspace.tsx",
-        "commits": 5
-      },
-      {
         "file": "src/components/about/AboutDialog.tsx",
         "commits": 5
       },
@@ -149,6 +145,10 @@
       },
       {
         "file": "src/components/canvas/nodes/IssueNode.tsx",
+        "commits": 4
+      },
+      {
+        "file": "src/Workspace.tsx",
         "commits": 4
       },
       {
@@ -284,9 +284,9 @@
   },
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
-    "ageDays": 123,
-    "commits": 322,
-    "commits7d": 5,
+    "ageDays": 130,
+    "commits": 323,
+    "commits7d": 6,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
@@ -294,7 +294,7 @@
       },
       {
         "name": "github-actions[bot]",
-        "count": 118
+        "count": 119
       },
       {
         "name": "Claude",
@@ -302,8 +302,8 @@
       }
     ],
     "churn30d": {
-      "added": 2254,
-      "removed": 324
+      "added": 2237,
+      "removed": 307
     },
     "changelogEntries": 125
   }
