@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-10-19T13:17:21.589Z",
-  "commit": "154e9c2",
+  "generatedAt": "2026-10-26T13:04:51.174Z",
+  "commit": "f5f5eac",
   "headline": {
     "linesTsJs": 24471,
     "tests": 591,
     "lineCoveragePct": 89.4,
-    "commits": 323,
-    "ageDays": 130,
+    "commits": 324,
+    "ageDays": 137,
     "trackedFiles": 305,
     "featureManualPct": 100,
     "featureBookPct": 99.2,
@@ -137,36 +137,30 @@
     "churnHotspots": [
       {
         "file": "src/components/about/AboutDialog.tsx",
-        "commits": 5
+        "commits": 3
       },
       {
         "file": "src/i18n/locales/en/app.ts",
-        "commits": 5
+        "commits": 3
       },
       {
         "file": "src/components/canvas/nodes/IssueNode.tsx",
-        "commits": 4
+        "commits": 2
       },
       {
-        "file": "src/Workspace.tsx",
-        "commits": 4
+        "file": "src/domain/layout.test.ts",
+        "commits": 2
       },
       {
-        "file": "src/pwa/pwaUpdate.ts",
-        "commits": 4
+        "file": "src/domain/layout.ts",
+        "commits": 2
       },
       {
-        "file": "src/services/storage.ts",
-        "commits": 4
+        "file": "src/components/about/AboutDialog.test.tsx",
+        "commits": 2
       }
     ],
-    "risky": [
-      {
-        "file": "src/components/canvas/Canvas.tsx",
-        "commits": 3,
-        "pct": 66.47
-      }
-    ]
+    "risky": []
   },
   "hygiene": {
     "todo": 12,
@@ -284,9 +278,9 @@
   },
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
-    "ageDays": 130,
-    "commits": 323,
-    "commits7d": 6,
+    "ageDays": 137,
+    "commits": 324,
+    "commits7d": 1,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
@@ -294,7 +288,7 @@
       },
       {
         "name": "github-actions[bot]",
-        "count": 119
+        "count": 120
       },
       {
         "name": "Claude",
@@ -302,8 +296,8 @@
       }
     ],
     "churn30d": {
-      "added": 2237,
-      "removed": 307
+      "added": 278,
+      "removed": 135
     },
     "changelogEntries": 125
   }
