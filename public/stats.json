@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-10-27T06:11:12.322Z",
-  "commit": "71dc3cb",
+  "generatedAt": "2026-10-27T06:44:45.915Z",
+  "commit": "d83a194",
   "headline": {
-    "linesTsJs": 25117,
-    "tests": 617,
-    "lineCoveragePct": 89.6,
-    "commits": 332,
+    "linesTsJs": 26140,
+    "tests": 649,
+    "lineCoveragePct": 89.82,
+    "commits": 337,
     "ageDays": 138,
-    "trackedFiles": 306,
+    "trackedFiles": 311,
     "featureManualPct": 100,
-    "featureBookPct": 97.6,
-    "featureExamplePct": 16.9
+    "featureBookPct": 95.3,
+    "featureExamplePct": 16.5
   },
   "code": [
     {
       "category": "App code (src, excl. tests)",
-      "files": 130,
-      "lines": 14570
+      "files": 133,
+      "lines": 15156
     },
     {
       "category": "Unit tests",
-      "files": 79,
-      "lines": 7581
+      "files": 81,
+      "lines": 8018
     },
     {
       "category": "E2E tests (Playwright)",
@@ -41,40 +41,40 @@
     {
       "category": "Docs (Markdown)",
       "files": 24,
-      "lines": 3149
+      "lines": 3174
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 89.6,
-      "covered": 2845,
-      "total": 3175
+      "pct": 89.82,
+      "covered": 2965,
+      "total": 3301
     },
     "statements": {
-      "pct": 88.12,
-      "covered": 3376,
-      "total": 3831
+      "pct": 88.42,
+      "covered": 3531,
+      "total": 3993
     },
     "functions": {
-      "pct": 84.45,
-      "covered": 978,
-      "total": 1158
+      "pct": 84.81,
+      "covered": 1028,
+      "total": 1212
     },
     "branches": {
-      "pct": 80.47,
-      "covered": 1760,
-      "total": 2187
+      "pct": 81.46,
+      "covered": 1908,
+      "total": 2342
     }
   },
   "tests": {
-    "unit": 562,
+    "unit": 594,
     "e2e": 55
   },
   "domain": {
-    "features": 124,
+    "features": 127,
     "areas": 14,
-    "domainModules": 32,
-    "components": 50,
+    "domainModules": 33,
+    "components": 52,
     "exporters": 14
   },
   "footprint": {
@@ -83,15 +83,15 @@
     "biggestFiles": [
       {
         "name": "components/inspector/Inspector.tsx",
-        "lines": 787
+        "lines": 796
       },
       {
         "name": "store/index.ts",
-        "lines": 746
+        "lines": 766
       },
       {
         "name": "domain/tree.ts",
-        "lines": 609
+        "lines": 699
       },
       {
         "name": "domain/mece/engine.ts",
@@ -123,7 +123,7 @@
       },
       {
         "file": "src/i18n/locales/en/advisories.ts",
-        "pct": 33.33
+        "pct": 22.22
       },
       {
         "file": "src/i18n/locales/en/mece.ts",
@@ -135,6 +135,10 @@
       }
     ],
     "churnHotspots": [
+      {
+        "file": "src/store/index.ts",
+        "commits": 3
+      },
       {
         "file": "src/domain/mece/engine.ts",
         "commits": 3
@@ -154,10 +158,6 @@
       {
         "file": "src/i18n/locales/en/app.ts",
         "commits": 3
-      },
-      {
-        "file": "src/services/storage.ts",
-        "commits": 2
       }
     ],
     "risky": []
@@ -173,8 +173,8 @@
     "nonNull": 0
   },
   "bundle": {
-    "eagerJsGzipKb": 111.7,
-    "totalJsGzipKb": 555.6,
+    "eagerJsGzipKb": 112.5,
+    "totalJsGzipKb": 558,
     "cssGzipKb": 9.4,
     "budgetKb": 113,
     "withinBudget": true
@@ -182,17 +182,17 @@
   "docs": {
     "bookWords": 27957,
     "chapters": 16,
-    "appLoc": 14570,
-    "docToCodeRatio": 0.22
+    "appLoc": 15156,
+    "docToCodeRatio": 0.21
   },
   "featureCoverage": {
-    "total": 124,
-    "manual": 124,
+    "total": 127,
+    "manual": 127,
     "manualPct": 100,
     "book": 121,
-    "bookPct": 97.6,
+    "bookPct": 95.3,
     "bookExample": 21,
-    "bookExamplePct": 16.9,
+    "bookExamplePct": 16.5,
     "byArea": {
       "Tree": {
         "total": 7,
@@ -200,8 +200,8 @@
         "book": 7
       },
       "MECE": {
-        "total": 21,
-        "manual": 21,
+        "total": 22,
+        "manual": 22,
         "book": 21
       },
       "Prioritisation": {
@@ -210,13 +210,13 @@
         "book": 3
       },
       "Hypotheses": {
-        "total": 2,
-        "manual": 2,
+        "total": 3,
+        "manual": 3,
         "book": 2
       },
       "Evidence": {
-        "total": 5,
-        "manual": 5,
+        "total": 6,
+        "manual": 6,
         "book": 5
       },
       "Value": {
@@ -269,6 +269,11 @@
       "noManual": [],
       "noBook": [
         {
+          "id": "status-history",
+          "name": "Status history with reason and tipping evidence",
+          "since": 11
+        },
+        {
           "id": "ai-split-check",
           "name": "AI check-this-split's-meaning prompt (keyless)",
           "since": 11
@@ -276,6 +281,16 @@
         {
           "id": "multi-window-library",
           "name": "Library shared safely across open windows",
+          "since": 11
+        },
+        {
+          "id": "evidence-provenance",
+          "name": "Evidence provenance (date, who, source, link)",
+          "since": 11
+        },
+        {
+          "id": "advisory-evidence-consistency",
+          "name": "Coaching: verdict not carried by the evidence",
           "since": 11
         },
         {
@@ -289,26 +304,26 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 138,
-    "commits": 332,
-    "commits7d": 8,
+    "commits": 337,
+    "commits7d": 13,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 143
+        "count": 144
       },
       {
         "name": "github-actions[bot]",
-        "count": 121
+        "count": 123
       },
       {
         "name": "Claude",
-        "count": 68
+        "count": 70
       }
     ],
     "churn30d": {
-      "added": 1126,
-      "removed": 247
+      "added": 2376,
+      "removed": 389
     },
-    "changelogEntries": 132
+    "changelogEntries": 135
   }
 }
