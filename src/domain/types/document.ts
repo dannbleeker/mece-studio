@@ -41,8 +41,8 @@ export type FactDimension = 'what' | 'where' | 'when' | 'extent';
 
 /**
  * One "is / is not" fact about the problem: what we observe (`is`) set
- * against the closest thing we do NOT observe (`isNot`). "Saturdays from
- * 16:00" / "not weekdays, not mornings". Any root cause must explain the
+ * against the closest thing we do NOT observe (`isNot`). "Mondays from
+ * 09:00" / "not other days, not afternoons". Any root cause must explain the
  * whole set — that is what makes the list useful.
  */
 export interface DiagnosticFact {

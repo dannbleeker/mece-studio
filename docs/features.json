@@ -1197,6 +1197,42 @@
       "manual": true,
       "book": false,
       "bookExample": false
+    },
+    {
+      "id": "where-to-look-next",
+      "name": "Where to look next (impact × uncertainty)",
+      "area": "Hypotheses",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "evidence-timeline",
+      "name": "Evidence and status timeline",
+      "area": "Evidence",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "changes-since-update",
+      "name": "\"What changed since\" Markdown update",
+      "area": "Export",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "framework-request-path",
+      "name": "Request path framework template",
+      "area": "Tree",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
     }
   ]
 }

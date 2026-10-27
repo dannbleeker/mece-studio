@@ -99,16 +99,16 @@ describe('toMarkdown', () => {
 
 describe('toMarkdown — provenance and status history', () => {
   function sample() {
-    let doc = createDoc('Why is the POS slow?', 0);
-    const h = addChild(doc, doc.rootId, 'CSU slow at peak');
+    let doc = createDoc('Why is the app slow?', 0);
+    const h = addChild(doc, doc.rootId, 'Database slow at peak');
     doc = addEvidence(h.doc, h.childId, {
       id: 'ev1',
-      summary: 'ZDX: CSU 120 ms to 450 ms at 16:00',
+      summary: 'Probe: query time 120 ms to 450 ms at peak',
       supports: true,
       strength: 'indicative',
-      author: 'Martin',
+      author: 'Alex',
       date: '2026-10-24',
-      source: 'Zscaler ZDX',
+      source: 'Synthetic monitor',
       url: 'https://teams.microsoft.com/l/message/1',
     });
     doc = setStatus(doc, h.childId, 'refuted', Date.UTC(2026, 9, 19, 12));
@@ -120,10 +120,10 @@ describe('toMarkdown — provenance and status history', () => {
   it('carries who, when, where and the link on each evidence line', () => {
     const md = toMarkdown(sample(), en);
     expect(md).toContain(
-      `ZDX: CSU 120 ms to 450 ms at 16:00${en.exports.evidenceProvenance({
-        author: 'Martin',
+      `Probe: query time 120 ms to 450 ms at peak${en.exports.evidenceProvenance({
+        author: 'Alex',
         day: '2026-10-24',
-        source: 'Zscaler ZDX',
+        source: 'Synthetic monitor',
         url: 'https://teams.microsoft.com/l/message/1',
       })}`
     );
@@ -156,9 +156,9 @@ describe('toMarkdown — provenance and status history', () => {
 
 describe('toMarkdown — diagnosis', () => {
   function sample() {
-    let doc = createDoc('Why are German tills slow on Saturdays?', 0);
-    const h = addChild(doc, doc.rootId, 'Store line too thin');
-    doc = addFact(h.doc, { id: 'f1', dimension: 'where', is: 'Germany', isNot: 'Other countries' });
+    let doc = createDoc('Why are page loads slow on Monday mornings?', 0);
+    const h = addChild(doc, doc.rootId, 'Network link too thin');
+    doc = addFact(h.doc, { id: 'f1', dimension: 'where', is: 'Region A', isNot: 'Other regions' });
     doc = addFact(doc, { id: 'f2', dimension: 'extent', is: 'Some fast lines hit too' });
     doc = setExplains(doc, h.childId, 'f1', 'yes');
     doc = setExplains(doc, h.childId, 'f2', 'no');
@@ -171,7 +171,7 @@ describe('toMarkdown — diagnosis', () => {
     const md = toMarkdown(sample(), en);
     expect(md).toContain(en.exports.factsHeading);
     expect(md).toContain(
-      en.exports.factLine({ dimension: 'where', is: 'Germany', isNot: 'Other countries' })
+      en.exports.factLine({ dimension: 'where', is: 'Region A', isNot: 'Other regions' })
     );
     expect(md).toContain(
       en.exports.factLine({ dimension: 'extent', is: 'Some fast lines hit too' })

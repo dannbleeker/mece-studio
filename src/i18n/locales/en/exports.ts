@@ -18,7 +18,13 @@
  *   annotation: the whole annotation is one entry, so a locale *may* reword it,
  *   but English renders the raw states it always has.
  */
-import type { CheckState, DecompositionType, FactDimension, NodeStatus } from '@/domain/types';
+import type {
+  CheckState,
+  DecompositionType,
+  EvidenceStrength,
+  FactDimension,
+  NodeStatus,
+} from '@/domain/types';
 import { day, LOCALE, num, plur, quote, when } from './_locale';
 import { enums } from './enums';
 
@@ -189,8 +195,8 @@ export const exports = {
   synthEvidence: ({ items }: { items: string[] }) => `${markers.evidence} ${items.join('; ')}`,
 
   /**
-   * Provenance appended to an evidence line: " — Martin, 24 Oct 2026, Zscaler
-   * ZDX <https://…>". Every part optional; `day` is a validated ISO day and
+   * Provenance appended to an evidence line: " — Alex, 26 Oct 2026, Synthetic
+   * monitor <https://…>". Every part optional; `day` is a validated ISO day and
    * `url` an already-vetted http(s) link (the domain drops anything else).
    */
   evidenceProvenance: ({
@@ -234,6 +240,42 @@ export const exports = {
           `${when(c.at)} ${enums.status[c.from]} → ${enums.status[c.to]}${c.reason ? ` (${c.reason})` : ''}`
       )
       .join('; ')}`,
+
+  /** "What changed since …" — a pasteable update built from the timeline. */
+  changesHeading: ({ since, question }: { since: number; question: string }) =>
+    `## What changed since ${when(since)}${question ? `: ${question}` : ''}`,
+  changesNode: ({ label, status }: { label: string; status: NodeStatus }) =>
+    `- **${label}** (now ${enums.status[status]})`,
+  changesStatus: ({
+    at,
+    from,
+    to,
+    reason,
+  }: {
+    at: number;
+    from: NodeStatus;
+    to: NodeStatus;
+    reason?: string;
+  }) =>
+    `${when(at)}: ${enums.status[from]} → ${enums.status[to]}${reason ? `, because ${reason}` : ''}`,
+  changesEvidence: ({
+    summary,
+    supports,
+    strength,
+    day: iso,
+    author,
+    url,
+  }: {
+    summary: string;
+    supports: boolean;
+    strength: EvidenceStrength;
+    day?: string;
+    author?: string;
+    url?: string;
+  }) =>
+    `${iso ? `${day(iso)}: ` : ''}new ${enums.evidenceStrength[strength]} evidence ${
+      supports ? 'for' : 'against'
+    }: ${summary}${author ? ` (${author})` : ''}${url ? ` <${url}>` : ''}`,
 
   /** The standalone one-page HTML answer (see the const above). */
   answerPage,

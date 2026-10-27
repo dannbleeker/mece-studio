@@ -36,7 +36,8 @@ export type FrameworkId =
   | 'ansoff'
   | '7s'
   | 'aarrr'
-  | 'fishbone-6m';
+  | 'fishbone-6m'
+  | 'request-path';
 
 /** Every word one framework seeds: the card's copy, then the tree it starts. */
 export interface FrameworkContent {
@@ -87,4 +88,5 @@ export const FRAMEWORK_TEMPLATES: FrameworkTemplate[] = [
   // ── Growth / diagnosis ─────────────────────────────────────────────────
   { id: 'aarrr', decomposition: 'process' },
   { id: 'fishbone-6m', decomposition: 'framework' },
+  { id: 'request-path', decomposition: 'process' },
 ];

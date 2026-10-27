@@ -19,7 +19,7 @@ export type EvidenceStrength = 'anecdote' | 'indicative' | 'strong';
 export interface EvidenceItem {
   id: string;
   summary: string;
-  /** Where it came from, as free text ("Teams: Weekend crashes", "Grafana"). */
+  /** Where it came from, as free text ("Chat: incident channel", "Grafana"). */
   source?: string;
   strength: EvidenceStrength;
   /** true = supports the node's claim; false = contradicts it. */
@@ -27,7 +27,7 @@ export interface EvidenceItem {
   /**
    * The day the fact was observed or reported, as an ISO calendar date
    * (`YYYY-MM-DD`) — not when it was typed in. A date rather than a timestamp,
-   * because "what happened on Saturday 24 Oct" is a calendar fact with no
+   * because "what happened on Monday 26 Oct" is a calendar fact with no
    * time zone. Optional; read through `evidenceDate()`, which rejects anything
    * that isn't a real calendar day.
    */

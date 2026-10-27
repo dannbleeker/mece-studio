@@ -1,6 +1,16 @@
 /** English wording for the doc-level Problem brief (the "Problem Identity Card"). */
-import type { ExplainVerdict, FactDimension, ProblemBrief, TreeMode } from '@/domain/types';
-import { num, plur } from './_locale';
+import type { Uncertainty } from '@/domain/nextLook';
+import type {
+  EvidenceStrength,
+  ExplainVerdict,
+  FactDimension,
+  Level,
+  NodeStatus,
+  ProblemBrief,
+  TreeMode,
+} from '@/domain/types';
+import { day, num, plur, when } from './_locale';
+import { enums } from './enums';
 
 /**
  * One label + hint per brief field, keyed by the field it fills. Keyed by field
@@ -73,6 +83,14 @@ const verdictGlyph: Record<ExplainVerdict | 'none', string> = {
   none: '·',
 };
 
+/** How unsettled an open hypothesis is (Where to look next). */
+const uncertainty: Record<Uncertainty, string> = {
+  unknown: 'no evidence yet',
+  contested: 'evidence both ways',
+  thin: 'anecdote only',
+  leaning: 'evidence one way',
+};
+
 export const brief = {
   /** The dialog shell. */
   title: 'Problem brief',
@@ -102,7 +120,7 @@ export const brief = {
   factDimension,
   factDimensionLabel: 'Dimension',
   factIsLabel: 'Is',
-  factIsPlaceholder: 'e.g. Saturdays from 16:00',
+  factIsPlaceholder: 'e.g. Mondays from 09:00',
   factIsNotLabel: 'Is not',
   factIsNotPlaceholder: 'e.g. weekdays, mornings',
   addFact: '+ Add a fact',
@@ -134,4 +152,43 @@ export const brief = {
     verdict: string;
   }) => `${hypothesis} — ${fact}: ${v}`,
   gridNoFacts: 'Add "is / is not" facts in the Problem brief first.',
+
+  /** Where to look next: open hypotheses ranked by impact × uncertainty. */
+  lookTitle: 'Where to look next',
+  lookSubtitle:
+    'Open hypotheses, ranked by how much they would move the answer and how little we know. A ranking, not a verdict.',
+  lookEmpty: 'No open hypotheses left outside refuted or parked branches.',
+  lookImpact: ({ level }: { level: Level | undefined }) =>
+    level ? `${enums.level[level]} impact` : 'impact not set',
+  uncertainty,
+  lookNoKillTest: 'no kill test',
+  lookScore: ({ score }: { score: number }) => `score ${num(score)} of 9`,
+
+  /** The evidence timeline and the "what changed since" update. */
+  timelineTitle: 'Timeline',
+  timelineSubtitle:
+    'Dated evidence and every status change, oldest first. Evidence without a date is placed when it was added.',
+  timelineSince: 'Since',
+  timelineEmpty: 'Nothing dated yet. Add a date to a piece of evidence, or change a status.',
+  timelineNoneSince: 'Nothing changed on or after that date.',
+  timelineCopy: 'Copy "what changed" update',
+  /** `day`: a calendar day the user gave; `added`: when evidence was typed in; `moment`: a status change. */
+  timelineDay: ({ at, mode }: { at: number; mode: 'day' | 'added' | 'moment' }) =>
+    mode === 'day'
+      ? day(new Date(at).toISOString().slice(0, 10))
+      : `${when(at)}${mode === 'added' ? ' (added)' : ''}`,
+  timelineStatus: ({ from, to, reason }: { from: NodeStatus; to: NodeStatus; reason?: string }) =>
+    `${enums.status[from]} → ${enums.status[to]}${reason ? `: ${reason}` : ''}`,
+  timelineEvidence: ({
+    summary,
+    supports,
+    strength,
+    author,
+  }: {
+    summary: string;
+    supports: boolean;
+    strength: EvidenceStrength;
+    author?: string;
+  }) =>
+    `${supports ? 'For' : 'Against'} (${enums.evidenceStrength[strength]}): ${summary}${author ? ` · ${author}` : ''}`,
 };

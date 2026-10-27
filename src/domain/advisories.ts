@@ -139,7 +139,7 @@ function hypothesisAdvisory(node: IssueNode): Advisory | null {
  * refuted, and at most one hint per node, most serious first:
  *
  * 1. strong evidence points the other way ("ruled out, but strong evidence
- *    supports it" — the CSU branch, killed on server timings, then seen slow
+ *    supports it" — a branch, killed on server timings, then seen slow
  *    from a neutral probe);
  * 2. the only evidence for the verdict is anecdote;
  * 3. there is no evidence at all.

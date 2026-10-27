@@ -148,7 +148,7 @@ describe('toFlow projection', () => {
   });
 
   it('sizes every node to the box layout used, so a long label cannot overlap its children', () => {
-    const long = 'Why do we have bad POS performance in peak season in Germany and the Nordics?';
+    const long = 'Why do we have slow page loads in peak season in Region A and Region B?';
     let doc = createDoc(long, 0);
     const a = addChild(doc, doc.rootId, 'Ownership');
     const b = addChild(a.doc, doc.rootId, 'Sub-issue 2');

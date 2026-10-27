@@ -153,8 +153,9 @@ decomposed that way.</li>
 <li><strong>Named frameworks</strong> — classic strategy, marketing, and diagnosis frameworks as
 one-click starter trees: the <strong>4Ps</strong> and <strong>Lauterborn 4Cs</strong> marketing mixes, Ohmae&#39;s
 <strong>3Cs</strong>, <strong>Porter&#39;s Five Forces</strong>, <strong>PESTEL</strong>, <strong>SWOT</strong>, the <strong>BCG</strong> and <strong>Ansoff</strong>
-matrices, <strong>McKinsey 7S</strong>, the <strong>AARRR</strong> funnel, and a <strong>fishbone (Ishikawa)</strong> cause
-checklist. Each opens with its canonical branches filled in. They organise your
+matrices, <strong>McKinsey 7S</strong>, the <strong>AARRR</strong> funnel, a <strong>fishbone (Ishikawa)</strong> cause
+checklist, and a <strong>request path</strong> for slow systems (where is the time lost: on the
+device, the local network, the access line, in transit, or in the back end). Each opens with its canonical branches filled in. They organise your
 thinking but <strong>aren&#39;t guaranteed MECE</strong> — they&#39;re typed as <em>framework</em> (or <em>process</em>
 for AARRR), so the engine leaves exclusivity for you to confirm as you rename each
 branch to your situation.</li>
@@ -204,8 +205,8 @@ removed (you can undo).</p>
 <p>Before you decompose, it helps to frame the problem. The <strong>Problem brief</strong> button in the Answer banner opens a one-page <strong>Problem Identity Card</strong> (after Barbara Minto and Arnaud Chevallier): <strong>Situation</strong> (the stable, agreed context), <strong>Complication</strong> (what changed — why act now), <strong>Owner</strong>, <strong>Decision-makers</strong>, <strong>Success criteria</strong>, <strong>In scope</strong>, <strong>Out of scope</strong> (what you decide upfront <em>not</em> to tackle), and <strong>Desired outcome</strong>. Every field is optional and saves as you type. The Situation and Complication then lead the <a href="#synthesis--reading-the-answer">answer-first synthesis</a> as a Situation → Complication → Resolution intro, and the card nudges you when the key question isn&#39;t sharp — when it isn&#39;t phrased as a question, bundles two questions, or runs too long.</p>
 <p><strong>Is / is not.</strong> Under the card, list the <strong>facts any root cause must explain</strong>,
 each on one dimension: <strong>What</strong>, <strong>Where</strong>, <strong>When</strong> or <strong>How much</strong>. Write what
-the problem <strong>is</strong> and, beside it, the closest thing it <strong>is not</strong> (&quot;Saturdays
-from 16:00&quot; / &quot;weekdays&quot;; &quot;Germany&quot; / &quot;Denmark, Ireland&quot;). The contrast is the
+the problem <strong>is</strong> and, beside it, the closest thing it <strong>is not</strong> (&quot;Mondays
+from 09:00&quot; / &quot;other days&quot;; &quot;Region A&quot; / &quot;Region B, Region C&quot;). The contrast is the
 point: a candidate cause has to explain why the problem shows up on one side and
 not the other. Once a fact is listed, the Answer banner shows a
 <strong>Must-explain grid</strong> button (see <a href="#hypotheses-and-status">Hypotheses and status</a>).</p>
@@ -373,7 +374,7 @@ its current state. The history travels with the tree in saved files, the
 Markdown outline and print.</p>
 <p><strong>Kill test and prediction.</strong> Below the history, each hypothesis has two short
 fields: the <strong>kill test</strong> (the result that would prove it wrong, such as &quot;a probe
-from an Azure VM stays fast at 16:00&quot;) and the <strong>prediction</strong> (what you expect
+from a cloud VM stays fast at 09:00&quot;) and the <strong>prediction</strong> (what you expect
 to see next time if it is right). Writing the kill test first keeps a branch from
 being &quot;ruled out&quot; by a test that could never have caught it.</p>
 <p><strong>Explains the facts?</strong> When the problem brief lists is / is not facts, the
@@ -384,7 +385,20 @@ cycle ✓ → ~ → ✗ → not judged, and read the row back in the last column
 (&quot;explains all&quot;, &quot;fails 1&quot;, &quot;2 of 4 judged&quot;). Click a hypothesis name to jump to
 it on the canvas. You make each call; the grid only collects them, and never
 changes a status for you. The verdicts appear in the Markdown outline and the
-synthesis as &quot;explains 3 of 4 facts — not: Germany only&quot;.</p>
+synthesis as &quot;explains 3 of 4 facts — not: Region A only&quot;.</p>
+<p><strong>Where to look next.</strong> The Answer banner&#39;s <strong>Where to look next</strong> lists every
+open hypothesis, highest first, by <strong>impact</strong> (from its priority; unset counts
+as medium) times <strong>uncertainty</strong> (no evidence yet or evidence both ways ranks
+highest, anecdote only next, evidence pointing one way lowest). It also notes a
+hypothesis with no kill test. Branches under a refuted or parked node are left
+out. Click a row to jump to it. It&#39;s a ranking to help you choose, not a
+verdict: it never changes a status.</p>
+<p><strong>Timeline.</strong> The banner&#39;s <strong>Timeline</strong> shows the investigation in order: every
+dated piece of evidence (by the day it was observed, or when it was added if it
+has no date) and every status change, oldest first. Pick a <strong>Since</strong> day to see
+only what&#39;s new, and <strong>Copy &quot;what changed&quot; update</strong> for a ready-to-paste
+Markdown summary, grouped by hypothesis with each one&#39;s current status. Handy
+for the weekly status mail.</p>
 <h2>Evidence</h2>
 <p>Attach <strong>evidence</strong> to any node from the inspector&#39;s <strong>Evidence</strong> tab — each
 item is <strong>supporting</strong> or <strong>contradicting</strong>, with a <strong>strength</strong> (anecdote /
@@ -397,7 +411,7 @@ synthesis and your hypothesis decisions.</p>
 <p><strong>Where it came from.</strong> Under each item, <strong>Source details</strong> opens four optional
 fields: the <strong>date</strong> the fact was observed, <strong>who</strong> reported it, the <strong>source</strong>
 (a chat, a dashboard, a ticket) and a <strong>link</strong> back to the original. Filled in,
-they show as one line under the item (&quot;Martin · 24 Oct 2026 · Zscaler ZDX&quot;) with
+they show as one line under the item (&quot;Alex · 26 Oct 2026 · Synthetic monitor&quot;) with
 an <strong>Open the original ↗</strong> link. Only http(s) links open; anything else is kept
 as text, since a tree can arrive from someone else&#39;s file. Provenance is
 included in the saved file, the Markdown outline and print.</p>

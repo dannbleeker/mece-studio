@@ -129,8 +129,9 @@ The sidebar switches the main view:
 - **Named frameworks** — classic strategy, marketing, and diagnosis frameworks as
   one-click starter trees: the **4Ps** and **Lauterborn 4Cs** marketing mixes, Ohmae's
   **3Cs**, **Porter's Five Forces**, **PESTEL**, **SWOT**, the **BCG** and **Ansoff**
-  matrices, **McKinsey 7S**, the **AARRR** funnel, and a **fishbone (Ishikawa)** cause
-  checklist. Each opens with its canonical branches filled in. They organise your
+  matrices, **McKinsey 7S**, the **AARRR** funnel, a **fishbone (Ishikawa)** cause
+  checklist, and a **request path** for slow systems (where is the time lost: on the
+  device, the local network, the access line, in transit, or in the back end). Each opens with its canonical branches filled in. They organise your
   thinking but **aren't guaranteed MECE** — they're typed as *framework* (or *process*
   for AARRR), so the engine leaves exclusivity for you to confirm as you rename each
   branch to your situation.
@@ -189,8 +190,8 @@ Before you decompose, it helps to frame the problem. The **Problem brief** butto
 
 **Is / is not.** Under the card, list the **facts any root cause must explain**,
 each on one dimension: **What**, **Where**, **When** or **How much**. Write what
-the problem **is** and, beside it, the closest thing it **is not** ("Saturdays
-from 16:00" / "weekdays"; "Germany" / "Denmark, Ireland"). The contrast is the
+the problem **is** and, beside it, the closest thing it **is not** ("Mondays
+from 09:00" / "other days"; "Region A" / "Region B, Region C"). The contrast is the
 point: a candidate cause has to explain why the problem shows up on one side and
 not the other. Once a fact is listed, the Answer banner shows a
 **Must-explain grid** button (see [Hypotheses and status](#hypotheses-and-status)).
@@ -392,7 +393,7 @@ Markdown outline and print.
 
 **Kill test and prediction.** Below the history, each hypothesis has two short
 fields: the **kill test** (the result that would prove it wrong, such as "a probe
-from an Azure VM stays fast at 16:00") and the **prediction** (what you expect
+from a cloud VM stays fast at 09:00") and the **prediction** (what you expect
 to see next time if it is right). Writing the kill test first keeps a branch from
 being "ruled out" by a test that could never have caught it.
 
@@ -404,7 +405,22 @@ cycle ✓ → ~ → ✗ → not judged, and read the row back in the last column
 ("explains all", "fails 1", "2 of 4 judged"). Click a hypothesis name to jump to
 it on the canvas. You make each call; the grid only collects them, and never
 changes a status for you. The verdicts appear in the Markdown outline and the
-synthesis as "explains 3 of 4 facts — not: Germany only".
+synthesis as "explains 3 of 4 facts — not: Region A only".
+
+**Where to look next.** The Answer banner's **Where to look next** lists every
+open hypothesis, highest first, by **impact** (from its priority; unset counts
+as medium) times **uncertainty** (no evidence yet or evidence both ways ranks
+highest, anecdote only next, evidence pointing one way lowest). It also notes a
+hypothesis with no kill test. Branches under a refuted or parked node are left
+out. Click a row to jump to it. It's a ranking to help you choose, not a
+verdict: it never changes a status.
+
+**Timeline.** The banner's **Timeline** shows the investigation in order: every
+dated piece of evidence (by the day it was observed, or when it was added if it
+has no date) and every status change, oldest first. Pick a **Since** day to see
+only what's new, and **Copy "what changed" update** for a ready-to-paste
+Markdown summary, grouped by hypothesis with each one's current status. Handy
+for the weekly status mail.
 
 ## Evidence
 
@@ -420,7 +436,7 @@ synthesis and your hypothesis decisions.
 **Where it came from.** Under each item, **Source details** opens four optional
 fields: the **date** the fact was observed, **who** reported it, the **source**
 (a chat, a dashboard, a ticket) and a **link** back to the original. Filled in,
-they show as one line under the item ("Martin · 24 Oct 2026 · Zscaler ZDX") with
+they show as one line under the item ("Alex · 26 Oct 2026 · Synthetic monitor") with
 an **Open the original ↗** link. Only http(s) links open; anything else is kept
 as text, since a tree can arrive from someone else's file. Provenance is
 included in the saved file, the Markdown outline and print.

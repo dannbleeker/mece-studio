@@ -38,13 +38,13 @@ describe('ProblemBriefDialog', () => {
       target: { value: 'when' },
     });
     fireEvent.blur(screen.getByLabelText(en.brief.factIsLabel), {
-      target: { value: 'Saturdays from 16:00' },
+      target: { value: 'Mondays from 09:00' },
     });
     fireEvent.blur(screen.getByLabelText(en.brief.factIsNotLabel), {
-      target: { value: 'Weekdays' },
+      target: { value: 'Other days' },
     });
     expect(s().doc.facts).toEqual([
-      expect.objectContaining({ dimension: 'when', is: 'Saturdays from 16:00', isNot: 'Weekdays' }),
+      expect.objectContaining({ dimension: 'when', is: 'Mondays from 09:00', isNot: 'Other days' }),
     ]);
     fireEvent.click(screen.getByRole('button', { name: en.brief.removeFact }));
     expect(s().doc.facts).toBeUndefined();

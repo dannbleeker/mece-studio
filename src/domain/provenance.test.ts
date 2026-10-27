@@ -39,7 +39,7 @@ describe('evidenceDate', () => {
   });
 
   it('rejects anything that is not a real calendar day', () => {
-    for (const bad of ['2026-02-30', '2026-13-01', '24-10-2026', '2026-10-24T16:00', 'Saturday']) {
+    for (const bad of ['2026-02-30', '2026-13-01', '24-10-2026', '2026-10-24T16:00', 'Monday']) {
       expect(evidenceDate({ date: bad }), bad).toBeUndefined();
     }
     expect(evidenceDate({})).toBeUndefined();
@@ -82,6 +82,6 @@ describe('statusLogOf', () => {
 
 describe('createEvidence', () => {
   it('stamps when the evidence was added', () => {
-    expect(createEvidence('ZDX probe', true, 'indicative', 1234).addedAt).toBe(1234);
+    expect(createEvidence('Synthetic probe', true, 'indicative', 1234).addedAt).toBe(1234);
   });
 });

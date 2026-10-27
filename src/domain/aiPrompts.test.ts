@@ -35,17 +35,17 @@ describe('decomposePrompt', () => {
 
 describe('splitCheckPrompt', () => {
   it('names the parent and lists its branches before the tree', () => {
-    let doc = createDoc('Why is the POS slow?', 0);
+    let doc = createDoc('Why is the app slow?', 0);
     doc = addChild(doc, doc.rootId, 'ISP routing').doc;
     doc = addChild(doc, doc.rootId, 'Telekom path').doc;
     const out = splitCheckPrompt(doc, doc.rootId, en);
     expect(out).toBe(
       en.exports.aiSplitCheck({
-        label: 'Why is the POS slow?',
+        label: 'Why is the app slow?',
         branches: ['ISP routing', 'Telekom path'],
         tree: toMarkdown(doc, en),
       })
     );
-    expect(out.indexOf('- ISP routing')).toBeLessThan(out.indexOf('# Why is the POS slow?'));
+    expect(out.indexOf('- ISP routing')).toBeLessThan(out.indexOf('# Why is the app slow?'));
   });
 });
