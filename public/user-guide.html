@@ -390,8 +390,9 @@ synthesis as &quot;explains 3 of 4 facts — not: Region A only&quot;.</p>
 open hypothesis, highest first, by <strong>impact</strong> (from its priority; unset counts
 as medium) times <strong>uncertainty</strong> (no evidence yet or evidence both ways ranks
 highest, anecdote only next, evidence pointing one way lowest). It also notes a
-hypothesis with no kill test. Branches under a refuted or parked node are left
-out. Click a row to jump to it. It&#39;s a ranking to help you choose, not a
+hypothesis with no kill test. A parent is listed only once nothing under it is
+still open (its children are the sharper tests), and branches under a refuted
+or parked node are left out. Click a row to jump to it. It&#39;s a ranking to help you choose, not a
 verdict: it never changes a status.</p>
 <p><strong>Timeline.</strong> The banner&#39;s <strong>Timeline</strong> shows the investigation in order: every
 dated piece of evidence (by the day it was observed, or when it was added if it
@@ -399,6 +400,15 @@ has no date) and every status change, oldest first. Pick a <strong>Since</strong
 only what&#39;s new, and <strong>Copy &quot;what changed&quot; update</strong> for a ready-to-paste
 Markdown summary, grouped by hypothesis with each one&#39;s current status. Handy
 for the weekly status mail.</p>
+<p><strong>Combined causes.</strong> Sometimes two hypotheses only cause the problem together:
+a slower back end is fine on a fast link, a busy link is fine with a fast back
+end, but both at once is the outage. A tree can&#39;t hold that, since each node
+sits on one branch. Under <strong>Combined with</strong> in the inspector, pick the other
+hypothesis and click <strong>Link</strong>, then say how they combine. The link is drawn as a
+<strong>dotted line</strong> over the tree. It is a note, not a branch: it never moves a box,
+never changes a split, and the MECE checks never see it. Remove it with ×; it
+also goes when either node is deleted. Links are listed under <strong>Combined
+causes</strong> at the end of the Markdown outline.</p>
 <h2>Evidence</h2>
 <p>Attach <strong>evidence</strong> to any node from the inspector&#39;s <strong>Evidence</strong> tab — each
 item is <strong>supporting</strong> or <strong>contradicting</strong>, with a <strong>strength</strong> (anecdote /

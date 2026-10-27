@@ -168,6 +168,27 @@ describe('Inspector', () => {
     });
   });
 
+  it('links two hypotheses as a combined cause, with a note, and unlinks them', () => {
+    const root = s().doc.rootId;
+    s().addChild(root, 'Database slow at peak');
+    s().addChild(root, 'Network link full');
+    const [a, b] = childrenOf(s().doc, root).map((c) => c.id);
+    s().select(a as NodeId);
+    render(<Inspector />);
+    fireEvent.change(screen.getByLabelText(en.inspector.linkPick), { target: { value: b } });
+    fireEvent.click(screen.getByRole('button', { name: en.inspector.linkAdd }));
+    expect(s().doc.links).toEqual([expect.objectContaining({ a, b })]);
+    fireEvent.blur(
+      screen.getByLabelText(en.inspector.linkNoteLabel({ other: 'Network link full' })),
+      { target: { value: 'only together' } }
+    );
+    expect(s().doc.links?.[0]?.note).toBe('only together');
+    fireEvent.click(
+      screen.getByRole('button', { name: en.inspector.linkRemove({ other: 'Network link full' }) })
+    );
+    expect(s().doc.links).toBeUndefined();
+  });
+
   it('records a kill test, a prediction and verdicts against the facts', () => {
     const root = s().doc.rootId;
     s().addChild(root, 'Network link too thin');
@@ -177,10 +198,10 @@ describe('Inspector', () => {
     s().select(child as NodeId);
     render(<Inspector />);
     fireEvent.blur(screen.getByLabelText(en.inspector.killTestLabel), {
-      target: { value: 'A fast-line store slows at the same minute' },
+      target: { value: 'A site on a fast link slows at the same minute' },
     });
     fireEvent.blur(screen.getByLabelText(en.inspector.predictionLabel), {
-      target: { value: 'Telemetry-off stores stay fast' },
+      target: { value: 'Sites on a bigger link stay fast' },
     });
     const yes = screen.getByRole('button', {
       name: en.brief.gridCellLabel({
@@ -192,8 +213,8 @@ describe('Inspector', () => {
     fireEvent.click(yes);
     const node = s().doc.nodes[child as NodeId];
     expect(node).toMatchObject({
-      killTest: 'A fast-line store slows at the same minute',
-      prediction: 'Telemetry-off stores stay fast',
+      killTest: 'A site on a fast link slows at the same minute',
+      prediction: 'Sites on a bigger link stay fast',
       explains: { [factId]: 'yes' },
     });
     // Clicking the active verdict again clears it.

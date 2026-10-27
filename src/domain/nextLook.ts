@@ -3,8 +3,9 @@
 // The 80/20 rule of hypothesis-driven work: chase what would move the answer
 // most and what we know least about. That is impact (from the node's priority)
 // times uncertainty (from its evidence). A ranking, not a verdict: it never
-// changes a status, and a branch under a refuted or parked ancestor is left
-// out, because the user has already set that whole branch aside.
+// changes a status. A branch under a refuted or parked ancestor is left out,
+// because the user has already set it aside, and a parent waits until its
+// children are settled.
 import { childrenOf } from './tree';
 import type { EvidenceItem, IssueTreeDoc, Level, NodeId } from './types';
 
@@ -45,30 +46,32 @@ export interface LookRow {
 }
 
 /**
- * Every open non-root node not under a refuted or parked ancestor, highest
- * score first; ties keep tree order. Leaves and branches both count: an open
- * branch is a hypothesis too, and often the cheapest one to test.
+ * The open hypotheses to test, highest score first; ties keep tree order. A
+ * branch is listed only when nothing under it is still open: its children are
+ * the sharper tests, and a parent with no evidence of its own would otherwise
+ * crowd the top of the list. Nothing under a refuted or parked node is listed.
  */
 export function whereToLook(doc: IssueTreeDoc): LookRow[] {
   const rows: LookRow[] = [];
-  const visit = (id: NodeId) => {
+  /** Visit a subtree; true when it listed at least one row. */
+  const visit = (id: NodeId): boolean => {
     const node = doc.nodes[id];
-    if (!node) return;
-    if (id !== doc.rootId) {
-      if (node.status === 'refuted' || node.status === 'parked') return;
-      if (node.status === 'open') {
-        const impact = node.priority?.impact;
-        const uncertainty = uncertaintyOf(node.evidence);
-        rows.push({
-          nodeId: id,
-          impact,
-          uncertainty,
-          score: IMPACT_WEIGHT[impact ?? 'medium'] * UNCERTAINTY_WEIGHT[uncertainty],
-          hasKillTest: typeof node.killTest === 'string' && node.killTest.trim() !== '',
-        });
-      }
-    }
-    for (const child of childrenOf(doc, id)) visit(child.id);
+    if (!node) return false;
+    const isRoot = id === doc.rootId;
+    if (!isRoot && (node.status === 'refuted' || node.status === 'parked')) return false;
+    let listedBelow = false;
+    for (const child of childrenOf(doc, id)) listedBelow = visit(child.id) || listedBelow;
+    if (isRoot || listedBelow || node.status !== 'open') return listedBelow;
+    const impact = node.priority?.impact;
+    const uncertainty = uncertaintyOf(node.evidence);
+    rows.push({
+      nodeId: id,
+      impact,
+      uncertainty,
+      score: IMPACT_WEIGHT[impact ?? 'medium'] * UNCERTAINTY_WEIGHT[uncertainty],
+      hasKillTest: typeof node.killTest === 'string' && node.killTest.trim() !== '',
+    });
+    return true;
   };
   visit(doc.rootId);
   return rows

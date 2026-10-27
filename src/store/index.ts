@@ -9,6 +9,11 @@ import {
   updateFact as updateFactOp,
 } from '@/domain/diagnosis';
 import { createDoc, createEvidence } from '@/domain/factory';
+import {
+  addLink as addLinkOp,
+  removeLink as removeLinkOp,
+  setLinkNote as setLinkNoteOp,
+} from '@/domain/links';
 import { graftCaptureOutline } from '@/domain/markdownImport';
 import { type MeceOptions, recomputeMece } from '@/domain/mece';
 import { meceOptions, type Settings } from '@/domain/settings';
@@ -336,6 +341,10 @@ interface AppState {
   setExplains: (nodeId: NodeId, factId: string, verdict: ExplainVerdict | null) => void;
   setKillTest: (nodeId: NodeId, value: string) => void;
   setPrediction: (nodeId: NodeId, value: string) => void;
+  /** Mark two nodes as a possible combined cause (an overlay, not a tree edge). */
+  addLink: (a: NodeId, b: NodeId) => void;
+  removeLink: (id: string) => void;
+  setLinkNote: (id: string, note: string) => void;
   /** Annotate one status change with why it happened and what tipped it. */
   updateStatusChange: (
     nodeId: NodeId,
@@ -685,6 +694,9 @@ export const useStore = create<AppState>((set, get) => {
       apply((doc) => setExplainsOp(doc, nodeId, factId, verdict)),
     setKillTest: (nodeId, value) => apply((doc) => setKillTestOp(doc, nodeId, value)),
     setPrediction: (nodeId, value) => apply((doc) => setPredictionOp(doc, nodeId, value)),
+    addLink: (a, b) => apply((doc) => addLinkOp(doc, { id: nanoid(), a, b })),
+    removeLink: (id) => apply((doc) => removeLinkOp(doc, id)),
+    setLinkNote: (id, note) => apply((doc) => setLinkNoteOp(doc, id, note)),
     setDecomposition: (parentId, decomposition) =>
       apply((doc) => setDecompositionOp(doc, parentId, decomposition)),
     setOperator: (parentId, operator) => apply((doc) => setOperatorOp(doc, parentId, operator)),

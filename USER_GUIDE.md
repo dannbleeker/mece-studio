@@ -411,8 +411,9 @@ synthesis as "explains 3 of 4 facts — not: Region A only".
 open hypothesis, highest first, by **impact** (from its priority; unset counts
 as medium) times **uncertainty** (no evidence yet or evidence both ways ranks
 highest, anecdote only next, evidence pointing one way lowest). It also notes a
-hypothesis with no kill test. Branches under a refuted or parked node are left
-out. Click a row to jump to it. It's a ranking to help you choose, not a
+hypothesis with no kill test. A parent is listed only once nothing under it is
+still open (its children are the sharper tests), and branches under a refuted
+or parked node are left out. Click a row to jump to it. It's a ranking to help you choose, not a
 verdict: it never changes a status.
 
 **Timeline.** The banner's **Timeline** shows the investigation in order: every
@@ -421,6 +422,16 @@ has no date) and every status change, oldest first. Pick a **Since** day to see
 only what's new, and **Copy "what changed" update** for a ready-to-paste
 Markdown summary, grouped by hypothesis with each one's current status. Handy
 for the weekly status mail.
+
+**Combined causes.** Sometimes two hypotheses only cause the problem together:
+a slower back end is fine on a fast link, a busy link is fine with a fast back
+end, but both at once is the outage. A tree can't hold that, since each node
+sits on one branch. Under **Combined with** in the inspector, pick the other
+hypothesis and click **Link**, then say how they combine. The link is drawn as a
+**dotted line** over the tree. It is a note, not a branch: it never moves a box,
+never changes a split, and the MECE checks never see it. Remove it with ×; it
+also goes when either node is deleted. Links are listed under **Combined
+causes** at the end of the Markdown outline.
 
 ## Evidence
 

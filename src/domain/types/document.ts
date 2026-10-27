@@ -52,6 +52,21 @@ export interface DiagnosticFact {
   isNot?: string;
 }
 
+/**
+ * Two hypotheses that may only cause the problem together ("a slower back end
+ * AND a thin, busy link"). A tree can't hold that: each node sits on one
+ * branch. A link is a note laid over the tree, outside the layout and the MECE
+ * checks, so it never bends the strict-tree invariant.
+ */
+export interface CauseLink {
+  id: string;
+  /** The two linked nodes; order carries no meaning. */
+  a: NodeId;
+  b: NodeId;
+  /** How they combine, in the user's words. Optional. */
+  note?: string;
+}
+
 /** Whether the tree asks "why?" (diagnostic — causes) or "how?" (prescriptive — alternatives). */
 export type TreeMode = 'why' | 'how';
 
@@ -74,6 +89,11 @@ export interface IssueTreeDoc {
    * additive; read through `factsOf()`, which drops malformed entries.
    */
   facts?: DiagnosticFact[];
+  /**
+   * Combined-cause links between nodes. Optional and additive; read through
+   * `linksOf()`, which drops dangling or malformed links.
+   */
+  links?: CauseLink[];
   /**
    * The app locale in effect when the document was created — i.e. the language
    * its seeded labels ("Segment 1", "Other") were written in. Optional and

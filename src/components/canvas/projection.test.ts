@@ -3,6 +3,7 @@ import { NODE_WIDTH } from '@/domain/constants';
 import { nodeHeight } from '@/domain/layout';
 import { en } from '@/i18n/locales/en';
 import { createDoc, createEvidence } from '../../domain/factory';
+import { addLink } from '../../domain/links';
 import { recomputeMece } from '../../domain/mece';
 import {
   addChild,
@@ -17,7 +18,7 @@ import {
 } from '../../domain/tree';
 import type { NodeId } from '../../domain/types';
 import type { IssueFlowNode } from './projection';
-import { toFlow } from './projection';
+import { LINK_EDGE_PREFIX, toFlow } from './projection';
 
 function sample() {
   let doc = createDoc('Root', 0);
@@ -167,5 +168,26 @@ describe('toFlow projection', () => {
     for (const child of nodes.filter((n) => n.id !== doc.rootId)) {
       expect(child.position.x).toBeGreaterThanOrEqual(root.position.x + (root.width ?? 0));
     }
+  });
+});
+
+describe('combined-cause links', () => {
+  it('draws a link as a dotted overlay edge, and hides it when an end is folded away', () => {
+    let doc = createDoc('Root', 0);
+    const a = addChild(doc, doc.rootId, 'A');
+    doc = a.doc;
+    const b = addChild(doc, doc.rootId, 'B');
+    doc = b.doc;
+    const c = addChild(doc, b.childId, 'C');
+    doc = addLink(c.doc, { id: 'l1', a: a.childId, b: c.childId, note: 'together' });
+    const before = toFlow(doc);
+    const overlay = before.edges.find((e) => e.id === `${LINK_EDGE_PREFIX}l1`);
+    expect(overlay).toMatchObject({ source: a.childId, target: c.childId, label: '+' });
+    expect(overlay?.style?.strokeDasharray).toBeTruthy();
+    // Same node positions with or without the link: it never feeds the layout.
+    const without = toFlow({ ...doc, links: [] });
+    expect(before.nodes.map((n) => n.position)).toEqual(without.nodes.map((n) => n.position));
+    const folded = toFlow(toggleCollapse(doc, b.childId));
+    expect(folded.edges.some((e) => e.id.startsWith(LINK_EDGE_PREFIX))).toBe(false);
   });
 });

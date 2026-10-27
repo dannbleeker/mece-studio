@@ -1,6 +1,7 @@
 import type { Edge, Node } from '@xyflow/react';
 import { NODE_WIDTH } from '@/domain/constants';
 import { layoutTree, nodeHeight } from '@/domain/layout';
+import { linksOf } from '@/domain/links';
 import { orderSiblings, type PriorityBand, priorityBand } from '@/domain/priority';
 import { matchesQuery } from '@/domain/search';
 import { hiddenNodeIds, nodeDepths, splitOf } from '@/domain/tree';
@@ -142,5 +143,31 @@ export function toFlow(
     }
   }
 
+  // Combined-cause links: a dotted overlay between two nodes, drawn after the
+  // layout so they never move a box, and skipped when either end is folded away.
+  for (const link of linksOf(doc)) {
+    if (hidden.has(link.a) || hidden.has(link.b)) continue;
+    edges.push({
+      id: `${LINK_EDGE_PREFIX}${link.id}`,
+      source: link.a,
+      target: link.b,
+      type: 'default',
+      selectable: false,
+      focusable: false,
+      zIndex: 1,
+      style: { stroke: '#8a6bb5', strokeWidth: 1.5, strokeDasharray: '2 4' },
+      // A small marker, not the note: a sentence-long label would run across the
+      // boxes. The note lives in the inspector and the outline.
+      label: '+',
+      labelStyle: { fontSize: 11, fontWeight: 600, fill: '#6a4f93' },
+      labelBgPadding: [4, 1] as [number, number],
+      labelBgBorderRadius: 8,
+      labelBgStyle: { fill: '#f5f1fa' },
+    });
+  }
+
   return { nodes, edges };
 }
+
+/** Edge-id prefix that marks a combined-cause overlay rather than a tree edge. */
+export const LINK_EDGE_PREFIX = 'link:';

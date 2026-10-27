@@ -220,6 +220,11 @@ export const exports = {
   factLine: ({ dimension, is, isNot }: { dimension: FactDimension; is: string; isNot?: string }) =>
     `- **${factDimensionWord[dimension]}:** ${is}${isNot ? ` — *not:* ${isNot}` : ''}`,
 
+  /** Combined-cause links, listed after the tree. */
+  linksHeading: '## Combined causes',
+  linkLine: ({ a, b, note }: { a: string; b: string; note?: string }) =>
+    `- ${a} + ${b}${note ? `: ${note}` : ''}`,
+
   /** A hypothesis's test lines. */
   killTestLine: ({ text }: { text: string }) => `kill test: ${text}`,
   predictionLine: ({ text }: { text: string }) => `prediction: ${text}`,
