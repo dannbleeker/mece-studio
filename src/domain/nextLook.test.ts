@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { setKillTest } from './diagnosis';
 import { createDoc, createEvidence } from './factory';
 import { uncertaintyOf, whereToLook } from './nextLook';
 import { addChild, addEvidence, setPriority, setStatus } from './tree';
@@ -53,11 +54,17 @@ describe('whereToLook', () => {
     const rows = whereToLook(t.doc);
     expect(rows.map((r) => [r.nodeId, r.score, r.uncertainty])).toEqual([
       [t.db, 9, 'contested'],
-      [t.lan, 6, 'unknown'],
       [t.lanSwitch, 6, 'unknown'],
       [t.line, 3, 'unknown'],
     ]);
     expect(rows[1]?.impact).toBeUndefined();
+  });
+
+  it('lists a parent only once nothing under it is still open', () => {
+    const t = tree();
+    expect(whereToLook(t.doc).map((r) => r.nodeId)).not.toContain(t.lan);
+    t.doc = setStatus(t.doc, t.lanSwitch, 'refuted', 1);
+    expect(whereToLook(t.doc).map((r) => r.nodeId)).toContain(t.lan);
   });
 
   it('leaves out judged nodes and anything under a refuted or parked branch', () => {
@@ -69,10 +76,7 @@ describe('whereToLook', () => {
 
   it('notes whether a kill test is written', () => {
     const t = tree();
-    t.doc = {
-      ...t.doc,
-      nodes: { ...t.doc.nodes, [t.line]: { ...t.doc.nodes[t.line]!, killTest: 'x' } },
-    };
+    t.doc = setKillTest(t.doc, t.line, 'x');
     const byId = new Map(whereToLook(t.doc).map((r) => [r.nodeId, r.hasKillTest]));
     expect(byId.get(t.line)).toBe(true);
     expect(byId.get(t.db)).toBe(false);
