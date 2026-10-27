@@ -1233,6 +1233,15 @@
       "manual": true,
       "book": false,
       "bookExample": false
+    },
+    {
+      "id": "combined-cause-links",
+      "name": "Combined-cause links (dotted overlay)",
+      "area": "Hypotheses",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
     }
   ]
 }
