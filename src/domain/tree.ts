@@ -1,4 +1,5 @@
 import { createNode, createSplit } from './factory';
+import { pruneLinks } from './links';
 import { evidenceDate, statusLogOf } from './provenance';
 import type {
   DecompositionType,
@@ -358,7 +359,8 @@ export function removeNode(doc: IssueTreeDoc, nodeId: NodeId): IssueTreeDoc {
       childIds.length === split.childIds.length ? split : { ...split, childIds };
   }
 
-  return { ...doc, nodes, splits };
+  // A combined-cause link to a removed node would dangle; drop it with the node.
+  return pruneLinks({ ...doc, nodes, splits });
 }
 
 /**

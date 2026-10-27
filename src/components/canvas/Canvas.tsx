@@ -36,7 +36,7 @@ import { useStore } from '@/store';
 import { CanvasCoach } from './CanvasCoach';
 import { type NodeEditing, NodeEditingContext } from './nodeEditing';
 import { IssueNode } from './nodes/IssueNode';
-import { type IssueFlowNode, toFlow } from './projection';
+import { type IssueFlowNode, LINK_EDGE_PREFIX, toFlow } from './projection';
 import { SelectionBar } from './SelectionBar';
 import { boundsWithinViewport, nodesBounds } from './viewport';
 
@@ -301,7 +301,7 @@ function Flow() {
   const displayEdges = useMemo(() => {
     if (!reviewOpen) return edges;
     return edges.map((e) =>
-      flaggedIds.has(e.source as NodeId)
+      flaggedIds.has(e.source as NodeId) && !e.id.startsWith(LINK_EDGE_PREFIX)
         ? { ...e, style: { stroke: '#bd842c', strokeWidth: 2, strokeDasharray: '5 4' } }
         : e
     );

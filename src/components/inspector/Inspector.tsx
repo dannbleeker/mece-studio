@@ -21,6 +21,7 @@ import { renderAdvisory, renderMece } from '@/i18n/render';
 import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { copyToClipboard } from '@/services/download';
 import { useStore } from '@/store';
+import { CombinedCauses } from './CombinedCauses';
 import { EvidenceProvenance } from './EvidenceProvenance';
 import { HypothesisTests } from './HypothesisTests';
 import { StatusHistory } from './StatusHistory';
@@ -266,6 +267,7 @@ export function Inspector() {
 
             <StatusHistory node={node} />
             {!isRoot && <HypothesisTests node={node} />}
+            {!isRoot && <CombinedCauses node={node} />}
 
             <section className="flex flex-col gap-2 border-neutral-100 border-t pt-3">
               <div className="flex items-center justify-between">

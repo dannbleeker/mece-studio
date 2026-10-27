@@ -151,6 +151,15 @@ export const inspector = {
   predictionLabel: 'Prediction',
   predictionPlaceholder: 'If this is true, what will we see next time?',
   explainsHeading: 'Explains the facts?',
+  /** Combined-cause links (an overlay, outside the tree and its MECE checks). */
+  linksHeading: 'Combined with',
+  linksHint:
+    'Causes that may only produce the problem together. Drawn as a dotted line; not part of the tree.',
+  linkPick: 'Pick a hypothesis…',
+  linkAdd: 'Link',
+  linkNoteLabel: ({ other }: { other: string }) => `How it combines with ${other}`,
+  linkNotePlaceholder: 'e.g. only when both happen at once',
+  linkRemove: ({ other }: { other: string }) => `Remove the link to ${other}`,
 
   /** Issue tab: status history. */
   statusHistoryHeading: 'Status history',

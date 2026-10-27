@@ -1,5 +1,6 @@
 import type { EditorMessages } from '@/i18n/types';
 import { explainsOf, factsOf } from './diagnosis';
+import { linksOf } from './links';
 import { priorityBand } from './priority';
 import { evidenceDate, safeUrl, statusLogOf } from './provenance';
 import { childrenOf, splitOf } from './tree';
@@ -141,5 +142,17 @@ export function toMarkdown(doc: IssueTreeDoc, m: EditorMessages): string {
   }
   if (root && root.evidence.length > 0) lines.push(...evidenceLines(root.evidence, '', m), '');
   for (const child of childrenOf(doc, doc.rootId)) nodeBlock(doc, child.id, 0, lines, m);
+  const links = linksOf(doc);
+  if (links.length > 0) {
+    lines.push('', m.exports.linksHeading, '');
+    const name = (id: NodeId) => doc.nodes[id]?.label || m.content.untitled;
+    for (const l of links) {
+      lines.push(
+        m.exports.linkLine(
+          l.note ? { a: name(l.a), b: name(l.b), note: l.note } : { a: name(l.a), b: name(l.b) }
+        )
+      );
+    }
+  }
   return `${lines.join('\n')}\n`;
 }
