@@ -503,3 +503,43 @@ describe('store — history reconciles selection', () => {
     expect(s().library.some((e) => e.id === s().doc.id)).toBe(false);
   });
 });
+
+/** The persisted library index, read straight from storage. */
+function persisted(): { activeId: string; docs: { id: string; name: string }[] } {
+  return JSON.parse(localStorage.getItem('mece-studio:library:v1') ?? 'null');
+}
+
+describe('library index persistence — single window', () => {
+  // Pins today's behaviour before the write path changes: whatever the store
+  // shows as the library is exactly what a reload would read back.
+  const expectInSync = () => {
+    expect(persisted().docs).toEqual(s().library);
+    expect(persisted().activeId).toBe(s().activeId);
+  };
+
+  it('stays in sync through new, rename, duplicate, switch and delete', () => {
+    expectInSync();
+    s().newDoc('Second tree');
+    expectInSync();
+    s().setRootQuestion('Second tree, renamed');
+    expectInSync();
+    const first = s().library[0]?.id ?? '';
+    s().renameDoc(first, 'First tree');
+    expectInSync();
+    s().duplicateDoc(first);
+    expectInSync();
+    s().switchDoc(first);
+    expectInSync();
+    const second = s().library[1]?.id ?? '';
+    s().deleteDoc(second);
+    expectInSync();
+    s().deleteDoc(s().activeId);
+    expectInSync();
+  });
+
+  it('empties in sync when the last tree is deleted', () => {
+    s().deleteDoc(s().activeId);
+    expect(persisted()).toEqual({ activeId: '', docs: [] });
+    expect(s().library).toEqual([]);
+  });
+});
