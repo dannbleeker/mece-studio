@@ -321,12 +321,12 @@
   },
   {
     "date": "2026-10-27",
-    "linesTsJs": 28149,
-    "coveragePct": 90.42,
-    "tests": 686,
-    "bundleKb": 113.3,
+    "linesTsJs": 28576,
+    "coveragePct": 90.62,
+    "tests": 696,
+    "bundleKb": 113.9,
     "featureManualPct": 100,
-    "featureBookPct": 89.6,
-    "featureExamplePct": 15.6
+    "featureBookPct": 89,
+    "featureExamplePct": 15.4
   }
 ]
