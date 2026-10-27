@@ -17,17 +17,17 @@ afterEach(cleanup);
 
 function setup() {
   const root = s().doc.rootId;
-  s().addChild(root, 'CSU slow at peak');
+  s().addChild(root, 'Database slow at peak');
   const hyp = childrenOf(s().doc, root)[0]?.id ?? '';
-  s().addFact('when', 'Saturdays from 16:00');
-  s().addFact('where', 'Germany only');
+  s().addFact('when', 'Mondays from 09:00');
+  s().addFact('where', 'Region A only');
   const [f1, f2] = (s().doc.facts ?? []).map((f) => f.id);
   return { hyp, f1: f1 ?? '', f2: f2 ?? '' };
 }
 
 const cell = (fact: string, verdict: string) =>
   screen.getByRole('button', {
-    name: en.brief.gridCellLabel({ hypothesis: 'CSU slow at peak', fact, verdict }),
+    name: en.brief.gridCellLabel({ hypothesis: 'Database slow at peak', fact, verdict }),
   });
 
 describe('MustExplainGrid', () => {
@@ -40,13 +40,13 @@ describe('MustExplainGrid', () => {
     const { hyp, f1 } = setup();
     render(<MustExplainGrid onClose={() => {}} />);
     const verdict = () => s().doc.nodes[hyp as NodeId]?.explains?.[f1];
-    fireEvent.click(cell('Saturdays from 16:00', en.brief.verdictClear));
+    fireEvent.click(cell('Mondays from 09:00', en.brief.verdictClear));
     expect(verdict()).toBe('yes');
-    fireEvent.click(cell('Saturdays from 16:00', en.brief.verdict.yes));
+    fireEvent.click(cell('Mondays from 09:00', en.brief.verdict.yes));
     expect(verdict()).toBe('partly');
-    fireEvent.click(cell('Saturdays from 16:00', en.brief.verdict.partly));
+    fireEvent.click(cell('Mondays from 09:00', en.brief.verdict.partly));
     expect(verdict()).toBe('no');
-    fireEvent.click(cell('Saturdays from 16:00', en.brief.verdict.no));
+    fireEvent.click(cell('Mondays from 09:00', en.brief.verdict.no));
     expect(verdict()).toBeUndefined();
   });
 
@@ -73,7 +73,7 @@ describe('MustExplainGrid', () => {
         }}
       />
     );
-    fireEvent.click(screen.getByRole('button', { name: 'CSU slow at peak' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Database slow at peak' }));
     expect(s().selectedId).toBe(hyp);
     expect(closed).toBe(true);
   });

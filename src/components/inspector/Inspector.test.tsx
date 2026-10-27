@@ -102,12 +102,12 @@ describe('Inspector', () => {
 
   it('records who, when and where for a piece of evidence, with a link back', () => {
     const rootId = selectRoot();
-    s().addEvidence(rootId, 'CSU 120 ms to 450 ms at 16:00', true, 'indicative');
+    s().addEvidence(rootId, 'Query time 120 ms to 450 ms at peak', true, 'indicative');
     render(<Inspector />);
     goTab('evidence');
     fireEvent.click(screen.getByRole('button', { name: en.inspector.provenanceShow }));
     fireEvent.blur(screen.getByLabelText(en.inspector.provenanceAuthor), {
-      target: { value: 'Martin' },
+      target: { value: 'Alex' },
     });
     fireEvent.blur(screen.getByLabelText(en.inspector.provenanceDate), {
       target: { value: '2026-10-24' },
@@ -117,7 +117,7 @@ describe('Inspector', () => {
     });
     const ev = s().doc.nodes[rootId]?.evidence[0];
     expect(ev).toMatchObject({
-      author: 'Martin',
+      author: 'Alex',
       date: '2026-10-24',
       url: 'https://teams.microsoft.com/l/message/1',
     });
@@ -125,7 +125,7 @@ describe('Inspector', () => {
     expect(link.getAttribute('href')).toBe('https://teams.microsoft.com/l/message/1');
     expect(link.getAttribute('rel')).toContain('noopener');
     expect(
-      screen.getByText(new RegExp(`Martin · ${en.inspector.provenanceDay({ iso: '2026-10-24' })}`))
+      screen.getByText(new RegExp(`Alex · ${en.inspector.provenanceDay({ iso: '2026-10-24' })}`))
     ).toBeTruthy();
   });
 
@@ -153,7 +153,9 @@ describe('Inspector', () => {
     const reasons = screen.getAllByLabelText(en.inspector.statusReasonLabel);
     expect(reasons).toHaveLength(2);
     // Newest first: the reopening is the top entry.
-    fireEvent.blur(reasons[0] as HTMLElement, { target: { value: 'ZDX saw it slow from Munich' } });
+    fireEvent.blur(reasons[0] as HTMLElement, {
+      target: { value: 'The probe saw it slow from outside' },
+    });
     const evId = s().doc.nodes[rootId]?.evidence[0]?.id ?? '';
     fireEvent.change(screen.getAllByRole('combobox')[0] as HTMLElement, {
       target: { value: evId },
@@ -161,16 +163,16 @@ describe('Inspector', () => {
     expect(s().doc.nodes[rootId]?.statusLog?.[1]).toMatchObject({
       from: 'refuted',
       to: 'open',
-      reason: 'ZDX saw it slow from Munich',
+      reason: 'The probe saw it slow from outside',
       evidenceId: evId,
     });
   });
 
   it('records a kill test, a prediction and verdicts against the facts', () => {
     const root = s().doc.rootId;
-    s().addChild(root, 'Store line too thin');
+    s().addChild(root, 'Network link too thin');
     const child = s().doc.nodes[root] && childrenOf(s().doc, root)[0]?.id;
-    s().addFact('where', 'Germany only');
+    s().addFact('where', 'Region A only');
     const factId = s().doc.facts?.[0]?.id ?? '';
     s().select(child as NodeId);
     render(<Inspector />);
@@ -182,8 +184,8 @@ describe('Inspector', () => {
     });
     const yes = screen.getByRole('button', {
       name: en.brief.gridCellLabel({
-        hypothesis: 'Store line too thin',
-        fact: 'Germany only',
+        hypothesis: 'Network link too thin',
+        fact: 'Region A only',
         verdict: en.brief.verdict.yes,
       }),
     });

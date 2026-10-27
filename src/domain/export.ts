@@ -52,7 +52,7 @@ export function evidenceLines(
   });
 }
 
-/** " — Martin, 24 Oct 2026, ZDX <https://…>" for an evidence item, or "". */
+/** " — Alex, 26 Oct 2026, probe <https://…>" for an evidence item, or "". */
 function provenanceSuffix(e: EvidenceItem, m: EditorMessages): string {
   const parts: Parameters<EditorMessages['exports']['evidenceProvenance']>[0] = {};
   if (e.author?.trim()) parts.author = e.author.trim();

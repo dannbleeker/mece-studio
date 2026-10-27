@@ -3,7 +3,7 @@
 //
 // Kepner-Tregoe's specification: describe the problem by what it IS and the
 // closest thing it IS NOT, then judge every candidate cause against the whole
-// list. A cause that can't explain "Germany only" is in trouble however much
+// list. A cause that can't explain "Region A only" is in trouble however much
 // evidence it has. This is a reasoning aid, not a verdict machine: the user
 // marks each verdict; the domain only collects and summarises them.
 //

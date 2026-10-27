@@ -14,8 +14,8 @@ import {
 import type { IssueTreeDoc, NodeId } from './types';
 
 function withHypothesis(): { doc: IssueTreeDoc; id: NodeId } {
-  const doc0 = createDoc('Why is the POS slow?', 0);
-  const { doc, childId } = addChild(doc0, doc0.rootId, 'CSU slow at peak');
+  const doc0 = createDoc('Why is the app slow?', 0);
+  const { doc, childId } = addChild(doc0, doc0.rootId, 'Database slow at peak');
   return { doc, id: childId };
 }
 
@@ -49,7 +49,7 @@ describe('status history', () => {
     let { doc, id } = withHypothesis();
     doc = addEvidence(doc, id, {
       id: 'ev1',
-      summary: 'ZDX: CSU 120 ms to 450 ms at 16:00',
+      summary: 'Probe: query time 120 ms to 450 ms at peak',
       supports: true,
       strength: 'indicative',
     });
@@ -108,22 +108,22 @@ describe('evidence provenance', () => {
 
   it('sets date, author, source and link, trimmed', () => {
     let { doc, id } = withEvidence();
-    doc = setEvidenceProvenance(doc, id, 'ev1', 'author', '  Martin ');
+    doc = setEvidenceProvenance(doc, id, 'ev1', 'author', '  Alex ');
     doc = setEvidenceProvenance(doc, id, 'ev1', 'date', '2026-10-24');
-    doc = setEvidenceProvenance(doc, id, 'ev1', 'source', 'Zscaler ZDX');
+    doc = setEvidenceProvenance(doc, id, 'ev1', 'source', 'Synthetic monitor');
     doc = setEvidenceProvenance(doc, id, 'ev1', 'url', 'https://teams.microsoft.com/l/message/1');
     expect(ev(doc, id)).toMatchObject({
-      author: 'Martin',
+      author: 'Alex',
       date: '2026-10-24',
-      source: 'Zscaler ZDX',
+      source: 'Synthetic monitor',
       url: 'https://teams.microsoft.com/l/message/1',
     });
   });
 
   it('clears a field with an empty value, and is a no-op when nothing changes', () => {
     let { doc, id } = withEvidence();
-    doc = setEvidenceProvenance(doc, id, 'ev1', 'author', 'Martin');
-    expect(setEvidenceProvenance(doc, id, 'ev1', 'author', 'Martin')).toBe(doc);
+    doc = setEvidenceProvenance(doc, id, 'ev1', 'author', 'Alex');
+    expect(setEvidenceProvenance(doc, id, 'ev1', 'author', 'Alex')).toBe(doc);
     doc = setEvidenceProvenance(doc, id, 'ev1', 'author', '   ');
     expect(ev(doc, id)).not.toHaveProperty('author');
   });

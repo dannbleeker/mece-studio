@@ -168,7 +168,7 @@ describe('evidence-consistency hints', () => {
     status: 'supported' | 'refuted',
     evidence: { supports: boolean; strength: 'anecdote' | 'indicative' | 'strong' }[]
   ) {
-    const { doc: d0, ids } = freeform(['CSU slow at peak', 'Store line too thin']);
+    const { doc: d0, ids } = freeform(['Database slow at peak', 'Network link too thin']);
     let doc = d0;
     const id = ids[0] as NodeId;
     evidence.forEach((e, i) => {
@@ -200,7 +200,7 @@ describe('evidence-consistency hints', () => {
   });
 
   it('flags a hypothesis ruled out while strong evidence still supports it', () => {
-    // The CSU case: ruled out on server timings, then a neutral probe saw it slow.
+    // The classic case: ruled out on server timings, then a neutral probe saw it slow.
     const { doc } = judged('refuted', [
       { supports: false, strength: 'indicative' },
       { supports: true, strength: 'strong' },
@@ -235,7 +235,7 @@ describe('evidence-consistency hints', () => {
   });
 
   it('ignores open and parked hypotheses, and the root', () => {
-    let { doc } = freeform(['CSU slow at peak']);
+    let { doc } = freeform(['Database slow at peak']);
     doc = setStatus(doc, doc.rootId, 'supported');
     expect(evidenceHints(doc)).toHaveLength(0);
   });
@@ -251,9 +251,9 @@ describe('evidence-consistency hints', () => {
 
 describe('diagnosis hints', () => {
   function withFacts() {
-    const { doc: d0, ids } = freeform(['CSU slow at peak', 'Store line too thin']);
-    let doc = addFact(d0, { id: 'f1', dimension: 'where', is: 'Germany only' });
-    doc = addFact(doc, { id: 'f2', dimension: 'when', is: 'Saturdays from 16:00' });
+    const { doc: d0, ids } = freeform(['Database slow at peak', 'Network link too thin']);
+    let doc = addFact(d0, { id: 'f1', dimension: 'where', is: 'Region A only' });
+    doc = addFact(doc, { id: 'f2', dimension: 'when', is: 'Mondays from 09:00' });
     return { doc, a: ids[0] as NodeId, b: ids[1] as NodeId };
   }
 
@@ -264,7 +264,7 @@ describe('diagnosis hints', () => {
     doc = setStatus(doc, a, 'supported');
     const hints = cats(advisories(doc), 'diagnosis');
     expect(hints.map((h) => h.message)).toEqual([
-      { code: 'advisory.diagnosis.doesNotExplain', params: { fact: 'Germany only', more: 0 } },
+      { code: 'advisory.diagnosis.doesNotExplain', params: { fact: 'Region A only', more: 0 } },
     ]);
   });
 
@@ -284,7 +284,7 @@ describe('diagnosis hints', () => {
       target: { kind: 'node', id: a },
       message: { code: 'advisory.diagnosis.noKillTest' },
     });
-    doc = setKillTest(doc, a, 'Azure probe stays at 120 ms at 16:00');
+    doc = setKillTest(doc, a, 'Cloud probe stays at 120 ms at 09:00');
     expect(cats(advisories(doc), 'diagnosis')).toHaveLength(0);
   });
 });

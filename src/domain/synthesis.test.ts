@@ -184,9 +184,9 @@ describe('synthesise', () => {
 
 describe('synthesise — must-explain', () => {
   it('says how each branch fares against the facts, and parses it as a detail line', () => {
-    let doc = createDoc('Why are German tills slow on Saturdays?', 0);
-    const h = addChild(doc, doc.rootId, 'Store line too thin');
-    doc = addFact(h.doc, { id: 'f1', dimension: 'where', is: 'Germany' });
+    let doc = createDoc('Why are page loads slow on Monday mornings?', 0);
+    const h = addChild(doc, doc.rootId, 'Network link too thin');
+    doc = addFact(h.doc, { id: 'f1', dimension: 'where', is: 'Region A' });
     doc = addFact(doc, { id: 'f2', dimension: 'extent', is: 'Some fast lines hit too' });
     doc = setExplains(doc, h.childId, 'f1', 'yes');
     doc = setExplains(doc, h.childId, 'f2', 'no');
