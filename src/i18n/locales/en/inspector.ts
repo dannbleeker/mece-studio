@@ -110,6 +110,9 @@ export const inspector = {
   aiPromptTitle:
     'Copy a prompt to suggest a MECE split for this node — paste it into Claude or ChatGPT',
   aiPromptAction: 'Copy an AI prompt to suggest a split →',
+  splitCheckTitle:
+    'Copy a prompt asking an AI to judge this split on meaning, not just wording — paste it into Claude or ChatGPT',
+  splitCheckAction: 'Wording only — copy an AI prompt to check the meaning →',
   aiPasteSummary: "…then paste the AI's split back →",
   aiPastePlaceholder: "Paste the AI's Markdown outline…\n- Sub-issue\n  - nested",
   aiPasteAction: 'Add these sub-issues',

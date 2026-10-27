@@ -40,6 +40,8 @@ export interface MeceParams {
   'mece.exclusive.binaryClean': undefined;
   /** A binary split has the wrong branch count (either axis). */
   'mece.exclusive.binaryNeedsTwo': undefined;
+  /** Two binary branches that don't read as A / not-A, so exclusivity isn't proven. */
+  'mece.exclusive.binaryNotComplement': undefined;
   /** Formula terms are exclusive by construction (product / difference, or a clean sum). */
   'mece.exclusive.formulaClean': undefined;
   /** A summed term reads like a running total, so it double-counts the others. */
@@ -69,6 +71,8 @@ export interface MeceParams {
   'mece.exhaustive.binaryNeedsTwo': undefined;
   /** A / not-A covers every case. */
   'mece.exhaustive.binaryClean': undefined;
+  /** Two binary branches that don't read as A / not-A, so exhaustiveness isn't proven. */
+  'mece.exhaustive.binaryNotComplement': undefined;
   /** Process stages: prompt the end-to-end check we can't prove. */
   'mece.exhaustive.processEndToEnd': undefined;
   /** A named framework organises thinking but isn't a provable partition. */

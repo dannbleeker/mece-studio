@@ -62,6 +62,17 @@ describe('App routing', () => {
     expect(screen.queryByRole('button', { name: en.app.backToStart })).toBeNull(); // nor its header
   });
 
+  it('re-reads the library when another window changes it, and stops on unmount', () => {
+    const sync = vi.spyOn(s(), 'syncLibrary');
+    useStore.setState({ syncLibrary: sync });
+    const { unmount } = render(<App />);
+    window.dispatchEvent(new StorageEvent('storage', { key: 'mece-studio:library:v1' }));
+    expect(sync).toHaveBeenCalledTimes(1);
+    unmount();
+    window.dispatchEvent(new StorageEvent('storage', { key: 'mece-studio:library:v1' }));
+    expect(sync).toHaveBeenCalledTimes(1);
+  });
+
   it('shows the workspace once a tree is open', async () => {
     s().setView('workspace');
     render(<App />);

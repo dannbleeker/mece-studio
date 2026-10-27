@@ -55,19 +55,21 @@ import { catalogueFor } from '@/i18n/registry';
 import type { CoreMessages } from '@/i18n/types';
 import {
   docName,
+  type Library,
   type LibraryEntry,
   loadDocById,
+  loadLibrary,
   loadOpenTabs,
   loadSettings,
   loadUserTemplates,
   loadWorkspace,
   removeDocById,
   saveDocById,
-  saveLibrary,
   saveOpenTabs,
   saveSettings,
   saveUserTemplates,
   type UserTemplate,
+  updateLibrary,
 } from '@/services/storage';
 
 const HISTORY_LIMIT = 100;
@@ -144,8 +146,10 @@ function initialState(): {
   }
   const doc = freshDoc(options, settings);
   saveDocById(doc);
-  const library = [entryFor(doc, settings)];
-  saveLibrary({ activeId: doc.id, docs: library });
+  const { docs: library } = updateLibrary(
+    { activeId: doc.id, upsert: [entryFor(doc, settings)] },
+    { activeId: doc.id, docs: [] }
+  );
   saveOpenTabs([doc.id]);
   return { doc, library, activeId: doc.id, openTabs: [doc.id], settings };
 }
@@ -159,9 +163,21 @@ function syncLibraryName(
   const name = docName(doc, cat(settings).content.untitledTree);
   const existing = library.find((e) => e.id === doc.id);
   if (!existing || existing.name === name) return library;
-  const next = library.map((e) => (e.id === doc.id ? { ...e, name } : e));
-  saveLibrary({ activeId: doc.id, docs: next });
-  return next;
+  return updateLibrary(
+    { activeId: doc.id, upsert: [{ ...existing, name }] },
+    { activeId: doc.id, docs: library }
+  ).docs;
+}
+
+/** This window's library as the fallback base for `updateLibrary`. */
+function current(s: { library: LibraryEntry[]; activeId: string }): Library {
+  return { activeId: s.activeId, docs: s.library };
+}
+
+/** Narrow a tab list to the trees the library still lists. */
+function liveTabs(tabs: string[], docs: LibraryEntry[]): string[] {
+  const ids = new Set(docs.map((e) => e.id));
+  return tabs.filter((t) => ids.has(t));
 }
 
 /** Add `id` to the open-tabs list if it isn't already there. */
@@ -170,14 +186,25 @@ function withTab(tabs: string[], id: string): string[] {
 }
 
 /**
- * Make `doc` the active document under `docs`: persist both, ensure it's an open
- * tab, reset history + selection, and enter the canvas workspace (every entry
- * point — new / open / switch / delete-and-reopen — opens the tree for editing).
+ * Make `doc` the active document: persist it, list it in the library (dropping
+ * `remove`), ensure it's an open tab, reset history + selection, and enter the
+ * canvas workspace (every entry point — new / open / switch / delete-and-reopen
+ * — opens the tree for editing). The index write is a merge, so trees another
+ * window added or deleted meanwhile are kept as they are.
  */
-function activate(doc: IssueTreeDoc, docs: LibraryEntry[], prevTabs: string[]) {
+function activate(
+  doc: IssueTreeDoc,
+  settings: Settings,
+  prevTabs: string[],
+  fallback: Library,
+  remove: string[] = []
+) {
   saveDocById(doc);
-  saveLibrary({ activeId: doc.id, docs });
-  const openTabs = withTab(prevTabs, doc.id);
+  const { docs } = updateLibrary(
+    { activeId: doc.id, upsert: [entryFor(doc, settings)], remove },
+    fallback
+  );
+  const openTabs = withTab(liveTabs(prevTabs, docs), doc.id);
   saveOpenTabs(openTabs);
   return {
     doc,
@@ -237,6 +264,12 @@ interface AppState {
   renameDoc: (id: string, label: string) => void;
   /** Copy a whole tree into the library as a new document, without opening it. */
   duplicateDoc: (id: string) => void;
+  /**
+   * Re-read the library index after another window changed it: list what it
+   * added, drop what it deleted (and any tab on it). The tree open HERE stays
+   * listed even if the other window deleted it — someone is still typing in it.
+   */
+  syncLibrary: () => void;
   /** The user's saved custom templates. */
   userTemplates: UserTemplate[];
   /** Save the current tree as a reusable custom template (instance data stripped). */
@@ -370,7 +403,7 @@ export const useStore = create<AppState>((set, get) => {
     newDoc: (question) =>
       set((s) => {
         const doc = freshDoc(meceOptions(s.settings), s.settings, question);
-        return activate(doc, [...s.library, entryFor(doc, s.settings)], s.openTabs);
+        return activate(doc, s.settings, s.openTabs, current(s));
       }),
 
     switchDoc: (id) =>
@@ -378,7 +411,12 @@ export const useStore = create<AppState>((set, get) => {
         if (id === s.activeId) return s;
         const target = loadDocById(id);
         if (!target) return s;
-        return activate(recomputeMece(target, meceOptions(s.settings)), s.library, s.openTabs);
+        return activate(
+          recomputeMece(target, meceOptions(s.settings)),
+          s.settings,
+          s.openTabs,
+          current(s)
+        );
       }),
 
     closeTab: (id) =>
@@ -395,30 +433,39 @@ export const useStore = create<AppState>((set, get) => {
         const nextId = tabs[Math.min(closedAt, tabs.length - 1)] ?? '';
         const target = loadDocById(nextId);
         if (!target) return { openTabs: tabs };
-        return activate(recomputeMece(target, meceOptions(s.settings)), s.library, tabs);
+        return activate(
+          recomputeMece(target, meceOptions(s.settings)),
+          s.settings,
+          tabs,
+          current(s)
+        );
       }),
 
     deleteDoc: (id) =>
       set((s) => {
         if (!s.library.some((e) => e.id === id)) return s;
         removeDocById(id);
-        const docs = s.library.filter((e) => e.id !== id);
         const opts = meceOptions(s.settings);
         // A deleted tree can't stay an open tab.
         const tabs = s.openTabs.filter((t) => t !== id);
 
         // Deleting a non-active doc: just drop it from the library (and any tab).
         if (id !== s.activeId) {
-          saveLibrary({ activeId: s.activeId, docs });
-          saveOpenTabs(tabs);
-          return { library: docs, openTabs: tabs };
+          const { docs } = updateLibrary({ remove: [id] }, current(s));
+          const openTabs = liveTabs(tabs, docs);
+          saveOpenTabs(openTabs);
+          return { library: docs, openTabs };
         }
+        // What remains is judged against the index as stored, not this window's
+        // copy: another window may have added a tree, and then this was not the
+        // last one.
+        const docs = (loadLibrary() ?? current(s)).docs.filter((e) => e.id !== id);
         // Deleting the active doc while others remain: open the next tab, else
         // the first remaining library tree.
         if (docs.length > 0) {
-          const nextId = tabs[0] ?? docs[0]?.id ?? '';
+          const nextId = liveTabs(tabs, docs)[0] ?? docs[0]?.id ?? '';
           const next = loadDocById(nextId);
-          if (next) return activate(recomputeMece(next, opts), docs, tabs);
+          if (next) return activate(recomputeMece(next, opts), s.settings, tabs, current(s), [id]);
           // The next tree could not be read back — evicted, a write that hit quota,
           // or a browser handing us no localStorage at all. The old fallback opened
           // a fabricated blank doc while passing the UNCHANGED library to `activate`,
@@ -429,13 +476,14 @@ export const useStore = create<AppState>((set, get) => {
           // It strands nothing, invents no tree, and leaves the remaining trees one
           // click away. (Listing the blank doc would be the other repair, but on a
           // profile with no storage at all every delete would then breed a phantom.)
-          saveLibrary({ activeId: '', docs });
-          saveOpenTabs(tabs);
+          const kept = updateLibrary({ activeId: '', remove: [id] }, current(s)).docs;
+          const openTabs = liveTabs(tabs, kept);
+          saveOpenTabs(openTabs);
           return {
             doc: freshDoc(opts, s.settings),
-            library: docs,
+            library: kept,
             activeId: '',
-            openTabs: tabs,
+            openTabs,
             past: [],
             future: [],
             selectedId: null,
@@ -448,11 +496,11 @@ export const useStore = create<AppState>((set, get) => {
         // return to Start (the empty gallery) — don't reseed a starter, which
         // would look like the delete never happened. A throwaway blank doc keeps
         // the canvas type-safe; it isn't listed until the user starts a new tree.
-        saveLibrary({ activeId: '', docs: [] });
+        const emptied = updateLibrary({ activeId: '', remove: [id] }, current(s)).docs;
         saveOpenTabs([]);
         return {
           doc: freshDoc(opts, s.settings),
-          library: [],
+          library: emptied,
           activeId: '',
           openTabs: [],
           past: [],
@@ -474,10 +522,10 @@ export const useStore = create<AppState>((set, get) => {
         if (renamed === base) return s; // unchanged → no-op
         const doc = { ...renamed, updatedAt: Date.now() };
         saveDocById(doc);
-        const library = s.library.map((e) =>
-          e.id === id ? { ...e, name: docName(doc, cat(s.settings).content.untitledTree) } : e
+        const { docs: library } = updateLibrary(
+          { upsert: [{ id, name: docName(doc, cat(s.settings).content.untitledTree) }] },
+          current(s)
         );
-        saveLibrary({ activeId: s.activeId, docs: library });
         // Reflect the rename in the live doc too if it's the one currently open.
         return id === s.activeId ? { doc, library } : { library };
       }),
@@ -499,9 +547,26 @@ export const useStore = create<AppState>((set, get) => {
           })
         );
         saveDocById(copy);
-        const library = [...s.library, entryFor(copy, s.settings)];
-        saveLibrary({ activeId: s.activeId, docs: library });
+        const { docs: library } = updateLibrary(
+          { upsert: [entryFor(copy, s.settings)] },
+          current(s)
+        );
         return { library };
+      }),
+
+    syncLibrary: () =>
+      set((s) => {
+        const stored = loadLibrary();
+        if (!stored) return s;
+        let docs = stored.docs;
+        if (s.activeId && !docs.some((e) => e.id === s.activeId)) {
+          // The other window's delete also removed the blob: write it back.
+          saveDocById(s.doc);
+          docs = updateLibrary({ upsert: [entryFor(s.doc, s.settings)] }, stored).docs;
+        }
+        // Tabs are narrowed in memory only. The tab list is per window in
+        // spirit but shares one key; writing it here would just bounce back.
+        return { library: docs, openTabs: liveTabs(s.openTabs, docs) };
       }),
 
     saveAsTemplate: (name) =>
@@ -529,7 +594,7 @@ export const useStore = create<AppState>((set, get) => {
           { ...incoming, id: nanoid() as DocId, updatedAt: Date.now() },
           meceOptions(s.settings)
         );
-        return activate(doc, [...s.library, entryFor(doc, s.settings)], s.openTabs);
+        return activate(doc, s.settings, s.openTabs, current(s));
       }),
 
     setRootQuestion: (label) => apply((doc) => renameNodeOp(doc, doc.rootId, label)),

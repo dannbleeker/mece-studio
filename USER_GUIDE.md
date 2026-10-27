@@ -168,7 +168,7 @@ inspector, pick a **decomposition type**:
   explicit **"Other"** bucket to be sure you've covered everything.
 - **Process** — break into sequential stages or steps.
 - **Binary** — split into **A / not-A** (e.g. *new customers* vs *existing*).
-  This is always provably MECE.
+  Provably MECE when one branch is the negation of the other — see below.
 - **Formula** — the children combine arithmetically into the parent
   (Revenue = Price × Volume). See [Value-driver trees](#value-driver-trees).
 - **Framework** — an established lens (e.g. People / Process / Technology).
@@ -203,20 +203,37 @@ re-evaluates every split on every change and shows the result two ways:
 
 How each split type is judged:
 
-- **Binary (A / not-A)** — provably MECE by construction (exactly two branches).
+- **Binary (A / not-A)** — provably MECE when the two branches read as a
+  complement: one negates the other (*not*, *no*, *without*, *ikke*, *uden*, or a
+  prefix like *un-* / *non-*: *Profitable / Unprofitable*), or they form a known
+  pair (*online / offline*, *internal / external*, *new / existing*). Two branches
+  that don't — *Revenue / Costs* put in a binary split — show as **not proven**
+  rather than a pass. Not a warning: nothing is shown to be wrong, it just isn't
+  shown to be right. *Above / below target* looks binary but isn't: *on target*
+  falls in neither.
 - **Formula** — checked for **reconciliation** (do the children combine into the
   parent's value within tolerance?) *and* for **double-counting**: a summed term
   named like a running "total", or two terms with the same label, is flagged.
   Product / difference terms are exclusive by construction.
 - **Segments** — collectively exhaustive only when you include an explicit
-  **"Other"** bucket; otherwise you're warned there may be a gap.
+  **"Other"** bucket; otherwise you're warned there may be a gap. The bucket is
+  recognised in English and Danish (*Other*, *Remaining*, *Everything else*,
+  *Øvrige*, *Andre*, *Resten*, *Diverse*…).
 - **Process** and **framework** — can't be *proven* exhaustive, so instead of a
   silent grey dot you get a plain-language prompt (does the process run end to
   end? does the framework leave anything important outside?).
 - **Other types** — a **sibling-overlap heuristic** flags when siblings share a
   content word (a sign they may not be mutually exclusive) and **names the pair**.
-  A word that *every* sibling shares (with three or more branches) is treated as
-  the split's dimension, not an overlap; generic and placeholder words are ignored.
+  A word that *every named* sibling shares (with three or more branches) is
+  treated as the split's dimension, not an overlap — so *Large stores / Small
+  stores / Other* is cut on *stores*, not flagged. Generic and placeholder words
+  are ignored, letters like *æ, ø, å* stay inside their word, and a singular and
+  its plural (*Store* / *Stores*) count as the same word.
+- **Wording only** — the overlap check compares words, not meaning: *ISP routing*
+  and *Telekom path* share no word but may describe the same thing. Wherever a
+  split can't be proven, the **Logic** tab offers **"Wording only — copy an AI
+  prompt to check the meaning"**, a prompt about just that split (see
+  *AI assist* below).
 - **Mixed axes** — if the branches each *name a different way to cut* the level
   (e.g. *"By region" / "By segment" / "By quarter"* as siblings) instead of one
   axis's categories, you're warned to pick a single axis per level. It's
@@ -417,8 +434,12 @@ key and no backend:
 - **Suggest a split** (from the inspector, on a selected node) — copies a prompt
   asking an LLM to propose a MECE decomposition for that node, returned as a
   paste-ready Markdown outline.
+- **Check this split's meaning** (from the inspector's **Logic** tab, on a split
+  the engine can't prove) — copies a prompt asking an LLM to judge just that one
+  split: could a real case fall under two branches, or under none? It names the
+  parent and its branches first, then the whole tree for context.
 
-Paste either into Claude, ChatGPT, or any assistant. Your data never leaves your
+Paste any of them into Claude, ChatGPT, or any assistant. Your data never leaves your
 machine unless *you* paste it.
 
 **Paste the split back.** Under the same inspector section, a **"paste the AI's
@@ -447,6 +468,11 @@ MECE Studio keeps a **library** of trees.
   the next tree in your library. Deleting your last tree leaves the library
   empty and returns you to the Start page, where **+ New tree** (or the
   key-question box) starts a fresh one.
+- **More than one window** — open MECE Studio in two tabs or windows and they
+  share one library. A tree created, renamed or deleted in one shows up in the
+  other without a reload, and neither window can erase the other's trees. If
+  you delete a tree in one window while it's open in another, the open one keeps
+  it: someone is still working in it, so it stays listed.
 - **Automatic migration** — if you used an earlier single-tree version, your tree
   is folded into the library automatically the first time you open the new
   version. Nothing is lost.

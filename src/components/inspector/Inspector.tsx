@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { CHECK_STATE_COLOR, CHECK_STATE_GLYPH } from '@/components/checkColors';
 import { advisoriesFor } from '@/domain/advisories';
-import { decomposePrompt } from '@/domain/aiPrompts';
+import { decomposePrompt, splitCheckPrompt } from '@/domain/aiPrompts';
 import { DECOMPOSITION_TYPES } from '@/domain/constants';
 import { priorityBand } from '@/domain/priority';
 import { rollUpValue } from '@/domain/rollup';
@@ -480,6 +480,18 @@ export function Inspector() {
                 <MeceRow label={m.inspector.exclusiveAxis} result={split.mece.exclusive} />
                 <MeceRow label={m.inspector.exhaustiveAxis} result={split.mece.exhaustive} />
               </div>
+              {(split.mece.exclusive.state === 'unknown' ||
+                split.mece.exhaustive.state === 'unknown') &&
+                split.logic !== 'deductive' && (
+                  <button
+                    type="button"
+                    className="self-start text-[11px] text-[#3f6fb0] hover:underline"
+                    title={m.inspector.splitCheckTitle}
+                    onClick={() => void copyToClipboard(splitCheckPrompt(doc, selectedId, m))}
+                  >
+                    {m.inspector.splitCheckAction}
+                  </button>
+                )}
               {rollup !== undefined && (
                 <button
                   type="button"

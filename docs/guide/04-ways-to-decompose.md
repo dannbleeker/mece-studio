@@ -10,6 +10,8 @@ A binary split divides the world into something and its complement: churned cust
 
 Binary is always MECE. The logic is airtight: something either belongs to the A group or it doesn't, there is no third option, and together A and not-A cover everything. You cannot overlap, and you cannot leave a gap.
 
+The catch is that the two labels have to *be* a complement, not just two things. "Above target margin / below target margin" looks binary, but a product exactly on target falls in neither. MECE Studio only marks a binary split as provably MECE when the wording shows the complement: one branch negates the other ("churned / did not churn"), or they form a known pair ("new / existing"). Anything else it reports as not proven, which is your cue to reword.
+
 Use binary when:
 
 - You are not sure yet how to cut a question and need a safe start.
