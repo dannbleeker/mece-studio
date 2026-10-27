@@ -380,7 +380,11 @@ const COMPLEMENT_PAIRS: ReadonlyArray<readonly [string, string]> = [
   ['internal', 'external'],
   ['inside', 'outside'],
   ['inbound', 'outbound'],
+  ['new', 'existing'],
+  // Danish
   ['intern', 'ekstern'],
+  ['ny', 'eksisterende'],
+  ['nye', 'eksisterende'],
 ];
 
 /** Same tokens except one, where `neg` is `base` with a negating prefix glued on. */

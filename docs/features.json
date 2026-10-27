@@ -920,6 +920,15 @@
       "bookExample": false
     },
     {
+      "id": "ai-split-check",
+      "name": "AI check-this-split's-meaning prompt (keyless)",
+      "area": "AI",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
       "id": "first-split-chooser",
       "name": "Scaffold the first split from the Build CTA",
       "area": "Tree",
@@ -980,6 +989,15 @@
       "since": 9,
       "manual": true,
       "book": true,
+      "bookExample": false
+    },
+    {
+      "id": "multi-window-library",
+      "name": "Library shared safely across open windows",
+      "area": "Documents",
+      "since": 11,
+      "manual": true,
+      "book": false,
       "bookExample": false
     },
     {

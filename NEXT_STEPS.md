@@ -31,6 +31,12 @@ The architecture is in place and English is the only locale. What's open:
 - **Lazy-load whole locales** once there is more than one. Every read already
   goes through `catalogueFor` / `editorCatalogueFor`, so it is a change to those
   two files plus a loading state — no call site moves.
+- **Before Danish ships, add its scaffold nouns to the overlap stopwords.** The
+  English placeholders ("Segment 1", "Stage 2") are stop-worded in
+  `domain/mece/engine.ts` so a fresh scaffold doesn't flag itself; the Danish
+  placeholders will need the same, or a new Danish tree starts with a false
+  overlap. Danish remainder words (Øvrige, Andre, Resten…) and function words are
+  already in. The mixed-axis check still only knows English "By" / "Per".
 - **Read `IssueTreeDoc.locale`.** It is recorded on every new document but no
   behaviour reads it yet. The intended use is collating and formatting a tree in
   its own language rather than the reader's.
@@ -69,16 +75,16 @@ Reviewed and deliberately left out:
   at an installed Chromium runs the suite fine (`offline.spec.ts` and `about.spec.ts`
   both pass that way), but that is a local override, not something to commit —
   CI's e2e job runs the correct pinned browser and stays authoritative.
-- **Two open windows clobber each other's library index.** Every `saveLibrary`
-  call writes the whole index from the calling window's in-memory copy, and
-  nothing listens for the `storage` event, so a second window can delete trees
-  the first created (orphaning their blobs) or resurrect ones it deleted. This is
-  confirmed by reading, not hypothetical — but it wants cross-window
-  coordination, not a patch: merging on write still loses a race, and a partial
-  fix to a data-loss bug buys false confidence, which is worse than the known
-  bug. The shape worth building is a `storage`-event listener that reconciles the
-  library, with the write path made merge-based rather than replace-based, landed
-  as a prep commit that pins today's single-window behaviour first.
+- **Two windows can still race on the same millisecond.** Index writes are now
+  merge-based and every window re-reads the index on the `storage` event, so a
+  second window no longer erases or resurrects trees. What remains is a true
+  race: both windows read the index, both write, within the same task. Closing it
+  needs a lock (the Web Locks API) around `updateLibrary`; it hasn't been seen in
+  practice, so it isn't worth the extra moving part yet.
+- **The open-tabs list shares one key across windows.** Tabs are per window in
+  spirit, so the last window to change its tabs decides what the next reload
+  restores. Cosmetic, nothing is lost — key it per window (a `sessionStorage` id)
+  if it ever annoys.
 - **`repairRequested` is computed but not shown.** `checkOfflineReadiness()`
   reports whether it drove a reinstall this session; the About panel shows four
   rows and not that one. A fifth row would be cheap if the self-heal ever needs

@@ -252,6 +252,8 @@ describe('MECE rules — binary splits are only provable when worded as A / not-
       ['With a loyalty card', 'Without a loyalty card'],
       ['Online', 'Offline'],
       ['Internal', 'External'],
+      ['Revenue from new channels', 'Revenue from existing channels'],
+      ['Nye kunder', 'Eksisterende kunder'],
     ]) {
       const res = binary(a as string, b as string);
       expect(res.exclusive.state, `${a} / ${b}`).toBe('pass');
@@ -271,6 +273,10 @@ describe('MECE rules — binary splits are only provable when worded as A / not-
       state: 'unknown',
       message: { code: 'mece.exhaustive.binaryNotComplement' },
     });
+  });
+
+  it('does not take above / below a threshold as a complement (on target is neither)', () => {
+    expect(binary('Above target margin', 'Below target margin').exhaustive.state).toBe('unknown');
   });
 
   it('only treats un- / non- / u- as negating prefixes, not in-', () => {
