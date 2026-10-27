@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-10-27T06:44:45.915Z",
-  "commit": "d83a194",
+  "generatedAt": "2026-10-27T06:51:59.049Z",
+  "commit": "711425b",
   "headline": {
-    "linesTsJs": 26140,
-    "tests": 649,
-    "lineCoveragePct": 89.82,
-    "commits": 337,
+    "linesTsJs": 27391,
+    "tests": 673,
+    "lineCoveragePct": 90.41,
+    "commits": 341,
     "ageDays": 138,
-    "trackedFiles": 311,
+    "trackedFiles": 316,
     "featureManualPct": 100,
-    "featureBookPct": 95.3,
-    "featureExamplePct": 16.5
+    "featureBookPct": 92.4,
+    "featureExamplePct": 16
   },
   "code": [
     {
       "category": "App code (src, excl. tests)",
-      "files": 133,
-      "lines": 15156
+      "files": 136,
+      "lines": 15995
     },
     {
       "category": "Unit tests",
-      "files": 81,
-      "lines": 8018
+      "files": 83,
+      "lines": 8430
     },
     {
       "category": "E2E tests (Playwright)",
@@ -41,40 +41,40 @@
     {
       "category": "Docs (Markdown)",
       "files": 24,
-      "lines": 3174
+      "lines": 3203
     }
   ],
   "coverage": {
     "lines": {
-      "pct": 89.82,
-      "covered": 2965,
-      "total": 3301
+      "pct": 90.41,
+      "covered": 3180,
+      "total": 3517
     },
     "statements": {
-      "pct": 88.42,
-      "covered": 3531,
-      "total": 3993
+      "pct": 88.95,
+      "covered": 3803,
+      "total": 4275
     },
     "functions": {
-      "pct": 84.81,
-      "covered": 1028,
-      "total": 1212
+      "pct": 85.72,
+      "covered": 1123,
+      "total": 1310
     },
     "branches": {
-      "pct": 81.46,
-      "covered": 1908,
-      "total": 2342
+      "pct": 82.04,
+      "covered": 2056,
+      "total": 2506
     }
   },
   "tests": {
-    "unit": 594,
+    "unit": 618,
     "e2e": 55
   },
   "domain": {
-    "features": 127,
+    "features": 131,
     "areas": 14,
-    "domainModules": 33,
-    "components": 52,
+    "domainModules": 34,
+    "components": 55,
     "exporters": 14
   },
   "footprint": {
@@ -83,11 +83,11 @@
     "biggestFiles": [
       {
         "name": "components/inspector/Inspector.tsx",
-        "lines": 796
+        "lines": 798
       },
       {
         "name": "store/index.ts",
-        "lines": 766
+        "lines": 795
       },
       {
         "name": "domain/tree.ts",
@@ -123,7 +123,7 @@
       },
       {
         "file": "src/i18n/locales/en/advisories.ts",
-        "pct": 22.22
+        "pct": 20
       },
       {
         "file": "src/i18n/locales/en/mece.ts",
@@ -136,27 +136,27 @@
     ],
     "churnHotspots": [
       {
-        "file": "src/store/index.ts",
-        "commits": 3
-      },
-      {
-        "file": "src/domain/mece/engine.ts",
-        "commits": 3
-      },
-      {
-        "file": "src/domain/mece/rules.test.ts",
-        "commits": 3
-      },
-      {
-        "file": "src/store/store.test.ts",
-        "commits": 3
-      },
-      {
-        "file": "src/components/about/AboutDialog.tsx",
-        "commits": 3
-      },
-      {
         "file": "src/i18n/locales/en/app.ts",
+        "commits": 4
+      },
+      {
+        "file": "src/store/index.ts",
+        "commits": 4
+      },
+      {
+        "file": "src/components/inspector/Inspector.test.tsx",
+        "commits": 3
+      },
+      {
+        "file": "src/components/inspector/Inspector.tsx",
+        "commits": 3
+      },
+      {
+        "file": "src/domain/messages.ts",
+        "commits": 3
+      },
+      {
+        "file": "src/i18n/locales/en/exports.ts",
         "commits": 3
       }
     ],
@@ -173,35 +173,35 @@
     "nonNull": 0
   },
   "bundle": {
-    "eagerJsGzipKb": 112.5,
-    "totalJsGzipKb": 558,
-    "cssGzipKb": 9.4,
-    "budgetKb": 113,
+    "eagerJsGzipKb": 113.1,
+    "totalJsGzipKb": 561.4,
+    "cssGzipKb": 9.5,
+    "budgetKb": 115,
     "withinBudget": true
   },
   "docs": {
     "bookWords": 27957,
     "chapters": 16,
-    "appLoc": 15156,
-    "docToCodeRatio": 0.21
+    "appLoc": 15995,
+    "docToCodeRatio": 0.2
   },
   "featureCoverage": {
-    "total": 127,
-    "manual": 127,
+    "total": 131,
+    "manual": 131,
     "manualPct": 100,
     "book": 121,
-    "bookPct": 95.3,
+    "bookPct": 92.4,
     "bookExample": 21,
-    "bookExamplePct": 16.5,
+    "bookExamplePct": 16,
     "byArea": {
       "Tree": {
-        "total": 7,
-        "manual": 7,
+        "total": 8,
+        "manual": 8,
         "book": 7
       },
       "MECE": {
-        "total": 22,
-        "manual": 22,
+        "total": 23,
+        "manual": 23,
         "book": 21
       },
       "Prioritisation": {
@@ -210,8 +210,8 @@
         "book": 3
       },
       "Hypotheses": {
-        "total": 3,
-        "manual": 3,
+        "total": 5,
+        "manual": 5,
         "book": 2
       },
       "Evidence": {
@@ -297,6 +297,26 @@
           "id": "ui-language",
           "name": "UI language setting (English only)",
           "since": 11
+        },
+        {
+          "id": "is-is-not-facts",
+          "name": "Is / is not facts in the problem brief",
+          "since": 11
+        },
+        {
+          "id": "must-explain-grid",
+          "name": "Must-explain grid (hypotheses × facts)",
+          "since": 11
+        },
+        {
+          "id": "kill-test-prediction",
+          "name": "Kill test and prediction per hypothesis",
+          "since": 11
+        },
+        {
+          "id": "advisory-diagnosis",
+          "name": "Coaching: hypothesis vs facts, missing kill test",
+          "since": 11
         }
       ]
     }
@@ -304,26 +324,26 @@
   "git": {
     "born": "2026-06-11T17:11:43+02:00",
     "ageDays": 138,
-    "commits": 337,
-    "commits7d": 13,
+    "commits": 341,
+    "commits7d": 17,
     "authors": [
       {
         "name": "Dann Bleeker Pedersen",
-        "count": 144
+        "count": 145
       },
       {
         "name": "github-actions[bot]",
-        "count": 123
+        "count": 124
       },
       {
         "name": "Claude",
-        "count": 70
+        "count": 72
       }
     ],
     "churn30d": {
-      "added": 2376,
-      "removed": 389
+      "added": 3807,
+      "removed": 470
     },
-    "changelogEntries": 135
+    "changelogEntries": 139
   }
 }
