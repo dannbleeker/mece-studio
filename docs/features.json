@@ -191,6 +191,15 @@
       "bookExample": false
     },
     {
+      "id": "status-history",
+      "name": "Status history with reason and tipping evidence",
+      "area": "Hypotheses",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
       "id": "evidence-items",
       "name": "Supporting / contradicting evidence items",
       "area": "Evidence",
@@ -1019,6 +1028,15 @@
       "bookExample": false
     },
     {
+      "id": "evidence-provenance",
+      "name": "Evidence provenance (date, who, source, link)",
+      "area": "Evidence",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
       "id": "on-node-add-child",
       "name": "On-node add-sub-issue affordance",
       "area": "Editing",
@@ -1115,6 +1133,15 @@
       "since": 11,
       "manual": true,
       "book": true,
+      "bookExample": false
+    },
+    {
+      "id": "advisory-evidence-consistency",
+      "name": "Coaching: verdict not carried by the evidence",
+      "area": "MECE",
+      "since": 11,
+      "manual": true,
+      "book": false,
       "bookExample": false
     },
     {

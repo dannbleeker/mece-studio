@@ -268,7 +268,11 @@ decide deliberately.</p>
 <li>a split with <strong>more than seven branches</strong> — a &quot;laundry list&quot;; aim for three to five;</li>
 <li>one branch that sits at a <strong>different altitude</strong> (far more detailed) than its siblings;</li>
 <li>a <strong>hypothesis still phrased as a question</strong> once you&#39;ve judged it supported or refuted;</li>
-<li>a <strong>key question</strong> that isn&#39;t a question, bundles two, or runs too long.</li>
+<li>a <strong>key question</strong> that isn&#39;t a question, bundles two, or runs too long;</li>
+<li>a <strong>verdict the evidence doesn&#39;t carry</strong>: a node marked supported or refuted
+with no evidence at all, on anecdote alone, or while <strong>strong</strong> evidence points
+the other way (the classic: a cause &quot;ruled out&quot; on one measurement, then seen
+plainly by another).</li>
 </ul>
 <p>These are advice, not MECE findings — they never affect the MECE health chip or the review dock.</p>
 <h3>Why and How trees</h3>
@@ -350,6 +354,13 @@ test. Set a node&#39;s <strong>status</strong> in the inspector:</p>
 </ul>
 <p>The node gets a <strong>colour-coded left edge</strong> so the state of play is visible across
 the whole tree, and the synthesis flags ✓ supported, ✗ refuted, ⊘ parked.</p>
+<p><strong>Status history.</strong> Every change of status is recorded with its date. Under the
+status buttons, the <strong>Status history</strong> lists them newest first; give each a short
+<strong>why</strong> (&quot;neutral probe saw the backend slow&quot;) and, if one piece of evidence
+tipped it, pick that item under <strong>Tipped by</strong>. A branch that was ruled out and
+later reopened then shows both calls and the reason for each, instead of only
+its current state. The history travels with the tree in saved files, the
+Markdown outline and print.</p>
 <h2>Evidence</h2>
 <p>Attach <strong>evidence</strong> to any node from the inspector&#39;s <strong>Evidence</strong> tab — each
 item is <strong>supporting</strong> or <strong>contradicting</strong>, with a <strong>strength</strong> (anecdote /
@@ -359,6 +370,13 @@ you add the item, switch an existing item&#39;s strength with a direct picker, a
 item&#39;s text to edit it in place</strong> (it commits on blur / Enter). Nodes show ✓/✗
 count badges so you can see where the case is strong or thin. Evidence feeds the
 synthesis and your hypothesis decisions.</p>
+<p><strong>Where it came from.</strong> Under each item, <strong>Source details</strong> opens four optional
+fields: the <strong>date</strong> the fact was observed, <strong>who</strong> reported it, the <strong>source</strong>
+(a chat, a dashboard, a ticket) and a <strong>link</strong> back to the original. Filled in,
+they show as one line under the item (&quot;Martin · 24 Oct 2026 · Zscaler ZDX&quot;) with
+an <strong>Open the original ↗</strong> link. Only http(s) links open; anything else is kept
+as text, since a tree can arrive from someone else&#39;s file. Provenance is
+included in the saved file, the Markdown outline and print.</p>
 <h2>Value-driver trees</h2>
 <p>When a question is quantitative, make it a <strong>formula</strong> split and put numbers on
 the leaves.</p>
