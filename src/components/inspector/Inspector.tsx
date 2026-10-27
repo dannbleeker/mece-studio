@@ -21,6 +21,8 @@ import { renderAdvisory, renderMece } from '@/i18n/render';
 import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { copyToClipboard } from '@/services/download';
 import { useStore } from '@/store';
+import { EvidenceProvenance } from './EvidenceProvenance';
+import { StatusHistory } from './StatusHistory';
 
 // Shared Tailwind class strings — named so the inspector's many labels/inputs can't drift.
 const LABEL_CLS = 'font-medium text-[11px] text-neutral-400 uppercase tracking-wider';
@@ -260,6 +262,8 @@ export function Inspector() {
                 ))}
               </div>
             </section>
+
+            <StatusHistory node={node} />
 
             <section className="flex flex-col gap-2 border-neutral-100 border-t pt-3">
               <div className="flex items-center justify-between">
@@ -587,65 +591,70 @@ export function Inspector() {
                 {node.evidence.map((e) => {
                   const stance = e.supports ? 'supports' : 'contradicts';
                   return (
-                    <li key={e.id} className="flex items-start gap-1.5 text-[12px]">
-                      <button
-                        type="button"
-                        className="mt-0.5 font-semibold"
-                        style={{ color: e.supports ? '#3f7d54' : '#bd4a3a' }}
-                        title={m.inspector.stanceTitle[stance]}
-                        aria-label={m.inspector.stanceLabel[stance]}
-                        onClick={() => updateEvidence(selectedId, e.id, { supports: !e.supports })}
-                      >
-                        {e.supports ? '✓' : '✗'}
-                      </button>
-                      <input
-                        defaultValue={e.summary}
-                        aria-label={m.inspector.evidenceTextLabel}
-                        className="min-w-0 flex-1 rounded-sm border border-transparent bg-transparent px-1 py-0.5 text-neutral-700 leading-snug hover:border-neutral-200 focus:border-[#3f6fb0] focus:bg-white focus:outline-none"
-                        onBlur={(ev) => {
-                          const next = ev.target.value.trim();
-                          if (!next || next === e.summary) {
-                            ev.target.value = e.summary;
-                            return;
+                    <li key={e.id} className="flex flex-col gap-0.5">
+                      <div className="flex items-start gap-1.5 text-[12px]">
+                        <button
+                          type="button"
+                          className="mt-0.5 font-semibold"
+                          style={{ color: e.supports ? '#3f7d54' : '#bd4a3a' }}
+                          title={m.inspector.stanceTitle[stance]}
+                          aria-label={m.inspector.stanceLabel[stance]}
+                          onClick={() =>
+                            updateEvidence(selectedId, e.id, { supports: !e.supports })
                           }
-                          updateEvidence(selectedId, e.id, { summary: next });
-                        }}
-                        onKeyDown={(ev) => {
-                          if (ev.key === 'Enter') {
-                            ev.preventDefault();
-                            ev.currentTarget.blur();
-                          }
-                        }}
-                      />
-                      <span className="flex shrink-0 gap-0.5">
-                        {STRENGTHS.map((st) => (
-                          <button
-                            key={st}
-                            type="button"
-                            title={m.enums.evidenceStrength[st]}
-                            aria-label={m.inspector.strengthOptionLabel({
-                              strength: m.enums.evidenceStrength[st],
-                            })}
-                            className={`rounded px-1 text-[10px] uppercase ${
-                              e.strength === st
-                                ? 'bg-[#3f6fb0] text-white'
-                                : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'
-                            }`}
-                            onClick={() => updateEvidence(selectedId, e.id, { strength: st })}
-                          >
-                            {m.enums.evidenceStrength[st].charAt(0)}
-                          </button>
-                        ))}
-                      </span>
-                      <button
-                        type="button"
-                        title={m.inspector.removeTitle}
-                        aria-label={m.inspector.removeEvidenceLabel}
-                        className="text-neutral-300 hover:text-neutral-600"
-                        onClick={() => removeEvidence(selectedId, e.id)}
-                      >
-                        ×
-                      </button>
+                        >
+                          {e.supports ? '✓' : '✗'}
+                        </button>
+                        <input
+                          defaultValue={e.summary}
+                          aria-label={m.inspector.evidenceTextLabel}
+                          className="min-w-0 flex-1 rounded-sm border border-transparent bg-transparent px-1 py-0.5 text-neutral-700 leading-snug hover:border-neutral-200 focus:border-[#3f6fb0] focus:bg-white focus:outline-none"
+                          onBlur={(ev) => {
+                            const next = ev.target.value.trim();
+                            if (!next || next === e.summary) {
+                              ev.target.value = e.summary;
+                              return;
+                            }
+                            updateEvidence(selectedId, e.id, { summary: next });
+                          }}
+                          onKeyDown={(ev) => {
+                            if (ev.key === 'Enter') {
+                              ev.preventDefault();
+                              ev.currentTarget.blur();
+                            }
+                          }}
+                        />
+                        <span className="flex shrink-0 gap-0.5">
+                          {STRENGTHS.map((st) => (
+                            <button
+                              key={st}
+                              type="button"
+                              title={m.enums.evidenceStrength[st]}
+                              aria-label={m.inspector.strengthOptionLabel({
+                                strength: m.enums.evidenceStrength[st],
+                              })}
+                              className={`rounded px-1 text-[10px] uppercase ${
+                                e.strength === st
+                                  ? 'bg-[#3f6fb0] text-white'
+                                  : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'
+                              }`}
+                              onClick={() => updateEvidence(selectedId, e.id, { strength: st })}
+                            >
+                              {m.enums.evidenceStrength[st].charAt(0)}
+                            </button>
+                          ))}
+                        </span>
+                        <button
+                          type="button"
+                          title={m.inspector.removeTitle}
+                          aria-label={m.inspector.removeEvidenceLabel}
+                          className="text-neutral-300 hover:text-neutral-600"
+                          onClick={() => removeEvidence(selectedId, e.id)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                      <EvidenceProvenance nodeId={selectedId} item={e} />
                     </li>
                   );
                 })}

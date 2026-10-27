@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { type Advisory, type AdvisoryCategory, advisories, advisoriesFor } from './advisories';
 import { createDoc } from './factory';
-import { addChild, setDecomposition, setStatus, setTreeMode } from './tree';
+import { addChild, addEvidence, setDecomposition, setStatus, setTreeMode } from './tree';
 import type { NodeId } from './types';
 
 const cats = (as: Advisory[], c: AdvisoryCategory): Advisory[] =>
@@ -152,5 +152,91 @@ describe('advisoriesFor', () => {
     const forRevenue = advisoriesFor(doc, ids[0] as NodeId);
     expect(forRevenue.every((a) => a.target.id === ids[0])).toBe(true);
     expect(forRevenue.some((a) => a.category === 'whole-sentence')).toBe(true);
+  });
+});
+
+describe('evidence-consistency hints', () => {
+  function judged(
+    status: 'supported' | 'refuted',
+    evidence: { supports: boolean; strength: 'anecdote' | 'indicative' | 'strong' }[]
+  ) {
+    const { doc: d0, ids } = freeform(['CSU slow at peak', 'Store line too thin']);
+    let doc = d0;
+    const id = ids[0] as NodeId;
+    evidence.forEach((e, i) => {
+      doc = addEvidence(doc, id, { id: `e${i}`, summary: `fact ${i}`, ...e });
+    });
+    doc = setStatus(doc, id, status);
+    return { doc, id };
+  }
+  const evidenceHints = (doc: ReturnType<typeof judged>['doc']) =>
+    cats(advisories(doc), 'evidence');
+
+  it('flags a hypothesis judged with no evidence at all', () => {
+    const { doc, id } = judged('refuted', []);
+    const hints = evidenceHints(doc);
+    expect(hints).toHaveLength(1);
+    expect(hints[0]?.target).toEqual({ kind: 'node', id });
+    expect(hints[0]?.message).toEqual({
+      code: 'advisory.evidence.noEvidence',
+      params: { status: 'refuted' },
+    });
+  });
+
+  it('flags a hypothesis ruled out on anecdote alone', () => {
+    const { doc } = judged('refuted', [{ supports: false, strength: 'anecdote' }]);
+    expect(evidenceHints(doc)[0]?.message).toEqual({
+      code: 'advisory.evidence.anecdoteOnly',
+      params: { status: 'refuted' },
+    });
+  });
+
+  it('flags a hypothesis ruled out while strong evidence still supports it', () => {
+    // The CSU case: ruled out on server timings, then a neutral probe saw it slow.
+    const { doc } = judged('refuted', [
+      { supports: false, strength: 'indicative' },
+      { supports: true, strength: 'strong' },
+    ]);
+    expect(evidenceHints(doc)[0]?.message).toEqual({
+      code: 'advisory.evidence.strongAgainst',
+      params: { status: 'refuted' },
+    });
+  });
+
+  it('works the same way round for a supported hypothesis', () => {
+    expect(
+      evidenceHints(judged('supported', [{ supports: true, strength: 'anecdote' }]).doc)[0]?.message
+        ?.code
+    ).toBe('advisory.evidence.anecdoteOnly');
+    expect(
+      evidenceHints(
+        judged('supported', [
+          { supports: true, strength: 'strong' },
+          { supports: false, strength: 'strong' },
+        ]).doc
+      )[0]?.message?.code
+    ).toBe('advisory.evidence.strongAgainst');
+  });
+
+  it('stays quiet when the verdict is backed by non-anecdotal evidence and nothing strong opposes it', () => {
+    const { doc } = judged('refuted', [
+      { supports: false, strength: 'indicative' },
+      { supports: true, strength: 'anecdote' },
+    ]);
+    expect(evidenceHints(doc)).toHaveLength(0);
+  });
+
+  it('ignores open and parked hypotheses, and the root', () => {
+    let { doc } = freeform(['CSU slow at peak']);
+    doc = setStatus(doc, doc.rootId, 'supported');
+    expect(evidenceHints(doc)).toHaveLength(0);
+  });
+
+  it('raises at most one hint per node', () => {
+    const { doc } = judged('refuted', [
+      { supports: false, strength: 'anecdote' },
+      { supports: true, strength: 'strong' },
+    ]);
+    expect(evidenceHints(doc)).toHaveLength(1);
   });
 });

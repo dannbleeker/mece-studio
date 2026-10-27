@@ -28,6 +28,12 @@ export const advisories: MessagesOf<AdvisoryParams> = {
     'Tighten the key question to a sentence or two so it stays memorable.',
   'advisory.treeMode.process':
     'A "how" tree shows alternative solutions, not a sequence — a process split reads as steps, not options.',
+  'advisory.evidence.noEvidence': ({ status }) =>
+    `Marked ${enums.status[status]} with no evidence attached — add what the call rests on.`,
+  'advisory.evidence.anecdoteOnly': ({ status }) =>
+    `Marked ${enums.status[status]} on anecdote alone — find something indicative or strong before relying on it.`,
+  'advisory.evidence.strongAgainst': ({ status }) =>
+    `Marked ${enums.status[status]}, but strong evidence points the other way — revisit the call.`,
   'advisory.treeMode.direction': ({ opposite, mode }) =>
     `This branch asks ${quote(enums.treeMode[opposite])}, but the tree is a ` +
     `${quote(enums.treeMode[mode])} tree — keep one direction.`,

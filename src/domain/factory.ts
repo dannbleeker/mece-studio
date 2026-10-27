@@ -67,7 +67,8 @@ export function createDoc(
 export function createEvidence(
   summary: string,
   supports: boolean,
-  strength: EvidenceStrength = 'indicative'
+  strength: EvidenceStrength = 'indicative',
+  now: number = Date.now()
 ): EvidenceItem {
-  return { id: nanoid(), summary, supports, strength };
+  return { id: nanoid(), summary, supports, strength, addedAt: now };
 }

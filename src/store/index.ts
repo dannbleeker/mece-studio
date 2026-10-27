@@ -12,6 +12,7 @@ import {
   duplicateNode as duplicateNodeOp,
   moveNode as moveNodeOp,
   moveSibling as moveSiblingOp,
+  type ProvenanceField,
   removeEvidence as removeEvidenceOp,
   removeNode as removeNodeOp,
   removeNodes as removeNodesOp,
@@ -21,6 +22,7 @@ import {
   setDecomposition as setDecompositionOp,
   setDetail as setDetailOp,
   setDimension as setDimensionOp,
+  setEvidenceProvenance as setEvidenceProvenanceOp,
   setNodeValue as setNodeValueOp,
   setOperator as setOperatorOp,
   setPriorityMany as setPriorityManyOp,
@@ -34,6 +36,7 @@ import {
   setTreeMode as setTreeModeOp,
   toggleCollapse as toggleCollapseOp,
   updateEvidence as updateEvidenceOp,
+  updateStatusChange as updateStatusChangeOp,
 } from '@/domain/tree';
 import type {
   DecompositionType,
@@ -305,6 +308,19 @@ interface AppState {
   ) => void;
   removeEvidence: (nodeId: NodeId, evidenceId: string) => void;
   updateEvidence: (nodeId: NodeId, evidenceId: string, patch: Partial<EvidenceItem>) => void;
+  /** Set or clear an evidence item's date / author / source / link. */
+  setEvidenceProvenance: (
+    nodeId: NodeId,
+    evidenceId: string,
+    field: ProvenanceField,
+    value: string
+  ) => void;
+  /** Annotate one status change with why it happened and what tipped it. */
+  updateStatusChange: (
+    nodeId: NodeId,
+    index: number,
+    patch: { reason?: string; evidenceId?: string | null }
+  ) => void;
   setDecomposition: (parentId: NodeId, decomposition: DecompositionType) => void;
   setOperator: (parentId: NodeId, operator: FormulaOperator) => void;
   setDimension: (parentId: NodeId, dimension: string) => void;
@@ -636,6 +652,10 @@ export const useStore = create<AppState>((set, get) => {
       apply((doc) => removeEvidenceOp(doc, nodeId, evidenceId)),
     updateEvidence: (nodeId, evidenceId, patch) =>
       apply((doc) => updateEvidenceOp(doc, nodeId, evidenceId, patch)),
+    setEvidenceProvenance: (nodeId, evidenceId, field, value) =>
+      apply((doc) => setEvidenceProvenanceOp(doc, nodeId, evidenceId, field, value)),
+    updateStatusChange: (nodeId, index, patch) =>
+      apply((doc) => updateStatusChangeOp(doc, nodeId, index, patch)),
     setDecomposition: (parentId, decomposition) =>
       apply((doc) => setDecompositionOp(doc, parentId, decomposition)),
     setOperator: (parentId, operator) => apply((doc) => setOperatorOp(doc, parentId, operator)),

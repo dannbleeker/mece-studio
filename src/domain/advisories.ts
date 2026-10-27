@@ -16,7 +16,8 @@ export type AdvisoryCategory =
   | 'altitude'
   | 'hypothesis'
   | 'key-question'
-  | 'tree-mode';
+  | 'tree-mode'
+  | 'evidence';
 
 export interface Advisory {
   /** Stable, unique id (per category + target) — good as a React key. */
@@ -131,6 +132,52 @@ function hypothesisAdvisory(node: IssueNode): Advisory | null {
   };
 }
 
+/**
+ * Does the evidence carry the verdict? Only for a node marked supported or
+ * refuted, and at most one hint per node, most serious first:
+ *
+ * 1. strong evidence points the other way ("ruled out, but strong evidence
+ *    supports it" — the CSU branch, killed on server timings, then seen slow
+ *    from a neutral probe);
+ * 2. the only evidence for the verdict is anecdote;
+ * 3. there is no evidence at all.
+ *
+ * Conservative like the rest of this channel: indicative evidence for the
+ * verdict and nothing strong against it is enough to stay quiet.
+ */
+function evidenceAdvisory(node: IssueNode): Advisory | null {
+  const status = node.status;
+  if (status !== 'supported' && status !== 'refuted') return null;
+  // "for" the verdict: supporting evidence for a supported claim, contradicting
+  // evidence for a refuted one.
+  const forVerdict = node.evidence.filter((e) => e.supports === (status === 'supported'));
+  const against = node.evidence.filter((e) => e.supports !== (status === 'supported'));
+  const base = { id: `evidence:${node.id}`, target: { kind: 'node' as const, id: node.id } };
+
+  if (against.some((e) => e.strength === 'strong')) {
+    return {
+      ...base,
+      category: 'evidence',
+      message: { code: 'advisory.evidence.strongAgainst', params: { status } },
+    };
+  }
+  if (forVerdict.length > 0 && forVerdict.every((e) => e.strength === 'anecdote')) {
+    return {
+      ...base,
+      category: 'evidence',
+      message: { code: 'advisory.evidence.anecdoteOnly', params: { status } },
+    };
+  }
+  if (node.evidence.length === 0) {
+    return {
+      ...base,
+      category: 'evidence',
+      message: { code: 'advisory.evidence.noEvidence', params: { status } },
+    };
+  }
+  return null;
+}
+
 /** Key-question quality on the root: is it a single, well-scoped question? */
 function keyQuestionAdvisories(root: IssueNode): Advisory[] {
   const out: Advisory[] = [];
@@ -238,6 +285,8 @@ export function advisories(doc: IssueTreeDoc): Advisory[] {
     if (node.id === doc.rootId) continue; // the root is the question, not a hypothesis
     const hyp = hypothesisAdvisory(node);
     if (hyp) out.push(hyp);
+    const ev = evidenceAdvisory(node);
+    if (ev) out.push(ev);
   }
 
   return out;
