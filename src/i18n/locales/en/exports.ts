@@ -130,6 +130,23 @@ export const exports = {
       '',
       `Node to decompose: ${quote(label)}`,
     ].join('\n'),
+  aiSplitCheck: ({ label, branches, tree }: { label: string; branches: string[]; tree: string }) =>
+    [
+      'You are a McKinsey-style problem-solving coach. The tool checking this issue tree',
+      'can only compare wording, so it cannot tell whether two branches overlap in meaning',
+      'or leave a gap. Judge this ONE split on meaning:',
+      '',
+      `Parent: ${quote(label)}`,
+      ...branches.map((b) => `- ${b}`),
+      '',
+      '1. Mutually exclusive: could any real case fall under two branches? Name the pair and the case.',
+      '2. Collectively exhaustive: is there a case that falls under none? Name it.',
+      '3. If either fails, propose a fixed set of branches cut on a single dimension.',
+      '',
+      'Answer briefly. The full tree is below for context.',
+      '',
+      tree,
+    ].join('\n'),
 
   /** Storyline markers + detail-line prefixes (see the const above). */
   markers,

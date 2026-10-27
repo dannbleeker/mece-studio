@@ -170,7 +170,10 @@ describe('MECE rules — the Other bucket and the shared dimension', () => {
     doc = setDecomposition(doc, doc.rootId, 'segment');
     const res = rootMece(doc).exclusive;
     expect(res.state).toBe('warn');
-    expect(res.message?.params).toMatchObject({ token: 'online' });
+    expect(res.message).toMatchObject({
+      code: 'mece.exclusive.siblingOverlap',
+      params: { token: 'online' },
+    });
   });
 
   it('keeps the two-sibling rule: a lone pair sharing a word is still an overlap', () => {
@@ -186,7 +189,10 @@ describe('MECE rules — letters beyond a–z', () => {
     const doc = withChildren(['Østjylland butikker', 'Østjylland lager', 'Fyn']);
     const res = rootMece(doc).exclusive;
     expect(res.state).toBe('warn');
-    expect(res.message?.params).toMatchObject({ token: 'østjylland' });
+    expect(res.message).toMatchObject({
+      code: 'mece.exclusive.siblingOverlap',
+      params: { token: 'østjylland' },
+    });
   });
 
   it('recognises a Danish remainder bucket as the Other bucket', () => {
@@ -215,11 +221,61 @@ describe('MECE rules — plural forms', () => {
     const doc = withChildren(['Store network', 'Stores LAN', 'Back end']);
     const res = rootMece(doc).exclusive;
     expect(res.state).toBe('warn');
-    expect(res.message?.params).toMatchObject({ token: 'store' });
+    expect(res.message).toMatchObject({
+      code: 'mece.exclusive.siblingOverlap',
+      params: { token: 'store' },
+    });
   });
 
   it('does not strip the s from words that end in -ss', () => {
     const doc = withChildren(['Business rules', 'Busines hours']);
     expect(rootMece(doc).exclusive.state).not.toBe('warn');
+  });
+});
+
+describe('MECE rules — binary splits are only provable when worded as A / not-A', () => {
+  function binary(a: string, b: string) {
+    let doc = withChildren([a, b]);
+    doc = setDecomposition(doc, doc.rootId, 'binary');
+    return rootMece(doc);
+  }
+
+  it('proves a split whose second branch negates the first', () => {
+    for (const [a, b] of [
+      ['A', 'not-A'],
+      ['Yes', 'No'],
+      ['Yes — launch it', 'No — hold for now'],
+      ['Profitable', 'Unprofitable'],
+      ['Cause is in the store', 'Cause is not in the store'],
+      ['Rentabel', 'Urentabel'],
+      ['I butikken', 'Ikke i butikken'],
+      ['With a loyalty card', 'Without a loyalty card'],
+      ['Online', 'Offline'],
+      ['Internal', 'External'],
+    ]) {
+      const res = binary(a as string, b as string);
+      expect(res.exclusive.state, `${a} / ${b}`).toBe('pass');
+      expect(res.exhaustive.state, `${a} / ${b}`).toBe('pass');
+    }
+  });
+
+  it('does not claim proof for two labels that are not complements', () => {
+    const res = binary('Revenue', 'Costs');
+    // Not a warn: nothing is shown to be wrong, so it stays out of the review
+    // dock. But the engine no longer says "provably MECE" about it either.
+    expect(res.exclusive).toEqual({
+      state: 'unknown',
+      message: { code: 'mece.exclusive.binaryNotComplement' },
+    });
+    expect(res.exhaustive).toEqual({
+      state: 'unknown',
+      message: { code: 'mece.exhaustive.binaryNotComplement' },
+    });
+  });
+
+  it('only treats un- / non- / u- as negating prefixes, not in-', () => {
+    // "in-" starts too many ordinary words ("Internet", "Income") to read as a
+    // negation, so a pair that differs only by it is not taken as proof.
+    expect(binary('Ternet', 'Internet').exclusive.state).toBe('unknown');
   });
 });

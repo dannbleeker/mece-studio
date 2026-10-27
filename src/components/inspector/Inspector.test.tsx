@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { splitCheckPrompt } from '@/domain/aiPrompts';
 import { EXAMPLE_TREES } from '@/domain/examples';
 import { rollUpValue } from '@/domain/rollup';
 import { childrenOf, splitOf } from '@/domain/tree';
@@ -170,6 +171,24 @@ describe('Inspector', () => {
     goTab('logic');
     fireEvent.click(screen.getByText(en.inspector.aiPromptAction));
     expect(copyToClipboard).toHaveBeenCalledTimes(1);
+  });
+
+  it('offers a meaning check for a split it can only judge on wording', () => {
+    const root = selectRoot();
+    s().decompose(root, 'freeform');
+    render(<Inspector />);
+    goTab('logic');
+    fireEvent.click(screen.getByText(en.inspector.splitCheckAction));
+    expect(copyToClipboard).toHaveBeenCalledTimes(1);
+    expect(copyToClipboard).toHaveBeenCalledWith(splitCheckPrompt(s().doc, root, en));
+  });
+
+  it('hides the meaning check once both axes are proven', () => {
+    const root = selectRoot();
+    s().decompose(root, 'binary'); // scaffolds "A" / "not-A" — provable
+    render(<Inspector />);
+    goTab('logic');
+    expect(screen.queryByText(en.inspector.splitCheckAction)).toBeNull();
   });
 
   it('deletes a non-root node from the inspector', () => {

@@ -352,6 +352,80 @@ function formulaExclusive(split: Split, children: IssueNode[]): CheckResult {
   return clean;
 }
 
+// Words that turn a branch into the negation of its sibling ("not-A", "No —
+// hold", "Without a card", "Ikke i butikken").
+const NEGATION_WORDS = new Set([
+  'not',
+  'no',
+  'non',
+  'none',
+  'never',
+  'nothing',
+  'without',
+  // Danish
+  'ikke',
+  'ingen',
+  'intet',
+  'uden',
+]);
+
+// Prefixes that negate the word they're glued to. Deliberately not "in-",
+// "im-", "dis-": they start too many ordinary words ("Internet", "Income",
+// "Display") to read as proof of a complement.
+const NEGATION_PREFIXES = ['non', 'un', 'u'];
+
+// Pairs that are complements by meaning without either side negating the other.
+const COMPLEMENT_PAIRS: ReadonlyArray<readonly [string, string]> = [
+  ['online', 'offline'],
+  ['internal', 'external'],
+  ['inside', 'outside'],
+  ['inbound', 'outbound'],
+  ['intern', 'ekstern'],
+];
+
+/** Same tokens except one, where `neg` is `base` with a negating prefix glued on. */
+function differsByNegatingPrefix(base: string[], neg: string[]): boolean {
+  if (base.length !== neg.length) return false;
+  const diffs = base.flatMap((t, i) => (t === neg[i] ? [] : [i]));
+  if (diffs.length !== 1) return false;
+  const i = diffs[0] as number;
+  const b = base[i] as string;
+  const n = neg[i] as string;
+  return NEGATION_PREFIXES.some((p) => n === p + b && b.length >= 3);
+}
+
+/**
+ * Do two labels read as A / not-A? Only then is a binary split *provably* MECE;
+ * "Revenue / Costs" put in a binary split is two topics, not a complement, and
+ * the engine shouldn't vouch for it. Conservative in the other direction too:
+ * it recognises a negation word, a negating prefix, or a known complement pair,
+ * and nothing subtler — anything else falls back to an honest "not shown".
+ */
+function readsAsComplement(a: string, b: string): boolean {
+  const ta = wordTokens(a);
+  const tb = wordTokens(b);
+  if ([...ta, ...tb].some((t) => NEGATION_WORDS.has(t))) return true;
+  if (differsByNegatingPrefix(ta, tb) || differsByNegatingPrefix(tb, ta)) return true;
+  const sa = new Set(ta);
+  const sb = new Set(tb);
+  return COMPLEMENT_PAIRS.some(([x, y]) => (sa.has(x) && sb.has(y)) || (sa.has(y) && sb.has(x)));
+}
+
+/**
+ * A binary split's verdict on either axis. Two branches worded as a complement
+ * are provably MECE; two branches that aren't stay `unknown` — not `warn`,
+ * because nothing has been shown to be wrong, only not shown to be right.
+ */
+function binaryStatus(children: IssueNode[], axis: 'exclusive' | 'exhaustive'): CheckResult {
+  const [a, b] = children;
+  if (children.length !== 2 || !a || !b) {
+    return { state: 'warn', message: { code: `mece.${axis}.binaryNeedsTwo` } };
+  }
+  return readsAsComplement(a.label, b.label)
+    ? { state: 'pass', message: { code: `mece.${axis}.binaryClean` } }
+    : { state: 'unknown', message: { code: `mece.${axis}.binaryNotComplement` } };
+}
+
 /**
  * CE guidance for split types we can't prove exhaustive. The state stays
  * `unknown` (so it never enters the review dock or count — only `warn` does),
@@ -371,9 +445,7 @@ function exhaustiveHint(decomposition: DecompositionType): CheckResult {
 function exclusiveStatus(split: Split, children: IssueNode[], options: MeceOptions): CheckResult {
   switch (split.decomposition) {
     case 'binary':
-      return children.length === 2
-        ? { state: 'pass', message: { code: 'mece.exclusive.binaryClean' } }
-        : { state: 'warn', message: { code: 'mece.exclusive.binaryNeedsTwo' } };
+      return binaryStatus(children, 'exclusive');
     case 'formula':
       return formulaExclusive(split, children);
     default: {
@@ -395,9 +467,7 @@ function exhaustiveStatus(
 ): CheckResult {
   switch (split.decomposition) {
     case 'binary':
-      return children.length === 2
-        ? { state: 'pass', message: { code: 'mece.exhaustive.binaryClean' } }
-        : { state: 'warn', message: { code: 'mece.exhaustive.binaryNeedsTwo' } };
+      return binaryStatus(children, 'exhaustive');
     case 'formula':
       return formulaExhaustive(split, children, doc, options.formulaTolerance);
     case 'segment':

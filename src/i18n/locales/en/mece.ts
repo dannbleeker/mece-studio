@@ -12,7 +12,7 @@ import { num, pct, plur, quote } from './_locale';
 export const mece: MessagesOf<MeceParams> = {
   'mece.exclusive.default': 'Siblings may overlap.',
   'mece.exclusive.noObviousOverlap':
-    "No obvious overlap — but exclusivity isn't auto-checked for this split type.",
+    'Not proven — no two branches share a word, but only the wording was checked. Branches can still overlap in meaning ("ISP routing" and "Telekom path" share no word).',
   'mece.exclusive.siblingOverlap': ({ a, b, token, more }) =>
     `${quote(a)} and ${quote(b)} may overlap (both mention ${quote(token)})` +
     `${more > 0 ? ` (+${num(more)} more)` : ''}.`,
@@ -21,6 +21,8 @@ export const mece: MessagesOf<MeceParams> = {
     `cut the level on one axis so the branches don't overlap.`,
   'mece.exclusive.binaryClean': 'A / not-A cannot overlap.',
   'mece.exclusive.binaryNeedsTwo': 'A binary split should have exactly two branches (A / not-A).',
+  'mece.exclusive.binaryNotComplement':
+    'Not proven — these two branches don\'t read as A / not-A, so they could overlap. Word one as the negation of the other ("In the store" / "Not in the store"), or pick another split type.',
   'mece.exclusive.formulaClean': 'Formula terms are mutually exclusive.',
   'mece.exclusive.formulaRunningTotal': ({ label }) =>
     `${quote(label)} reads like a running total — summing it double-counts the other terms.`,
@@ -50,6 +52,8 @@ export const mece: MessagesOf<MeceParams> = {
     `put them in one unit before the total means anything.`,
   'mece.exhaustive.binaryNeedsTwo': 'A binary split should have exactly two branches (A / not-A).',
   'mece.exhaustive.binaryClean': 'A / not-A covers every case.',
+  'mece.exhaustive.binaryNotComplement':
+    'Not proven — two branches only cover everything when one is the negation of the other. Confirm nothing falls between them.',
   'mece.exhaustive.processEndToEnd':
     'Do the stages run end to end — nothing before the first or after the last, no steps skipped?',
   'mece.exhaustive.frameworkNotPartition':
