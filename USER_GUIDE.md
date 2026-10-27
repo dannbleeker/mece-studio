@@ -187,6 +187,14 @@ removed (you can undo).
 
 Before you decompose, it helps to frame the problem. The **Problem brief** button in the Answer banner opens a one-page **Problem Identity Card** (after Barbara Minto and Arnaud Chevallier): **Situation** (the stable, agreed context), **Complication** (what changed — why act now), **Owner**, **Decision-makers**, **Success criteria**, **In scope**, **Out of scope** (what you decide upfront *not* to tackle), and **Desired outcome**. Every field is optional and saves as you type. The Situation and Complication then lead the [answer-first synthesis](#synthesis--reading-the-answer) as a Situation → Complication → Resolution intro, and the card nudges you when the key question isn't sharp — when it isn't phrased as a question, bundles two questions, or runs too long.
 
+**Is / is not.** Under the card, list the **facts any root cause must explain**,
+each on one dimension: **What**, **Where**, **When** or **How much**. Write what
+the problem **is** and, beside it, the closest thing it **is not** ("Saturdays
+from 16:00" / "weekdays"; "Germany" / "Denmark, Ireland"). The contrast is the
+point: a candidate cause has to explain why the problem shows up on one side and
+not the other. Once a fact is listed, the Answer banner shows a
+**Must-explain grid** button (see [Hypotheses and status](#hypotheses-and-status)).
+
 ## MECE checking
 
 MECE = **Mutually Exclusive, Collectively Exhaustive**. It's a property of each
@@ -263,7 +271,10 @@ Alongside the strict ME / CE checks, the inspector shows a **Coaching** callout 
 - a **verdict the evidence doesn't carry**: a node marked supported or refuted
   with no evidence at all, on anecdote alone, or while **strong** evidence points
   the other way (the classic: a cause "ruled out" on one measurement, then seen
-  plainly by another).
+  plainly by another);
+- a **supported** hypothesis that you've marked as **not explaining** one of the
+  is / is not facts;
+- an **open, high-impact** hypothesis with **no kill test** yet.
 
 These are advice, not MECE findings — they never affect the MECE health chip or the review dock.
 
@@ -378,6 +389,22 @@ tipped it, pick that item under **Tipped by**. A branch that was ruled out and
 later reopened then shows both calls and the reason for each, instead of only
 its current state. The history travels with the tree in saved files, the
 Markdown outline and print.
+
+**Kill test and prediction.** Below the history, each hypothesis has two short
+fields: the **kill test** (the result that would prove it wrong, such as "a probe
+from an Azure VM stays fast at 16:00") and the **prediction** (what you expect
+to see next time if it is right). Writing the kill test first keeps a branch from
+being "ruled out" by a test that could never have caught it.
+
+**Explains the facts?** When the problem brief lists is / is not facts, the
+inspector shows each one with three buttons: ✓ explains, ~ partly, ✗ doesn't.
+Click an active button again to clear it. The **Must-explain grid** (Answer
+banner) puts every hypothesis against every fact on one screen: click a cell to
+cycle ✓ → ~ → ✗ → not judged, and read the row back in the last column
+("explains all", "fails 1", "2 of 4 judged"). Click a hypothesis name to jump to
+it on the canvas. You make each call; the grid only collects them, and never
+changes a status for you. The verdicts appear in the Markdown outline and the
+synthesis as "explains 3 of 4 facts — not: Germany only".
 
 ## Evidence
 

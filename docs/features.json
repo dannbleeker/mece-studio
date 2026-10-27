@@ -1161,6 +1161,42 @@
       "manual": true,
       "book": false,
       "bookExample": false
+    },
+    {
+      "id": "is-is-not-facts",
+      "name": "Is / is not facts in the problem brief",
+      "area": "Tree",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "must-explain-grid",
+      "name": "Must-explain grid (hypotheses × facts)",
+      "area": "Hypotheses",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "kill-test-prediction",
+      "name": "Kill test and prediction per hypothesis",
+      "area": "Hypotheses",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
+    },
+    {
+      "id": "advisory-diagnosis",
+      "name": "Coaching: hypothesis vs facts, missing kill test",
+      "area": "MECE",
+      "since": 11,
+      "manual": true,
+      "book": false,
+      "bookExample": false
     }
   ]
 }

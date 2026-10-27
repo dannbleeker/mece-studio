@@ -202,6 +202,13 @@ gives terms. The &quot;Decompose by…&quot; buttons appear on leaf nodes.</p>
 removed (you can undo).</p>
 <h3>Problem brief</h3>
 <p>Before you decompose, it helps to frame the problem. The <strong>Problem brief</strong> button in the Answer banner opens a one-page <strong>Problem Identity Card</strong> (after Barbara Minto and Arnaud Chevallier): <strong>Situation</strong> (the stable, agreed context), <strong>Complication</strong> (what changed — why act now), <strong>Owner</strong>, <strong>Decision-makers</strong>, <strong>Success criteria</strong>, <strong>In scope</strong>, <strong>Out of scope</strong> (what you decide upfront <em>not</em> to tackle), and <strong>Desired outcome</strong>. Every field is optional and saves as you type. The Situation and Complication then lead the <a href="#synthesis--reading-the-answer">answer-first synthesis</a> as a Situation → Complication → Resolution intro, and the card nudges you when the key question isn&#39;t sharp — when it isn&#39;t phrased as a question, bundles two questions, or runs too long.</p>
+<p><strong>Is / is not.</strong> Under the card, list the <strong>facts any root cause must explain</strong>,
+each on one dimension: <strong>What</strong>, <strong>Where</strong>, <strong>When</strong> or <strong>How much</strong>. Write what
+the problem <strong>is</strong> and, beside it, the closest thing it <strong>is not</strong> (&quot;Saturdays
+from 16:00&quot; / &quot;weekdays&quot;; &quot;Germany&quot; / &quot;Denmark, Ireland&quot;). The contrast is the
+point: a candidate cause has to explain why the problem shows up on one side and
+not the other. Once a fact is listed, the Answer banner shows a
+<strong>Must-explain grid</strong> button (see <a href="#hypotheses-and-status">Hypotheses and status</a>).</p>
 <h2>MECE checking</h2>
 <p>MECE = <strong>Mutually Exclusive, Collectively Exhaustive</strong>. It&#39;s a property of each
 <em>split</em> (a parent and its children), not of a single node. The engine
@@ -272,7 +279,10 @@ decide deliberately.</p>
 <li>a <strong>verdict the evidence doesn&#39;t carry</strong>: a node marked supported or refuted
 with no evidence at all, on anecdote alone, or while <strong>strong</strong> evidence points
 the other way (the classic: a cause &quot;ruled out&quot; on one measurement, then seen
-plainly by another).</li>
+plainly by another);</li>
+<li>a <strong>supported</strong> hypothesis that you&#39;ve marked as <strong>not explaining</strong> one of the
+is / is not facts;</li>
+<li>an <strong>open, high-impact</strong> hypothesis with <strong>no kill test</strong> yet.</li>
 </ul>
 <p>These are advice, not MECE findings — they never affect the MECE health chip or the review dock.</p>
 <h3>Why and How trees</h3>
@@ -361,6 +371,20 @@ tipped it, pick that item under <strong>Tipped by</strong>. A branch that was ru
 later reopened then shows both calls and the reason for each, instead of only
 its current state. The history travels with the tree in saved files, the
 Markdown outline and print.</p>
+<p><strong>Kill test and prediction.</strong> Below the history, each hypothesis has two short
+fields: the <strong>kill test</strong> (the result that would prove it wrong, such as &quot;a probe
+from an Azure VM stays fast at 16:00&quot;) and the <strong>prediction</strong> (what you expect
+to see next time if it is right). Writing the kill test first keeps a branch from
+being &quot;ruled out&quot; by a test that could never have caught it.</p>
+<p><strong>Explains the facts?</strong> When the problem brief lists is / is not facts, the
+inspector shows each one with three buttons: ✓ explains, ~ partly, ✗ doesn&#39;t.
+Click an active button again to clear it. The <strong>Must-explain grid</strong> (Answer
+banner) puts every hypothesis against every fact on one screen: click a cell to
+cycle ✓ → ~ → ✗ → not judged, and read the row back in the last column
+(&quot;explains all&quot;, &quot;fails 1&quot;, &quot;2 of 4 judged&quot;). Click a hypothesis name to jump to
+it on the canvas. You make each call; the grid only collects them, and never
+changes a status for you. The verdicts appear in the Markdown outline and the
+synthesis as &quot;explains 3 of 4 facts — not: Germany only&quot;.</p>
 <h2>Evidence</h2>
 <p>Attach <strong>evidence</strong> to any node from the inspector&#39;s <strong>Evidence</strong> tab — each
 item is <strong>supporting</strong> or <strong>contradicting</strong>, with a <strong>strength</strong> (anecdote /

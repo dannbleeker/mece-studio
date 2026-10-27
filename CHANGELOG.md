@@ -8,8 +8,10 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 - **Where a piece of evidence came from.** Each evidence item can carry the date the fact was observed, who reported it, its source and a link back to the original, behind a **Source details** toggle. Filled in, it shows as one line under the item with an "Open the original" link. Only http(s) links ever become clickable — a tree can arrive from someone else's file, so a `javascript:` link is kept as text and dropped from exports. All four fields are optional and additive: older saves open unchanged.
 - **Status history.** Every status change is recorded with its date, and can carry a reason and the evidence item that tipped it. A branch ruled out and later reopened now shows both calls and why, instead of only where it ended up. Read through one validating reader, so a malformed history in an imported file is dropped rather than trusted.
 - **Coaching: is the verdict carried by the evidence?** A node marked supported or refuted gets a hint when it has no evidence, rests on anecdote alone, or has strong evidence pointing the other way. Advice only, like the other coaching hints: it never touches the MECE health chip.
-
-### Added
+- **Is / is not facts.** The problem brief can list the facts any root cause must explain, each on a What / Where / When / How much dimension, with the closest thing the problem is *not*. Exported as an "Is / is not" block under the question.
+- **Must-explain grid.** Every hypothesis against every fact on one screen; click a cell to mark explains / partly / doesn't, and read each row back. The user makes every call; nothing is computed into a status. Removing a fact also removes the verdicts on it.
+- **Kill test and prediction** on each hypothesis: the result that would prove it wrong, and what you expect to see if it's right. Both export with the node.
+- **Coaching: diagnosis.** A hint when a supported hypothesis doesn't explain a listed fact, and when an open high-impact hypothesis has no kill test. Advice only.
 - **"Check this split's meaning" prompt.** The overlap check compares wording, not meaning, so wherever it can't prove a split the Logic tab now offers a one-click prompt asking an AI to judge just that split: could a real case fall under two branches, or under none? It names the parent and its branches first, so the answer stays on the split rather than wandering over the whole tree.
 
 ### Fixed
