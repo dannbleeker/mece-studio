@@ -6,6 +6,7 @@
 // and conservative by design — like the ME/CE heuristics, a false positive is
 // worse than a miss, so each lint fires only on a clear-cut case.
 import { IDEAL_SPLIT_MAX, MAX_SPLIT_CHILDREN } from './constants';
+import { explainsOf, factsOf } from './diagnosis';
 import type { AdvisoryMessageRef } from './messages';
 import { childrenOf } from './tree';
 import type { IssueNode, IssueTreeDoc, NodeId, Split } from './types';
@@ -17,7 +18,8 @@ export type AdvisoryCategory =
   | 'hypothesis'
   | 'key-question'
   | 'tree-mode'
-  | 'evidence';
+  | 'evidence'
+  | 'diagnosis';
 
 export interface Advisory {
   /** Stable, unique id (per category + target) — good as a React key. */
@@ -178,6 +180,41 @@ function evidenceAdvisory(node: IssueNode): Advisory | null {
   return null;
 }
 
+/**
+ * Diagnosis hints, at most one per node:
+ * - a hypothesis marked **supported** that the user judged unable to explain
+ *   one of the "is / is not" facts — the verdict and the facts disagree;
+ * - a **high-impact open** hypothesis with no kill test — say what would
+ *   prove it wrong before spending a test on it.
+ * A failed fact on an *open* hypothesis is a finding, not a contradiction, so
+ * it stays quiet there.
+ */
+function diagnosisAdvisory(doc: IssueTreeDoc, node: IssueNode): Advisory | null {
+  const base = {
+    id: `diagnosis:${node.id}`,
+    target: { kind: 'node' as const, id: node.id },
+    category: 'diagnosis' as const,
+  };
+  if (node.status === 'supported') {
+    const verdicts = explainsOf(node);
+    const failed = factsOf(doc).filter((f) => verdicts[f.id] === 'no');
+    const first = failed[0];
+    if (first) {
+      return {
+        ...base,
+        message: {
+          code: 'advisory.diagnosis.doesNotExplain',
+          params: { fact: truncate(first.is), more: failed.length - 1 },
+        },
+      };
+    }
+  }
+  if (node.status === 'open' && node.priority?.impact === 'high' && !node.killTest?.trim()) {
+    return { ...base, message: { code: 'advisory.diagnosis.noKillTest' } };
+  }
+  return null;
+}
+
 /** Key-question quality on the root: is it a single, well-scoped question? */
 function keyQuestionAdvisories(root: IssueNode): Advisory[] {
   const out: Advisory[] = [];
@@ -287,6 +324,8 @@ export function advisories(doc: IssueTreeDoc): Advisory[] {
     if (hyp) out.push(hyp);
     const ev = evidenceAdvisory(node);
     if (ev) out.push(ev);
+    const dx = diagnosisAdvisory(doc, node);
+    if (dx) out.push(dx);
   }
 
   return out;

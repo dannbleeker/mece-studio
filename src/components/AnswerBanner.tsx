@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { ProblemBriefDialog } from '@/components/brief/ProblemBriefDialog';
+import { MustExplainGrid } from '@/components/diagnosis/MustExplainGrid';
+import { factsOf } from '@/domain/diagnosis';
 import { useMessages } from '@/i18n/useMessages';
 import { useStore } from '@/store';
 
@@ -14,6 +16,8 @@ export function AnswerBanner() {
   const doc = useStore((s) => s.doc);
   const setAnswer = useStore((s) => s.setAnswer);
   const [showBrief, setShowBrief] = useState(false);
+  const [showGrid, setShowGrid] = useState(false);
+  const hasFacts = factsOf(doc).length > 0;
   const hasBrief = doc.problemBrief !== undefined;
 
   return (
@@ -37,7 +41,17 @@ export function AnswerBanner() {
       >
         {hasBrief ? m.app.editProblemBrief : m.app.addProblemBrief}
       </button>
+      {hasFacts && (
+        <button
+          type="button"
+          onClick={() => setShowGrid(true)}
+          className="shrink-0 rounded-md px-2 py-0.5 font-medium text-[11px] text-[#3f6fb0] hover:bg-[#e7eff8]"
+        >
+          {m.app.mustExplainGrid}
+        </button>
+      )}
       {showBrief && <ProblemBriefDialog onClose={() => setShowBrief(false)} />}
+      {showGrid && <MustExplainGrid onClose={() => setShowGrid(false)} />}
     </div>
   );
 }

@@ -22,6 +22,7 @@ import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { copyToClipboard } from '@/services/download';
 import { useStore } from '@/store';
 import { EvidenceProvenance } from './EvidenceProvenance';
+import { HypothesisTests } from './HypothesisTests';
 import { StatusHistory } from './StatusHistory';
 
 // Shared Tailwind class strings — named so the inspector's many labels/inputs can't drift.
@@ -264,6 +265,7 @@ export function Inspector() {
             </section>
 
             <StatusHistory node={node} />
+            {!isRoot && <HypothesisTests node={node} />}
 
             <section className="flex flex-col gap-2 border-neutral-100 border-t pt-3">
               <div className="flex items-center justify-between">

@@ -109,6 +109,10 @@ export interface AdvisoryParams {
   'advisory.evidence.anecdoteOnly': { status: 'supported' | 'refuted' };
   /** Strong evidence points the other way from the verdict. */
   'advisory.evidence.strongAgainst': { status: 'supported' | 'refuted' };
+  /** Marked supported, but judged unable to explain a fact. `more` = other failed facts. */
+  'advisory.diagnosis.doesNotExplain': { fact: string; more: number };
+  /** A high-impact open hypothesis with no kill test. */
+  'advisory.diagnosis.noKillTest': undefined;
 }
 
 /**

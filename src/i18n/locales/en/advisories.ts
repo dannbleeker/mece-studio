@@ -34,6 +34,11 @@ export const advisories: MessagesOf<AdvisoryParams> = {
     `Marked ${enums.status[status]} on anecdote alone — find something indicative or strong before relying on it.`,
   'advisory.evidence.strongAgainst': ({ status }) =>
     `Marked ${enums.status[status]}, but strong evidence points the other way — revisit the call.`,
+  'advisory.diagnosis.doesNotExplain': ({ fact, more }) =>
+    `Marked supported, but it doesn't explain ${quote(fact)}` +
+    `${more > 0 ? ` (+${num(more)} more)` : ''} — a cause has to explain every fact.`,
+  'advisory.diagnosis.noKillTest':
+    'High impact and still open — write down what would prove it wrong before testing it.',
   'advisory.treeMode.direction': ({ opposite, mode }) =>
     `This branch asks ${quote(enums.treeMode[opposite])}, but the tree is a ` +
     `${quote(enums.treeMode[mode])} tree — keep one direction.`,

@@ -18,7 +18,7 @@
  *   annotation: the whole annotation is one entry, so a locale *may* reword it,
  *   but English renders the raw states it always has.
  */
-import type { CheckState, DecompositionType, NodeStatus } from '@/domain/types';
+import type { CheckState, DecompositionType, FactDimension, NodeStatus } from '@/domain/types';
 import { day, LOCALE, num, plur, quote, when } from './_locale';
 import { enums } from './enums';
 
@@ -35,6 +35,14 @@ const byDimension = ({ dimension }: { dimension: string }): string => `by ${dime
  * `domain/synthesis.ts`, matched by `domain/synthesisFormat.ts` — one copy, so
  * the writer and the parser cannot drift apart in any language.
  */
+/** Fact dimensions in exported prose (the editor's picker words live in `brief`). */
+const factDimensionWord: Record<FactDimension, string> = {
+  what: 'What',
+  where: 'Where',
+  when: 'When',
+  extent: 'How much',
+};
+
 const markers = {
   situation: '**Situation:**',
   complication: '**Complication:**',
@@ -44,6 +52,7 @@ const markers = {
   rollUp: 'rolls up to',
   sensitivity: 'most sensitive to:',
   evidence: 'evidence:',
+  explains: 'explains',
 };
 
 /** The standalone one-page HTML answer: its `<html lang>`, title, and sign-off. */
@@ -199,6 +208,19 @@ export const exports = {
     const link = url ? ` <${url}>` : '';
     return parts.length > 0 || link ? ` — ${parts.join(', ')}${link}` : '';
   },
+
+  /** The "is / is not" facts block under the question. */
+  factsHeading: '## Is / is not',
+  factLine: ({ dimension, is, isNot }: { dimension: FactDimension; is: string; isNot?: string }) =>
+    `- **${factDimensionWord[dimension]}:** ${is}${isNot ? ` — *not:* ${isNot}` : ''}`,
+
+  /** A hypothesis's test lines. */
+  killTestLine: ({ text }: { text: string }) => `kill test: ${text}`,
+  predictionLine: ({ text }: { text: string }) => `prediction: ${text}`,
+  /** How the hypothesis fares against the facts; `failed` = the facts it can't explain. */
+  explainsLine: ({ yes, total, failed }: { yes: number; total: number; failed: string[] }) =>
+    `${markers.explains} ${num(yes)} of ${num(total)} ${plur(total, { one: 'fact', other: 'facts' })}` +
+    `${failed.length > 0 ? ` — not: ${failed.join('; ')}` : ''}`,
 
   /** A node's status changes on one line, oldest first. */
   statusHistory: ({

@@ -31,6 +31,25 @@ describe('ProblemBriefDialog', () => {
     });
   });
 
+  it('adds, edits and removes an is / is not fact', () => {
+    render(<ProblemBriefDialog onClose={() => {}} />);
+    fireEvent.click(screen.getByRole('button', { name: en.brief.addFact }));
+    fireEvent.change(screen.getByLabelText(en.brief.factDimensionLabel), {
+      target: { value: 'when' },
+    });
+    fireEvent.blur(screen.getByLabelText(en.brief.factIsLabel), {
+      target: { value: 'Saturdays from 16:00' },
+    });
+    fireEvent.blur(screen.getByLabelText(en.brief.factIsNotLabel), {
+      target: { value: 'Weekdays' },
+    });
+    expect(s().doc.facts).toEqual([
+      expect.objectContaining({ dimension: 'when', is: 'Saturdays from 16:00', isNot: 'Weekdays' }),
+    ]);
+    fireEvent.click(screen.getByRole('button', { name: en.brief.removeFact }));
+    expect(s().doc.facts).toBeUndefined();
+  });
+
   it('surfaces a key-question advisory when the root is not a question', () => {
     s().setRootQuestion('Improve profitability');
     render(<ProblemBriefDialog onClose={() => {}} />);

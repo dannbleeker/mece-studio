@@ -1,5 +1,6 @@
 /** English wording for the doc-level Problem brief (the "Problem Identity Card"). */
-import type { ProblemBrief, TreeMode } from '@/domain/types';
+import type { ExplainVerdict, FactDimension, ProblemBrief, TreeMode } from '@/domain/types';
+import { num, plur } from './_locale';
 
 /**
  * One label + hint per brief field, keyed by the field it fills. Keyed by field
@@ -51,6 +52,27 @@ const treeTypeOption: Record<TreeMode | 'none', string> = {
   how: 'How (prescriptive)',
 };
 
+/** The Kepner-Tregoe dimensions, as the fact editor's picker shows them. */
+const factDimension: Record<FactDimension, string> = {
+  what: 'What',
+  where: 'Where',
+  when: 'When',
+  extent: 'How much',
+};
+
+/** A hypothesis's verdict on one fact: the word, and the one-glyph cell form. */
+const verdict: Record<ExplainVerdict, string> = {
+  yes: 'Explains it',
+  partly: 'Partly',
+  no: "Doesn't explain it",
+};
+const verdictGlyph: Record<ExplainVerdict | 'none', string> = {
+  yes: '✓',
+  partly: '~',
+  no: '✗',
+  none: '·',
+};
+
 export const brief = {
   /** The dialog shell. */
   title: 'Problem brief',
@@ -72,4 +94,44 @@ export const brief = {
 
   /** The brief's own fields. */
   fields,
+
+  /** "Is / is not" facts (Kepner-Tregoe). */
+  factsHeading: 'Is / is not',
+  factsHint:
+    'What the problem IS, set against the closest thing it IS NOT. Any root cause has to explain every row.',
+  factDimension,
+  factDimensionLabel: 'Dimension',
+  factIsLabel: 'Is',
+  factIsPlaceholder: 'e.g. Saturdays from 16:00',
+  factIsNotLabel: 'Is not',
+  factIsNotPlaceholder: 'e.g. weekdays, mornings',
+  addFact: '+ Add a fact',
+  removeFact: 'Remove fact',
+
+  /** Verdicts, shared by the inspector and the grid. */
+  verdict,
+  verdictGlyph,
+  verdictClear: 'Not judged',
+
+  /** The must-explain grid. */
+  gridTitle: 'Must-explain grid',
+  gridSubtitle:
+    "Every hypothesis against every fact. Click a cell to cycle: not judged → explains → partly → doesn't explain.",
+  gridHypothesis: 'Hypothesis',
+  gridSummary: 'Verdict',
+  gridExplainsAll: 'Explains every fact',
+  gridFails: ({ count }: { count: number }) =>
+    `Fails ${num(count)} ${plur(count, { one: 'fact', other: 'facts' })}`,
+  gridOpen: ({ judged, total }: { judged: number; total: number }) =>
+    `${num(judged)} of ${num(total)} judged`,
+  gridCellLabel: ({
+    hypothesis,
+    fact,
+    verdict: v,
+  }: {
+    hypothesis: string;
+    fact: string;
+    verdict: string;
+  }) => `${hypothesis} — ${fact}: ${v}`,
+  gridNoFacts: 'Add "is / is not" facts in the Problem brief first.',
 };

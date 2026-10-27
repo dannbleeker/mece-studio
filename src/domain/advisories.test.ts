@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { type Advisory, type AdvisoryCategory, advisories, advisoriesFor } from './advisories';
+import { addFact, setExplains, setKillTest } from './diagnosis';
 import { createDoc } from './factory';
-import { addChild, addEvidence, setDecomposition, setStatus, setTreeMode } from './tree';
+import {
+  addChild,
+  addEvidence,
+  setDecomposition,
+  setPriority,
+  setStatus,
+  setTreeMode,
+} from './tree';
 import type { NodeId } from './types';
 
 const cats = (as: Advisory[], c: AdvisoryCategory): Advisory[] =>
@@ -238,5 +246,45 @@ describe('evidence-consistency hints', () => {
       { supports: true, strength: 'strong' },
     ]);
     expect(evidenceHints(doc)).toHaveLength(1);
+  });
+});
+
+describe('diagnosis hints', () => {
+  function withFacts() {
+    const { doc: d0, ids } = freeform(['CSU slow at peak', 'Store line too thin']);
+    let doc = addFact(d0, { id: 'f1', dimension: 'where', is: 'Germany only' });
+    doc = addFact(doc, { id: 'f2', dimension: 'when', is: 'Saturdays from 16:00' });
+    return { doc, a: ids[0] as NodeId, b: ids[1] as NodeId };
+  }
+
+  it('flags a supported hypothesis that fails to explain a fact, naming the fact', () => {
+    let { doc, a } = withFacts();
+    doc = setExplains(doc, a, 'f1', 'no');
+    doc = addEvidence(doc, a, { id: 'e', summary: 's', supports: true, strength: 'strong' });
+    doc = setStatus(doc, a, 'supported');
+    const hints = cats(advisories(doc), 'diagnosis');
+    expect(hints.map((h) => h.message)).toEqual([
+      { code: 'advisory.diagnosis.doesNotExplain', params: { fact: 'Germany only', more: 0 } },
+    ]);
+  });
+
+  it('stays quiet for an open hypothesis with a failed fact (that is just a finding)', () => {
+    let { doc, a } = withFacts();
+    doc = setExplains(doc, a, 'f1', 'no');
+    expect(cats(advisories(doc), 'diagnosis')).toHaveLength(0);
+  });
+
+  it('asks a high-impact open hypothesis what would kill it', () => {
+    let { doc, a, b } = withFacts();
+    doc = setPriority(doc, a, { impact: 'high', ease: 'low' });
+    doc = setPriority(doc, b, { impact: 'medium', ease: 'high' });
+    const hints = cats(advisories(doc), 'diagnosis');
+    expect(hints).toHaveLength(1);
+    expect(hints[0]).toMatchObject({
+      target: { kind: 'node', id: a },
+      message: { code: 'advisory.diagnosis.noKillTest' },
+    });
+    doc = setKillTest(doc, a, 'Azure probe stays at 120 ms at 16:00');
+    expect(cats(advisories(doc), 'diagnosis')).toHaveLength(0);
   });
 });

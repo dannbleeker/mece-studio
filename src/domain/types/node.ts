@@ -66,6 +66,9 @@ export interface NumericValue {
   unit?: string;
 }
 
+/** Does a hypothesis explain one "is / is not" fact? */
+export type ExplainVerdict = 'yes' | 'partly' | 'no';
+
 /**
  * A node in the issue tree: a question, sub-issue, or driver.
  * Parent/child structure lives in `Split`, never here.
@@ -87,4 +90,16 @@ export interface IssueNode {
    * `statusLogOf()`, never directly.
    */
   statusLog?: StatusChange[];
+  /**
+   * What would prove this hypothesis wrong — the test that could kill it.
+   * Optional; written before the test is run.
+   */
+  killTest?: string;
+  /** What we expect to see next time if the hypothesis is true. Optional. */
+  prediction?: string;
+  /**
+   * How this hypothesis fares against each "is / is not" fact, keyed by the
+   * fact's id. Absent key = not judged yet. Read through `explainsOf()`.
+   */
+  explains?: Record<string, ExplainVerdict>;
 }

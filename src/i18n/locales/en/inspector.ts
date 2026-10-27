@@ -145,6 +145,13 @@ export const inspector = {
   provenanceOpen: 'Open the original',
   provenanceUnsafeUrl: 'Only http(s) links open — this one is kept as text.',
 
+  /** Issue tab: the test that could kill the hypothesis, and what we expect. */
+  killTestLabel: 'Kill test',
+  killTestPlaceholder: 'What result would prove this wrong?',
+  predictionLabel: 'Prediction',
+  predictionPlaceholder: 'If this is true, what will we see next time?',
+  explainsHeading: 'Explains the facts?',
+
   /** Issue tab: status history. */
   statusHistoryHeading: 'Status history',
   /** When a status change happened (epoch ms), in this locale. */

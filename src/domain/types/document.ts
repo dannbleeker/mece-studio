@@ -33,6 +33,25 @@ export interface ProblemBrief {
   desiredOutcome?: string;
 }
 
+/**
+ * The Kepner-Tregoe specification dimensions: what is affected, where, when,
+ * and to what extent.
+ */
+export type FactDimension = 'what' | 'where' | 'when' | 'extent';
+
+/**
+ * One "is / is not" fact about the problem: what we observe (`is`) set
+ * against the closest thing we do NOT observe (`isNot`). "Saturdays from
+ * 16:00" / "not weekdays, not mornings". Any root cause must explain the
+ * whole set — that is what makes the list useful.
+ */
+export interface DiagnosticFact {
+  id: string;
+  dimension: FactDimension;
+  is: string;
+  isNot?: string;
+}
+
 /** Whether the tree asks "why?" (diagnostic — causes) or "how?" (prescriptive — alternatives). */
 export type TreeMode = 'why' | 'how';
 
@@ -50,6 +69,11 @@ export interface IssueTreeDoc {
   problemBrief?: ProblemBrief;
   /** Whether this is a "why?" (diagnostic) or "how?" (prescriptive) tree. Optional; unset = either. */
   mode?: TreeMode;
+  /**
+   * The "is / is not" facts any root cause must explain. Optional and
+   * additive; read through `factsOf()`, which drops malformed entries.
+   */
+  facts?: DiagnosticFact[];
   /**
    * The app locale in effect when the document was created — i.e. the language
    * its seeded labels ("Segment 1", "Other") were written in. Optional and
