@@ -187,7 +187,7 @@ inspector, pick a <strong>decomposition type</strong>:</p>
 explicit <strong>&quot;Other&quot;</strong> bucket to be sure you&#39;ve covered everything.</li>
 <li><strong>Process</strong> — break into sequential stages or steps.</li>
 <li><strong>Binary</strong> — split into <strong>A / not-A</strong> (e.g. <em>new customers</em> vs <em>existing</em>).
-This is always provably MECE.</li>
+Provably MECE when one branch is the negation of the other — see below.</li>
 <li><strong>Formula</strong> — the children combine arithmetically into the parent
 (Revenue = Price × Volume). See <a href="#value-driver-trees">Value-driver trees</a>.</li>
 <li><strong>Framework</strong> — an established lens (e.g. People / Process / Technology).</li>
@@ -217,20 +217,37 @@ with what to do about it.</li>
 </ul>
 <p>How each split type is judged:</p>
 <ul>
-<li><strong>Binary (A / not-A)</strong> — provably MECE by construction (exactly two branches).</li>
+<li><strong>Binary (A / not-A)</strong> — provably MECE when the two branches read as a
+complement: one negates the other (<em>not</em>, <em>no</em>, <em>without</em>, <em>ikke</em>, <em>uden</em>, or a
+prefix like <em>un-</em> / <em>non-</em>: <em>Profitable / Unprofitable</em>), or they form a known
+pair (<em>online / offline</em>, <em>internal / external</em>, <em>new / existing</em>). Two branches
+that don&#39;t — <em>Revenue / Costs</em> put in a binary split — show as <strong>not proven</strong>
+rather than a pass. Not a warning: nothing is shown to be wrong, it just isn&#39;t
+shown to be right. <em>Above / below target</em> looks binary but isn&#39;t: <em>on target</em>
+falls in neither.</li>
 <li><strong>Formula</strong> — checked for <strong>reconciliation</strong> (do the children combine into the
 parent&#39;s value within tolerance?) <em>and</em> for <strong>double-counting</strong>: a summed term
 named like a running &quot;total&quot;, or two terms with the same label, is flagged.
 Product / difference terms are exclusive by construction.</li>
 <li><strong>Segments</strong> — collectively exhaustive only when you include an explicit
-<strong>&quot;Other&quot;</strong> bucket; otherwise you&#39;re warned there may be a gap.</li>
+<strong>&quot;Other&quot;</strong> bucket; otherwise you&#39;re warned there may be a gap. The bucket is
+recognised in English and Danish (<em>Other</em>, <em>Remaining</em>, <em>Everything else</em>,
+<em>Øvrige</em>, <em>Andre</em>, <em>Resten</em>, <em>Diverse</em>…).</li>
 <li><strong>Process</strong> and <strong>framework</strong> — can&#39;t be <em>proven</em> exhaustive, so instead of a
 silent grey dot you get a plain-language prompt (does the process run end to
 end? does the framework leave anything important outside?).</li>
 <li><strong>Other types</strong> — a <strong>sibling-overlap heuristic</strong> flags when siblings share a
 content word (a sign they may not be mutually exclusive) and <strong>names the pair</strong>.
-A word that <em>every</em> sibling shares (with three or more branches) is treated as
-the split&#39;s dimension, not an overlap; generic and placeholder words are ignored.</li>
+A word that <em>every named</em> sibling shares (with three or more branches) is
+treated as the split&#39;s dimension, not an overlap — so <em>Large stores / Small
+stores / Other</em> is cut on <em>stores</em>, not flagged. Generic and placeholder words
+are ignored, letters like <em>æ, ø, å</em> stay inside their word, and a singular and
+its plural (<em>Store</em> / <em>Stores</em>) count as the same word.</li>
+<li><strong>Wording only</strong> — the overlap check compares words, not meaning: <em>ISP routing</em>
+and <em>Telekom path</em> share no word but may describe the same thing. Wherever a
+split can&#39;t be proven, the <strong>Logic</strong> tab offers <strong>&quot;Wording only — copy an AI
+prompt to check the meaning&quot;</strong>, a prompt about just that split (see
+<em>AI assist</em> below).</li>
 <li><strong>Mixed axes</strong> — if the branches each <em>name a different way to cut</em> the level
 (e.g. <em>&quot;By region&quot; / &quot;By segment&quot; / &quot;By quarter&quot;</em> as siblings) instead of one
 axis&#39;s categories, you&#39;re warned to pick a single axis per level. It&#39;s
@@ -392,8 +409,12 @@ critique your tree&#39;s MECE structure.</li>
 <li><strong>Suggest a split</strong> (from the inspector, on a selected node) — copies a prompt
 asking an LLM to propose a MECE decomposition for that node, returned as a
 paste-ready Markdown outline.</li>
+<li><strong>Check this split&#39;s meaning</strong> (from the inspector&#39;s <strong>Logic</strong> tab, on a split
+the engine can&#39;t prove) — copies a prompt asking an LLM to judge just that one
+split: could a real case fall under two branches, or under none? It names the
+parent and its branches first, then the whole tree for context.</li>
 </ul>
-<p>Paste either into Claude, ChatGPT, or any assistant. Your data never leaves your
+<p>Paste any of them into Claude, ChatGPT, or any assistant. Your data never leaves your
 machine unless <em>you</em> paste it.</p>
 <p><strong>Paste the split back.</strong> Under the same inspector section, a <strong>&quot;paste the AI&#39;s
 split back&quot;</strong> box closes the loop: paste the outline the LLM returned and its
@@ -419,6 +440,11 @@ popup), then opens
 the next tree in your library. Deleting your last tree leaves the library
 empty and returns you to the Start page, where <strong>+ New tree</strong> (or the
 key-question box) starts a fresh one.</li>
+<li><strong>More than one window</strong> — open MECE Studio in two tabs or windows and they
+share one library. A tree created, renamed or deleted in one shows up in the
+other without a reload, and neither window can erase the other&#39;s trees. If
+you delete a tree in one window while it&#39;s open in another, the open one keeps
+it: someone is still working in it, so it stays listed.</li>
 <li><strong>Automatic migration</strong> — if you used an earlier single-tree version, your tree
 is folded into the library automatically the first time you open the new
 version. Nothing is lost.</li>
