@@ -259,7 +259,11 @@ Alongside the strict ME / CE checks, the inspector shows a **Coaching** callout 
 - a split with **more than seven branches** — a "laundry list"; aim for three to five;
 - one branch that sits at a **different altitude** (far more detailed) than its siblings;
 - a **hypothesis still phrased as a question** once you've judged it supported or refuted;
-- a **key question** that isn't a question, bundles two, or runs too long.
+- a **key question** that isn't a question, bundles two, or runs too long;
+- a **verdict the evidence doesn't carry**: a node marked supported or refuted
+  with no evidence at all, on anecdote alone, or while **strong** evidence points
+  the other way (the classic: a cause "ruled out" on one measurement, then seen
+  plainly by another).
 
 These are advice, not MECE findings — they never affect the MECE health chip or the review dock.
 
@@ -367,6 +371,14 @@ test. Set a node's **status** in the inspector:
 The node gets a **colour-coded left edge** so the state of play is visible across
 the whole tree, and the synthesis flags ✓ supported, ✗ refuted, ⊘ parked.
 
+**Status history.** Every change of status is recorded with its date. Under the
+status buttons, the **Status history** lists them newest first; give each a short
+**why** ("neutral probe saw the backend slow") and, if one piece of evidence
+tipped it, pick that item under **Tipped by**. A branch that was ruled out and
+later reopened then shows both calls and the reason for each, instead of only
+its current state. The history travels with the tree in saved files, the
+Markdown outline and print.
+
 ## Evidence
 
 Attach **evidence** to any node from the inspector's **Evidence** tab — each
@@ -377,6 +389,14 @@ you add the item, switch an existing item's strength with a direct picker, and
 item's text to edit it in place** (it commits on blur / Enter). Nodes show ✓/✗
 count badges so you can see where the case is strong or thin. Evidence feeds the
 synthesis and your hypothesis decisions.
+
+**Where it came from.** Under each item, **Source details** opens four optional
+fields: the **date** the fact was observed, **who** reported it, the **source**
+(a chat, a dashboard, a ticket) and a **link** back to the original. Filled in,
+they show as one line under the item ("Martin · 24 Oct 2026 · Zscaler ZDX") with
+an **Open the original ↗** link. Only http(s) links open; anything else is kept
+as text, since a tree can arrive from someone else's file. Provenance is
+included in the saved file, the Markdown outline and print.
 
 ## Value-driver trees
 

@@ -11,7 +11,10 @@ import {
   setNodeValue,
   setPriority,
   setStatus,
+  updateEvidence,
+  updateStatusChange,
 } from './tree';
+import type { NodeId } from './types';
 
 describe('toMarkdown', () => {
   it('renders the root as an H1 and children as nested bullets', () => {
@@ -90,5 +93,62 @@ describe('toMarkdown', () => {
     const md = toMarkdown(doc, en);
     expect(md).toContain('- Parent');
     expect(md).toContain('  - Child'); // a grandchild indents one level deeper
+  });
+});
+
+describe('toMarkdown — provenance and status history', () => {
+  function sample() {
+    let doc = createDoc('Why is the POS slow?', 0);
+    const h = addChild(doc, doc.rootId, 'CSU slow at peak');
+    doc = addEvidence(h.doc, h.childId, {
+      id: 'ev1',
+      summary: 'ZDX: CSU 120 ms to 450 ms at 16:00',
+      supports: true,
+      strength: 'indicative',
+      author: 'Martin',
+      date: '2026-10-24',
+      source: 'Zscaler ZDX',
+      url: 'https://teams.microsoft.com/l/message/1',
+    });
+    doc = setStatus(doc, h.childId, 'refuted', Date.UTC(2026, 9, 19, 12));
+    doc = setStatus(doc, h.childId, 'open', Date.UTC(2026, 9, 26, 12));
+    doc = updateStatusChange(doc, h.childId, 1, { reason: 'Neutral probe saw it slow' });
+    return doc;
+  }
+
+  it('carries who, when, where and the link on each evidence line', () => {
+    const md = toMarkdown(sample(), en);
+    expect(md).toContain(
+      `ZDX: CSU 120 ms to 450 ms at 16:00${en.exports.evidenceProvenance({
+        author: 'Martin',
+        day: '2026-10-24',
+        source: 'Zscaler ZDX',
+        url: 'https://teams.microsoft.com/l/message/1',
+      })}`
+    );
+  });
+
+  it('drops a link that is not http(s) rather than exporting it', () => {
+    let doc = sample();
+    const id = Object.keys(doc.nodes).find((k) => k !== doc.rootId) as NodeId;
+    doc = updateEvidence(doc, id, 'ev1', { url: 'javascript:alert(1)' });
+    expect(toMarkdown(doc, en)).not.toContain('javascript:');
+  });
+
+  it('lists the status history under the node, with the reason', () => {
+    const md = toMarkdown(sample(), en);
+    expect(md).toContain(
+      en.exports.statusHistory({
+        entries: [
+          { at: Date.UTC(2026, 9, 19, 12), from: 'open', to: 'refuted' },
+          {
+            at: Date.UTC(2026, 9, 26, 12),
+            from: 'refuted',
+            to: 'open',
+            reason: 'Neutral probe saw it slow',
+          },
+        ],
+      })
+    );
   });
 });

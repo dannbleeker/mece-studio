@@ -1,5 +1,6 @@
 import type { EditorMessages } from '@/i18n/types';
 import { priorityBand } from './priority';
+import { evidenceDate, safeUrl, statusLogOf } from './provenance';
 import { childrenOf, splitOf } from './tree';
 import type { EvidenceItem, IssueNode, IssueTreeDoc, NodeId, NodeStatus } from './types';
 
@@ -46,8 +47,26 @@ export function evidenceLines(
 ): string[] {
   return evidence.map((e) => {
     const strength = m.enums.evidenceStrength[e.strength];
-    return `${indent}  - ${e.supports ? '✓' : '✗'} (${strength}) ${e.summary}`;
+    return `${indent}  - ${e.supports ? '✓' : '✗'} (${strength}) ${e.summary}${provenanceSuffix(e, m)}`;
   });
+}
+
+/** " — Martin, 24 Oct 2026, ZDX <https://…>" for an evidence item, or "". */
+function provenanceSuffix(e: EvidenceItem, m: EditorMessages): string {
+  const parts: Parameters<EditorMessages['exports']['evidenceProvenance']>[0] = {};
+  if (e.author?.trim()) parts.author = e.author.trim();
+  const iso = evidenceDate(e);
+  if (iso) parts.day = iso;
+  if (e.source?.trim()) parts.source = e.source.trim();
+  const url = safeUrl(e.url);
+  if (url) parts.url = url;
+  return m.exports.evidenceProvenance(parts);
+}
+
+/** The status-history line under a node, or nothing when its status never changed. */
+function historyLines(node: IssueNode, indent: string, m: EditorMessages): string[] {
+  const log = statusLogOf(node);
+  return log.length > 0 ? [`${indent}  - ${m.exports.statusHistory({ entries: log })}`] : [];
 }
 
 function nodeBlock(
@@ -65,6 +84,7 @@ function nodeBlock(
     `${indent}- ${node.label}${value}${metaTag(node, m)}${meceNote(doc, id, m)}${detailNote(node.detail, indent)}`
   );
   if (node.evidence.length > 0) lines.push(...evidenceLines(node.evidence, indent, m));
+  lines.push(...historyLines(node, indent, m));
   for (const child of childrenOf(doc, id)) nodeBlock(doc, child.id, depth + 1, lines, m);
 }
 

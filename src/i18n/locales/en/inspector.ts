@@ -7,7 +7,7 @@
  * `./enums` because the pickers, the coaching messages and the exports all say them.
  */
 import type { SplitLogic } from '@/domain/types';
-import { num, plur } from './_locale';
+import { day, num, plur, when } from './_locale';
 
 /** Which way a piece of evidence points — the ✓ / ✗ toggle on a row. */
 type Stance = 'supports' | 'contradicts';
@@ -129,6 +129,31 @@ export const inspector = {
   removeEvidenceLabel: 'Remove evidence',
   addSupports: '+ Supports',
   addContradicts: '+ Contradicts',
+
+  /** Evidence provenance: who said it, when, where — and a link back. */
+  provenanceShow: 'Source details',
+  provenanceHide: 'Hide source details',
+  provenanceDate: 'Date',
+  /** A validated `YYYY-MM-DD` evidence day, in this locale. */
+  provenanceDay: ({ iso }: { iso: string }) => day(iso),
+  provenanceAuthor: 'Who',
+  provenanceAuthorPlaceholder: 'Who reported it',
+  provenanceSource: 'Source',
+  provenanceSourcePlaceholder: 'e.g. Teams chat, Grafana, ticket',
+  provenanceUrl: 'Link',
+  provenanceUrlPlaceholder: 'https://…',
+  provenanceOpen: 'Open the original',
+  provenanceUnsafeUrl: 'Only http(s) links open — this one is kept as text.',
+
+  /** Issue tab: status history. */
+  statusHistoryHeading: 'Status history',
+  /** When a status change happened (epoch ms), in this locale. */
+  statusWhen: ({ at }: { at: number }) => when(at),
+  statusChange: ({ from, to }: { from: string; to: string }) => `${from} → ${to}`,
+  statusReasonLabel: 'Why it changed',
+  statusReasonPlaceholder: 'Why did it change?',
+  statusEvidenceLabel: 'Tipped by',
+  statusEvidenceNone: 'No single item',
 
   /** Value tab. */
   valueLabel: 'Value (optional)',

@@ -1,4 +1,5 @@
 import { createNode, createSplit } from './factory';
+import { evidenceDate, statusLogOf } from './provenance';
 import type {
   DecompositionType,
   EvidenceItem,
@@ -14,6 +15,7 @@ import type {
   SplitId,
   SplitLogic,
   SplitOrder,
+  StatusChange,
   TreeMode,
 } from './types';
 
@@ -432,7 +434,12 @@ export function duplicateNode(
     if (!orig) continue;
     const clone = createNode(orig.label);
     idMap.set(id, clone.id);
-    nodes[clone.id] = { ...orig, id: clone.id, evidence: orig.evidence.map((e) => ({ ...e })) };
+    nodes[clone.id] = {
+      ...orig,
+      id: clone.id,
+      evidence: orig.evidence.map((e) => ({ ...e })),
+      ...(orig.statusLog === undefined ? {} : { statusLog: statusLogOf(orig) }),
+    };
   }
 
   const splits = { ...doc.splits };
@@ -520,7 +527,15 @@ export function removeEvidence(
 ): IssueTreeDoc {
   return patchNode(doc, nodeId, (node) => {
     const evidence = node.evidence.filter((e) => e.id !== evidenceId);
-    return evidence.length === node.evidence.length ? null : { ...node, evidence };
+    if (evidence.length === node.evidence.length) return null;
+    // A status change that pointed at this evidence keeps its reason but loses
+    // the dangling link.
+    const statusLog = statusLogOf(node).map((c) => {
+      if (c.evidenceId !== evidenceId) return c;
+      const { evidenceId: _gone, ...rest } = c;
+      return rest;
+    });
+    return node.statusLog === undefined ? { ...node, evidence } : { ...node, evidence, statusLog };
   });
 }
 
@@ -541,9 +556,83 @@ export function updateEvidence(
   });
 }
 
-/** Set a node's hypothesis status (open / supported / refuted / parked). */
-export function setStatus(doc: IssueTreeDoc, nodeId: NodeId, status: NodeStatus): IssueTreeDoc {
-  return patchNode(doc, nodeId, (node) => (node.status === status ? null : { ...node, status }));
+/** The provenance fields on an evidence item that are plain text. */
+export type ProvenanceField = 'date' | 'author' | 'source' | 'url';
+
+/**
+ * Set or clear one provenance field on an evidence item. Trimmed; empty clears
+ * it; a `date` must be a real ISO calendar day or the edit is refused. A `url`
+ * is stored as typed and only made clickable through `safeUrl()`.
+ */
+export function setEvidenceProvenance(
+  doc: IssueTreeDoc,
+  nodeId: NodeId,
+  evidenceId: string,
+  field: ProvenanceField,
+  value: string
+): IssueTreeDoc {
+  const next = value.trim();
+  if (field === 'date' && next && !evidenceDate({ date: next })) return doc;
+  return patchNode(doc, nodeId, (node) => {
+    const at = node.evidence.findIndex((e) => e.id === evidenceId);
+    const item = node.evidence[at];
+    if (!item || (item[field] ?? '') === next) return null;
+    const updated: EvidenceItem = { ...item };
+    if (next) updated[field] = next;
+    else delete updated[field];
+    return { ...node, evidence: node.evidence.map((e, i) => (i === at ? updated : e)) };
+  });
+}
+
+/**
+ * Set a node's hypothesis status (open / supported / refuted / parked), and
+ * append the change to its status history. `at` is injectable for tests and
+ * for writing a history after the fact.
+ */
+export function setStatus(
+  doc: IssueTreeDoc,
+  nodeId: NodeId,
+  status: NodeStatus,
+  at: number = Date.now()
+): IssueTreeDoc {
+  return patchNode(doc, nodeId, (node) =>
+    node.status === status
+      ? null
+      : {
+          ...node,
+          status,
+          statusLog: [...statusLogOf(node), { at, from: node.status, to: status }],
+        }
+  );
+}
+
+/**
+ * Annotate one status change: why it happened, and which evidence on this node
+ * tipped it. An empty reason clears it; an unknown index is a no-op.
+ */
+export function updateStatusChange(
+  doc: IssueTreeDoc,
+  nodeId: NodeId,
+  index: number,
+  patch: { reason?: string; evidenceId?: string | null }
+): IssueTreeDoc {
+  return patchNode(doc, nodeId, (node) => {
+    const log = statusLogOf(node);
+    const entry = log[index];
+    if (!entry) return null;
+    const next: StatusChange = { ...entry };
+    if (patch.reason !== undefined) {
+      const reason = patch.reason.trim();
+      if (reason) next.reason = reason;
+      else delete next.reason;
+    }
+    if (patch.evidenceId !== undefined) {
+      if (patch.evidenceId) next.evidenceId = patch.evidenceId;
+      else delete next.evidenceId;
+    }
+    if (next.reason === entry.reason && next.evidenceId === entry.evidenceId) return null;
+    return { ...node, statusLog: log.map((c, i) => (i === index ? next : c)) };
+  });
 }
 
 /** Remove several nodes (and their subtrees) in one transform — one undo step. */
@@ -557,10 +646,11 @@ export function removeNodes(doc: IssueTreeDoc, ids: readonly NodeId[]): IssueTre
 export function setStatusMany(
   doc: IssueTreeDoc,
   ids: readonly NodeId[],
-  status: NodeStatus
+  status: NodeStatus,
+  at: number = Date.now()
 ): IssueTreeDoc {
   let next = doc;
-  for (const id of ids) next = setStatus(next, id, status);
+  for (const id of ids) next = setStatus(next, id, status, at);
   return next;
 }
 

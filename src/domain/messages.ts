@@ -103,6 +103,12 @@ export interface AdvisoryParams {
   'advisory.treeMode.process': undefined;
   /** A branch asks the opposite question word to the tree's mode. Both raw. */
   'advisory.treeMode.direction': { opposite: TreeMode; mode: TreeMode };
+  /** Judged supported / refuted with no evidence attached. */
+  'advisory.evidence.noEvidence': { status: 'supported' | 'refuted' };
+  /** The only evidence for the verdict is anecdote. */
+  'advisory.evidence.anecdoteOnly': { status: 'supported' | 'refuted' };
+  /** Strong evidence points the other way from the verdict. */
+  'advisory.evidence.strongAgainst': { status: 'supported' | 'refuted' };
 }
 
 /**

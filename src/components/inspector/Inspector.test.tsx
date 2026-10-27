@@ -37,7 +37,8 @@ function selectRoot(): NodeId {
  * catalogue — a test that survives a rewording is a test of the wiring.
  */
 function goTab(facet: keyof typeof en.inspector.tabs) {
-  fireEvent.click(screen.getByRole('button', { name: en.inspector.tabs[facet] }));
+  // A tab's accessible name can carry a count after its label ("Evidence 2").
+  fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${en.inspector.tabs[facet]}`) }));
 }
 
 describe('Inspector', () => {
@@ -97,6 +98,72 @@ describe('Inspector', () => {
     expect(s().doc.nodes[rootId]?.evidence[0]?.summary).toBe('It works');
     fireEvent.click(screen.getByRole('button', { name: en.inspector.removeEvidenceLabel }));
     expect(s().doc.nodes[rootId]?.evidence).toHaveLength(0);
+  });
+
+  it('records who, when and where for a piece of evidence, with a link back', () => {
+    const rootId = selectRoot();
+    s().addEvidence(rootId, 'CSU 120 ms to 450 ms at 16:00', true, 'indicative');
+    render(<Inspector />);
+    goTab('evidence');
+    fireEvent.click(screen.getByRole('button', { name: en.inspector.provenanceShow }));
+    fireEvent.blur(screen.getByLabelText(en.inspector.provenanceAuthor), {
+      target: { value: 'Martin' },
+    });
+    fireEvent.blur(screen.getByLabelText(en.inspector.provenanceDate), {
+      target: { value: '2026-10-24' },
+    });
+    fireEvent.blur(screen.getByLabelText(en.inspector.provenanceUrl), {
+      target: { value: 'https://teams.microsoft.com/l/message/1' },
+    });
+    const ev = s().doc.nodes[rootId]?.evidence[0];
+    expect(ev).toMatchObject({
+      author: 'Martin',
+      date: '2026-10-24',
+      url: 'https://teams.microsoft.com/l/message/1',
+    });
+    const link = screen.getByRole('link', { name: new RegExp(en.inspector.provenanceOpen) });
+    expect(link.getAttribute('href')).toBe('https://teams.microsoft.com/l/message/1');
+    expect(link.getAttribute('rel')).toContain('noopener');
+    expect(
+      screen.getByText(new RegExp(`Martin · ${en.inspector.provenanceDay({ iso: '2026-10-24' })}`))
+    ).toBeTruthy();
+  });
+
+  it('never turns a non-http link from a file into a clickable link', () => {
+    const rootId = selectRoot();
+    s().addEvidence(rootId, 'From an imported file', true, 'indicative');
+    const id = s().doc.nodes[rootId]?.evidence[0]?.id ?? '';
+    s().updateEvidence(rootId, id, { url: 'javascript:alert(1)' });
+    render(<Inspector />);
+    goTab('evidence');
+    expect(
+      screen.queryByRole('link', { name: new RegExp(en.inspector.provenanceOpen) })
+    ).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: en.inspector.provenanceShow }));
+    expect(screen.getByText(en.inspector.provenanceUnsafeUrl)).toBeTruthy();
+  });
+
+  it('shows the status history and saves why a status changed', () => {
+    const rootId = selectRoot();
+    s().addEvidence(rootId, 'Neutral probe saw the backend slow', true, 'strong');
+    s().setStatus(rootId, 'refuted');
+    s().setStatus(rootId, 'open');
+    render(<Inspector />);
+    expect(screen.getByText(en.inspector.statusHistoryHeading)).toBeTruthy();
+    const reasons = screen.getAllByLabelText(en.inspector.statusReasonLabel);
+    expect(reasons).toHaveLength(2);
+    // Newest first: the reopening is the top entry.
+    fireEvent.blur(reasons[0] as HTMLElement, { target: { value: 'ZDX saw it slow from Munich' } });
+    const evId = s().doc.nodes[rootId]?.evidence[0]?.id ?? '';
+    fireEvent.change(screen.getAllByRole('combobox')[0] as HTMLElement, {
+      target: { value: evId },
+    });
+    expect(s().doc.nodes[rootId]?.statusLog?.[1]).toMatchObject({
+      from: 'refuted',
+      to: 'open',
+      reason: 'ZDX saw it slow from Munich',
+      evidenceId: evId,
+    });
   });
 
   it('picks draft strength up front and flips an evidence item stance', () => {

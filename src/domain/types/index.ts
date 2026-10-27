@@ -9,6 +9,7 @@ export type {
   NodeStatus,
   NumericValue,
   Priority,
+  StatusChange,
 } from './node';
 export type {
   CheckResult,
