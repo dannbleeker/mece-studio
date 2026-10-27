@@ -41,8 +41,14 @@ function stripEmphasis(s: string): string {
  */
 export function formatSynthesis(md: string, m: EditorMessages): SynthLine[] {
   const marker = m.exports.markers;
-  // The four prefixes that introduce a supporting-detail line under a branch.
-  const metaPrefixes = [marker.value, marker.rollUp, marker.sensitivity, marker.evidence];
+  // The prefixes that introduce a supporting-detail line under a branch.
+  const metaPrefixes = [
+    marker.value,
+    marker.rollUp,
+    marker.sensitivity,
+    marker.evidence,
+    marker.explains,
+  ];
   const out: SynthLine[] = [];
   for (const raw of md.split('\n')) {
     if (raw.trim() === '') {

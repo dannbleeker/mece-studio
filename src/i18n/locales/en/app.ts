@@ -138,6 +138,7 @@ export const app = {
   problemBriefTitle: 'Frame the problem — situation, complication, scope',
   editProblemBrief: '✎ Problem brief',
   addProblemBrief: '+ Problem brief',
+  mustExplainGrid: 'Must-explain grid',
 
   /** Import: paste an outline, OPML, or a tree's JSON. */
   importTitle: 'Import a tree',

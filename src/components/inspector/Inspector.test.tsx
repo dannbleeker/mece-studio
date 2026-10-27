@@ -166,6 +166,45 @@ describe('Inspector', () => {
     });
   });
 
+  it('records a kill test, a prediction and verdicts against the facts', () => {
+    const root = s().doc.rootId;
+    s().addChild(root, 'Store line too thin');
+    const child = s().doc.nodes[root] && childrenOf(s().doc, root)[0]?.id;
+    s().addFact('where', 'Germany only');
+    const factId = s().doc.facts?.[0]?.id ?? '';
+    s().select(child as NodeId);
+    render(<Inspector />);
+    fireEvent.blur(screen.getByLabelText(en.inspector.killTestLabel), {
+      target: { value: 'A fast-line store slows at the same minute' },
+    });
+    fireEvent.blur(screen.getByLabelText(en.inspector.predictionLabel), {
+      target: { value: 'Telemetry-off stores stay fast' },
+    });
+    const yes = screen.getByRole('button', {
+      name: en.brief.gridCellLabel({
+        hypothesis: 'Store line too thin',
+        fact: 'Germany only',
+        verdict: en.brief.verdict.yes,
+      }),
+    });
+    fireEvent.click(yes);
+    const node = s().doc.nodes[child as NodeId];
+    expect(node).toMatchObject({
+      killTest: 'A fast-line store slows at the same minute',
+      prediction: 'Telemetry-off stores stay fast',
+      explains: { [factId]: 'yes' },
+    });
+    // Clicking the active verdict again clears it.
+    fireEvent.click(yes);
+    expect(s().doc.nodes[child as NodeId]).not.toHaveProperty('explains');
+  });
+
+  it('keeps kill test and prediction off the root (it is the question)', () => {
+    selectRoot();
+    render(<Inspector />);
+    expect(screen.queryByLabelText(en.inspector.killTestLabel)).toBeNull();
+  });
+
   it('picks draft strength up front and flips an evidence item stance', () => {
     const rootId = selectRoot();
     render(<Inspector />);

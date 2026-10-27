@@ -1,6 +1,7 @@
 import { Dialog } from '@/components/Dialog';
 import { advisoriesFor } from '@/domain/advisories';
-import type { ProblemBrief, TreeMode } from '@/domain/types';
+import { FACT_DIMENSIONS, factsOf } from '@/domain/diagnosis';
+import type { FactDimension, ProblemBrief, TreeMode } from '@/domain/types';
 import { renderAdvisory } from '@/i18n/render';
 import { useEditorMessages } from '@/i18n/useEditorMessages';
 import { useStore } from '@/store';
@@ -132,7 +133,84 @@ export function ProblemBriefDialog({ onClose }: { onClose: () => void }) {
             </div>
           );
         })}
+
+        <FactsEditor />
       </div>
     </Dialog>
+  );
+}
+
+/**
+ * The "is / is not" facts (Kepner-Tregoe): what the problem IS against the
+ * closest thing it IS NOT, on what / where / when / how much. Each row commits
+ * on blur like the rest of the brief.
+ */
+function FactsEditor() {
+  const m = useEditorMessages();
+  const doc = useStore((s) => s.doc);
+  const addFact = useStore((s) => s.addFact);
+  const updateFact = useStore((s) => s.updateFact);
+  const removeFact = useStore((s) => s.removeFact);
+  const facts = factsOf(doc);
+
+  return (
+    <section className="flex flex-col gap-2 border-neutral-100 border-t pt-4">
+      <span className="font-medium text-[11px] text-neutral-400 uppercase tracking-wider">
+        {m.brief.factsHeading}
+      </span>
+      <span className="text-[11px] text-neutral-400 leading-snug">{m.brief.factsHint}</span>
+      {facts.length > 0 && (
+        <ul className="flex flex-col gap-1.5">
+          {facts.map((f) => (
+            <li key={f.id} className="grid grid-cols-[6rem_1fr_1fr_auto] items-center gap-1.5">
+              <select
+                aria-label={m.brief.factDimensionLabel}
+                value={f.dimension}
+                className={FIELD_CLS}
+                onChange={(e) => updateFact(f.id, { dimension: e.target.value as FactDimension })}
+              >
+                {FACT_DIMENSIONS.map((d) => (
+                  <option key={d} value={d}>
+                    {m.brief.factDimension[d]}
+                  </option>
+                ))}
+              </select>
+              <input
+                key={`${f.id}-is-${f.is}`}
+                aria-label={m.brief.factIsLabel}
+                defaultValue={f.is}
+                placeholder={m.brief.factIsPlaceholder}
+                className={FIELD_CLS}
+                onBlur={(e) => updateFact(f.id, { is: e.target.value })}
+              />
+              <input
+                key={`${f.id}-isnot-${f.isNot ?? ''}`}
+                aria-label={m.brief.factIsNotLabel}
+                defaultValue={f.isNot ?? ''}
+                placeholder={m.brief.factIsNotPlaceholder}
+                className={FIELD_CLS}
+                onBlur={(e) => updateFact(f.id, { isNot: e.target.value })}
+              />
+              <button
+                type="button"
+                aria-label={m.brief.removeFact}
+                title={m.brief.removeFact}
+                className="px-1 text-neutral-300 hover:text-neutral-600"
+                onClick={() => removeFact(f.id)}
+              >
+                ×
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <button
+        type="button"
+        className="self-start rounded-md bg-neutral-100 px-2 py-1 text-[11px] text-neutral-600 hover:bg-neutral-200"
+        onClick={() => addFact('what')}
+      >
+        {m.brief.addFact}
+      </button>
+    </section>
   );
 }

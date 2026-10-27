@@ -1,5 +1,13 @@
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
+import {
+  addFact as addFactOp,
+  removeFact as removeFactOp,
+  setExplains as setExplainsOp,
+  setKillTest as setKillTestOp,
+  setPrediction as setPredictionOp,
+  updateFact as updateFactOp,
+} from '@/domain/diagnosis';
 import { createDoc, createEvidence } from '@/domain/factory';
 import { graftCaptureOutline } from '@/domain/markdownImport';
 import { type MeceOptions, recomputeMece } from '@/domain/mece';
@@ -43,6 +51,8 @@ import type {
   DocId,
   EvidenceItem,
   EvidenceStrength,
+  ExplainVerdict,
+  FactDimension,
   FormulaOperator,
   IssueTreeDoc,
   NodeId,
@@ -315,6 +325,17 @@ interface AppState {
     field: ProvenanceField,
     value: string
   ) => void;
+  /** Add an "is / is not" fact on the given dimension (empty text, to fill in). */
+  addFact: (dimension: FactDimension, is?: string) => void;
+  updateFact: (
+    id: string,
+    patch: { dimension?: FactDimension; is?: string; isNot?: string }
+  ) => void;
+  removeFact: (id: string) => void;
+  /** How a hypothesis fares against one fact; `null` clears it. */
+  setExplains: (nodeId: NodeId, factId: string, verdict: ExplainVerdict | null) => void;
+  setKillTest: (nodeId: NodeId, value: string) => void;
+  setPrediction: (nodeId: NodeId, value: string) => void;
   /** Annotate one status change with why it happened and what tipped it. */
   updateStatusChange: (
     nodeId: NodeId,
@@ -656,6 +677,14 @@ export const useStore = create<AppState>((set, get) => {
       apply((doc) => setEvidenceProvenanceOp(doc, nodeId, evidenceId, field, value)),
     updateStatusChange: (nodeId, index, patch) =>
       apply((doc) => updateStatusChangeOp(doc, nodeId, index, patch)),
+    addFact: (dimension, is = '') =>
+      apply((doc) => addFactOp(doc, { id: nanoid(), dimension, is })),
+    updateFact: (id, patch) => apply((doc) => updateFactOp(doc, id, patch)),
+    removeFact: (id) => apply((doc) => removeFactOp(doc, id)),
+    setExplains: (nodeId, factId, verdict) =>
+      apply((doc) => setExplainsOp(doc, nodeId, factId, verdict)),
+    setKillTest: (nodeId, value) => apply((doc) => setKillTestOp(doc, nodeId, value)),
+    setPrediction: (nodeId, value) => apply((doc) => setPredictionOp(doc, nodeId, value)),
     setDecomposition: (parentId, decomposition) =>
       apply((doc) => setDecompositionOp(doc, parentId, decomposition)),
     setOperator: (parentId, operator) => apply((doc) => setOperatorOp(doc, parentId, operator)),

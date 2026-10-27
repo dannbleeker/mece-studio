@@ -1,4 +1,5 @@
 import type { EditorMessages } from '@/i18n/types';
+import { explainsOf, factsOf } from './diagnosis';
 import { priorityBand } from './priority';
 import { evidenceDate, safeUrl, statusLogOf } from './provenance';
 import { childrenOf, splitOf } from './tree';
@@ -63,6 +64,28 @@ function provenanceSuffix(e: EvidenceItem, m: EditorMessages): string {
   return m.exports.evidenceProvenance(parts);
 }
 
+/** Kill test, prediction and fact verdicts under a node — only the ones that are set. */
+function diagnosisLines(
+  doc: IssueTreeDoc,
+  node: IssueNode,
+  indent: string,
+  m: EditorMessages
+): string[] {
+  const out: string[] = [];
+  if (node.killTest) out.push(`${indent}  - ${m.exports.killTestLine({ text: node.killTest })}`);
+  if (node.prediction) {
+    out.push(`${indent}  - ${m.exports.predictionLine({ text: node.prediction })}`);
+  }
+  const facts = factsOf(doc);
+  const verdicts = explainsOf(node);
+  if (facts.some((f) => f.id in verdicts)) {
+    const yes = facts.filter((f) => verdicts[f.id] === 'yes').length;
+    const failed = facts.filter((f) => verdicts[f.id] === 'no').map((f) => f.is);
+    out.push(`${indent}  - ${m.exports.explainsLine({ yes, total: facts.length, failed })}`);
+  }
+  return out;
+}
+
 /** The status-history line under a node, or nothing when its status never changed. */
 function historyLines(node: IssueNode, indent: string, m: EditorMessages): string[] {
   const log = statusLogOf(node);
@@ -85,6 +108,7 @@ function nodeBlock(
   );
   if (node.evidence.length > 0) lines.push(...evidenceLines(node.evidence, indent, m));
   lines.push(...historyLines(node, indent, m));
+  lines.push(...diagnosisLines(doc, node, indent, m));
   for (const child of childrenOf(doc, id)) nodeBlock(doc, child.id, depth + 1, lines, m);
 }
 
@@ -101,6 +125,20 @@ export function toMarkdown(doc: IssueTreeDoc, m: EditorMessages): string {
     `# ${root?.label ?? doc.title}${root ? metaTag(root, m) : ''}${meceNote(doc, doc.rootId, m)}${detailNote(root?.detail, '')}`,
     '',
   ];
+  const facts = factsOf(doc);
+  if (facts.length > 0) {
+    lines.push(m.exports.factsHeading, '');
+    for (const f of facts) {
+      lines.push(
+        m.exports.factLine(
+          f.isNot
+            ? { dimension: f.dimension, is: f.is, isNot: f.isNot }
+            : { dimension: f.dimension, is: f.is }
+        )
+      );
+    }
+    lines.push('');
+  }
   if (root && root.evidence.length > 0) lines.push(...evidenceLines(root.evidence, '', m), '');
   for (const child of childrenOf(doc, doc.rootId)) nodeBlock(doc, child.id, 0, lines, m);
   return `${lines.join('\n')}\n`;

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { en } from '@/i18n/locales/en';
+import { addFact, setExplains, setKillTest, setPrediction } from './diagnosis';
 import { toMarkdown } from './export';
 import { createDoc, createEvidence } from './factory';
 import { recomputeMece } from './mece';
@@ -149,6 +150,44 @@ describe('toMarkdown — provenance and status history', () => {
           },
         ],
       })
+    );
+  });
+});
+
+describe('toMarkdown — diagnosis', () => {
+  function sample() {
+    let doc = createDoc('Why are German tills slow on Saturdays?', 0);
+    const h = addChild(doc, doc.rootId, 'Store line too thin');
+    doc = addFact(h.doc, { id: 'f1', dimension: 'where', is: 'Germany', isNot: 'Other countries' });
+    doc = addFact(doc, { id: 'f2', dimension: 'extent', is: 'Some fast lines hit too' });
+    doc = setExplains(doc, h.childId, 'f1', 'yes');
+    doc = setExplains(doc, h.childId, 'f2', 'no');
+    doc = setKillTest(doc, h.childId, 'Fast-line store slows at the same minute');
+    doc = setPrediction(doc, h.childId, 'Telemetry-off stores stay fast on 31 Oct');
+    return doc;
+  }
+
+  it('lists the is / is not facts under the question', () => {
+    const md = toMarkdown(sample(), en);
+    expect(md).toContain(en.exports.factsHeading);
+    expect(md).toContain(
+      en.exports.factLine({ dimension: 'where', is: 'Germany', isNot: 'Other countries' })
+    );
+    expect(md).toContain(
+      en.exports.factLine({ dimension: 'extent', is: 'Some fast lines hit too' })
+    );
+  });
+
+  it('carries the kill test, the prediction and the verdicts on the node', () => {
+    const md = toMarkdown(sample(), en);
+    expect(md).toContain(
+      en.exports.killTestLine({ text: 'Fast-line store slows at the same minute' })
+    );
+    expect(md).toContain(
+      en.exports.predictionLine({ text: 'Telemetry-off stores stay fast on 31 Oct' })
+    );
+    expect(md).toContain(
+      en.exports.explainsLine({ yes: 1, total: 2, failed: ['Some fast lines hit too'] })
     );
   });
 });

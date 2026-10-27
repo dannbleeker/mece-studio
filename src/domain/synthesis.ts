@@ -1,4 +1,5 @@
 import type { EditorMessages } from '@/i18n/types';
+import { explainsOf, factsOf } from './diagnosis';
 import { priorityBand, priorityScore } from './priority';
 import { rollUpValue } from './rollup';
 import { sensitivity } from './sensitivity';
@@ -103,6 +104,14 @@ function render(
   if (node.evidence.length > 0) {
     const items = node.evidence.map((e) => `${e.supports ? '✓' : '✗'} ${e.summary}`);
     lines.push(`${indent}  ${m.exports.synthEvidence({ items })}`);
+  }
+  // How the branch fares against the "is / is not" facts, once any are judged.
+  const facts = factsOf(doc);
+  const verdicts = explainsOf(node);
+  if (facts.some((f) => f.id in verdicts)) {
+    const yes = facts.filter((f) => verdicts[f.id] === 'yes').length;
+    const failed = facts.filter((f) => verdicts[f.id] === 'no').map((f) => f.is);
+    lines.push(`${indent}  ${m.exports.explainsLine({ yes, total: facts.length, failed })}`);
   }
   const childIds = split?.childIds ?? [];
   const ordered = [...childIds].sort((a, b) => scoreOf(doc.nodes[b]) - scoreOf(doc.nodes[a]));

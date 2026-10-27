@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { en } from '@/i18n/locales/en';
+import { addFact, setExplains } from './diagnosis';
 import { createDoc, createEvidence } from './factory';
 import { recomputeMece } from './mece';
 import { synthesise, verdict } from './synthesis';
+import { formatSynthesis } from './synthesisFormat';
 import {
   addChild,
   addEvidence,
@@ -177,5 +179,20 @@ describe('synthesise', () => {
     doc = recomputeMece(doc);
 
     expect(synthesise(doc, en)).toContain(en.exports.synthMeceFlags({ overlap: true, gap: true }));
+  });
+});
+
+describe('synthesise — must-explain', () => {
+  it('says how each branch fares against the facts, and parses it as a detail line', () => {
+    let doc = createDoc('Why are German tills slow on Saturdays?', 0);
+    const h = addChild(doc, doc.rootId, 'Store line too thin');
+    doc = addFact(h.doc, { id: 'f1', dimension: 'where', is: 'Germany' });
+    doc = addFact(doc, { id: 'f2', dimension: 'extent', is: 'Some fast lines hit too' });
+    doc = setExplains(doc, h.childId, 'f1', 'yes');
+    doc = setExplains(doc, h.childId, 'f2', 'no');
+    const out = synthesise(doc, en);
+    const line = en.exports.explainsLine({ yes: 1, total: 2, failed: ['Some fast lines hit too'] });
+    expect(out).toContain(line);
+    expect(formatSynthesis(out, en).find((l) => l.text.includes(line))?.kind).toBe('meta');
   });
 });
