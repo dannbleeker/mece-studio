@@ -151,3 +151,75 @@ describe('MECE rules — CE guidance for un-provable splits', () => {
     expect(ce.message?.code).toBe('mece.exhaustive.frameworkNotPartition');
   });
 });
+
+describe('MECE rules — the Other bucket and the shared dimension', () => {
+  it('treats a word every named segment shares as the dimension, even beside "Other"', () => {
+    let doc = withChildren(['Large stores', 'Small stores', 'Other']);
+    doc = setDecomposition(doc, doc.rootId, 'segment');
+    expect(rootMece(doc).exclusive.state).not.toBe('warn');
+  });
+
+  it('ignores the dimension word when the remainder bucket repeats it', () => {
+    let doc = withChildren(['Large stores', 'Small stores', 'Remaining stores']);
+    doc = setDecomposition(doc, doc.rootId, 'segment');
+    expect(rootMece(doc).exclusive.state).not.toBe('warn');
+  });
+
+  it('still flags a word only some named segments share', () => {
+    let doc = withChildren(['Online retail', 'Online wholesale', 'Export', 'Other']);
+    doc = setDecomposition(doc, doc.rootId, 'segment');
+    const res = rootMece(doc).exclusive;
+    expect(res.state).toBe('warn');
+    expect(res.message?.params).toMatchObject({ token: 'online' });
+  });
+
+  it('keeps the two-sibling rule: a lone pair sharing a word is still an overlap', () => {
+    const doc = withChildren(['Online marketing', 'Online sales']);
+    expect(rootMece(doc).exclusive.state).toBe('warn');
+  });
+});
+
+describe('MECE rules — letters beyond a–z', () => {
+  it('keeps æ, ø and å inside a word instead of splitting on them', () => {
+    // Before the fix "Østjylland" tokenised to "stjylland" and "Ørestad" to
+    // "restad": the letters vanished, so a real overlap on an ø-word was missed.
+    const doc = withChildren(['Østjylland butikker', 'Østjylland lager', 'Fyn']);
+    const res = rootMece(doc).exclusive;
+    expect(res.state).toBe('warn');
+    expect(res.message?.params).toMatchObject({ token: 'østjylland' });
+  });
+
+  it('recognises a Danish remainder bucket as the Other bucket', () => {
+    for (const other of ['Øvrige', 'Andre butikker', 'Resten', 'Diverse']) {
+      let doc = withChildren(['Jylland', 'Sjælland', other]);
+      doc = setDecomposition(doc, doc.rootId, 'segment');
+      expect(rootMece(doc).exhaustive.state, other).toBe('pass');
+    }
+  });
+
+  it('does not mistake a word that merely starts like "other" for the bucket', () => {
+    let doc = withChildren(['Mothers', 'Fathers']);
+    doc = setDecomposition(doc, doc.rootId, 'segment');
+    expect(rootMece(doc).exhaustive.state).toBe('warn');
+  });
+
+  it('treats a Danish dimension word beside "Øvrige" as the dimension', () => {
+    let doc = withChildren(['Store butikker', 'Små butikker', 'Øvrige']);
+    doc = setDecomposition(doc, doc.rootId, 'segment');
+    expect(rootMece(doc).exclusive.state).not.toBe('warn');
+  });
+});
+
+describe('MECE rules — plural forms', () => {
+  it('matches a singular and a plural of the same word', () => {
+    const doc = withChildren(['Store network', 'Stores LAN', 'Back end']);
+    const res = rootMece(doc).exclusive;
+    expect(res.state).toBe('warn');
+    expect(res.message?.params).toMatchObject({ token: 'store' });
+  });
+
+  it('does not strip the s from words that end in -ss', () => {
+    const doc = withChildren(['Business rules', 'Busines hours']);
+    expect(rootMece(doc).exclusive.state).not.toBe('warn');
+  });
+});

@@ -25,6 +25,12 @@ export const DEFAULT_MECE_OPTIONS: MeceOptions = {
 
 // Words too generic to signal a real overlap, plus the placeholder nouns the
 // scaffolds seed (so a fresh "Segment 1 / Segment 2" doesn't flag itself).
+//
+// The vocabulary is a union across the languages people write trees in, not
+// keyed by the UI locale: a tree's labels are user text in whatever language
+// its author chose, so an English UI can hold a Danish tree. A Danish function
+// word in an English tree is harmless — it simply never appears. Matching runs
+// on normalised tokens, so entries are lower-case and accent-exact.
 const OVERLAP_STOPWORDS = new Set([
   'the',
   'and',
@@ -68,27 +74,105 @@ const OVERLAP_STOPWORDS = new Set([
   'options',
   'other',
   'others',
+  // Danish function words (three letters and up — shorter ones never pass the
+  // minimum token length anyway).
+  'den',
+  'det',
+  'til',
+  'fra',
+  'med',
+  'ved',
+  'mod',
+  'ikke',
+  'eller',
+  'samt',
+  'efter',
+  'mellem',
+  'andet',
+  'andre',
+  'øvrige',
+  'øvrigt',
 ]);
 
-const OTHER_BUCKET =
-  /\b(other|others|remaining|remainder|rest|misc|miscellaneous|everything\s+else)\b/i;
+// Words that mark a branch as the remainder bucket, matched as whole tokens.
+// Token matching (rather than a `\b…\b` regex) is what makes this work outside
+// a–z: `\b` is ASCII-only in JavaScript, so `/\bøvrige\b/` can never match.
+const OTHER_WORDS = new Set([
+  'other',
+  'others',
+  'remaining',
+  'remainder',
+  'rest',
+  'misc',
+  'miscellaneous',
+  // Danish
+  'andet',
+  'andre',
+  'øvrige',
+  'øvrigt',
+  'resten',
+  'resterende',
+  'diverse',
+]);
+
+const OTHER_PHRASE = /(?:^|\s)everything\s+else(?:\s|$)/iu;
+
+/**
+ * Split a label into lower-case word tokens. `\p{L}` / `\p{N}` keep every
+ * letter and digit — æ, ø, å, é, ü — inside its word; the old `[^a-z0-9]`
+ * split cut "Østjylland" down to "stjylland". NFC first so a decomposed "ø"
+ * (o + combining stroke) and a precomposed one compare equal.
+ */
+function wordTokens(label: string): string[] {
+  return label
+    .normalize('NFC')
+    .toLocaleLowerCase()
+    .split(/[^\p{L}\p{N}]+/u)
+    .filter(Boolean);
+}
+
+/**
+ * Fold a regular English plural onto its singular so "Store" and "Stores"
+ * read as the same word. Deliberately light: only a trailing `-s` on words of
+ * five letters or more, never `-ss` ("business", "process"), and `-ies` → `-y`.
+ * A miss here only costs a missed overlap; a wrong fold would invent one, so
+ * irregular and non-English plurals are left alone on purpose.
+ */
+function stem(token: string): string {
+  if (token.length >= 5 && token.endsWith('ies')) return `${token.slice(0, -3)}y`;
+  if (token.length >= 5 && token.endsWith('s') && !token.endsWith('ss')) {
+    return token.slice(0, -1);
+  }
+  return token;
+}
 
 function contentTokens(label: string, minLength: number): string[] {
-  return label
-    .toLowerCase()
-    .split(/[^a-z0-9]+/)
-    .filter((t) => t.length >= minLength && !OVERLAP_STOPWORDS.has(t));
+  return wordTokens(label)
+    .filter((t) => t.length >= minLength && !OVERLAP_STOPWORDS.has(t))
+    .map(stem);
+}
+
+/** Is this branch the remainder ("Other", "Øvrige", "Everything else")? */
+function isOtherBucket(label: string): boolean {
+  return OTHER_PHRASE.test(label) || wordTokens(label).some((t) => OTHER_WORDS.has(t));
 }
 
 /**
  * ME heuristic for split types we can't prove exclusive: flag siblings that
- * share a content word. A word shared by *every* sibling (when there are ≥3) is
- * the dimension they're split on — not an overlap — so it's ignored; the check
- * then collects every overlapping pair and reports the first, naming the pair.
+ * share a content word. A word shared by *every named* sibling (when there are
+ * ≥3 branches) is the dimension they're split on — not an overlap — so it's
+ * ignored; the check then collects every overlapping pair and reports the
+ * first, naming the pair.
+ *
+ * "Named" excludes the remainder bucket: "Large stores / Small stores / Other"
+ * is cut on *stores*, and the Other bucket not repeating the word doesn't make
+ * the two named segments overlap.
  */
 function siblingOverlap(children: IssueNode[], strict: boolean): CheckResult {
   const minLength = strict ? 3 : 4;
   const n = children.length;
+  const isOther = children.map((c) => isOtherBucket(c.label));
+  const named = isOther.filter((o) => !o).length;
   // token → indexes of the children whose label contains it.
   const tokenChildren = new Map<string, number[]>();
   children.forEach((child, i) => {
@@ -103,8 +187,10 @@ function siblingOverlap(children: IssueNode[], strict: boolean): CheckResult {
   const seenPair = new Set<string>();
   for (const [token, idxs] of tokenChildren) {
     if (idxs.length < 2) continue;
-    // A word every sibling shares is the split's dimension, not an overlap.
-    if (n >= 3 && idxs.length === n) continue;
+    // A word every named sibling shares is the split's dimension, not an
+    // overlap — whether or not the remainder bucket repeats it.
+    const namedSharing = idxs.filter((i) => !isOther[i]).length;
+    if (n >= 3 && named >= 2 && namedSharing === named) continue;
     for (let i = 0; i < idxs.length; i++) {
       for (let j = i + 1; j < idxs.length; j++) {
         const key = `${idxs[i]}-${idxs[j]}`;
@@ -134,11 +220,11 @@ function siblingOverlap(children: IssueNode[], strict: boolean): CheckResult {
 // quarter") rather than a category. Anchored to the start so it catches the
 // real mistake — listing cut-methods as branches — without firing on ordinary
 // labels that merely contain "by"/"per" (e.g. "Grow revenue by expansion").
-const AXIS_PHRASE = /^(?:by|per)\s+([a-z][a-z-]{2,})/i;
+const AXIS_PHRASE = /^(?:by|per)\s+(\p{L}[\p{L}-]{2,})/iu;
 
 function axisMarker(label: string): string | null {
-  const m = AXIS_PHRASE.exec(label.trim());
-  return m?.[1] ? m[1].toLowerCase() : null;
+  const m = AXIS_PHRASE.exec(label.normalize('NFC').trim());
+  return m?.[1] ? m[1].toLocaleLowerCase() : null;
 }
 
 /**
@@ -163,7 +249,7 @@ function mixedAxis(children: IssueNode[]): CheckResult {
 
 /** CE check for segments: they're only exhaustive with an explicit "Other" bucket. */
 function segmentExhaustive(children: IssueNode[]): CheckResult {
-  const hasOther = children.some((c) => OTHER_BUCKET.test(c.label));
+  const hasOther = children.some((c) => isOtherBucket(c.label));
   return hasOther
     ? { state: 'pass', message: { code: 'mece.exhaustive.segmentHasOther' } }
     : { state: 'warn', message: { code: 'mece.exhaustive.segmentNeedsOther' } };
