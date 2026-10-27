@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { StartPage } from '@/components/start/StartPage';
-import { parseDoc } from '@/services/storage';
+import { onLibraryChanged, parseDoc } from '@/services/storage';
 import { useStore } from '@/store';
 
 /** Open a `#doc=<base64 JSON>` share link (from "Copy share link") as a new tree. */
@@ -33,6 +33,11 @@ export function App() {
   useEffect(() => {
     openSharedDocFromHash();
   }, []);
+
+  // Another open window added, renamed or deleted a tree: re-read the shared
+  // library index so this window's picker and tabs don't go stale (and its
+  // next write doesn't act on a list that no longer exists).
+  useEffect(() => onLibraryChanged(() => useStore.getState().syncLibrary()), []);
 
   // Warm the editor chunk in the background once Start is showing, so the first
   // jump into a tree is instant — without weighing down first paint.

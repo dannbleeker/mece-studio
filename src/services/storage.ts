@@ -162,12 +162,68 @@ export function removeDocById(id: string): void {
   storage()?.removeItem(docKey(id));
 }
 
-function loadLibrary(): Library | null {
+export function loadLibrary(): Library | null {
   return readJson(LIBRARY_KEY, isLibrary);
 }
 
+/**
+ * Overwrite the whole index. Only for seeding storage (tests, a first-ever
+ * run); every edit from a running window goes through `updateLibrary`, which
+ * merges instead of replacing.
+ */
 export function saveLibrary(library: Library): boolean {
   return writeJson(LIBRARY_KEY, library);
+}
+
+/** What one action does to the index — a delta, never a full replacement. */
+export interface LibraryChange {
+  /** The tree this window now has open; omitted = leave it as it is. */
+  activeId?: string;
+  /** Add these entries, or rename them in place if already listed. */
+  upsert?: LibraryEntry[];
+  /** Drop these ids. */
+  remove?: string[];
+}
+
+/**
+ * Apply `change` to the index as it is in storage NOW, and return the result.
+ *
+ * Read-modify-write instead of writing this window's in-memory list: two open
+ * windows share one index, and replacing it from a stale copy is what used to
+ * delete the trees the other window created, or bring back the ones it
+ * deleted. A delta only touches the entries this action is about.
+ *
+ * `fallback` is the base when nothing readable is persisted (storage blocked,
+ * a first run) — the in-memory library, so a window without storage still
+ * behaves exactly as before.
+ */
+export function updateLibrary(change: LibraryChange, fallback: Library): Library {
+  const base = loadLibrary() ?? fallback;
+  const removed = new Set(change.remove ?? []);
+  const docs = base.docs.filter((e) => !removed.has(e.id));
+  for (const entry of change.upsert ?? []) {
+    const at = docs.findIndex((e) => e.id === entry.id);
+    if (at === -1) docs.push(entry);
+    else docs[at] = entry;
+  }
+  const next: Library = { activeId: change.activeId ?? base.activeId, docs };
+  writeJson(LIBRARY_KEY, next);
+  return next;
+}
+
+/**
+ * Call `onChange` whenever ANOTHER window rewrites the library index. The
+ * browser fires `storage` only in the windows that didn't make the write, so
+ * this never echoes a window's own changes back to it. A `null` key is a
+ * whole-storage clear, which takes the index with it. Returns an unsubscribe.
+ */
+export function onLibraryChanged(onChange: () => void): () => void {
+  if (typeof window === 'undefined') return () => {};
+  const listener = (e: StorageEvent) => {
+    if (e.key === LIBRARY_KEY || e.key === null) onChange();
+  };
+  window.addEventListener('storage', listener);
+  return () => window.removeEventListener('storage', listener);
 }
 
 /**

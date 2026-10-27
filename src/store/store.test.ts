@@ -543,3 +543,66 @@ describe('library index persistence — single window', () => {
     expect(s().library).toEqual([]);
   });
 });
+
+describe('library index persistence — two windows', () => {
+  // A second window shares localStorage but not this store. These helpers do
+  // to storage exactly what that window's own actions would.
+  function otherWindowAdds(label: string): string {
+    const doc = createDoc(label, 0);
+    saveDocById(doc);
+    const lib = persisted();
+    saveLibrary({ ...lib, docs: [...lib.docs, { id: doc.id, name: label }] });
+    return doc.id;
+  }
+  function otherWindowDeletes(id: string) {
+    localStorage.removeItem(`mece-studio:doc:${id}`);
+    const lib = persisted();
+    saveLibrary({ ...lib, docs: lib.docs.filter((e) => e.id !== id) });
+  }
+  const persistedIds = () => persisted().docs.map((e) => e.id);
+
+  it('keeps a tree the other window created when this one adds its own', () => {
+    const theirs = otherWindowAdds('Made in window B');
+    s().newDoc('Made in window A');
+    expect(persistedIds()).toContain(theirs);
+    expect(persistedIds()).toContain(s().activeId);
+  });
+
+  it('does not bring back a tree the other window deleted', () => {
+    s().newDoc('Second'); // library [first, second], second active
+    const first = s().library[0]?.id ?? '';
+    otherWindowDeletes(first);
+    s().setRootQuestion('Second, renamed'); // rewrites the index from this window
+    expect(persistedIds()).not.toContain(first);
+  });
+
+  it("deleting this window's last tree keeps the other window's trees", () => {
+    const theirs = otherWindowAdds('Made in window B');
+    s().deleteDoc(s().activeId);
+    expect(persistedIds()).toEqual([theirs]);
+    expect(s().library.map((e) => e.id)).toEqual([theirs]);
+  });
+
+  it('syncLibrary picks up trees added and removed elsewhere, and drops dead tabs', () => {
+    s().newDoc('Second');
+    const first = s().library[0]?.id ?? '';
+    const theirs = otherWindowAdds('Made in window B');
+    otherWindowDeletes(first);
+    s().syncLibrary();
+    const ids = s().library.map((e) => e.id);
+    expect(ids).toContain(theirs);
+    expect(ids).not.toContain(first);
+    expect(s().openTabs).not.toContain(first);
+  });
+
+  it('keeps the tree open here listed when the other window deletes it', () => {
+    // The open tree wins: someone is still typing into it, and losing that is
+    // worse than a delete that has to be repeated.
+    const open = s().activeId;
+    otherWindowDeletes(open);
+    s().syncLibrary();
+    expect(s().library.map((e) => e.id)).toContain(open);
+    expect(persistedIds()).toContain(open);
+    expect(loadDocById(open)).not.toBeNull();
+  });
+});
