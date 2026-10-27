@@ -1,9 +1,14 @@
 import { useState } from 'react';
 import { ProblemBriefDialog } from '@/components/brief/ProblemBriefDialog';
 import { MustExplainGrid } from '@/components/diagnosis/MustExplainGrid';
+import { Timeline } from '@/components/diagnosis/Timeline';
+import { WhereToLook } from '@/components/diagnosis/WhereToLook';
 import { factsOf } from '@/domain/diagnosis';
 import { useMessages } from '@/i18n/useMessages';
 import { useStore } from '@/store';
+
+const BANNER_BTN =
+  'shrink-0 rounded-md px-2 py-0.5 font-medium text-[11px] text-[#3f6fb0] hover:bg-[#e7eff8]';
 
 /**
  * A slim editable banner above the canvas for the tree's **governing answer** —
@@ -17,6 +22,8 @@ export function AnswerBanner() {
   const setAnswer = useStore((s) => s.setAnswer);
   const [showBrief, setShowBrief] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
+  const [showLook, setShowLook] = useState(false);
+  const [showTimeline, setShowTimeline] = useState(false);
   const hasFacts = factsOf(doc).length > 0;
   const hasBrief = doc.problemBrief !== undefined;
 
@@ -37,21 +44,25 @@ export function AnswerBanner() {
         type="button"
         onClick={() => setShowBrief(true)}
         title={m.app.problemBriefTitle}
-        className="shrink-0 rounded-md px-2 py-0.5 font-medium text-[11px] text-[#3f6fb0] hover:bg-[#e7eff8]"
+        className={BANNER_BTN}
       >
         {hasBrief ? m.app.editProblemBrief : m.app.addProblemBrief}
       </button>
       {hasFacts && (
-        <button
-          type="button"
-          onClick={() => setShowGrid(true)}
-          className="shrink-0 rounded-md px-2 py-0.5 font-medium text-[11px] text-[#3f6fb0] hover:bg-[#e7eff8]"
-        >
+        <button type="button" onClick={() => setShowGrid(true)} className={BANNER_BTN}>
           {m.app.mustExplainGrid}
         </button>
       )}
+      <button type="button" onClick={() => setShowLook(true)} className={BANNER_BTN}>
+        {m.app.whereToLook}
+      </button>
+      <button type="button" onClick={() => setShowTimeline(true)} className={BANNER_BTN}>
+        {m.app.timeline}
+      </button>
       {showBrief && <ProblemBriefDialog onClose={() => setShowBrief(false)} />}
       {showGrid && <MustExplainGrid onClose={() => setShowGrid(false)} />}
+      {showLook && <WhereToLook onClose={() => setShowLook(false)} />}
+      {showTimeline && <Timeline onClose={() => setShowTimeline(false)} />}
     </div>
   );
 }

@@ -101,6 +101,18 @@ const frameworks: Record<FrameworkId, FrameworkContent> = {
     root: 'Why did the problem happen?',
     children: ['Manpower', 'Machine', 'Material', 'Method', 'Measurement', 'Mother Nature'],
   },
+  'request-path': {
+    name: 'Request path: where is the time lost?',
+    blurb: 'Split a slow transaction along the hops it travels, end to end.',
+    root: 'Where is the time lost on a slow request?',
+    children: [
+      'On the device',
+      'On the local network',
+      'On the access line',
+      'In transit (WAN, proxy, cloud edge)',
+      'In the back end',
+    ],
+  },
 };
 
 export { frameworks };

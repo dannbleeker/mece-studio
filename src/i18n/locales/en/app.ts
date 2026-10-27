@@ -139,6 +139,8 @@ export const app = {
   editProblemBrief: '✎ Problem brief',
   addProblemBrief: '+ Problem brief',
   mustExplainGrid: 'Must-explain grid',
+  whereToLook: 'Where to look next',
+  timeline: 'Timeline',
 
   /** Import: paste an outline, OPML, or a tree's JSON. */
   importTitle: 'Import a tree',
