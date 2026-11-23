@@ -12,3 +12,16 @@ allowBuilds:
 # wait for. Drop it once workbox-build's chain moves off the vulnerable range.
 overrides:
   brace-expansion: ^5.0.8
+  # GHSA-w3rx-r6r6-pgpr and GHSA-5p2g-fcmc-qvqq (high, image-size <=2.0.2).
+  # pptxgenjs declares image-size ^1.2.1 but never imports it: its only size
+  # probe is `require('sizeof')`, Node-only, and the browser build carries no
+  # reference at all (checked in pptxgenjs 4.0.1 dist). So taking the patched
+  # major changes no code path. Drop once pptxgenjs declares ^2.0.3 itself.
+  image-size: ^2.0.3
+  # GHSA-3g3m-2fjr-6pw4 (glob >=9 <=14.0.1) and GHSA-g3hv-75wg-m249 (minimatch
+  # <11.0.1, through glob). Build-time only: vite-plugin-pwa -> workbox-build,
+  # which declares glob ^11 and calls only `globSync(pattern, { cwd, follow,
+  # ignore, nodir })`, unchanged in glob 14. Verified by an identical precache
+  # list in dist/sw.js before and after. Drop once workbox-build declares
+  # glob >=14.0.2 itself.
+  glob: ^14.0.2

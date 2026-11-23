@@ -4,6 +4,9 @@ Notable changes to MECE Studio. Newest first. (Open items live in `NEXT_STEPS.md
 
 ## [Unreleased]
 
+### Security
+- **Dependency advisories cleared (20 by `pnpm audit`, 8 high).** `nanoid` floor raised to 5.1.16 (GHSA-28wg-ghj8-5hjv); `vitest` / `@vitest/coverage-v8` to 4.1.12 and `happy-dom` to 21.0.4, test tooling only; `dompurify` (under jspdf), `smol-toml` and `zod` (under knip) and `source-map-js` refreshed inside their parents' ranges. Two overrides join `brace-expansion` in `pnpm-workspace.yaml`: `image-size ^2.0.3`, which pptxgenjs declares but never imports, and `glob ^14.0.2` under workbox-build, verified by an identical service-worker precache list before and after. Nothing a user sees changes.
+
 ### Added
 - **Where a piece of evidence came from.** Each evidence item can carry the date the fact was observed, who reported it, its source and a link back to the original, behind a **Source details** toggle. Filled in, it shows as one line under the item with an "Open the original" link. Only http(s) links ever become clickable — a tree can arrive from someone else's file, so a `javascript:` link is kept as text and dropped from exports. All four fields are optional and additive: older saves open unchanged.
 - **Status history.** Every status change is recorded with its date, and can carry a reason and the evidence item that tipped it. A branch ruled out and later reopened now shows both calls and why, instead of only where it ended up. Read through one validating reader, so a malformed history in an imported file is dropped rather than trusted.
